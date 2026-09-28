@@ -242,7 +242,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={userDT?.account_manage?.[0]?.user_type_id == 3 ? true : false || mode == 'view'}
                                                 valueWatch={userDT?.account_manage?.[0]?.user_type_id == 3 ? userDT?.account_manage?.[0]?.group?.id : watch("group_id")}
                                                 handleChange={(e) => {
-                                                    setValue("group_id", e.target.value);
+                                                    setValue("group_id", e?.target?.value ?? "");
                                                     if (errors?.group_id) { clearErrors('group_id') }
                                                 }}
                                                 errors={errors?.group_id}
@@ -274,7 +274,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly || mode === 'edit'}
                                                 valueWatch={watch("zone_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("zone_id", e.target.value);
+                                                    setValue("zone_id", e?.target?.value ?? "");
                                                     if (errors?.zone_id) { clearErrors('zone_id') }
                                                 }}
                                                 errors={errors?.zone_id}
@@ -387,7 +387,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 multiline
                                                 onChange={(e) => {
                                                     if (e.target.value.length <= 255) {
-                                                        setValue("remark", e.target.value);
+                                                        setValue("remark", e?.target?.value ?? "");
                                                     }
                                                 }}
                                                 placeholder="Enter Comment"
@@ -418,6 +418,15 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                             </div>
                                         </div>
                                     </div>
+
+                                    <label
+                                    htmlFor="r"
+                                    className="block mb-2 text-sm font-light text-gray-500"
+                                >
+                                   {`When gas flows out of the system, input a negative value.`}
+                                </label>
+
+
 
                                     <div className="flex justify-end gap-4 pt-6 flex-wrap">
                                         <button

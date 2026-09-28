@@ -61,7 +61,7 @@ const ColumnVisibilityPopoverMT: React.FC<ColumnVisibilityPopoverProps> = ({
                     <div className="flex flex-col gap-2 mt-2">
                         {initialColumns?.map((column: any) => (
                             column?.parent_id ?
-                                <label key={column.key} className="flex items-center gap-2 pl-[5px]">
+                                <label key={column?.key} className="flex items-center gap-2 pl-[5px]">
                                     <span
                                         className="absolute h-full border-l-2 border-gray-300 translate-y-[1px]"
                                         style={{
@@ -74,8 +74,8 @@ const ColumnVisibilityPopoverMT: React.FC<ColumnVisibilityPopoverProps> = ({
                                     />
                                     <input
                                         type="checkbox"
-                                        checked={columnVisibility[column.key]}
-                                        onChange={() => handleColumnToggle(column.key)}
+                                        checked={columnVisibility?.[column?.key]}
+                                        onChange={() => handleColumnToggle(column?.key)}
                                         className="h-4 w-4 border border-gray-400 rounded-md checked:bg-[#1473A1] checked:border-transparent text-white focus:ring-0"
                                         style={{
                                             accentColor: '#1473A1',
@@ -86,11 +86,11 @@ const ColumnVisibilityPopoverMT: React.FC<ColumnVisibilityPopoverProps> = ({
                                     </span>
                                 </label>
                                 :
-                                <label key={column.key} className="flex items-center gap-2">
+                                <label key={column?.key} className="flex items-center gap-2">
                                     <input
                                         type="checkbox"
-                                        checked={columnVisibility[column.key]}
-                                        onChange={() => handleColumnToggle(column.key)}
+                                        checked={columnVisibility?.[column?.key]}
+                                        onChange={() => handleColumnToggle(column?.key)}
                                         className="h-4 w-4 border border-gray-400 rounded-md checked:bg-[#1473A1] checked:border-transparent text-white focus:ring-0"
                                         style={{
                                             accentColor: '#1473A1',

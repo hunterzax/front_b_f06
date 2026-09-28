@@ -31,13 +31,13 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
     };
 
     // เอาไว้ span column แบบ dynamic เคสเปิด ปิดไส้ใน
-    const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility[col.key]).length || 1;
+    const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility?.[col.key]).length || 1;
     const getVisibleChildCountMultiLevel = (parentKey: string): number => {
         const children = initialColumns?.filter((col: any) => col.parent_id === parentKey);
 
         // ถ้าไม่มีลูก: เป็น leaf → เช็คว่า visible ไหม
         if (children.length === 0) {
-            return columnVisibility[parentKey] ? 1 : 0;
+            return columnVisibility?.[parentKey] ? 1 : 0;
         }
 
         // มีลูก: ไปดูลูกของลูกแบบ recursive แล้วรวม count ของลูกที่มองเห็น
@@ -62,9 +62,9 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                             <tr className="h-9">
 
                                 {/* สามารถ Freeze column ถึง column ไหนได้ ซึ่งยังอยากให้เห็นข้อมูล ตรง  row total ครบอยู่ https://app.clickup.com/t/86eujrg5x */}
-                                {columnVisibility.gas_day && (
+                                {columnVisibility?.gas_day && (
                                     <th
-                                        className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] sticky left-0 bg-[#1473A1] z-[99]`}
+                                        className={`${table_header_style} min-w-[260px] w-[260px] max-w-[260px] text-center sticky left-0 bg-[#1473A1] z-[99]`}
                                         rowSpan={4}
                                         scope="col"
                                     // onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, tableData)} // https://app.clickup.com/t/86eujrg4t R: Sort ยังไม่ได้บาง column (ดูเพิ่มเติมว่ามันสามารถ sort ได้แบบไหน)
@@ -74,7 +74,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                     </th>
                                 )}
 
-                                {columnVisibility.summary_pane && (
+                                {columnVisibility?.summary_pane && (
                                     <th
                                         className={`${table_header_style} bg-[#DEA477] text-center`}
                                         // colSpan={48} 
@@ -85,7 +85,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                     </th>
                                 )}
 
-                                {columnVisibility.detail_pane && (
+                                {columnVisibility?.detail_pane && (
                                     <th
                                         className={`${table_header_style} bg-[#6EA48D] text-center`}
                                         // colSpan={25} 
@@ -100,15 +100,16 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                             {/* SUB MAIN */}
                             <tr className="h-9">
 
-                                {columnVisibility.summary_pane && (<>
+                                {columnVisibility?.summary_pane && (<>
 
 
-                                    {columnVisibility.shipper_name && (
+                                    {columnVisibility?.shipper_name && (
                                         <th
                                             className={`
+                                                min-w-[260px] w-[260px] max-w-[260px]
                                                 ${table_sort_header_style} text-center sticky z-50 bg-[#1473A1]
                                                 ${!columnVisibility?.gas_day ? 'left-0' // ถ้าปิด gas_day
-                                                    : 'left-[120px]' // default
+                                                    : 'left-[260px]' // default
                                                 }
                                             `}
                                             rowSpan={3}
@@ -116,20 +117,22 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             colSpan={1}
                                         // onClick={() => handleSortBalReport("shipper_data.shipper", sortState, setSortState, setSortedData, tableData, shipperGroupData)}  // https://app.clickup.com/t/86eujrg4t R: Sort ยังไม่ได้บาง column (ดูเพิ่มเติมว่ามันสามารถ sort ได้แบบไหน)
                                         >
-                                            <div className="w-[200px]">
+                                            <div className="">
                                                 {`Shipper Name`}
                                                 {/* {getArrowIcon("shipper_data.shipper")} */}
                                             </div>
                                         </th>
                                     )}
 
-                                    {columnVisibility.contract_code && (
+                                    {columnVisibility?.contract_code && (
                                         <th
-                                            className={`${table_sort_header_style} sticky bg-[#1473A1] z-50
-                                            ${(columnVisibility?.gas_day && !columnVisibility.shipper_name) ? 'left-[120px]' // ถ้าไม่ปิด gas_day แต่ปิด shipper_name
-                                                    : (!columnVisibility?.gas_day && columnVisibility.shipper_name) ? 'left-[216px]' // ถ้าปิด gas_day แต่ไม่ปิด shipper_name
-                                                        : (!columnVisibility?.gas_day && !columnVisibility.shipper_name) ? 'left-0' // ถ้าปิดทั้งคู่
-                                                            : 'left-[352px]' // default
+                                            className={`
+                                                min-w-[260px] w-[260px] max-w-[260px] text-center
+                                                ${table_sort_header_style} sticky bg-[#1473A1] z-50
+                                            ${(columnVisibility?.gas_day && !columnVisibility?.shipper_name) ? 'left-[260px]' // ถ้าไม่ปิด gas_day แต่ปิด shipper_name
+                                                    : (!columnVisibility?.gas_day && columnVisibility?.shipper_name) ? 'left-[260px]' // ถ้าปิด gas_day แต่ไม่ปิด shipper_name
+                                                        : (!columnVisibility?.gas_day && !columnVisibility?.shipper_name) ? 'left-0' // ถ้าปิดทั้งคู่
+                                                            : 'left-[520px]' // default
                                                 }
                                         `}
                                             rowSpan={3}
@@ -137,14 +140,14 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             colSpan={1}
                                             onClick={() => handleSortOnlyBalReport("shipper_data.contract_data.contract", sortState, setSortState, setSortedData, tableData)}
                                         >
-                                            <div className="w-[150px]">
+                                            <div className="">
                                                 {`Contract Code`}
                                                 {getArrowIcon("shipper_data.contract_data.contract")}
                                             </div>
                                         </th>
                                     )}
 
-                                    {columnVisibility.total_entry_mmbtud && (
+                                    {columnVisibility?.total_entry_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -157,7 +160,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                     )}
 
 
-                                    {columnVisibility.total_exit_mmbtud && (
+                                    {columnVisibility?.total_exit_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -169,7 +172,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.imbalance_zone_mmbtud && (
+                                    {columnVisibility?.imbalance_zone_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -181,7 +184,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.instructed_flow_mmbtud && (
+                                    {columnVisibility?.instructed_flow_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -193,7 +196,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.shrinkage_volume_mmbtud && (
+                                    {columnVisibility?.shrinkage_volume_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -205,7 +208,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.park_mmbtud && (
+                                    {columnVisibility?.park_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -217,7 +220,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.unpark_mmbtud && (
+                                    {columnVisibility?.unpark_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -229,7 +232,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.sod_park_mmbtud && (
+                                    {columnVisibility?.sod_park_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -241,7 +244,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.eod_park_mmbtud && (
+                                    {columnVisibility?.eod_park_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -253,7 +256,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.min_inventory_change_mmbtud && (
+                                    {columnVisibility?.min_inventory_change_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -265,7 +268,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.reserve_bal_mmbtud && (
+                                    {columnVisibility?.reserve_bal_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -277,7 +280,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.adjust_imbalance_mmbtud && (
+                                    {columnVisibility?.adjust_imbalance_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -289,7 +292,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.vent_gas && (
+                                    {columnVisibility?.vent_gas && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -303,7 +306,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.commissioning_gas && (
+                                    {columnVisibility?.commissioning_gas && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -317,7 +320,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.other_gas && (
+                                    {columnVisibility?.other_gas && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -331,7 +334,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.daily_imb_mmbtud && (
+                                    {columnVisibility?.daily_imb_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -343,7 +346,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.aip_mmbtud && (
+                                    {columnVisibility?.aip_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -356,7 +359,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                     )}
 
 
-                                    {columnVisibility.ain_mmbtud && (
+                                    {columnVisibility?.ain_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -368,7 +371,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.percentage_imb && (
+                                    {columnVisibility?.percentage_imb && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -380,7 +383,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.percentage_abslmb && (
+                                    {columnVisibility?.percentage_abslmb && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -392,7 +395,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.acc_imb_month_mmbtud && (
+                                    {columnVisibility?.acc_imb_month_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -404,7 +407,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.acc_imb_mmbtud && (
+                                    {columnVisibility?.acc_imb_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -416,7 +419,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.min_inventory_mmbtud && (
+                                    {columnVisibility?.min_inventory_mmbtud && (
                                         <th
                                             className={`${table_header_style} text-center`}
                                             rowSpan={1}
@@ -431,10 +434,10 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                 </>
                                 )}
 
-                                {columnVisibility.detail_pane && (
+                                {columnVisibility?.detail_pane && (
                                     <>
                                         {/* under detail pane */}
-                                        {columnVisibility.entry && (
+                                        {columnVisibility?.entry && (
                                             <th
                                                 className={`${table_header_style} text-center bg-[#1AB9CF]`}
                                                 rowSpan={1}
@@ -447,7 +450,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         )}
 
                                         {/* under detail pane */}
-                                        {columnVisibility.exit && (
+                                        {columnVisibility?.exit && (
                                             <th
                                                 className={`${table_header_style} text-center bg-[#3A8FB8]`}
                                                 rowSpan={1}
@@ -468,11 +471,11 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                 {/* เรื่อง SORT เปลี่ยนไปใช้ handleSortBalReportRowWhite() (อ่านคอมเม้นนะ) R: Sort ยังไม่ได้บาง column (ดูเพิ่มเติมว่ามันสามารถ sort ได้แบบไหน) https://app.clickup.com/t/86eujrg4t */}
                                 {/* List : Column ย่อยพวก East / West / East-West ปรับจัดกลาง https://app.clickup.com/t/86etje74w */}
-                                {columnVisibility.summary_pane && (<>
+                                {columnVisibility?.summary_pane && (<>
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Total Entry (MMBTU) ########################## */}
-                                    {columnVisibility.east_total_entry_mmbtud && (
+                                    {columnVisibility?.east_total_entry_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("total_entry_east", sortState, setSortState, setSortedData, tableData)}
@@ -483,7 +486,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_total_entry_mmbtud && (
+                                    {columnVisibility?.west_total_entry_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("total_entry_west", sortState, setSortState, setSortedData, tableData)}
@@ -494,7 +497,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.east_west_total_entry_mmbtud && (
+                                    {columnVisibility?.east_west_total_entry_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#C8FFD7] hover:bg-[#a6f5bf] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("total_entry_east-west", sortState, setSortState, setSortedData, tableData)}
@@ -508,7 +511,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Total Exit (MMBTU) ########################## */}
-                                    {columnVisibility.east_total_exit_mmbtud && (
+                                    {columnVisibility?.east_total_exit_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("total_exit_east", sortState, setSortState, setSortedData, tableData)}
@@ -519,7 +522,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_total_exit_mmbtud && (
+                                    {columnVisibility?.west_total_exit_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("total_exit_west", sortState, setSortState, setSortedData, tableData)}
@@ -530,7 +533,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.east_west_total_exit_mmbtud && (
+                                    {columnVisibility?.east_west_total_exit_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#C8FFD7] hover:bg-[#a6f5bf] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("total_exit_east-west", sortState, setSortState, setSortedData, tableData)}
@@ -544,7 +547,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Imbalance Zone (MMBTU) ########################## */}
-                                    {columnVisibility.east_imbalance_zone_mmbtud && (
+                                    {columnVisibility?.east_imbalance_zone_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("imbZone_east", sortState, setSortState, setSortedData, tableData)}
@@ -555,7 +558,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_imbalance_zone_mmbtud && (
+                                    {columnVisibility?.west_imbalance_zone_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("imbZone_west", sortState, setSortState, setSortedData, tableData)}
@@ -566,7 +569,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.total_imbalance_zone_mmbtud && (
+                                    {columnVisibility?.total_imbalance_zone_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#e0e0e0] text-right min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("imbZone_total", sortState, setSortState, setSortedData, tableData)}
@@ -581,7 +584,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Instructed flow (MMBTU) ########################## */}
-                                    {columnVisibility.east_instructed_flow_mmbtud && (
+                                    {columnVisibility?.east_instructed_flow_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("instructedFlow_east", sortState, setSortState, setSortedData, tableData)}
@@ -592,7 +595,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_instructed_flow_mmbtud && (
+                                    {columnVisibility?.west_instructed_flow_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("instructedFlow_west", sortState, setSortState, setSortedData, tableData)}
@@ -603,7 +606,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.east_west_instructed_flow_mmbtud && (
+                                    {columnVisibility?.east_west_instructed_flow_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#C8FFD7] hover:bg-[#a6f5bf] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("instructedFlow_east-west", sortState, setSortState, setSortedData, tableData)}
@@ -617,7 +620,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Shrinkage Volume (MMBTU) ########################## */}
-                                    {columnVisibility.east_shrinkage_volume_mmbtud && (
+                                    {columnVisibility?.east_shrinkage_volume_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("shrinkage_east", sortState, setSortState, setSortedData, tableData)}
@@ -628,7 +631,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_shrinkage_volume_mmbtud && (
+                                    {columnVisibility?.west_shrinkage_volume_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("shrinkage_west", sortState, setSortState, setSortedData, tableData)}
@@ -642,7 +645,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Park (MMBTU) ########################## */}
-                                    {columnVisibility.east_park_mmbtud && (
+                                    {columnVisibility?.east_park_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("park_east", sortState, setSortState, setSortedData, tableData)}
@@ -653,7 +656,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_park_mmbtud && (
+                                    {columnVisibility?.west_park_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("park_west", sortState, setSortState, setSortedData, tableData)}
@@ -667,7 +670,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Unpark (MMBTU) ########################## */}
-                                    {columnVisibility.east_unpark_mmbtud && (
+                                    {columnVisibility?.east_unpark_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("unpark_east", sortState, setSortState, setSortedData, tableData)}
@@ -678,7 +681,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_unpark_mmbtud && (
+                                    {columnVisibility?.west_unpark_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("unpark_west", sortState, setSortState, setSortedData, tableData)}
@@ -692,7 +695,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> SOD Park (MMBTU) ########################## */}
-                                    {columnVisibility.east_sod_park_mmbtud && (
+                                    {columnVisibility?.east_sod_park_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("SodPark_east", sortState, setSortState, setSortedData, tableData)}
@@ -703,7 +706,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_sod_park_mmbtud && (
+                                    {columnVisibility?.west_sod_park_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("SodPark_west", sortState, setSortState, setSortedData, tableData)}
@@ -717,7 +720,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> EOD Park (MMBTU) ########################## */}
-                                    {columnVisibility.east_eod_park_mmbtud && (
+                                    {columnVisibility?.east_eod_park_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("EodPark_east", sortState, setSortState, setSortedData, tableData)}
@@ -728,7 +731,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_eod_park_mmbtud && (
+                                    {columnVisibility?.west_eod_park_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("EodPark_west", sortState, setSortState, setSortedData, tableData)}
@@ -742,7 +745,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Min. Inventory Change (MMBTU) ########################## */}
-                                    {columnVisibility.east_min_inventory_change_mmbtud && (
+                                    {columnVisibility?.east_min_inventory_change_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("minInventoryChange_east", sortState, setSortState, setSortedData, tableData)}
@@ -753,7 +756,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_min_inventory_change_mmbtud && (
+                                    {columnVisibility?.west_min_inventory_change_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("minInventoryChange_west", sortState, setSortState, setSortedData, tableData)}
@@ -766,7 +769,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Reserve Bal. (MMBTU) ########################## */}
-                                    {columnVisibility.east_reserve_bal_mmbtud && (
+                                    {columnVisibility?.east_reserve_bal_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("reserveBal_east", sortState, setSortState, setSortedData, tableData)}
@@ -777,7 +780,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_reserve_bal_mmbtud && (
+                                    {columnVisibility?.west_reserve_bal_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("reserveBal_west", sortState, setSortState, setSortedData, tableData)}
@@ -790,7 +793,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Adjust Imbalance (MMBTU) ########################## */}
-                                    {columnVisibility.east_adjust_imbalance_mmbtud && (
+                                    {columnVisibility?.east_adjust_imbalance_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("adjustDailyImb_east", sortState, setSortState, setSortedData, tableData)}
@@ -801,7 +804,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_adjust_imbalance_mmbtud && (
+                                    {columnVisibility?.west_adjust_imbalance_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("adjustDailyImb_west", sortState, setSortState, setSortedData, tableData)}
@@ -815,7 +818,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Vent Gas ########################## */}
-                                    {columnVisibility.east_vent_gas && (
+                                    {columnVisibility?.east_vent_gas && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("ventGas_east", sortState, setSortState, setSortedData, tableData)}
@@ -826,7 +829,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_vent_gas && (
+                                    {columnVisibility?.west_vent_gas && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("ventGas_west", sortState, setSortState, setSortedData, tableData)}
@@ -840,7 +843,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Commissioning Gas ########################## */}
-                                    {columnVisibility.east_commissioning_gas && (
+                                    {columnVisibility?.east_commissioning_gas && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("commissioningGas_east", sortState, setSortState, setSortedData, tableData)}
@@ -851,7 +854,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_commissioning_gas && (
+                                    {columnVisibility?.west_commissioning_gas && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("commissioningGas_west", sortState, setSortState, setSortedData, tableData)}
@@ -864,7 +867,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Other Gas ########################## */}
-                                    {columnVisibility.east_other_gas && (
+                                    {columnVisibility?.east_other_gas && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("otherGas_east", sortState, setSortState, setSortedData, tableData)}
@@ -875,7 +878,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_other_gas && (
+                                    {columnVisibility?.west_other_gas && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("otherGas_west", sortState, setSortState, setSortedData, tableData)}
@@ -889,7 +892,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Daily IMB (MMBTU) ########################## */}
-                                    {columnVisibility.east_daily_imb_mmbtud && (
+                                    {columnVisibility?.east_daily_imb_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("dailyImb_east", sortState, setSortState, setSortedData, tableData)}
@@ -900,7 +903,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_daily_imb_mmbtud && (
+                                    {columnVisibility?.west_daily_imb_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("dailyImb_west", sortState, setSortState, setSortedData, tableData)}
@@ -914,7 +917,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> AIP (MMBTU) ########################## */}
-                                    {columnVisibility.total_aip_mmbtud && (
+                                    {columnVisibility?.total_aip_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#e0e0e0] text-right min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("aip", sortState, setSortState, setSortedData, tableData)}
@@ -927,7 +930,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> AIN (MMBTU) ########################## */}
-                                    {columnVisibility.total_ain_mmbtud && (
+                                    {columnVisibility?.total_ain_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#e0e0e0] text-right min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("ain", sortState, setSortState, setSortedData, tableData)}
@@ -940,7 +943,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> % Imb ########################## */}
-                                    {columnVisibility.total_percentage_imb && (
+                                    {columnVisibility?.total_percentage_imb && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#e0e0e0] text-right min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("absimb", sortState, setSortState, setSortedData, tableData)}
@@ -953,7 +956,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> %Abslmb ########################## */}
-                                    {columnVisibility.total_percentage_abslmb && (
+                                    {columnVisibility?.total_percentage_abslmb && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#e0e0e0] text-right min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("absimb", sortState, setSortState, setSortedData, tableData)}
@@ -966,7 +969,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Acc. IMB. (MONTH) (MMBTU) ########################## */}
-                                    {columnVisibility.east_acc_imb_month_mmbtud && (
+                                    {columnVisibility?.east_acc_imb_month_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("accImbMonth_east", sortState, setSortState, setSortedData, tableData)}
@@ -977,7 +980,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_acc_imb_month_mmbtud && (
+                                    {columnVisibility?.west_acc_imb_month_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("accImbMonth_west", sortState, setSortState, setSortedData, tableData)}
@@ -991,7 +994,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Acc. IMB. (MMBTU) ########################## */}
-                                    {columnVisibility.east_acc_imb_mmbtud && (
+                                    {columnVisibility?.east_acc_imb_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("accImb_east", sortState, setSortState, setSortedData, tableData)}
@@ -1002,7 +1005,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_acc_imb_mmbtud && (
+                                    {columnVisibility?.west_acc_imb_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("accImb_west", sortState, setSortState, setSortedData, tableData)}
@@ -1016,7 +1019,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                     {/* ################################################################################################## */}
                                     {/* ########################## Under Summary Pane ---> Min. Inventory (MMBTU) ########################## */}
-                                    {columnVisibility.east_min_inventory_mmbtud && (
+                                    {columnVisibility?.east_min_inventory_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("minInventory_east", sortState, setSortState, setSortedData, tableData)}
@@ -1027,7 +1030,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_min_inventory_mmbtud && (
+                                    {columnVisibility?.west_min_inventory_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={2} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("minInventory_west", sortState, setSortState, setSortedData, tableData)}
@@ -1044,11 +1047,11 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
 
 
-                                {columnVisibility.detail_pane && (
+                                {columnVisibility?.detail_pane && (
                                     <>
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Detail Pane ---> Entry ########################## */}
-                                        {columnVisibility.east_entry_detail_pane && (
+                                        {columnVisibility?.east_entry_detail_pane && (
                                             <th
                                                 className={`${table_header_style} text-[#58585A] bg-[#DBE4FF] text-center`}
                                                 rowSpan={1}
@@ -1060,7 +1063,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_entry_detail_pane && (
+                                        {columnVisibility?.west_entry_detail_pane && (
                                             <th
                                                 className={`${table_header_style} text-[#58585A] bg-[#FFCEE2] text-center`}
                                                 rowSpan={1}
@@ -1072,7 +1075,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.east_west_entry_detail_pane && (
+                                        {columnVisibility?.east_west_entry_detail_pane && (
                                             <th
                                                 className={`${table_header_style} text-[#58585A] bg-[#C8FFD7] text-center`}
                                                 rowSpan={1}
@@ -1087,7 +1090,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Detail Pane ---> Exit ########################## */}
-                                        {columnVisibility.east_exit_detail_pane && (
+                                        {columnVisibility?.east_exit_detail_pane && (
                                             <th
                                                 className={`${table_header_style} text-[#58585A] bg-[#DBE4FF] text-center`}
                                                 rowSpan={1}
@@ -1099,7 +1102,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_exit_detail_pane && (
+                                        {columnVisibility?.west_exit_detail_pane && (
                                             <th
                                                 className={`${table_header_style} text-[#58585A] bg-[#FFCEE2] text-center`}
                                                 rowSpan={1}
@@ -1111,7 +1114,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.east_west_exit_detail_pane && (
+                                        {columnVisibility?.east_west_exit_detail_pane && (
                                             <th
                                                 className={`${table_header_style} text-[#58585A] bg-[#C8FFD7] text-center`}
                                                 rowSpan={1}
@@ -1123,7 +1126,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.f2_and_g && (
+                                        {columnVisibility?.f2_and_g && (
                                             <th
                                                 className={`${table_header_style} text-[#FFFFFF] bg-[#1473A1] text-center`}
                                                 rowSpan={1}
@@ -1135,7 +1138,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.e && (
+                                        {columnVisibility?.e && (
                                             <th
                                                 className={`${table_header_style} text-[#FFFFFF] bg-[#1473A1] text-center`}
                                                 rowSpan={1}
@@ -1156,13 +1159,13 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                             <tr className="h-9">
 
-                                {columnVisibility.detail_pane && (
+                                {columnVisibility?.detail_pane && (
                                     <>
 
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Detail Pane ---> Entry ---> East ########################## */}
-                                        {columnVisibility.gsp && (
+                                        {columnVisibility?.gsp && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_entry_east_gsp", sortState, setSortState, setSortedData, tableData)}
@@ -1173,7 +1176,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.bypass_gas && (
+                                        {columnVisibility?.bypass_gas && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_entry_east_bypassGas", sortState, setSortState, setSortedData, tableData)}
@@ -1184,7 +1187,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.lng && (
+                                        {columnVisibility?.lng && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_entry_east_lng", sortState, setSortState, setSortedData, tableData)}
@@ -1195,7 +1198,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.others_east && (
+                                        {columnVisibility?.others_east && (
                                             <th
                                                 className={`${table_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("minInventory_east", sortState, setSortState, setSortedData, tableData)}
@@ -1209,7 +1212,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Detail Pane ---> Entry ---> West ########################## */}
-                                        {columnVisibility.ydn && (
+                                        {columnVisibility?.ydn && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_entry_west_yadana", sortState, setSortState, setSortedData, tableData)}
@@ -1220,7 +1223,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.ytg && (
+                                        {columnVisibility?.ytg && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_entry_west_yetagun", sortState, setSortState, setSortedData, tableData)}
@@ -1231,7 +1234,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.ztk && (
+                                        {columnVisibility?.ztk && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_entry_west_zawtika", sortState, setSortState, setSortedData, tableData)}
@@ -1242,7 +1245,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.others_west && (
+                                        {columnVisibility?.others_west && (
                                             <th
                                                 className={`${table_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("detail_entry_east_lng", sortState, setSortState, setSortedData, tableData)}
@@ -1256,7 +1259,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Detail Pane ---> Entry ---> East-West ########################## */}
-                                        {columnVisibility.ra6_east && (
+                                        {columnVisibility?.ra6_east && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_entry_east-west_ra6East", sortState, setSortState, setSortedData, tableData)}
@@ -1267,7 +1270,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.ra6_west && (
+                                        {columnVisibility?.ra6_west && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_entry_east-west_ra6West", sortState, setSortState, setSortedData, tableData)}
@@ -1278,7 +1281,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.bvw10_east && (
+                                        {columnVisibility?.bvw10_east && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_entry_east-west_bvw10East", sortState, setSortState, setSortedData, tableData)}
@@ -1289,7 +1292,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.bvw10_West && (
+                                        {columnVisibility?.bvw10_West && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_entry_east-west_bvw10West", sortState, setSortState, setSortedData, tableData)}
@@ -1303,7 +1306,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Detail Pane ---> Exit ---> East ########################## */}
-                                        {columnVisibility.egat && (
+                                        {columnVisibility?.egat && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_exit_east_egat", sortState, setSortState, setSortedData, tableData)}
@@ -1314,7 +1317,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.ipp && (
+                                        {columnVisibility?.ipp && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_exit_east_ipp", sortState, setSortState, setSortedData, tableData)}
@@ -1325,7 +1328,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.others_east_exit && (
+                                        {columnVisibility?.others_east_exit && (
                                             <th
                                                 className={`${table_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("detail_entry_east-west_bvw10West", sortState, setSortState, setSortedData, tableData)}
@@ -1338,7 +1341,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Detail Pane ---> Exit ---> West ########################## */}
-                                        {columnVisibility.egat_west && (
+                                        {columnVisibility?.egat_west && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_exit_west_egat", sortState, setSortState, setSortedData, tableData)}
@@ -1349,7 +1352,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.ipp_west && (
+                                        {columnVisibility?.ipp_west && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_exit_west_ipp", sortState, setSortState, setSortedData, tableData)}
@@ -1360,7 +1363,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.others_west_exit && (
+                                        {columnVisibility?.others_west_exit && (
                                             <th
                                                 className={`${table_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("detail_exit_east_ipp", sortState, setSortState, setSortedData, tableData)}
@@ -1372,7 +1375,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Detail Pane ---> Exit ---> East-West ########################## */}
-                                        {columnVisibility.egat_east_west && (
+                                        {columnVisibility?.egat_east_west && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_exit_east-west_egat", sortState, setSortState, setSortedData, tableData)}
@@ -1383,7 +1386,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.ipp_east_west && (
+                                        {columnVisibility?.ipp_east_west && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_exit_east-west_ipp", sortState, setSortState, setSortedData, tableData)}
@@ -1394,7 +1397,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.others_east_west_exit && (
+                                        {columnVisibility?.others_east_west_exit && (
                                             <th
                                                 className={`${table_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                             // onClick={() => handleSortBalReport("detail_exit_west_ipp", sortState, setSortState, setSortedData, tableData)}
@@ -1407,7 +1410,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Detail Pane ---> Exit ---> F2&G ########################## */}
-                                        {columnVisibility.east_f2andg && (
+                                        {columnVisibility?.east_f2andg && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5EED9] hover:bg-[#def5c0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_exit_east_F2andG", sortState, setSortState, setSortedData, tableData)}
@@ -1418,7 +1421,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_f2andg && (
+                                        {columnVisibility?.west_f2andg && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE1F2] hover:bg-[#c8d4f4] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_exit_west_F2andG", sortState, setSortState, setSortedData, tableData)}
@@ -1432,7 +1435,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Detail Pane ---> Exit ---> E ########################## */}
-                                        {columnVisibility.east_e && (
+                                        {columnVisibility?.east_e && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#E5EED9] hover:bg-[#def5c0] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_exit_E_east", sortState, setSortState, setSortedData, tableData)}
@@ -1443,7 +1446,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_e && (
+                                        {columnVisibility?.west_e && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE1F2] hover:bg-[#c8d4f4] text-center min-w-[173px] w-[180px] max-w-[200px]`} rowSpan={1} scope="col" colSpan={1}
                                                 // onClick={() => handleSortBalReport("detail_exit_E_west", sortState, setSortState, setSortedData, tableData)}
@@ -1461,7 +1464,6 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                         </thead>
 
                         <tbody>
-                            {/* TEST 3 Steps map */}
                             {sortedData && sortedData.map((row: any, index: any) => (
                                 <>
                                     {row?.shipper_data?.map((shipperItem: any, cIdx: number) => (
@@ -1480,10 +1482,9 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 />
                                             ))}
 
-                                            {/* {(isBothFalse || showTotal) && ( */}
                                             {((isBothFalse || showTotal) && (row?.matchDataRowBlue == undefined || row?.matchDataRowBlue)) && (
                                                 <ContractRowBlue
-                                                    key={`contract-${row.request_number}-${cIdx}-blue`}
+                                                    key={`contract-${row?.request_number}-${cIdx}-blue`}
                                                     row={row}
                                                     shipperItem={shipperItem}
                                                     cIdx={cIdx}
@@ -1496,20 +1497,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </>
                                     ))}
 
-                                    {/* {
-                                        // (isBothFalse || showTotalAllShipper) && <ContractRowYellow
-                                        ((isBothFalse || showTotalAllShipper) && (row?.matchDataRowYellow == undefined || row?.matchDataRowYellow)) && <ContractRowYellow
-                                            key={'main-' + row?.request_number}
-                                            row={row}
-                                            // shipperItem={shipperItem}
-                                            // contract={contract}
-                                            // cIdx={cIdx}
-                                            index={index}
-                                            table_row_style={table_row_style}
-                                            shipperGroupData={shipperGroupData}
-                                            columnVisibility={columnVisibility}
-                                        />
-                                    } */}
+                                   
 
                                     {
                                         !isShipper &&

@@ -222,7 +222,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("group_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("group_id", e.target.value);
+                                                    setValue("group_id", e?.target?.value ?? "");
                                                     if (errors?.group_id) { clearErrors('group_id') }
                                                 }}
                                                 errors={errors?.group_id}
@@ -255,7 +255,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     if(watch("entry_exit_id") != e.target.value){
                                                         setSelectedValues([]);
                                                     }
-                                                    setValue("entry_exit_id", e.target.value);
+                                                    setValue("entry_exit_id", e?.target?.value ?? "");
                                                     if (errors?.entry_exit_id) { clearErrors('entry_exit_id') }
                                                 }}
                                                 errors={errors?.entry_exit_id}

@@ -210,12 +210,12 @@ const ModalAddDocument: React.FC<FormExampleProps> = ({
 
                         <div className={`mb-1 w-[100%] ${comments?.length > 2 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
                             {/* {data?.booking_version_comment?.map((item: any) => ( */}
-                            {comments && comments?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                            {(comments || [])?.map((item: any) => (
+                                <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
                                         <div className="mb-2 flex justify-between items-center">
                                             <span className="font-light">
-                                                By <span className="font-bold text-[#58585A]">{item?.create_by_account?.first_name} {item?.create_by_account?.last_name}</span>
+                                                By <span className="font-bold text-[#58585A]">{item?.create_by_account ? `${item?.create_by_account?.first_name || ''} ${item?.create_by_account?.last_name || ''}` : ''}</span>
                                             </span>
                                             <div className="flex items-center space-x-4">
                                                 <span className="text-[#9CA3AF] font-light">{formatDate(item?.create_date)}</span>
@@ -223,7 +223,7 @@ const ModalAddDocument: React.FC<FormExampleProps> = ({
                                                     sx={{ fontSize: '30px' }}
                                                     className="text-[#EA6060] bg-[#ffffff] border border-[#DFE4EA] rounded-md p-1 cursor-pointer"
                                                     // onClick={() => handleDelete(item.url)}
-                                                    onClick={() => setSelectedInactive(item.id)}
+                                                    onClick={() => setSelectedInactive(item?.id)}
                                                 />
                                             </div>
                                         </div>

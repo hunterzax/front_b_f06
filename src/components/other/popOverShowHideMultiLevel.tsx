@@ -87,7 +87,7 @@ const ColumnVisibilityPopoverMultiLevel: React.FC<ColumnVisibilityPopoverProps> 
 
                         <input
                             type="checkbox"
-                            checked={columnVisibility[column.key]}
+                            checked={columnVisibility?.[column.key]}
                             onChange={() => handleColumnToggle(column.key)}
                             className="h-4 w-4 ml-2 border border-gray-400 rounded-md checked:bg-[#1473A1] checked:border-transparent text-white focus:ring-0"
                             style={{

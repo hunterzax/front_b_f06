@@ -33,25 +33,25 @@ const ModalFiles: React.FC<FormExampleProps> = ({
     const [fileUpload, setFileUpload] = useState<any>();
 
     const handleFileChange = async (e: any) => {
-        const file = e.target.files[0];
+        const file = e?.target?.files?.[0];
         if (file) {
             const validFileTypes = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
             const maxSizeInMB = 10; // Maximum file size in MB
             const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
 
-            if (!validFileTypes.includes(file.type)) {
+            if (!validFileTypes.includes(file?.type)) {
                 setFileName('Invalid file type. Please upload a Excel file.');
                 // Invalid file type:'
                 return;
             }
 
-            if (file.size > maxSizeInBytes) {
+            if (file?.size > maxSizeInBytes) {
                 setFileName('The file is larger than 10 MB.');
                 // File size too large:
                 return;
             }
 
-            setFileName(file.name);
+            setFileName(file?.name || 'No file chosen');
             setFileUpload(file);
             setModalMsg("Your file has been uploaded")
 
@@ -138,7 +138,7 @@ const ModalFiles: React.FC<FormExampleProps> = ({
                         {/* ORIGINAL */}
                         {/* <div className="mb-4 w-[100%]">
                             {data?.file_capacity_request_management?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                                <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
                                         <div className="mb-2 flex justify-between">
                                             <span className='font-light'>By <span className="font-bold text-[#58585A]"> {item?.create_by_account?.first_name} {" "} {item?.create_by_account?.last_name}</span></span>
@@ -160,15 +160,15 @@ const ModalFiles: React.FC<FormExampleProps> = ({
                         </div> */}
 
                         <div
-                            className={`mb-4 w-[100%] ${data?.file_capacity_request_management?.length > 3 ? 'max-h-[350px] overflow-y-auto' : ''}`}
+                            className={`mb-4 w-[100%] ${(data?.file_capacity_request_management?.length ?? 0) > 3 ? 'max-h-[350px] overflow-y-auto' : ''}`}
                         >
-                            {data?.file_capacity_request_management?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                            {(data?.file_capacity_request_management || [])?.map((item: any) => (
+                                <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
                                         <div className="mb-2 flex justify-between">
                                             <span className='font-light'>
                                                 By <span className="font-bold text-[#58585A]">
-                                                    {item?.create_by_account?.first_name} {" "} {item?.create_by_account?.last_name}
+                                                    {item?.create_by_account ? `${item?.create_by_account?.first_name || ''} ${item?.create_by_account?.last_name || ''}` : ''}
                                                 </span>
                                             </span>
                                             <span className="text-[#9CA3AF] font-light">{formatDate(item?.create_date)}</span>

@@ -109,12 +109,12 @@ const TableViewCapacityOveruseCharge: React.FC<TableProps> = ({ tableData, isLoa
                 </thead>
 
                 <tbody>
-                    {sortedData && sortedData.map((row: any, index: number) => (
+                    {(sortedData || [])?.map((row: any, index: number) => (
                         <tr
                             key={index}
                             className={`${table_row_style}`}
                         >
-                            {/* <td className={`px-2 py-1 justify-center w-[200px] ${row.isSummary && "bg-[#E0F7FF]"} ${row.isGrandTotal && "bg-[#FFFEE0]"}`}>
+                            {/* <td className={`px-2 py-1 justify-center w-[200px] ${row?.isSummary && "bg-[#E0F7FF]"} ${row?.isGrandTotal && "bg-[#FFFEE0]"}`}>
                                 {''}
                             </td> */}
 
@@ -124,7 +124,7 @@ const TableViewCapacityOveruseCharge: React.FC<TableProps> = ({ tableData, isLoa
                                         row?.entry_exit_obj?.id == 2 ?
                                             <div
                                                 className="flex justify-center items-center rounded-full p-1 text-[#464255]"
-                                                style={{ backgroundColor: row?.area_obj?.color, width: '40px', height: '40px', color: getContrastTextColor(row?.area_obj.color) }}
+                                                style={{ backgroundColor: row?.area_obj?.color, width: '40px', height: '40px', color: getContrastTextColor(row?.area_obj?.color) }}
                                             >
                                                 {`${row?.area_obj?.name}`}
                                             </div>
@@ -140,32 +140,29 @@ const TableViewCapacityOveruseCharge: React.FC<TableProps> = ({ tableData, isLoa
                             </td>
 
                             {/* <td className={`px-2 py-1 justify-center  text-right text-[#464255]`}>
-                                {row.bookQuantity !== null && row.bookQuantity !== undefined ? formatNumberFourDecimal(row.bookQuantity) : ''}
+                                {row?.bookQuantity !== null && row?.bookQuantity !== undefined ? formatNumberFourDecimal(row?.bookQuantity) : ''}
                             </td>
 
                             <td className={`px-2 py-1 justify-center  text-right text-[#464255]`}>
-                                {row.allocationQuantity !== null && row.allocationQuantity !== undefined ? formatNumberFourDecimal(row.allocationQuantity) : ''}
+                                {row?.allocationQuantity !== null && row?.allocationQuantity !== undefined ? formatNumberFourDecimal(row?.allocationQuantity) : ''}
                             </td> */}
 
                             <td className={`px-2 py-1 justify-center  text-right text-[#464255]`}>
-                                {row.overuse !== null && row.overuse !== undefined ? formatNumberFourDecimal(row.overuse) : ''}
+                                {row?.overuse !== null && row?.overuse !== undefined ? formatNumberFourDecimal(row?.overuse) : ''}
                             </td>
 
-                            {/* Tariff Detail > Type Capacity Charge ตรง Column Detail ถ้าไม่มีสิทธิ์เห็นเมนู Capacity Contract Management ก็ให้ Hide Column Detail ไปเลย https://app.clickup.com/t/86euq74fb */}
-                            {
-                                canView &&
-                                <td className={`px-2 py-1  text-[#464255] w-[180px] text-center`}>
-                                    {
-                                        (!row.isSummary && !row.isGrandTotal) && <div className="relative inline-block text-left ">
+                                {
+                                    canView &&
+                                    <td className={`px-2 py-1  text-[#464255] w-[180px] text-center`}>
+                                        <div className="relative inline-block text-left ">
                                             <BtnDetailGeneral
                                                 handleFunc={routeToSomewhere}
                                                 row_id={''}
                                                 disable={false}
                                             />
                                         </div>
-                                    }
-                                </td>
-                            }
+                                    </td>
+                                }
 
                         </tr>
                     ))}

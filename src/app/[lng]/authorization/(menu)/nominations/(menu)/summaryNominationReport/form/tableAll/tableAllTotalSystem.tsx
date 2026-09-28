@@ -429,14 +429,14 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
 
                 <div className="overflow-y-auto overflow-x-auto w-full h-[54dvh]">
                     {
-                        isLoading ? <>
+                        !isLoading ? <>
                             <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
                                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                     <tr className="h-20">
 
                                         {/* ที่ handleSort ส่ง paginatedData แทน dataTable เพราะข้อนี้ */}
                                         {/* All > Weekly > Nomination > MMSCF > Smart Sear แล้ว Sort Column ทำให้ Smart Search หลุด https://app.clickup.com/t/86euy05du */}
-                                        {columnVisibility.zone && (
+                                        {columnVisibility?.zone && (
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zone_text", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zone_text", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Zone`}
@@ -444,7 +444,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                             </th>
                                         )}
 
-                                        {columnVisibility.entry_exit && (
+                                        {columnVisibility?.entry_exit && (
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Entry / Exit`}
@@ -452,7 +452,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                             </th>
                                         )}
 
-                                        {columnVisibility.area && (
+                                        {columnVisibility?.area && (
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Area`}
@@ -460,7 +460,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                             </th>
                                         )}
 
-                                        {columnVisibility.total_cap && (
+                                        {columnVisibility?.total_cap && (
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalCap", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalCap", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Total`}
@@ -468,7 +468,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                             </th>
                                         )}
 
-                                        {columnVisibility.nomination_point && (
+                                        {columnVisibility?.nomination_point && (
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Nomination Point`}
@@ -476,7 +476,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                             </th>
                                         )}
 
-                                        {columnVisibility.park_unpark_instructed_flows && (
+                                        {columnVisibility?.park_unpark_instructed_flows && (
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("parkUnparkInstructedFlows", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("parkUnparkInstructedFlows", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Park/Unpark-Instructed Flows`}
@@ -484,7 +484,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                             </th>
                                         )}
 
-                                        {columnVisibility.customer_type && (
+                                        {columnVisibility?.customer_type && (
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("customerType", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("customerType", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Customer Type`}
@@ -492,7 +492,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                             </th>
                                         )}
 
-                                        {columnVisibility.unit && (
+                                        {columnVisibility?.unit && (
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("units", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("units", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Units`}
@@ -500,7 +500,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization && (
+                                        {columnVisibility?.utilization && (
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("utilization", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Utilization (%)`}
@@ -508,7 +508,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                             </th>
                                         )}
 
-                                        {columnVisibility.wi && (
+                                        {columnVisibility?.wi && (
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`WI`}
@@ -516,7 +516,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                             </th>
                                         )}
 
-                                        {columnVisibility.hv && (
+                                        {columnVisibility?.hv && (
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`HV`}
@@ -524,7 +524,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                             </th>
                                         )}
 
-                                        {columnVisibility.sg && (
+                                        {columnVisibility?.sg && (
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`SG`}
@@ -533,7 +533,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                         )}
 
                                         {getVisibleHours().map(({ key, label, timeRange }) =>
-                                            columnVisibility[key] && (
+                                            columnVisibility?.[key] && (
                                                 <th
                                                     key={key}
                                                     scope="col"
@@ -553,8 +553,8 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
 
                                 <tbody>
                                     {
-                                        // sortedData?.length > 0 && sortedData?.map((row: any, index: any) => {
-                                        paginatedData?.length > 0 && paginatedData?.map((row: any, index: any) => {
+                                        // (sortedData || [])?.map((row: any, index: any) => {
+                                        (paginatedData || [])?.map((row: any, index: any) => {
                                             
                                             if(row?.unix === "MMBTU/D"){
 
@@ -612,16 +612,16 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                     className={`${table_row_style}`}
                                                 >
 
-                                                    {columnVisibility.zone && (
+                                                    {columnVisibility?.zone && (
                                                         <td className="px-2 py-1 justify-center">
                                                             {(() => {
-                                                                const filter_zone = zoneMaster?.data?.find((item: any) => item.name === row?.zone_text?.trim());
+                                                                const filter_zone = zoneMaster?.data?.find((item: any) => item?.name === row?.zone_text?.trim());
                                                                 return <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: filter_zone?.color }}>{`${filter_zone?.name}`}</div>
                                                             })()}
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.entry_exit && (
+                                                    {columnVisibility?.entry_exit && (
                                                         <td className="px-2 py-1  justify-center ">{
                                                             row?.entry_exit_id == 1 ?
                                                                 <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: '#C8FFD7' }}>{`Entry`}</div>
@@ -635,7 +635,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} !justify-center items-center text-center flex`}>
 
                                                             {(() => {
-                                                                const filter_area = areaMaster?.data?.find((item: any) => item.name === row?.area_text?.trim());
+                                                                const filter_area = areaMaster?.data?.find((item: any) => item?.name === row?.area_text?.trim());
 
                                                                 return filter_area?.entry_exit_id == 2 ? (
                                                                     <div
@@ -657,54 +657,54 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.total_cap && (
+                                                    {columnVisibility?.total_cap && (
                                                         // <td className="px-2 py-1 text-[#464255] font-bold text-right">{row?.totalCap ? formatNumberThreeDecimal(row?.totalCap) : ''}</td>
                                                         // <td className="px-2 py-1 text-[#464255] font-bold text-right">{row?.totalCap !== null && row?.totalCap !== undefined ? formatNumberThreeDecimal(row?.totalCap) : ''}</td>
                                                         <td className={`px-2 py-1 ${total_cap_validate ? 'text-[#464255]' : 'text-red-600'} text-right font-bold`}>{row?.totalCap !== null && row?.totalCap !== undefined ? `${row?.units}`.trim().toUpperCase() == 'MMSCFD' ? formatNumberSixDecimalNom(row?.totalCap) : formatNumberThreeDecimalNom(row?.totalCap) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.nomination_point && (
+                                                    {columnVisibility?.nomination_point && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">{row?.nomination_point ? row?.nomination_point : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.gas_day && (
+                                                    {columnVisibility?.gas_day && (
                                                         <td className="px-2 py-1 text-[#464255] ">{row?.gas_day_text ? row?.gas_day_text : ''}</td>
                                                     )}
 
 
-                                                    {columnVisibility.park_unpark_instructed_flows && (
+                                                    {columnVisibility?.park_unpark_instructed_flows && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.parkUnparkInstructedFlows ? row?.parkUnparkInstructedFlows : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.customer_type && (
+                                                    {columnVisibility?.customer_type && (
                                                         <td className="px-2 py-1 text-[#464255]">{row?.nomination_row_json?.data_temp?.["6"] ? row?.nomination_row_json?.data_temp?.["6"] : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.unit && (
+                                                    {columnVisibility?.unit && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">{row?.units ? row?.units : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization && (
+                                                    {columnVisibility?.utilization && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{typeof row?.utilization === 'number' ? formatNumberTwoDecimalNom(row?.utilization) : ''}</td>
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.utilization > 100 && 'text-red-600'} text-right`}>{row?.utilization !== null && row?.utilization !== undefined && row?.utilization !== '' ? formatNumberTwoDecimalNom(row?.utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.wi && (
+                                                    {columnVisibility?.wi && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{row?.wi ? formatNumberThreeDecimalNom(row?.wi) : ''}</td>
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.wi !== null && row?.wi !== undefined ? formatNumberThreeDecimalNom(row?.wi) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.hv && (
+                                                    {columnVisibility?.hv && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{row?.hv ? formatNumberThreeDecimalNom(row?.hv) : ''}</td>
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.hv !== null && row?.hv !== undefined ? formatNumberThreeDecimalNom(row?.hv) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.sg && (
+                                                    {columnVisibility?.sg && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{row?.sg ? formatNumberThreeDecimalNom(row?.sg) : ''}</td>
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.sg !== null && row?.sg !== undefined ? formatNumberFourDecimalNom(row?.sg) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.h1 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h1 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h1_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H1 === 'number' || !isNaN(Number(row?.H1)) ? formatNumberThreeDecimalNom(row?.H1) : ''
@@ -713,7 +713,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h2 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h2 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h2_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H2 === 'number' || !isNaN(Number(row?.H2)) ? formatNumberThreeDecimalNom(row?.H2) : ''
@@ -722,7 +722,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h3 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h3 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h3_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H3 === 'number' || !isNaN(Number(row?.H3)) ? formatNumberThreeDecimalNom(row?.H3) : ''
@@ -731,7 +731,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h4 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h4 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h4_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H4 === 'number' || !isNaN(Number(row?.H4)) ? formatNumberThreeDecimalNom(row?.H4) : ''
@@ -740,7 +740,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h5 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h5 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h5_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H5 === 'number' || !isNaN(Number(row?.H5)) ? formatNumberThreeDecimalNom(row?.H5) : ''
@@ -749,7 +749,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h6 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h6 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h6_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H6 === 'number' || !isNaN(Number(row?.H6)) ? formatNumberThreeDecimalNom(row?.H6) : ''
@@ -758,7 +758,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h7 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h7 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h7_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H7 === 'number' || !isNaN(Number(row?.H7)) ? formatNumberThreeDecimalNom(row?.H7) : ''
@@ -767,7 +767,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h8 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h8 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h8_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H8 === 'number' || !isNaN(Number(row?.H8)) ? formatNumberThreeDecimalNom(row?.H8) : ''
@@ -776,7 +776,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h9 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h9 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h9_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H9 === 'number' || !isNaN(Number(row?.H9)) ? formatNumberThreeDecimalNom(row?.H9) : ''
@@ -785,7 +785,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h10 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h10 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h10_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H10 === 'number' || !isNaN(Number(row?.H10)) ? formatNumberThreeDecimalNom(row?.H10) : ''
@@ -794,7 +794,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h11 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h11 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h11_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H11 === 'number' || !isNaN(Number(row?.H11)) ? formatNumberThreeDecimalNom(row?.H11) : ''
@@ -803,7 +803,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h12 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h12 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h12_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H12 === 'number' || !isNaN(Number(row?.H12)) ? formatNumberThreeDecimalNom(row?.H12) : ''
@@ -812,7 +812,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h13 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h13 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h13_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H13 === 'number' || !isNaN(Number(row?.H13)) ? formatNumberThreeDecimalNom(row?.H13) : ''
@@ -821,7 +821,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h14 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h14 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h14_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H14 === 'number' || !isNaN(Number(row?.H14)) ? formatNumberThreeDecimalNom(row?.H14) : ''
@@ -830,7 +830,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h15 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h15 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h15_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H15 === 'number' || !isNaN(Number(row?.H15)) ? formatNumberThreeDecimalNom(row?.H15) : ''
@@ -839,7 +839,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h16 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h16 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h16_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H16 === 'number' || !isNaN(Number(row?.H16)) ? formatNumberThreeDecimalNom(row?.H16) : ''
@@ -848,7 +848,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h17 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h17 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h17_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H17 === 'number' || !isNaN(Number(row?.H17)) ? formatNumberThreeDecimalNom(row?.H17) : ''
@@ -857,7 +857,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h18 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h18 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h18_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H18 === 'number' || !isNaN(Number(row?.H18)) ? formatNumberThreeDecimalNom(row?.H18) : ''
@@ -866,7 +866,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h19 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h19 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h19_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H19 === 'number' || !isNaN(Number(row?.H19)) ? formatNumberThreeDecimalNom(row?.H19) : ''
@@ -875,7 +875,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h20 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h20 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h20_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H20 === 'number' || !isNaN(Number(row?.H20)) ? formatNumberThreeDecimalNom(row?.H20) : ''
@@ -884,7 +884,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h21 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h21 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h21_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H21 === 'number' || !isNaN(Number(row?.H21)) ? formatNumberThreeDecimalNom(row?.H21) : ''
@@ -893,7 +893,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h22 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h22 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h22_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H22 === 'number' || !isNaN(Number(row?.H22)) ? formatNumberThreeDecimalNom(row?.H22) : ''
@@ -902,7 +902,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h23 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h23 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h23_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H23 === 'number' || !isNaN(Number(row?.H23)) ? formatNumberThreeDecimalNom(row?.H23) : ''
@@ -911,7 +911,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h24 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h24 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h24_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H24 === 'number' || !isNaN(Number(row?.H24)) ? formatNumberThreeDecimalNom(row?.H24) : ''
@@ -931,7 +931,7 @@ const TableAllTotalSystem: React.FC<any> = ({ openWarning, nomData, tableData, i
                     }
 
                     {
-                        isLoading && sortedData?.length == 0 && <NodataTable />
+                        !isLoading && (sortedData?.length ?? 0) == 0 && <NodataTable />
                     }
                 </div>
             </div>

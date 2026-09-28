@@ -305,7 +305,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             disabled={selectedItems?.length > 0}
                                                             valueWatch={watch("role") || ""}
                                                             handleChange={(e) => {
-                                                                setValue('role', e.target.value);
+                                                                setValue('role', e?.target?.value ?? "");
                                                                 setValue('system_login_account', undefined)
                                                                 getUserUnderRole(e?.target);
                                                                 if (errors?.role) { clearErrors('role') }
@@ -344,7 +344,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch('system_login_account') || ''}
                                                 handleChange={(e) => {
-                                                    setValue('system_login_account', e.target.value);
+                                                    setValue('system_login_account', e?.target?.value ?? "");
                                                 }}
                                                 errors={errors?.role}
                                                 errorsText={'Select Users'}
@@ -382,7 +382,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                     }
 
                                     <div
-                                        className={`overflow-y-auto ${selectedItems.length > 3 ? 'max-h-[200px]' : ''}`}
+                                        className={`overflow-y-auto ${selectedItems?.length > 3 ? 'max-h-[200px]' : ''}`}
                                     >
                                         {
                                             selectedItems && selectedItems.map((item: any, index: any) => (
@@ -421,7 +421,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 className="w-[167px] font-light bg-[#00ADEF] text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
                                                 disabled={selectedItems.length <= 0}
                                             >
-                                                {mode === 'create' ? 'Save' : 'Save'}
+                                                Save
                                             </button>
                                         )}
                                     </div>

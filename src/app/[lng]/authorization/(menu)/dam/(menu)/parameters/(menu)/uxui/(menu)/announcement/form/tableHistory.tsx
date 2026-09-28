@@ -46,42 +46,42 @@ const TableAnnouncementHistory: React.FC<TableProps> = ({ tableData, isLoading, 
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-1">
                     <tr className="h-9">
 
-                        {columnVisibility.status && (
+                        {columnVisibility?.status && (
                             <th scope="col" className={`${table_sort_header_style} text-center w-[130px]`} onClick={() => handleSort("status_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Status`}
                                 {getArrowIcon("status_name")}
                             </th>
                         )}
 
-                        {columnVisibility.topic && (
+                        {columnVisibility?.topic && (
                             <th scope="col" className={`${table_sort_header_style} w-[500px]`} onClick={() => handleSort("topic", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Topic`}
                                 {getArrowIcon("topic")}
                             </th>
                         )}
 
-                        {columnVisibility.detail && (
+                        {columnVisibility?.detail && (
                             <th scope="col" className={`${table_sort_header_style} w-[600px]`} onClick={() => handleSort("detail", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Detail`}
                                 {getArrowIcon("detail")}
                             </th>
                         )}
 
-                        {columnVisibility.start_date && (
+                        {columnVisibility?.start_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Start Date`}
                                 {getArrowIcon("start_date")}
                             </th>
                         )}
 
-                        {columnVisibility.end_date && (
+                        {columnVisibility?.end_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`End Date`}
                                 {getArrowIcon("end_date")}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -97,7 +97,7 @@ const TableAnnouncementHistory: React.FC<TableProps> = ({ tableData, isLoading, 
                                 key={row?.id}
                                 className={`border-b ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} h-12`}
                             >
-                                {columnVisibility.status && (
+                                {columnVisibility?.status && (
                                     <td className="px-2 py-1">
                                         <div className={`flex items-center justify-center w-[105px] h-[30px] rounded-[16px] ${row?.status ? 'bg-[#C2F5CA] text-[#464255]' : 'bg-[#EFEFEF] text-[#828282]'}`}>
                                             {row?.status ? 'Active' : 'Inactive'}
@@ -105,23 +105,23 @@ const TableAnnouncementHistory: React.FC<TableProps> = ({ tableData, isLoading, 
                                     </td>
                                 )}
 
-                                {columnVisibility.topic && (
-                                    <td className="px-2 py-1 text-[#464255] font-bold">{row?.topic && row?.topic}</td>
+                                {columnVisibility?.topic && (
+                                    <td className="px-2 py-1 text-[#464255] font-bold">{row?.topic}</td>
                                 )}
 
-                                {columnVisibility.detail && (
-                                    <td className="px-2 py-1 text-[#464255]">{row?.detail && row?.detail}</td>
+                                {columnVisibility?.detail && (
+                                    <td className="px-2 py-1 text-[#464255]">{row?.detail}</td>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div>
                                             <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

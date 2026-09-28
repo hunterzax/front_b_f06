@@ -46,28 +46,28 @@ const TableNomQualityPlanningDaily: React.FC<TableProps> = ({ tableData, isLoadi
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                {columnVisibility.gas_day && (
+                {columnVisibility?.gas_day && (
                   <th scope="col" className={`${table_sort_header_style} text-center w-[100px] !max-w-[120px]`} onClick={() => handleSortGasDay("gasday", sortState, setSortState, setSortedData, tableData)}>
                     {`${tabIndex == 0 || tabIndex == 1 ? 'Gas Day' : 'Gas Week'}`}
                     {getArrowIcon("gasday")}
                   </th>
                 )}
 
-                {columnVisibility.zone && (
+                {columnVisibility?.zone && (
                   <th scope="col" className={`${table_sort_header_style} text-center  w-[100px] !max-w-[120px] `} onClick={() => handleSort("zone.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Zone`}
                     {getArrowIcon("zone.name")}
                   </th>
                 )}
 
-                {columnVisibility.area && (
+                {columnVisibility?.area && (
                   <th scope="col" className={`${table_sort_header_style} text-center w-[100px] !max-w-[120px] `} onClick={() => handleSort("area.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Area`}
                     {getArrowIcon("area.name")}
                   </th>
                 )}
 
-                {columnVisibility.parameter && (
+                {columnVisibility?.parameter && (
                   <th scope="col" className={`${table_sort_header_style} text-center w-[100px] !max-w-[120px] `}
                     onClick={() => handleSort("parameter", sortState, setSortState, setSortedData, tableData)}
                   >
@@ -76,7 +76,7 @@ const TableNomQualityPlanningDaily: React.FC<TableProps> = ({ tableData, isLoadi
                   </th>
                 )}
 
-                {columnVisibility.value && (
+                {columnVisibility?.value && (
                   <th scope="col" className={`${table_sort_header_style} text-right`}
                     onClick={() => handleSort("valueBtuScf", sortState, setSortState, setSortedData, tableData)}
                   >
@@ -89,22 +89,22 @@ const TableNomQualityPlanningDaily: React.FC<TableProps> = ({ tableData, isLoadi
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => (
+              {(sortedData || [])?.map((row: any, index: any) => (
                 <tr
                   key={row?.id}
                   className={`${table_row_style}`}
                 >
 
-                  {columnVisibility.gas_day && (
+                  {columnVisibility?.gas_day && (
                     // <td className="px-2 py-1 text-[#464255] !min-w-[60px] !max-w-[80px] text-center">{row?.gasday ? formatDateNoTime(row?.gasday) : ''}</td>
                     <td className="px-2 py-1 text-[#464255] !min-w-[60px] !max-w-[80px] text-center">{row?.gasday ? row?.gasday : ''}</td>
                   )}
 
-                  {columnVisibility.zone && (
+                  {columnVisibility?.zone && (
                     <td className="px-2 py-1 justify-center">{row?.zone && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone?.color }}>{`${row?.zone?.name}`}</div>}</td>
                   )}
 
-                  {columnVisibility.area && (
+                  {columnVisibility?.area && (
                     <td className="px-2 py-1 justify-center text-center flex ">
                       {
                         row?.area?.entry_exit_id == 2 ?
@@ -125,11 +125,11 @@ const TableNomQualityPlanningDaily: React.FC<TableProps> = ({ tableData, isLoadi
                     </td>
                   )}
 
-                  {columnVisibility.parameter && (
+                  {columnVisibility?.parameter && (
                     <td className="px-2 py-1 text-[#464255] text-center">{row?.parameter ? row?.parameter : ''}</td>
                   )}
 
-                  {columnVisibility.value && (
+                  {columnVisibility?.value && (
                     // <td className="px-2 py-1 text-[#464255] text-right">
                     <td className={`px-2 py-1 text-[#464255] text-right
                       ${row?.parameter == "HV" && (row?.valueBtuScf > row?.zone?.zone_master_quality[0]?.v2_sat_heating_value_max || row?.valueBtuScf < row?.zone?.zone_master_quality[0]?.v2_sat_heating_value_min) && 'text-red-600'}

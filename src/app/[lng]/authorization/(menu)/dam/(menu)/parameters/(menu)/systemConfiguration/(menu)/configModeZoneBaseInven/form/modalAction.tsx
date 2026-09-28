@@ -213,7 +213,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("zone_id", e.target.value);
+                                                    setValue("zone_id", e?.target?.value ?? "");
                                                     // fetchData(e?.target);
                                                 }}
                                                 displayEmpty
@@ -248,7 +248,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     disabled={isReadOnly}
                                                     valueWatch={watch("zone_id") || ""}
                                                     handleChange={(e) => {
-                                                        setValue("zone_id", e.target.value);
+                                                        setValue("zone_id", e?.target?.value ?? "");
                                                         if (errors?.zone_id) { clearErrors('zone_id') }
                                                     }}
                                                     errors={errors?.zone_id}
@@ -319,7 +319,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             placeholder="0.0000"
                                                             readOnly={isReadOnly}
                                                             {...register("hv")}
-                                                            onChange={(e) => setValue("hv", e.target.value)}
+                                                            onChange={(e) => setValue("hv", e?.target?.value ?? "")}
                                                             // className={`${inputClass} ${errors.hv && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                             className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.hv && "border-red-500"} ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
                                                             thousandSeparator={true}
@@ -341,7 +341,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             placeholder="0.0000"
                                                             readOnly={isReadOnly}
                                                             {...register("base_inventory_value")}
-                                                            onChange={(e) => setValue("base_inventory_value", e.target.value)}
+                                                            onChange={(e) => setValue("base_inventory_value", e?.target?.value ?? "")}
                                                             // className={`${inputClass} ${errors.base_inventory_value && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                             className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.base_inventory_value && "border-red-500"}  ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"}`}
                                                             thousandSeparator={true}
@@ -363,7 +363,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             placeholder="0.0000"
                                                             readOnly={isReadOnly}
                                                             {...register("high_max")}
-                                                            onChange={(e) => setValue("high_max", e.target.value)}
+                                                            onChange={(e) => setValue("high_max", e?.target?.value ?? "")}
                                                             // className={`${inputClass} ${errors.high_max && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                             className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.high_max && "border-red-500"}  ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
                                                             thousandSeparator={true}
@@ -385,7 +385,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             placeholder="0.0000"
                                                             readOnly={isReadOnly}
                                                             {...register("high_difficult_day")}
-                                                            onChange={(e) => setValue("high_difficult_day", e.target.value)}
+                                                            onChange={(e) => setValue("high_difficult_day", e?.target?.value ?? "")}
                                                             // className={`${inputClass} ${errors.high_difficult_day && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                             className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.high_difficult_day && "border-red-500"}  ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
                                                             thousandSeparator={true}
@@ -403,7 +403,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder="0.0000"
                                                         readOnly={isReadOnly}
                                                         {...register("to_high_difficult_day")}
-                                                        onChange={(e) => setValue("to_high_difficult_day", e.target.value)}
+                                                        onChange={(e) => setValue("to_high_difficult_day", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_high_difficult_day && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                         thousandSeparator={true}
                                                         decimalScale={4}
@@ -424,7 +424,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             placeholder="0.0000"
                                                             readOnly={isReadOnly}
                                                             {...register("high_red")}
-                                                            onChange={(e) => setValue("high_red", e.target.value)}
+                                                            onChange={(e) => setValue("high_red", e?.target?.value ?? "")}
                                                             // className={`${inputClass} ${errors.high_red && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                             className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.high_red && "border-red-500"}  ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
                                                             thousandSeparator={true}
@@ -442,7 +442,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder="0.0000"
                                                         readOnly={isReadOnly}
                                                         {...register("to_high_red")}
-                                                        onChange={(e) => setValue("to_high_red", e.target.value)}
+                                                        onChange={(e) => setValue("to_high_red", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_high_red && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                         thousandSeparator={true}
                                                         decimalScale={4}
@@ -463,7 +463,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             placeholder="0.0000"
                                                             readOnly={isReadOnly}
                                                             {...register("high_orange")}
-                                                            onChange={(e) => setValue("high_orange", e.target.value)}
+                                                            onChange={(e) => setValue("high_orange", e?.target?.value ?? "")}
                                                             // className={`${inputClass} ${errors.high_orange && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                             className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.high_orange && "border-red-500"}  ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
                                                             thousandSeparator={true}
@@ -481,7 +481,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         value={watch("to_high_orange")}
                                                         readOnly={isReadOnly}
                                                         {...register("to_high_orange")}
-                                                        onChange={(e) => setValue("to_high_orange", e.target.value)}
+                                                        onChange={(e) => setValue("to_high_orange", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_high_orange && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                         thousandSeparator={true}
                                                         decimalScale={4}
@@ -505,7 +505,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             placeholder="0.0000"
                                                             readOnly={isReadOnly}
                                                             {...register("alert_high")}
-                                                            onChange={(e) => setValue("alert_high", e.target.value)}
+                                                            onChange={(e) => setValue("alert_high", e?.target?.value ?? "")}
                                                             // className={`${inputClass} ${errors.alert_high && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                             className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.alert_high && "border-red-500"}  ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
                                                             thousandSeparator={true}
@@ -523,7 +523,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder="0.0000"
                                                         readOnly={isReadOnly}
                                                         {...register("to_alert_high")}
-                                                        onChange={(e) => setValue("to_alert_high", e.target.value)}
+                                                        onChange={(e) => setValue("to_alert_high", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_alert_high && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                         thousandSeparator={true}
                                                         decimalScale={4}
@@ -536,18 +536,16 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 </div>
 
                                                 <div className="flex items-center space-x-4 py-2">
-                                                    {/* https://app.clickup.com/t/86eujrgt9 */}
-                                                    <div className="w-[155px]">{`Low Min `}</div>
+                                                    <div className="w-[155px]">{`Alert Low`}</div>
                                                     <div>
                                                         <NumericFormat
-                                                            id="low_max"
-                                                            value={watch("low_max")}
+                                                            id="alert_low"
+                                                            value={watch("alert_low")}
                                                             placeholder="0.0000"
                                                             readOnly={isReadOnly}
-                                                            {...register("low_max")}
-                                                            onChange={(e) => setValue("low_max", e.target.value)}
-                                                            // className={`${inputClass} ${errors.low_max && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
-                                                            className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.low_max && "border-red-500"}  ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
+                                                            {...register("alert_low")}
+                                                            onChange={(e) => setValue("alert_low", e?.target?.value ?? "")}
+                                                            className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.low_difficult_day && "border-red-500"} ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
                                                             thousandSeparator={true}
                                                             decimalScale={4}
                                                             fixedDecimalScale={true}
@@ -571,7 +569,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             placeholder="0.0000"
                                                             readOnly={isReadOnly}
                                                             {...register("low_orange")}
-                                                            onChange={(e) => setValue("low_orange", e.target.value)}
+                                                            onChange={(e) => setValue("low_orange", e?.target?.value ?? "")}
                                                             // className={`${inputClass} ${errors.low_orange && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                             className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.low_orange && "border-red-500"}  ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
                                                             thousandSeparator={true}
@@ -594,7 +592,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder="0.0000"
                                                         readOnly={isReadOnly}
                                                         {...register("to_low_orange")}
-                                                        onChange={(e) => setValue("to_low_orange", e.target.value)}
+                                                        onChange={(e) => setValue("to_low_orange", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_low_orange && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                         thousandSeparator={true}
                                                         decimalScale={4}
@@ -615,7 +613,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             placeholder="0.0000"
                                                             readOnly={isReadOnly}
                                                             {...register("low_red")}
-                                                            onChange={(e) => setValue("low_red", e.target.value)}
+                                                            onChange={(e) => setValue("low_red", e?.target?.value ?? "")}
                                                             // className={`${inputClass} ${errors.low_red && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                             className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.low_red && "border-red-500"}  ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
                                                             thousandSeparator={true}
@@ -637,7 +635,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder="0.0000"
                                                         readOnly={isReadOnly}
                                                         {...register("to_low_red")}
-                                                        onChange={(e) => setValue("to_low_red", e.target.value)}
+                                                        onChange={(e) => setValue("to_low_red", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_low_red && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                         thousandSeparator={true}
                                                         decimalScale={4}
@@ -658,7 +656,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             placeholder="0.0000"
                                                             readOnly={isReadOnly}
                                                             {...register("low_difficult_day")}
-                                                            onChange={(e) => setValue("low_difficult_day", e.target.value)}
+                                                            onChange={(e) => setValue("low_difficult_day", e?.target?.value ?? "")}
                                                             // className={`${inputClass} ${errors.low_difficult_day && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                             className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.low_difficult_day && "border-red-500"} ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
                                                             thousandSeparator={true}
@@ -680,7 +678,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder="0.0000"
                                                         readOnly={isReadOnly}
                                                         {...register("to_low_difficult_day")}
-                                                        onChange={(e) => setValue("to_low_difficult_day", e.target.value)}
+                                                        onChange={(e) => setValue("to_low_difficult_day", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_low_difficult_day && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                         thousandSeparator={true}
                                                         decimalScale={4}
@@ -693,16 +691,18 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 </div>
 
                                                 <div className="flex items-center space-x-4 py-2">
-                                                    <div className="w-[155px]">{`Alert Low`}</div>
+                                                    {/* https://app.clickup.com/t/86eujrgt9 */}
+                                                    <div className="w-[155px]">{`Low Min `}</div>
                                                     <div>
                                                         <NumericFormat
-                                                            id="alert_low"
-                                                            value={watch("alert_low")}
+                                                            id="low_max"
+                                                            value={watch("low_max")}
                                                             placeholder="0.0000"
                                                             readOnly={isReadOnly}
-                                                            {...register("alert_low")}
-                                                            onChange={(e) => setValue("alert_low", e.target.value)}
-                                                            className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.low_difficult_day && "border-red-500"} ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
+                                                            {...register("low_max")}
+                                                            onChange={(e) => setValue("low_max", e?.target?.value ?? "")}
+                                                            // className={`${inputClass} ${errors.low_max && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
+                                                            className={`text-[16px] bg-white ps-[21px] pe-10 h-[44px] w-full border-[1px] border-[#DFE4EA] focus:border-[#00ADEF] rounded-lg outline-none bg-opacity-100 text-right ${errors.low_max && "border-red-500"}  ${isReadOnly ? "!bg-[#EFECEC] pointer-events-none group-hover:border-[#DFE4EA]" : "hover:border-[#00ADEF]"} `}
                                                             thousandSeparator={true}
                                                             decimalScale={4}
                                                             fixedDecimalScale={true}

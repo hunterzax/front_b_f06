@@ -61,54 +61,54 @@ const TablePlanningNewPoint: React.FC<TableProps> = ({ tableData, isLoading, col
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                {columnVisibility.term && (
+                {columnVisibility?.term && (
                   <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("term", sortState, setSortState, setSortedData, tableData)}>
                     {`Term`}
                     {getArrowIcon("term")}
                   </th>
                 )}
 
-                {columnVisibility.planning_code && (
+                {columnVisibility?.planning_code && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("planning_code", sortState, setSortState, setSortedData, tableData)}>
                     {`Planning Code`}
                     {getArrowIcon("planning_code")}
                   </th>
                 )}
 
-                {columnVisibility.shipper_name && (
+                {columnVisibility?.shipper_name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("shipper_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Shipper Name`}
                     {getArrowIcon("shipper_name")}
                   </th>
                 )}
 
-                {columnVisibility.newpoint_detail && (
+                {columnVisibility?.newpoint_detail && (
                   <th scope="col" className={`${table_header_style} text-center`} >
                     {`Point`}
                   </th>
                 )}
 
-                {columnVisibility.file && (
+                {columnVisibility?.file && (
                   <th scope="col" className={`${table_header_style} text-center`} >
                     {`File`}
                   </th>
                 )}
 
-                {columnVisibility.shipper_file_date && (
+                {columnVisibility?.shipper_file_date && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("shipper_file_date", sortState, setSortState, setSortedData, tableData)}>
                     {`Submitted Timestamp`}
                     {getArrowIcon("shipper_file_date")}
                   </th>
                 )}
 
-                {columnVisibility.start_date && (
+                {columnVisibility?.start_date && (
                   <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                     {`Start Date`}
                     {getArrowIcon("start_date")}
                   </th>
                 )}
 
-                {columnVisibility.end_date && (
+                {columnVisibility?.end_date && (
                   <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}>
                     {`End Date`}
                     {getArrowIcon("end_date")}
@@ -119,13 +119,13 @@ const TablePlanningNewPoint: React.FC<TableProps> = ({ tableData, isLoading, col
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => (
+              {(sortedData || [])?.map((row: any, index: any) => (
                 <tr
                   key={row?.id}
                   className={`${table_row_style}`}
                 >
 
-                  {columnVisibility.term && (
+                  {columnVisibility?.term && (
                     <td className="pl-2 py-1 text-center">
                       {row?.term_type && (
                         <div className="w-full flex items-center justify-center">
@@ -140,15 +140,15 @@ const TablePlanningNewPoint: React.FC<TableProps> = ({ tableData, isLoading, col
                     </td>
                   )}
 
-                  {columnVisibility.planning_code && (
+                  {columnVisibility?.planning_code && (
                     <td className="pl-[15px] pr-2 py-1 text-[#464255]">{row?.planning_code}</td>
                   )}
 
-                  {columnVisibility.shipper_name && (
+                  {columnVisibility?.shipper_name && (
                     <td className="pl-[15px] pr-2 py-1 text-[#464255]">{row?.group ? row?.group?.name : ''}</td>
                   )}
 
-                  {columnVisibility.newpoint_detail && (
+                  {columnVisibility?.newpoint_detail && (
                     <td className="px-2 py-1 text-center">
                       <div className="inline-flex items-center justify-center relative">
                         {/* <button
@@ -184,7 +184,7 @@ const TablePlanningNewPoint: React.FC<TableProps> = ({ tableData, isLoading, col
                     </td>
                   )}
 
-                  {columnVisibility.file && (
+                  {columnVisibility?.file && (
                     <td className="px-2 py-1 text-center">
                       <div className="inline-flex items-center justify-center relative">
                         {/* <button
@@ -218,16 +218,16 @@ const TablePlanningNewPoint: React.FC<TableProps> = ({ tableData, isLoading, col
                     </td>
                   )}
 
-                  {columnVisibility.shipper_file_date && (
+                  {columnVisibility?.shipper_file_date && (
                     // <td className="pl-[15px] pr-2 py-1 text-[#464255]">{row?.shipper_file_submission_date ? formatDateTimeSecNoPlusSeven(row?.shipper_file_submission_date) : ''}</td>
                     <td className="pl-[15px] pr-2 py-1 text-[#464255]">{row?.shipper_file_submission_date ? formatDateTimeSec(row?.shipper_file_submission_date) : ''}</td>
                   )}
 
-                  {columnVisibility.start_date && (
+                  {columnVisibility?.start_date && (
                     <td className="px-2 py-1 text-[#464255] text-center">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                   )}
 
-                  {columnVisibility.end_date && (
+                  {columnVisibility?.end_date && (
                     <td className="px-2 py-1 text-[#0DA2A2] text-center">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                   )}
 

@@ -189,7 +189,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     readOnly={mode == 'view' ? true : false}
                                                     onChange={(e) => {
                                                         if (e.target.value.length <= 50) {
-                                                            setValue('description', e.target.value);
+                                                            setValue('description', e?.target?.value ?? "");
                                                         }
                                                     }}
                                                     maxLength={50}
@@ -212,7 +212,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 value={watch('description') || ''}
                                                 onChange={(e) => {
                                                     if (e.target.value.length <= 255) {
-                                                        setValue('description', e.target.value);
+                                                        setValue('description', e?.target?.value ?? "");
                                                     }
                                                 }}
                                                 label=""
@@ -264,7 +264,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     disabled={isReadOnly}
                                                     valueWatch={watch("area_id") || ""}
                                                     handleChange={(e) => {
-                                                        setValue("area_id", e.target.value);
+                                                        setValue("area_id", e?.target?.value ?? "");
                                                         setValue("nomination_point_id", null);
                                                         if (errors?.area_id) {
                                                             clearErrors('area_id')
@@ -298,7 +298,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     disabled={isReadOnly}
                                                     valueWatch={watch("nomination_point_id") || ""}
                                                     handleChange={(e) => {
-                                                        setValue("nomination_point_id", e.target.value);
+                                                        setValue("nomination_point_id", e?.target?.value ?? "");
                                                         if (errors?.nomination_point_id) {
                                                             clearErrors('nomination_point_id')
                                                         }

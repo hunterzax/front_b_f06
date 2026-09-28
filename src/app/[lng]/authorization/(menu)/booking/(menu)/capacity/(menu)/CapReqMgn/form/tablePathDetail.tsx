@@ -43,9 +43,9 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
         // dataGroupArea
         const updatedDataXXX = response?.data?.map((periodItem: any) => ({
             ...periodItem,
-            data: periodItem.data.map((areaItem: any) => ({
+            data: (periodItem.data || [])?.map((areaItem: any) => ({
                 ...areaItem,
-                dataGroupArea: areaItem.dataGroupArea.map((groupAreaItem: any) => {
+                dataGroupArea: (areaItem.dataGroupArea || [])?.map((groupAreaItem: any) => {
                     return ({
                         ...groupAreaItem,
                         path_display: groupAreaItem.capacity_detail_point?.path_temp ? JSON.parse(groupAreaItem.capacity_detail_point?.path_temp) : []
@@ -57,8 +57,8 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
         setpathMg(response?.pathManage || null)
         setdataAll(updatedDataXXX)
         setDataPeriod((prev: any) => {
-            // return response.map((item: any) => {
-            return updatedDataXXX.map((item: any) => {
+            // return (response || [])?.map((item: any) => {
+            return (updatedDataXXX || [])?.map((item: any) => {
                 return {
                     value: item.period,
                     label: formatDateNoTime(item.startDate) + '-' + formatDateNoTime(item.endDate),
@@ -97,18 +97,18 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
         dataGroupArea.forEach((group: any) => {
             // let assign = 0; // Sum for each dataGroupArea
 
-            let min_pre_avail = Math.min(...group.data.map((item?: any) => {
+            let min_pre_avail = Math.min(...(group?.data || [])?.map((item?: any) => {
                 return (Number(item.adjust))
-            }))
+            }));
 
-            let min_assign = Math.min(...group.data.map((item?: any) => {
+            let min_assign = Math.min(...(group?.data || [])?.map((item?: any) => {
                 return (Number(item.value))
-            }))
+            }));
 
-            let min_released = Math.max(...group.data.map((item?: any) => {
+            let min_released = Math.max(...(group?.data || [])?.map((item?: any) => {
                 return (Number(item.release))
-            }))
-            group.data.forEach((dataItem: any) => {
+            }));
+            (group?.data || []).forEach((dataItem: any) => {
                 area_nominal_capacity = parseFloat(dataItem.area_nominal_capacity) || 0; // ไม่ sum เอามาแค่ค่าเดียว
                 pre_available_capacity = min_pre_avail || parseFloat(dataItem.area_nominal_capacity)
             });
@@ -141,9 +141,10 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
                     capacity_right = findAreaExit?.capacityRight
 
                 // }
-                const findPeriod1 = pathMg?.path_temp_json?.filter((f: any) => f?.period === dataPathDetailSearch?.[0]?.period) || []
-                const fDate = group?.data[0]?.date
-                const filterVal = group?.data?.filter((f: any) => f?.date === fDate)
+                const findPeriod1 = (pathMg?.path_temp_json || []).filter((f: any) => f?.period === dataPathDetailSearch?.[0]?.period);
+                const groupData = group?.data || [];
+                const fDate = groupData.length > 0 ? groupData[0]?.date : '';
+                const filterVal = groupData.filter((f: any) => f?.date === fDate)
                 released = filterVal?.reduce(
                     (accumulator:any, currentValue:any) => accumulator + (currentValue?.release && Number(currentValue?.release) || 0),
                     0,
@@ -195,7 +196,7 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
             area_nominal_capacity,
             capacity_right,
             pre_available_capacity: area_nominal_capacity === 0 ? 0 : pre_available_capacity,
-            assignArray: area_nominal_capacity === 0 ? assignArray?.map((e:any) => 0) : assignArray, // Now returns the array of summed `assign` values
+            assignArray: area_nominal_capacity === 0 ? assignArray.map((e:any) => 0) : assignArray, // Now returns the array of summed `assign` values
             released,
             available_capacity_right: area_nominal_capacity === 0 ? 0 : available_capacity_right,
             pathKKKK: area_nominal_capacity === 0 ? [] : pathKKKK
@@ -257,11 +258,11 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
 
             const all_spark = [...initialColumns, ...map_area_name];
             // setDynamicColumns(all_spark); // <== Save dynamic columns
-            // setColumnVisibility(Object.fromEntries(all_spark.map((column: any) => [column.key, column.visible])));
+            // setColumnVisibility(Object.fromEntries((all_spark || [])?.map((column: any) => [column.key, column.visible])));
 
             const data_filter_dynamic = fillMissingDynamicColumns(all_spark, areaMaster)
             // setDynamicColumns(data_filter_dynamic); // <== Save dynamic columns
-            // setColumnVisibility(Object.fromEntries(data_filter_dynamic.map((column: any) => [column.key, column.visible])));
+            // setColumnVisibility(Object.fromEntries((data_filter_dynamic || [])?.map((column: any) => [column.key, column.visible])));
 
             // Path Detail : ให้เรียงลำดับ เอา Area ที่เป็น Entry ขึ้นมาแสดงก่อน แล้วค่อยไล่ไป Exit https://app.clickup.com/t/86ev0aqjc
             // เรียง data_filter_dynamic โดย
@@ -284,7 +285,9 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
             ];
 
             setDynamicColumns(sorted); // <== Save dynamic columns
-            setColumnVisibility(Object.fromEntries(sorted.map((column: any) => [column.key, column.visible])));
+            const sortedAndFormattedList = (sorted || []).map((column: any) => [column.key, column.visible]);
+            const sortedAndFormattedData = Object.fromEntries(sortedAndFormattedList)
+            setColumnVisibility(sortedAndFormattedData);
         }
 
 
@@ -293,7 +296,7 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
     }, [dataPathDetail, areaMaster, srchPeriod, isReset, dataPathDetailSearch])
 
 
-    const initialColumns: any = [
+    const initialColumns: any[] = [
         { key: 'scope', label: 'Scope', visible: true },
     ];
     const [dynamicColumns, setDynamicColumns] = useState<any[]>(initialColumns);
@@ -326,11 +329,11 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
 
     //         const all_spark = [...initialColumns, ...map_area_name];
     //         // setDynamicColumns(all_spark); // <== Save dynamic columns
-    //         // setColumnVisibility(Object.fromEntries(all_spark.map((column: any) => [column.key, column.visible])));
+    //         // setColumnVisibility(Object.fromEntries((all_spark || [])?.map((column: any) => [column.key, column.visible])));
 
     //         const data_filter_dynamic = fillMissingDynamicColumns(all_spark, areaMaster)
     //         // setDynamicColumns(data_filter_dynamic); // <== Save dynamic columns
-    //         // setColumnVisibility(Object.fromEntries(data_filter_dynamic.map((column: any) => [column.key, column.visible])));
+    //         // setColumnVisibility(Object.fromEntries((data_filter_dynamic || [])?.map((column: any) => [column.key, column.visible])));
 
     //         // Path Detail : ให้เรียงลำดับ เอา Area ที่เป็น Entry ขึ้นมาแสดงก่อน แล้วค่อยไล่ไป Exit https://app.clickup.com/t/86ev0aqjc
     //         // เรียง data_filter_dynamic โดย
@@ -353,7 +356,7 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
     //         ];
 
     //         setDynamicColumns(sorted); // <== Save dynamic columns
-    //         setColumnVisibility(Object.fromEntries(sorted.map((column: any) => [column.key, column.visible])));
+    //         setColumnVisibility(Object.fromEntries((sorted || [])?.map((column: any) => [column.key, column.visible])));
     //     }
     // }, [dataPathDetail, srchPeriod]);
 
@@ -428,14 +431,14 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
             }));
 
         // เพิ่ม missingAreas ต่อท้าย
-        dataTableX[0].data = [...(dataTableX[0]?.data || []), ...missingAreas];
+        if (dataTableX.length > 0) dataTableX[0].data = [...(dataTableX[0]?.data || []), ...missingAreas];
 
         return dataTableX;
     };
 
     // จัดกลุ่มหัว column เพิ่ม area เข้า
     const fillMissingDynamicColumns = (dynamicColumn: any[], areaMaster: any[]) => {
-        const existingKeys = dynamicColumn.map((col) => col.key);
+        const existingKeys = (dynamicColumn || [])?.map((col) => col.key);
 
         const missingColumns = areaMaster?.map((area) => ({
             key: `area_${area.id}`,
@@ -476,7 +479,7 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
                                     <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                         <tr className="h-9">
 
-                                            {columnVisibility.scope && (
+                                            {columnVisibility?.scope && (
                                                 <th scope="col" className={`${table_header_style} sticky left-0 bg-[#1473A1]`}>
                                                     {``}
                                                 </th>
@@ -485,7 +488,7 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
                                             {dynamicColumns
                                                 ?.filter((col: any) => col.key !== 'scope')
                                                 .map((col: any) => (
-                                                    columnVisibility[col.key] && (
+                                                    columnVisibility?.[col.key] && (
                                                         <th key={col.key} scope="col" className={`${table_header_style} text-center`}>
                                                             {col.label}
                                                         </th>
@@ -505,7 +508,7 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
                                         ].map((rowLabel, rowIndex) => (
                                             <tr key={rowIndex} className={`${table_row_style}`}>
 
-                                                {columnVisibility.scope && (
+                                                {columnVisibility?.scope && (
                                                     <td className="px-2 py-1 min-w-[200px] text-[#464255] sticky left-0 bg-[#FFFFFF] z-10">
                                                         {rowLabel}
                                                     </td>
@@ -518,7 +521,7 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
                                                             // const item = tableDataX[0]?.data?.find((d: any) => d.area.name === col.label);
                                                             const item = dataTableForGood[0]?.data?.find((d: any) => d.area.name === col.label);
                                                             return (
-                                                                item && columnVisibility[col.key] && (
+                                                                item && columnVisibility?.[col.key] && (
 
                                                                     <td
                                                                         key={colIndex}
@@ -533,12 +536,12 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
                                                                                         {/* เรียงถูกแล้วแต่หน้า path managements น่าจะเรียงไม่ถูกนะพี่คม */}
                                                                                         {item.path_display?.map((pathGroup: any, groupIndex: number) => {
                                                                                             let npathGroup = []
-                                                                                            for (let isort = 0; isort < pathGroup.length; isort++) {
+                                                                                            for (let isort = 0; isort < (pathGroup || []).length; isort++) {
                                                                                                 if (isort === 0) {
-                                                                                                    let dPgEntry = pathGroup?.find((f: any) => f?.source_id === null)
+                                                                                                    let dPgEntry = (pathGroup || []).find((f: any) => f?.source_id === null)
                                                                                                     npathGroup.push(dPgEntry)
                                                                                                 } else {
-                                                                                                    let dPgExit = pathGroup?.find((f: any) => f?.source_id === npathGroup[npathGroup.length - 1]?.area?.id)
+                                                                                                    let dPgExit = (pathGroup || []).find((f: any) => f?.source_id === npathGroup[npathGroup.length - 1]?.area?.id)
                                                                                                     npathGroup.push(dPgExit)
                                                                                                 }
                                                                                             }

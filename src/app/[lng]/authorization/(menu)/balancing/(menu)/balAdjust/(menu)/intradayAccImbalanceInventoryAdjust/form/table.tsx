@@ -105,41 +105,41 @@ const TableBalIntradayAccImbalanceInventoryAdjust: React.FC<TableProps> = ({ ope
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.gas_day && (
+                                {columnVisibility?.gas_day && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSortIntradayAccImbalanceInventoryAdjust("gas_day", sortState, setSortState, setSortedData, tableData)}>
                                         {`Gas Day`}
                                         {getArrowIcon("gas_day")}
                                     </th>
                                 )}
 
-                                {columnVisibility.east && (
+                                {columnVisibility?.east && (
                                     <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSortIntradayAccImbalanceInventoryAdjust("east", sortState, setSortState, setSortedData, tableData)}>
                                         {`East (MMBTU)`}
                                         {getArrowIcon("east")}
                                     </th>
                                 )}
 
-                                {columnVisibility.west && (
+                                {columnVisibility?.west && (
                                     <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSortIntradayAccImbalanceInventoryAdjust("west", sortState, setSortState, setSortedData, tableData)}>
                                         {`West (MMBTU)`}
                                         {getArrowIcon("west")}
                                     </th>
                                 )}
 
-                                {columnVisibility.comment && (
+                                {columnVisibility?.comment && (
                                     <th rowSpan={2} scope="col" className={`${table_header_style} text-center`}>
                                         {`Comment`}
                                     </th>
                                 )}
 
-                                {columnVisibility.created_by && (
+                                {columnVisibility?.created_by && (
                                     <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSortIntradayAccImbalanceInventoryAdjust("create_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Created by`}
                                         {getArrowIcon("create_by_account.first_name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSortIntradayAccImbalanceInventoryAdjust("update_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSortUpdateByFirstName("update_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Updated by`}
@@ -147,7 +147,7 @@ const TableBalIntradayAccImbalanceInventoryAdjust: React.FC<TableProps> = ({ ope
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -156,14 +156,12 @@ const TableBalIntradayAccImbalanceInventoryAdjust: React.FC<TableProps> = ({ ope
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData?.map((row: any, index: any) => {
-                                // const isGasDayPass = dayjs().isSameOrBefore(dayjs(row.gas_day));
-                                const isGasDayPass = dayjs().isSameOrBefore(dayjs(row.gas_day), 'day');
+                            {(sortedData || [])?.map((row: any, index: any) => {
+                                // const isGasDayPass = dayjs().isSameOrBefore(dayjs(row?.gas_day));
+                                const isGasDayPass = dayjs().isSameOrBefore(dayjs(row?.gas_day), 'day');
 
                                 return (
-                                    <tr
-                                        key={row?.id}
-                                        className={`${table_row_style}`}
+                                    <tr key={row?.id ?? index} className={`${table_row_style}`}
                                     >
 
                                         {columnVisibility?.gas_day && (
@@ -182,11 +180,11 @@ const TableBalIntradayAccImbalanceInventoryAdjust: React.FC<TableProps> = ({ ope
                                         {columnVisibility?.west && (
                                             <td className={`px-2 py-1 text-[#464255] text-right`}>
                                                 {/* {row?.west ? formatNumberFourDecimal(row?.west) : ''} */}
-                                                {row?.west !== null && row?.east !== undefined ? formatNumberFourDecimal(row?.west) : ''}
+                                                {row?.west !== null && row?.west !== undefined ? formatNumberFourDecimal(row?.west) : ''}
                                             </td>
                                         )}
 
-                                        {columnVisibility.comment && (
+                                        {columnVisibility?.comment && (
                                             <td className="px-2 py-1 text-center">
                                                 <div className="inline-flex items-center justify-center relative">
                                                     {/* <button
@@ -220,7 +218,7 @@ const TableBalIntradayAccImbalanceInventoryAdjust: React.FC<TableProps> = ({ ope
                                             </td>
                                         )}
 
-                                        {columnVisibility.created_by && (
+                                        {columnVisibility?.created_by && (
                                             <td className="px-2 py-1">
                                                 <div>
                                                     <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -229,7 +227,7 @@ const TableBalIntradayAccImbalanceInventoryAdjust: React.FC<TableProps> = ({ ope
                                             </td>
                                         )}
 
-                                        {columnVisibility.updated_by && (
+                                        {columnVisibility?.updated_by && (
                                             <td className="px-2 py-1">
                                                 <div>
                                                     <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
@@ -238,7 +236,7 @@ const TableBalIntradayAccImbalanceInventoryAdjust: React.FC<TableProps> = ({ ope
                                             </td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 {/* <div className="relative inline-block text-left "> */}
                                                 <div className="relative inline-flex justify-center items-center w-full">

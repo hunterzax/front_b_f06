@@ -51,7 +51,7 @@ const TableTariffChargeReport: React.FC<TableProps> = ({
     const isShipper = userDT?.account_manage?.[0]?.user_type_id === 3;
 
     // เอาไว้ span column แบบ dynamic เคสเปิด ปิดไส้ใน
-    // const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility[col.key]).length || 1;
+    // const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility?.[col.key]).length || 1;
 
     {/* Confirm Save */ }
     const [modaConfirmSave, setModaConfirmSave] = useState<any>(false)
@@ -145,9 +145,9 @@ const TableTariffChargeReport: React.FC<TableProps> = ({
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData?.map((row: any, index: any) => (
+                            {(sortedData || [])?.map((row: any, index: any) => row && (
                                 <tr
-                                    key={row?.id}
+                                    key={row?.id ?? index}
                                     className={`${table_row_style}`}
                                 >
 
@@ -223,7 +223,7 @@ const TableTariffChargeReport: React.FC<TableProps> = ({
                                         </td>
                                     )}
 
-                                    {columnVisibility.created_by && (
+                                    {columnVisibility?.created_by && (
                                         <td className="px-2 py-1 text-[#464255]">
                                             <div>
                                                 <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -233,7 +233,7 @@ const TableTariffChargeReport: React.FC<TableProps> = ({
                                         </td>
                                     )}
 
-                                    {columnVisibility.updated_by && (
+                                    {columnVisibility?.updated_by && (
                                         <td className="px-2 py-1 text-[#464255]">
                                             <div>
                                                 <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

@@ -98,11 +98,11 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [popoverRef]);
-    const averageValue = columnVisibility["Average"];
+    const averageValue = columnVisibility?.["Average"];
 
     // get col_visibility where value is true and count length only key is month and Average 
     const countVisibleMonths = Object.keys(columnVisibility).filter(key => {
-        return (key.match(/^[A-Za-z]{3} \d{4}$/) || key === "Average") && columnVisibility[key];
+        return (key.match(/^[A-Za-z]{3} \d{4}$/) || key === "Average") && columnVisibility?.[key];
     }).length;
 
     // map data into column under Used Cap (%)
@@ -115,7 +115,7 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                             {/* First row: Parent columns */}
                             <tr className="h-9">
 
-                                {/* {columnVisibility.version && (
+                                {/* {columnVisibility?.version && (
                                     <>
                                         <th rowSpan={2} scope="col" className={`${table_sort_header_style}`}>
                                             {`Shipper Name`}
@@ -136,21 +136,21 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </>
                                 )} */}
 
-                                {columnVisibility.shipper_name && (
+                                {columnVisibility?.shipper_name && (
                                     <th rowSpan={2} scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("group.name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Shipper Name`}
                                         {getArrowIcon("group.name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.contract_code && (
+                                {columnVisibility?.contract_code && (
                                     <th rowSpan={2} scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("contract_code", sortState, setSortState, setSortedData, tableData)}>
                                         {`Contract Code`}
                                         {getArrowIcon("contract_code")}
                                     </th>
                                 )}
 
-                                {columnVisibility.area && (
+                                {columnVisibility?.area && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -162,7 +162,7 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.entry_exit && (
+                                {columnVisibility?.entry_exit && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -175,14 +175,14 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                 )}
 
                                 {/* Parent column for Used Cap (%) */}
-                                {columnVisibility.used_cap && (
+                                {columnVisibility?.used_cap && (
                                     // <th colSpan={averageValue ? combinedSortKey.length  : combinedSortKey.length -1} scope="col" className={`${table_sort_header_style} text-center`}>
                                     <th colSpan={countVisibleMonths} scope="col" className={`${table_sort_header_style} text-center`}>
                                         {`Used Cap (%)`}
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th rowSpan={2} scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -190,10 +190,10 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                             </tr>
 
                             {/* Second row: Subcolumns under Used Cap (%) */}
-                            {columnVisibility.used_cap && (
+                            {columnVisibility?.used_cap && (
                                 <tr className="h-9 bg-gray-200">
                                     {combinedSortKey.map((date, index) => (
-                                        columnVisibility[date.formatted] && (
+                                        columnVisibility?.[date.formatted] && (
                                             <th
                                                 key={index}
                                                 scope="col"
@@ -235,15 +235,15 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                         key={index}
                                         className={`${table_row_style} border-b ${index % 2 === 0 ? '!bg-[#EBF9FF]' : 'bg-white'} h-12`}
                                     >
-                                        {columnVisibility.shipper_name && (
+                                        {columnVisibility?.shipper_name && (
                                             <td className="px-2 py-1 text-[#464255] font-light">{row?.group && row?.group?.name}</td>
                                         )}
 
-                                        {columnVisibility.contract_code && (
+                                        {columnVisibility?.contract_code && (
                                             <td className="px-2 py-1 text-[#464255] font-light">{row?.contract_code ? row?.contract_code : ''}</td>
                                         )}
 
-                                        {columnVisibility.area && (
+                                        {columnVisibility?.area && (
                                             <td className="px-2 py-1 justify-center ">
                                                 {(() => {
                                                     const matchedArea = areaMaster?.data?.find((area: any) => row?.data[0]?.entryData?.area_text === area.name);
@@ -287,7 +287,7 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                             </td>
                                         )}
 
-                                        {columnVisibility.entry_exit && (
+                                        {columnVisibility?.entry_exit && (
                                             <td className="px-2 py-1 justify-center ">
                                                 {(() => {
                                                     if (row?.data[0]?.entryData?.entry_exit_id == 1 && row?.data[0]?.entryData?.entry_exit) {
@@ -317,7 +317,7 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                             </td>
                                         )}
 
-                                        {columnVisibility.used_cap && (
+                                        {columnVisibility?.used_cap && (
                                             <>
 
                                                 {combinedSortKey.slice(0, -1).map((date, index) => {
@@ -347,7 +347,7 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                                     const exitDecimal = new Decimal(exitTmp || NaN).toNumber()
 
                                                     return (
-                                                        columnVisibility[date.formatted] && (
+                                                        columnVisibility?.[date.formatted] && (
                                                             <td key={index} className="px-2 py-1 font-light text-right">
                                                                 {(entryValue !== '-' && usedCap !== null && usedCap !== undefined) && (
                                                                     <span className={Number(entryDecimal) > Number(usedCap) ? 'text-red-500' : 'text-[#464255]'}>
@@ -367,7 +367,7 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                                         ))
 
                                                     // return (
-                                                    //     columnVisibility[date.formatted] && (
+                                                    //     columnVisibility?.[date.formatted] && (
                                                     //         <td key={index} className="px-2 py-1 font-light text-right">
                                                     //             {/* {row?.data[0]?.entryData.value[date.original]?.value || "-"} */}
                                                     //             {/* add formatNumberThreeDecimal */}
@@ -384,7 +384,7 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
 
                                                 {/* // Add a new row for averages */}
                                                 {
-                                                    columnVisibility.Average && (
+                                                    columnVisibility?.Average && (
                                                         <td className="px-2 py-1 text-[#464255] font-semibold text-right">
                                                             {entryAverage ? entryAverage.toFixed(3) : ""}
                                                             <br />
@@ -397,7 +397,7 @@ const TableUseItOrLoseIt: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                             </>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 <div className="relative inline-flex justify-center items-center w-full">
                                                     <BtnActionTable togglePopover={togglePopover} row_id={index} disable={!userPermission?.f_view && !userPermission?.f_edit ? true : false} />

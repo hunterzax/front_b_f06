@@ -404,7 +404,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
 
                 <div className="overflow-y-auto overflow-x-auto w-full h-[70dvh]">
                     {
-                        isLoading ? <>
+                        !isLoading ? <>
                             <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
                                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                     <tr className="h-20">
@@ -412,7 +412,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                         {/* ที่ handleSort ส่ง paginatedData แทน dataTable เพราะข้อนี้ */}
                                         {/* All > Weekly > Nomination > MMSCF > Smart Sear แล้ว Sort Column ทำให้ Smart Search หลุด https://app.clickup.com/t/86euy05du */}
 
-                                        {columnVisibility.zone && (
+                                        {columnVisibility?.zone && (
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zone_text", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zone_text", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zone_text", sortState, setSortState, setSortedData, dataTable)}>
@@ -421,7 +421,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.entry_exit && (
+                                        {columnVisibility?.entry_exit && (
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, dataTable)}>
@@ -430,7 +430,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.area && (
+                                        {columnVisibility?.area && (
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, dataTable)}>
@@ -439,7 +439,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.nomination_point && (
+                                        {columnVisibility?.nomination_point && (
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, dataTable)}>
@@ -448,7 +448,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.park_unpark_instructed_flows && (
+                                        {columnVisibility?.park_unpark_instructed_flows && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("parkUnparkInstructedFlows", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("parkUnparkInstructedFlows", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("parkUnparkInstructedFlows", sortState, setSortState, setSortedData, dataTable)}>
@@ -457,7 +457,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.customer_type && (
+                                        {columnVisibility?.customer_type && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("customerType", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("customerType", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("customerType", sortState, setSortState, setSortedData, dataTable)}>
@@ -466,7 +466,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.unit && (
+                                        {columnVisibility?.unit && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("units", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("units", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("units", sortState, setSortState, setSortedData, dataTable)}>
@@ -475,7 +475,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.sunday_wi && (
+                                        {columnVisibility?.sunday_wi && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sunday_wi", sortState, setSortState, setSortedData, dataTable)}>
@@ -484,7 +484,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.sunday_hv && (
+                                        {columnVisibility?.sunday_hv && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sunday_hv", sortState, setSortState, setSortedData, dataTable)}>
@@ -493,7 +493,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.sunday_sg && (
+                                        {columnVisibility?.sunday_sg && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sunday_sg", sortState, setSortState, setSortedData, dataTable)}>
@@ -502,7 +502,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.sunday && (
+                                        {columnVisibility?.sunday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("sunday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("sunday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("sunday", sortState, setSortState, setSortedData, dataTable)}>
@@ -514,7 +514,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                                 {getArrowIcon("sunday")}
                                             </th>
                                         )}
-                                        {columnVisibility.utilization_sunday && (
+                                        {columnVisibility?.utilization_sunday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("sunday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("sunday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("sunday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -523,7 +523,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.monday_wi && (
+                                        {columnVisibility?.monday_wi && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("monday_wi", sortState, setSortState, setSortedData, dataTable)}>
@@ -532,7 +532,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.monday_hv && (
+                                        {columnVisibility?.monday_hv && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("monday_hv", sortState, setSortState, setSortedData, dataTable)}>
@@ -541,7 +541,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.monday_sg && (
+                                        {columnVisibility?.monday_sg && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("monday_sg", sortState, setSortState, setSortedData, dataTable)}>
@@ -550,7 +550,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.monday && (
+                                        {columnVisibility?.monday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("monday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("monday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("monday", sortState, setSortState, setSortedData, dataTable)}>
@@ -563,7 +563,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization_monday && (
+                                        {columnVisibility?.utilization_monday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("monday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("monday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("monday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -572,7 +572,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.tuesday_wi && (
+                                        {columnVisibility?.tuesday_wi && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("tuesday_wi", sortState, setSortState, setSortedData, dataTable)}>
@@ -581,7 +581,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.tuesday_hv && (
+                                        {columnVisibility?.tuesday_hv && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("tuesday_hv", sortState, setSortState, setSortedData, dataTable)}>
@@ -590,7 +590,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.tuesday_sg && (
+                                        {columnVisibility?.tuesday_sg && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("tuesday_sg", sortState, setSortState, setSortedData, dataTable)}>
@@ -599,7 +599,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.tuesday && (
+                                        {columnVisibility?.tuesday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("tuesday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("tuesday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("tuesday", sortState, setSortState, setSortedData, dataTable)}>
@@ -612,7 +612,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization_tuesday && (
+                                        {columnVisibility?.utilization_tuesday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("tuesday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("tuesday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("tuesday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -621,7 +621,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.wednesday_wi && (
+                                        {columnVisibility?.wednesday_wi && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wednesday_wi", sortState, setSortState, setSortedData, dataTable)}>
@@ -630,7 +630,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.wednesday_hv && (
+                                        {columnVisibility?.wednesday_hv && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wednesday_hv", sortState, setSortState, setSortedData, dataTable)}>
@@ -639,7 +639,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.wednesday_sg && (
+                                        {columnVisibility?.wednesday_sg && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wednesday_sg", sortState, setSortState, setSortedData, dataTable)}>
@@ -648,7 +648,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.wednesday && (
+                                        {columnVisibility?.wednesday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("wednesday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("wednesday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("wednesday", sortState, setSortState, setSortedData, dataTable)}>
@@ -661,7 +661,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization_wednesday && (
+                                        {columnVisibility?.utilization_wednesday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("wednesday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("wednesday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("wednesday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -670,7 +670,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.thursday_wi && (
+                                        {columnVisibility?.thursday_wi && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("thursday_wi", sortState, setSortState, setSortedData, dataTable)}>
@@ -679,7 +679,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.thursday_hv && (
+                                        {columnVisibility?.thursday_hv && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("thursday_hv", sortState, setSortState, setSortedData, dataTable)}>
@@ -688,7 +688,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.thursday_sg && (
+                                        {columnVisibility?.thursday_sg && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("thursday_sg", sortState, setSortState, setSortedData, dataTable)}>
@@ -697,7 +697,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.thursday && (
+                                        {columnVisibility?.thursday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("thursday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("thursday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("thursday", sortState, setSortState, setSortedData, dataTable)}>
@@ -710,7 +710,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization_thursday && (
+                                        {columnVisibility?.utilization_thursday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("thursday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("thursday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("thursday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -719,7 +719,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.friday_wi && (
+                                        {columnVisibility?.friday_wi && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("friday_wi", sortState, setSortState, setSortedData, dataTable)}>
@@ -728,7 +728,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.friday_hv && (
+                                        {columnVisibility?.friday_hv && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("friday_hv", sortState, setSortState, setSortedData, dataTable)}>
@@ -737,7 +737,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.friday_sg && (
+                                        {columnVisibility?.friday_sg && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("friday_sg", sortState, setSortState, setSortedData, dataTable)}>
@@ -746,7 +746,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.friday && (
+                                        {columnVisibility?.friday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("friday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("friday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("friday", sortState, setSortState, setSortedData, dataTable)}>
@@ -759,7 +759,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization_friday && (
+                                        {columnVisibility?.utilization_friday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("friday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("friday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("friday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -768,7 +768,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.saturday_wi && (
+                                        {columnVisibility?.saturday_wi && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("saturday_wi", sortState, setSortState, setSortedData, dataTable)}>
@@ -777,7 +777,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.saturday_hv && (
+                                        {columnVisibility?.saturday_hv && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("saturday_hv", sortState, setSortState, setSortedData, dataTable)}>
@@ -786,7 +786,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.saturday_sg && (
+                                        {columnVisibility?.saturday_sg && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("saturday_sg", sortState, setSortState, setSortedData, dataTable)}>
@@ -795,7 +795,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.saturday && (
+                                        {columnVisibility?.saturday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("saturday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("saturday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("saturday", sortState, setSortState, setSortedData, dataTable)}>
@@ -808,7 +808,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization_saturday && (
+                                        {columnVisibility?.utilization_saturday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] `} onClick={() => handleSort("saturday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] `} onClick={() => handleSort("saturday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] `} onClick={() => handleSort("saturday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -822,18 +822,18 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
 
                                 <tbody>
                                     {
-                                        // renderIsus?.length > 0 && renderIsus?.map((row: any, index: any) => {
-                                        // sortedData?.length > 0 && sortedData?.map((row: any, index: any) => {
-                                        paginatedData.length > 0 && paginatedData?.map((row: any, index: any) => {
+                                        // (renderIsus || [])?.map((row: any, index: any) => {
+                                        // (sortedData || [])?.map((row: any, index: any) => {
+                                        (paginatedData?.length ?? 0) > 0 && (paginatedData || [])?.map((row: any, index: any) => {
 
-                                            let find_validate = nomData?.find((item: any) => item?.nomination_point === row?.nomination_point)
+                                            let find_validate = (nomData || [])?.find((item: any) => item?.nomination_point === row?.nomination_point)
 
-                                            const targetData = dataEva?.newWeekly?.find((item: any) => {
+                                            const targetData = (dataEva?.newWeekly || [])?.find((item: any) => {
                                                 const area_id = find_validate?.area?.entry_exit_id == 1 ? find_validate?.area?.id : find_validate?.area?.supply_reference_quality_area
                                                 return (
-                                                    item.area.id === area_id &&
-                                                    item.zone.name === find_validate.zone.name &&
-                                                    item.parameter === "HV"
+                                                    item?.area?.id === area_id &&
+                                                    item?.zone?.name === find_validate?.zone?.name &&
+                                                    item?.parameter === "HV"
                                                 );
                                             });
                                             
@@ -854,43 +854,21 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                             let saturday_max_cap;
                                             
                                             if(row?.unix === "MMBTU/D"){
-                                                if(row?.zone_text === "EAST-WEST"){
-                                                    
-                                                    sunday_max_cap = parseFloat(row?.sunday_hv) * parseFloat(find_validate?.maximum_capacity)
-                                                    monday_max_cap = parseFloat(row?.monday_hv) * parseFloat(find_validate?.maximum_capacity)
-                                                    tuesday_max_cap = parseFloat(row?.tuesday_hv) * parseFloat(find_validate?.maximum_capacity)
-                                                    wednesday_max_cap = parseFloat(row?.wednesday_hv) * parseFloat(find_validate?.maximum_capacity)
-                                                    thursday_max_cap = parseFloat(row?.thursday_hv) * parseFloat(find_validate?.maximum_capacity)
-                                                    friday_max_cap = parseFloat(row?.friday_hv) * parseFloat(find_validate?.maximum_capacity)
-                                                    saturday_max_cap = parseFloat(row?.saturday_hv) * parseFloat(find_validate?.maximum_capacity)
+                                                sunday_max_cap = parseFloat(row?.sunday_hv) * parseFloat(find_validate?.maximum_capacity)
+                                                monday_max_cap = parseFloat(row?.monday_hv) * parseFloat(find_validate?.maximum_capacity)
+                                                tuesday_max_cap = parseFloat(row?.tuesday_hv) * parseFloat(find_validate?.maximum_capacity)
+                                                wednesday_max_cap = parseFloat(row?.wednesday_hv) * parseFloat(find_validate?.maximum_capacity)
+                                                thursday_max_cap = parseFloat(row?.thursday_hv) * parseFloat(find_validate?.maximum_capacity)
+                                                friday_max_cap = parseFloat(row?.friday_hv) * parseFloat(find_validate?.maximum_capacity)
+                                                saturday_max_cap = parseFloat(row?.saturday_hv) * parseFloat(find_validate?.maximum_capacity)
 
-                                                    sunday_validate =  row?.query_shipper_nomination_type_id !== 1 ? true : sunday_max_cap > parseFloat(row?.sunday)
-                                                    monday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : monday_max_cap > parseFloat(row?.monday)
-                                                    tuesday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : tuesday_max_cap > parseFloat(row?.tuesday)
-                                                    wednesday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : wednesday_max_cap > parseFloat(row?.wednesday)
-                                                    thursday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : thursday_max_cap > parseFloat(row?.thursday)
-                                                    friday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : friday_max_cap > parseFloat(row?.friday)
-                                                    saturday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : saturday_max_cap > parseFloat(row?.saturday)
-                                                    
-                                                }else{
-                                                
-                                                    sunday_max_cap = parseFloat(row?.sunday_hv) * parseFloat(find_validate?.maximum_capacity)
-                                                    monday_max_cap = parseFloat(row?.monday_hv) * parseFloat(find_validate?.maximum_capacity)
-                                                    tuesday_max_cap = parseFloat(row?.tuesday_hv) * parseFloat(find_validate?.maximum_capacity)
-                                                    wednesday_max_cap = parseFloat(row?.wednesday_hv) * parseFloat(find_validate?.maximum_capacity)
-                                                    thursday_max_cap = parseFloat(row?.thursday_hv) * parseFloat(find_validate?.maximum_capacity)
-                                                    friday_max_cap = parseFloat(row?.friday_hv) * parseFloat(find_validate?.maximum_capacity)
-                                                    saturday_max_cap = parseFloat(row?.saturday_hv) * parseFloat(find_validate?.maximum_capacity)
-
-                                                    sunday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : sunday_max_cap > parseFloat(row?.sunday)
-                                                    monday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : monday_max_cap > parseFloat(row?.monday)
-                                                    tuesday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : tuesday_max_cap > parseFloat(row?.tuesday)
-                                                    wednesday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : wednesday_max_cap > parseFloat(row?.wednesday)
-                                                    thursday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : thursday_max_cap > parseFloat(row?.thursday)
-                                                    friday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : friday_max_cap > parseFloat(row?.friday)
-                                                    saturday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : saturday_max_cap > parseFloat(row?.saturday)
-                                                    
-                                                }
+                                                sunday_validate =  row?.query_shipper_nomination_type_id !== 1 ? true : sunday_max_cap > parseFloat(row?.sunday)
+                                                monday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : monday_max_cap > parseFloat(row?.monday)
+                                                tuesday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : tuesday_max_cap > parseFloat(row?.tuesday)
+                                                wednesday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : wednesday_max_cap > parseFloat(row?.wednesday)
+                                                thursday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : thursday_max_cap > parseFloat(row?.thursday)
+                                                friday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : friday_max_cap > parseFloat(row?.friday)
+                                                saturday_validate = row?.query_shipper_nomination_type_id !== 1 ? true : saturday_max_cap > parseFloat(row?.saturday)
                                             }else{
                                             
                                                     sunday_max_cap = find_validate?.mmscf_max_cap
@@ -917,16 +895,16 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                                     className={`${table_row_style}`}
                                                 >
 
-                                                    {columnVisibility.zone && (
+                                                    {columnVisibility?.zone && (
                                                         <td className="px-2 py-1 justify-center">
                                                             {(() => {
-                                                                const filter_zone = zoneMaster?.data?.find((item: any) => item.name === row?.zone_text?.trim());
+                                                                const filter_zone = zoneMaster?.data?.find((item: any) => item?.name === row?.zone_text?.trim());
                                                                 return <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: filter_zone?.color }}>{`${filter_zone?.name}`}</div>
                                                             })()}
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.entry_exit && (
+                                                    {columnVisibility?.entry_exit && (
                                                         <td className="px-2 py-1  justify-center ">{
                                                             row?.entry_exit_id == 1 ?
                                                                 <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: '#C8FFD7' }}>{`Entry`}</div>
@@ -941,7 +919,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                                         <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} !justify-center items-center text-center flex`}>
 
                                                             {(() => {
-                                                                const filter_area = areaMaster?.data?.find((item: any) => item.name === row?.area_text?.trim());
+                                                                const filter_area = areaMaster?.data?.find((item: any) => item?.name === row?.area_text?.trim());
 
                                                                 return filter_area?.entry_exit_id == 2 ? (
                                                                     <div
@@ -963,19 +941,19 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.nomination_point && (
+                                                    {columnVisibility?.nomination_point && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">{row?.nomination_point ? row?.nomination_point : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.park_unpark_instructed_flows && (
+                                                    {columnVisibility?.park_unpark_instructed_flows && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.parkUnparkInstructedFlows ? row?.parkUnparkInstructedFlows : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.customer_type && (
+                                                    {columnVisibility?.customer_type && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">{row?.customerType ? row?.customerType : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.unit && (
+                                                    {columnVisibility?.unit && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">{row?.units ? row?.units : ''}</td>
                                                     )}
 
@@ -1000,143 +978,143 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                                                     saturday_sg, 
                                                     */}
 
-                                                    {columnVisibility.sunday_wi && (
+                                                    {columnVisibility?.sunday_wi && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.sunday_wi !== null && row?.sunday_wi !== undefined ? formatNumberThreeDecimalNom(row?.sunday_wi) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.sunday_hv && (
+                                                    {columnVisibility?.sunday_hv && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.sunday_hv !== null && row?.sunday_hv !== undefined ? formatNumberThreeDecimalNom(row?.sunday_hv) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.sunday_sg && (
+                                                    {columnVisibility?.sunday_sg && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.sunday_sg !== null && row?.sunday_sg !== undefined ? formatNumberFourDecimalNom(row?.sunday_sg) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.sunday && (
+                                                    {columnVisibility?.sunday && (
                                                         <td className={`px-2 py-1 ${sunday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.sunday !== null && row?.sunday !== undefined ? `${row?.units}`.trim().toUpperCase() == 'MMSCFD' ? formatNumberSixDecimalNom(row?.sunday) : formatNumberThreeDecimalNom(row?.sunday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_sunday && (
+                                                    {columnVisibility?.utilization_sunday && (
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.sunday_utilization > 100 && 'text-red-600'} text-right`}>{row?.sunday_utilization !== null && row?.sunday_utilization !== undefined ? formatNumberTwoDecimalNom(row?.sunday_utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.monday_wi && (
+                                                    {columnVisibility?.monday_wi && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.monday_wi !== null && row?.monday_wi !== undefined ? formatNumberThreeDecimalNom(row?.monday_wi) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.monday_hv && (
+                                                    {columnVisibility?.monday_hv && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.monday_hv !== null && row?.monday_hv !== undefined ? formatNumberThreeDecimalNom(row?.monday_hv) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.monday_sg && (
+                                                    {columnVisibility?.monday_sg && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.monday_sg !== null && row?.monday_sg !== undefined ? formatNumberFourDecimalNom(row?.monday_sg) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.monday && (
+                                                    {columnVisibility?.monday && (
                                                         <td className={`px-2 py-1 ${monday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.monday !== null && row?.monday !== undefined ? `${row?.units}`.trim().toUpperCase() == 'MMSCFD' ? formatNumberSixDecimalNom(row?.monday) : formatNumberThreeDecimalNom(row?.monday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_monday && (
+                                                    {columnVisibility?.utilization_monday && (
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.monday_utilization > 100 && 'text-red-600'} text-right`}>{row?.monday_utilization !== null && row?.monday_utilization !== undefined ? formatNumberTwoDecimalNom(row?.monday_utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.tuesday_wi && (
+                                                    {columnVisibility?.tuesday_wi && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.tuesday_wi !== null && row?.tuesday_wi !== undefined ? formatNumberThreeDecimalNom(row?.tuesday_wi) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.tuesday_hv && (
+                                                    {columnVisibility?.tuesday_hv && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.tuesday_hv !== null && row?.tuesday_hv !== undefined ? formatNumberThreeDecimalNom(row?.tuesday_hv) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.tuesday_sg && (
+                                                    {columnVisibility?.tuesday_sg && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.tuesday_sg !== null && row?.tuesday_sg !== undefined ? formatNumberFourDecimalNom(row?.tuesday_sg) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.tuesday && (
+                                                    {columnVisibility?.tuesday && (
                                                         <td className={`px-2 py-1 ${tuesday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.tuesday !== null && row?.tuesday !== undefined ? `${row?.units}`.trim().toUpperCase() == 'MMSCFD' ? formatNumberSixDecimalNom(row?.tuesday) : formatNumberThreeDecimalNom(row?.tuesday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_tuesday && (
+                                                    {columnVisibility?.utilization_tuesday && (
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.tuesday_utilization > 100 && 'text-red-600'} text-right`}>{row?.tuesday_utilization !== null && row?.tuesday_utilization !== undefined ? formatNumberTwoDecimalNom(row?.tuesday_utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.wednesday_wi && (
+                                                    {columnVisibility?.wednesday_wi && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.wednesday_wi !== null && row?.wednesday_wi !== undefined ? formatNumberThreeDecimalNom(row?.wednesday_wi) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.wednesday_hv && (
+                                                    {columnVisibility?.wednesday_hv && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.wednesday_hv !== null && row?.wednesday_hv !== undefined ? formatNumberThreeDecimalNom(row?.wednesday_hv) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.wednesday_sg && (
+                                                    {columnVisibility?.wednesday_sg && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.wednesday_sg !== null && row?.wednesday_sg !== undefined ? formatNumberFourDecimalNom(row?.wednesday_sg) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.wednesday && (
+                                                    {columnVisibility?.wednesday && (
                                                         <td className={`px-2 py-1 ${wednesday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.wednesday !== null && row?.wednesday !== undefined ? `${row?.units}`.trim().toUpperCase() == 'MMSCFD' ? formatNumberSixDecimalNom(row?.wednesday) : formatNumberThreeDecimalNom(row?.wednesday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_wednesday && (
+                                                    {columnVisibility?.utilization_wednesday && (
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.wednesday_utilization > 100 && 'text-red-600'} text-right`}>{row?.wednesday_utilization !== null && row?.wednesday_utilization !== undefined ? formatNumberTwoDecimalNom(row?.wednesday_utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.thursday_wi && (
+                                                    {columnVisibility?.thursday_wi && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.thursday_wi !== null && row?.thursday_wi !== undefined ? formatNumberThreeDecimalNom(row?.thursday_wi) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.thursday_hv && (
+                                                    {columnVisibility?.thursday_hv && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.thursday_hv !== null && row?.thursday_hv !== undefined ? formatNumberThreeDecimalNom(row?.thursday_hv) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.thursday_sg && (
+                                                    {columnVisibility?.thursday_sg && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.thursday_sg !== null && row?.thursday_sg !== undefined ? formatNumberFourDecimalNom(row?.thursday_sg) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.thursday && (
+                                                    {columnVisibility?.thursday && (
                                                         <td className={`px-2 py-1 ${thursday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.thursday !== null && row?.thursday !== undefined ? `${row?.units}`.trim().toUpperCase() == 'MMSCFD' ? formatNumberSixDecimalNom(row?.thursday) : formatNumberThreeDecimalNom(row?.thursday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_thursday && (
+                                                    {columnVisibility?.utilization_thursday && (
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.thursday_utilization > 100 && 'text-red-600'} text-right`}>{row?.thursday_utilization !== null && row?.thursday_utilization !== undefined ? formatNumberTwoDecimalNom(row?.thursday_utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.friday_wi && (
+                                                    {columnVisibility?.friday_wi && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.friday_wi !== null && row?.friday_wi !== undefined ? formatNumberThreeDecimalNom(row?.friday_wi) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.friday_hv && (
+                                                    {columnVisibility?.friday_hv && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.friday_hv !== null && row?.friday_hv !== undefined ? formatNumberThreeDecimalNom(row?.friday_hv) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.friday_sg && (
+                                                    {columnVisibility?.friday_sg && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.friday_sg !== null && row?.friday_sg !== undefined ? formatNumberFourDecimalNom(row?.friday_sg) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.friday && (
+                                                    {columnVisibility?.friday && (
                                                         <td className={`px-2 py-1 ${friday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.friday !== null && row?.friday !== undefined ? `${row?.units}`.trim().toUpperCase() == 'MMSCFD' ? formatNumberSixDecimalNom(row?.friday) : formatNumberThreeDecimalNom(row?.friday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_friday && (
+                                                    {columnVisibility?.utilization_friday && (
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.friday_utilization > 100 && 'text-red-600'} text-right`}>{row?.friday_utilization !== null && row?.friday_utilization !== undefined ? formatNumberTwoDecimalNom(row?.friday_utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.saturday_wi && (
+                                                    {columnVisibility?.saturday_wi && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.saturday_wi !== null && row?.saturday_wi !== undefined ? formatNumberThreeDecimalNom(row?.saturday_wi) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.saturday_hv && (
+                                                    {columnVisibility?.saturday_hv && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.saturday_hv !== null && row?.saturday_hv !== undefined ? formatNumberThreeDecimalNom(row?.saturday_hv) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.saturday_sg && (
+                                                    {columnVisibility?.saturday_sg && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.saturday_sg !== null && row?.saturday_sg !== undefined ? formatNumberFourDecimalNom(row?.saturday_sg) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.saturday && (
+                                                    {columnVisibility?.saturday && (
                                                         <td className={`px-2 py-1 ${saturday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.saturday !== null && row?.saturday !== undefined ? `${row?.units}`.trim().toUpperCase() == 'MMSCFD' ? formatNumberSixDecimalNom(row?.saturday) : formatNumberThreeDecimalNom(row?.saturday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_saturday && (
+                                                    {columnVisibility?.utilization_saturday && (
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.saturday_utilization > 100 && 'text-red-600'} text-right`}>{row?.saturday_utilization !== null && row?.saturday_utilization !== undefined ? formatNumberTwoDecimalNom(row?.saturday_utilization) : ''}</td>
                                                     )}
 
@@ -1152,7 +1130,7 @@ const TableWeeklyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, 
                     }
 
                     {
-                        isLoading && sortedData?.length == 0 && <NodataTable />
+                        !isLoading && (sortedData?.length ?? 0) == 0 && <NodataTable />
                     }
                 </div>
 

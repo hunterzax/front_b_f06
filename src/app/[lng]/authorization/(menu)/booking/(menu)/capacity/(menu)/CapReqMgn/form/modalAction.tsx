@@ -150,7 +150,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("process_type_id", e.target.value);
+                                                    setValue("process_type_id", e?.target?.value ?? "");
                                                     // fetchData(e?.target);
                                                 }}
                                                 displayEmpty
@@ -170,7 +170,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 }}
                                             >
                                                 {/* <MenuItem value="" style={{ color: '#A0A0A0', height: '30px' }}>{""}</MenuItem> */}
-                                                {processTypeMasterData?.length > 0 && processTypeMasterData?.map((item: any) => (
+                                                {(processTypeMasterData || [])?.map((item: any) => (
                                                     <MenuItem key={item.id} value={item.id}>
                                                         {item.name}
                                                     </MenuItem>
@@ -211,7 +211,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("user_type_id", e.target.value);
+                                                    setValue("user_type_id", e?.target?.value ?? "");
                                                     // fetchData(e?.target);
                                                 }}
                                                 displayEmpty
@@ -231,7 +231,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 }}
                                             >
                                                 {/* <MenuItem value="" style={{ color: '#A0A0A0', height: '30px' }}>{""}</MenuItem> */}
-                                                {userTypeMasterData?.length > 0 && userTypeMasterData?.map((item: any) => (
+                                                {(userTypeMasterData || [])?.map((item: any) => (
                                                     <MenuItem key={item.id} value={item.id}>
                                                         {item.name}
                                                     </MenuItem>
@@ -272,7 +272,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("nomination_type_id", e.target.value);
+                                                    setValue("nomination_type_id", e?.target?.value ?? "");
                                                     // fetchData(e?.target);
                                                 }}
                                                 displayEmpty
@@ -292,7 +292,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 }}
                                             >
                                                 {/* <MenuItem value="" style={{ color: '#A0A0A0', height: '30px' }}>{""}</MenuItem> */}
-                                                {nominationTypeMasterData?.length > 0 && nominationTypeMasterData?.map((item: any) => (
+                                                {(nominationTypeMasterData || [])?.map((item: any) => (
                                                     <MenuItem key={item.id} value={item.id}>
                                                         {item.name}
                                                     </MenuItem>
@@ -332,7 +332,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         },
                                                     }}
                                                     onChange={(e) => {
-                                                        setValue("hour", e.target.value);
+                                                        setValue("hour", e?.target?.value ?? "");
                                                     }}
                                                     displayEmpty
                                                     renderValue={(value: any) => {
@@ -379,7 +379,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         },
                                                     }}
                                                     onChange={(e) => {
-                                                        setValue("minute", e.target.value);
+                                                        setValue("minute", e?.target?.value ?? "");
                                                     }}
                                                     displayEmpty
                                                     renderValue={(value: any) => {

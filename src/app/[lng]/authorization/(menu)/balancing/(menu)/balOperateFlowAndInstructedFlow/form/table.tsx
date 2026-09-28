@@ -114,10 +114,10 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
         } else if (tableData && tableData.length > 0 && toggleData !== undefined) { // for toggle and reset
             setSortedData(tableData);
 
-            let toggleDT: any = toggleData;
-            let toggleDTNEW: any = [];
-            for (let index = 0; index < tableData?.length; index++) {
-                let checkedData: any = toggleDT?.find((item: any) => item?.id == tableData[index]?.id);
+            let toggleDT = Array.isArray(toggleData) ? toggleData : [];
+            let toggleDTNEW: any[] = [];
+            for (let index = 0; index < tableData.length; index++) {
+                let checkedData: any = toggleDT.find((item: any) => item?.id == tableData[index]?.id);
                 if (checkedData) {
                     toggleDTNEW.push(
                         {
@@ -137,7 +137,7 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
                 }
             }
 
-            if (toggleDTNEW?.length > 0) { settoggleData(toggleDTNEW) }
+            if (toggleDTNEW.length > 0) { settoggleData(toggleDTNEW) }
         }
 
         setSortedData(tableData);
@@ -273,8 +273,12 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
 
         if(eventPath == 'ofo'){
             const gasDayjs = row_data?.gas_day ? toDayjs(row_data?.gas_day) : undefined;
-            const eventDateFrom = gasDayjs?.isValid() ? gasDayjs.startOf('day').format('YYYY-MM-DD') : '';
-            const eventDateTo = gasDayjs?.isValid() ? gasDayjs.endOf('day').format('YYYY-MM-DD') : '';
+            let eventDateFrom = '';
+            let eventDateTo = '';
+            if(gasDayjs?.isValid() || false){
+                eventDateFrom = gasDayjs.startOf('day').format('YYYY-MM-DD');
+                eventDateTo = gasDayjs.endOf('day').format('YYYY-MM-DD');
+            }
             const eventStat = '1'; //'Open' = '1' , 'Close' = '2'
     
             getService(`/master/event/${eventPath}?eventDateFrom=${eventDateFrom}&eventDateTo=${eventDateTo}&EventStatus=${eventStat}&offset=0&limit=100`).then(response => {
@@ -544,7 +548,7 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData.map((row: any, key: any) => {
+                            {(sortedData || [])?.map((row: any, key: any) => {
                                 // console.log('row : ', row);
                                 return (
                                     <>
@@ -554,10 +558,10 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
                                             onClick={() => {
                                                 // let toggleIDX: any = toggleData?.findIndex((item: any) => item?.id == row?.id);
 
-                                                let toggleIDX: any = toggleData?.findIndex((item: any) => item?.id == row?.id && item?.timeStamp == row?.valuesData?.timestamp);
+                                                let toggleIDX: any = (toggleData || []).findIndex((item: any) => item?.id == row?.id && item?.timeStamp == row?.valuesData?.timestamp);
 
-                                                if (toggleIDX !== -1) {
-                                                    toggleData[toggleIDX].toggle = !toggleData[toggleIDX]?.toggle;
+                                                if (toggleIDX !== -1 && toggleData[toggleIDX]) {
+                                                    toggleData[toggleIDX].toggle = !(toggleData[toggleIDX].toggle || false);
                                                     settk(!tk);
                                                 }
                                             }}
@@ -749,7 +753,7 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
                                         {/* {toggleData?.find((item: any) => item?.id == row?.id)?.toggle == true && toggleData?.find((item: any) => item?.timeStamp == row?.valuesData.timestamp).timeStamp == row?.valuesData.timestamp && row?.shipperData?.length > 0 && row?.shipperData?.map((item: any, key: any) => { */}
                                         {
                                             toggleData?.find((item: any) => item?.id == row?.id && item?.timeStamp == row?.valuesData?.timestamp)?.toggle === true &&
-                                            Array.isArray(row?.shipperData) && row?.shipperData.length > 0 && row.shipperData.map((item: any, key: number) => {
+                                            Array.isArray(row?.shipperData) && row?.shipperData.length > 0 && (row.shipperData || [])?.map((item: any, key: number) => {
 
                                                 // let thisCheckItem: any = checkedData?.find((item: any) => item?.id == row?.id);
 
@@ -902,7 +906,7 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
                                                         </td>
                                                     )} */}
 
-                                                        {columnVisibility.file && (
+                                                        {columnVisibility?.file && (
                                                             <td className="px-2 py-1 text-center">
                                                                 <div className="inline-flex items-center justify-center relative">
                                                                     {/* <button
@@ -966,7 +970,7 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
                                                             </td>
                                                         )}
 
-                                                        {columnVisibility.action && (userDT?.account_manage?.[0]?.user_type_id !== 3 && userDT?.account_manage?.[0]?.user_type_id !== 4) && (
+                                                        {columnVisibility?.action && (userDT?.account_manage?.[0]?.user_type_id !== 3 && userDT?.account_manage?.[0]?.user_type_id !== 4) && (
                                                             <td className="px-2 py-1">
                                                                 <div className="relative inline-flex justify-center items-center w-full">
                                                                     <BtnActionTable

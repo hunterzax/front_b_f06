@@ -139,8 +139,18 @@ const ChartExit: React.FC<any> = ({}) => {
       return startDate <= presentDate && (endDate === null || endDate >= presentDate)
     })
 
-    let start_date = toDayjs().toDate()
-    let end_date = toDayjs().add(10, 'year').endOf('year').toDate()
+    // let start_date = toDayjs().toDate()
+    // let end_date = toDayjs().add(10, 'year').endOf('year').toDate()
+    // วันที่ 1 ของเดือนปัจจุบัน
+      const start_date = toDayjs()
+        .startOf('month')
+        .toDate()
+
+      // วันสิ้นเดือน อีก 20 ปีจากเดือนปัจจุบัน
+      const end_date = toDayjs()
+        .add(20, 'year')
+        .endOf('month')
+        .toDate()
 
     const idsArray = shipperGroupData?.data?.map((item: any) => item.id)
     let filter_string = `${userDT?.account_manage?.[0]?.user_type_id == 1 || userDT?.account_manage?.[0]?.user_type_id == 2 ? idsArray : userDT?.account_manage?.[0]?.group_id}` // ถ้าเป็น TSO เอา id shipper ทั้งหมดมาแสดง ถ้าเป็น shipper เอาแค่ของตัวเอง
@@ -388,10 +398,10 @@ const ChartExit: React.FC<any> = ({}) => {
         const start = toDayjs(start_date);
         let end = toDayjs(end_date);
 
-        // ถ้าเลือกเดือนเดียวกัน
-        if (start.isSame(end, "month")) {
-            end = end.add(1, "month").startOf("month");
-        }
+        // // ถ้าเลือกเดือนเดียวกัน
+        // if (start.isSame(end, "month")) {
+        //     end = end.add(1, "month").startOf("month");
+        // }
 
         start_date = start.startOf("month").format("DD/MM/YYYY");
         end_date = end.endOf("month").format("DD/MM/YYYY");
@@ -405,8 +415,8 @@ const ChartExit: React.FC<any> = ({}) => {
             .format("DD/MM/YYYY");
 
         end_date = start
-            .add(10, "year")
-            .endOf("year")
+            .add(20, "year")
+            .endOf("month")
             .format("DD/MM/YYYY");
 
     } else if (end_date) {
@@ -414,8 +424,8 @@ const ChartExit: React.FC<any> = ({}) => {
         const end = toDayjs(end_date);
 
         start_date = end
-            .subtract(10, "year")
-            .startOf("year")
+            .subtract(20, "year")
+            .startOf("month")
             .format("DD/MM/YYYY");
 
         end_date = end
@@ -426,8 +436,16 @@ const ChartExit: React.FC<any> = ({}) => {
 
         // สำคัญ:
         // ไม่เลือกวันที่ ต้องไม่เริ่มจาก "วันนี้"
-        start_date = resStartDateDefault;
-        end_date = resEndDateDefault;
+        // start_date = resStartDateDefault;
+        // end_date = resEndDateDefault;
+        start_date = toDayjs()
+            .startOf("month")
+            .format("DD/MM/YYYY");
+
+        end_date = toDayjs()
+            .add(20, "year")
+            .endOf("month")
+            .format("DD/MM/YYYY");
     }
     console.log('srchStartDateMain : ', srchStartDateMain)
     console.log('start_date : ', start_date)
@@ -773,25 +791,25 @@ const ChartExit: React.FC<any> = ({}) => {
           paddedData.push(null)
         }
 
-        let lastNonNullIndex = -1
-        for (let i = paddedData.length - 1; i >= 0; i--) {
-          if (paddedData[i] !== null && paddedData[i] !== undefined) {
-            lastNonNullIndex = i
-            break
-          }
-        }
+        // let lastNonNullIndex = -1
+        // for (let i = paddedData.length - 1; i >= 0; i--) {
+        //   if (paddedData[i] !== null && paddedData[i] !== undefined) {
+        //     lastNonNullIndex = i
+        //     break
+        //   }
+        // }
 
-        const reachesEnd = sortedLabels.length > 0 && lastNonNullIndex === sortedLabels.length - 1
+        // const reachesEnd = sortedLabels.length > 0 && lastNonNullIndex === sortedLabels.length - 1
 
-        // แสดงจุดเฉพาะจุดสุดท้ายของเส้นที่ไปไม่สุดแกน X
-        const pointRadius = reachesEnd ? 0 : paddedData.map((_: any, i: number) => (i === lastNonNullIndex ? 4 : 0))
-        const pointHoverRadius = reachesEnd ? 0 : paddedData.map((_: any, i: number) => (i === lastNonNullIndex ? 6 : 0))
+        // // แสดงจุดเฉพาะจุดสุดท้ายของเส้นที่ไปไม่สุดแกน X
+        // const pointRadius = reachesEnd ? 0 : paddedData.map((_: any, i: number) => (i === lastNonNullIndex ? 4 : 0))
+        // const pointHoverRadius = reachesEnd ? 0 : paddedData.map((_: any, i: number) => (i === lastNonNullIndex ? 6 : 0))
 
         return {
           ...ds,
           data: paddedData,
-          pointRadius,
-          pointHoverRadius,
+          // pointRadius,
+          // pointHoverRadius,
           pointBackgroundColor: ds.borderColor,
           pointBorderColor: ds.borderColor
         }
@@ -894,6 +912,7 @@ const ChartExit: React.FC<any> = ({}) => {
         bodyColor: '#767676',
         padding: 10,
         boxPadding: 5,
+        usePointStyle: true,
         callbacks: {
           title: () => null, // Hides the title
           // label: (tooltipItem: any) => tooltipItem?.dataset?.label || '', // Returns dataset label

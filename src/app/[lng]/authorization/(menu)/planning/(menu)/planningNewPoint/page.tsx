@@ -29,7 +29,7 @@ interface ClientProps {
   };
 }
 
-const ClientPage: React.FC<ClientProps> = (props) => {
+const ClientPage: React.FC<ClientProps> = () => {
   const userDT: any = getUserValue();
 
   // ############### Check Authen ###############
@@ -38,23 +38,23 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   // ############### PERMISSION ###############
   const [userPermission, setUserPermission] = useState<any>();
-  let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-  // let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+  let user_permission: any = typeof window !== 'undefined' ? (getCookieValue("k3a9r2b6m7t0x5w1s8j") || localStorage?.getItem("k3a9r2b6m7t0x5w1s8j")) : null;
   user_permission = user_permission ? decryptData(user_permission) : null;
 
   const getPermission = () => {
     if (user_permission) {
       try {
-        user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
-        const updatedUserPermission = generateUserPermission(user_permission);
+        let parsed_permission = user_permission;
+        if (typeof parsed_permission === 'string') {
+          parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+        }
+        const updatedUserPermission = generateUserPermission(parsed_permission);
         setUserPermission(updatedUserPermission);
       } catch (error) {
-        // Failed to parse user_permission:
+        // Failed to parse user_permission
       }
-    } else {
-      // No user_permission found
     }
-  }
+  };
 
   // ############### REDUX DATA ###############
   const { shipperGroupData, termTypeMaster, nominationPointData } = useFetchMasters();
@@ -85,21 +85,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [srchEndDate, setSrchEndDate] = useState<Date | null>(null);
 
   const handleFieldSearch = () => {
-    // const result = filterDataTableByDateRange(dataTable, srchStartDate, srchEndDate);
-    // const res_filtered_date: any = filterStartEndDate(dataTable, srchStartDate, srchEndDate); // เดิมโรงงาน
-    const res_filtered_date: any = filterStartEndDateNewLogic(dataTable, srchStartDate, srchEndDate); // v1.0.90 ปรับ logic filter start date และ end date https://app.clickup.com/t/86erqt8ed
+    const res_filtered_date: any = filterStartEndDateNewLogic(dataTable, srchStartDate, srchEndDate);
 
-    const result_2 = res_filtered_date?.filter((item: any) => {
+    const result_2 = (res_filtered_date || [])?.filter((item: any) => {
+      if (!item) return false;
       return (
-        // (srchPlanningCode ? item?.id == srchPlanningCode : true) &&
-        // // (srchPlanningCode ? item?.id.toLowerCase().includes(srchPlanningCode.toLowerCase()) : true) &&
-        // (srchShipper ? item?.group_id == srchShipper : true) &&
-        // (srchTermType ? item?.term_type_id == srchTermType : true)
-
-        // ปรับ Filter ทุกเมนูให้เป็นแบบ Multi https://app.clickup.com/t/86eub6d11
-        (srchPlanningCode?.length > 0 ? srchPlanningCode.includes(item?.id?.toString()) : true) &&
-        (srchShipper?.length > 0 ? srchShipper.includes(item?.group_id) : true) &&
-        (srchTermType?.length > 0 ? srchTermType.includes(item?.term_type_id?.toString()) : true)
+        ((Array.isArray(srchPlanningCode) && srchPlanningCode?.length > 0) ? srchPlanningCode.includes(item?.id?.toString()) : true) &&
+        ((Array.isArray(srchShipper) && srchShipper?.length > 0) ? srchShipper.includes(item?.group_id) : true) &&
+        ((Array.isArray(srchTermType) && srchTermType?.length > 0) ? srchTermType.includes(item?.term_type_id?.toString()) : true)
       );
     });
     setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
@@ -107,9 +100,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   };
 
   const handleReset = () => {
-    setSrchShipper([])
-    setSrchTermType([])
-    setSrchPlanningCode([])
+    setSrchShipper([]);
+    setSrchTermType([]);
+    setSrchPlanningCode([]);
     setSrchStartDate(null);
     setSrchEndDate(null);
     setFilteredDataTable(dataTable);
@@ -118,22 +111,27 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   // ############### LIKE SEARCH ###############
   const handleSearch = (query: string) => {
-    const queryLower = query.toLowerCase().replace(/\s+/g, '')?.trim();
-    const filtered = dataTable?.filter((item: any) => {
+    const queryLower = (query || '').toLowerCase().replace(/\s+/g, '')?.trim();
+    if (!queryLower) {
+      setFilteredDataTable(dataTable);
+      return;
+    }
+    const filtered = (dataTable || [])?.filter((item: any) => {
+      if (!item) return false;
       return (
-        item?.term_type?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower.replace(/\s+/g, '')?.toLowerCase()) ||
-        item?.planning_code?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower.replace(/\s+/g, '')?.toLowerCase()) ||
-        item?.group?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower.replace(/\s+/g, '')?.toLowerCase()) ||
-        String(item?.newpoint_detail?.length) == queryLower.replace(/\s+/g, '')?.toLowerCase() ||
-        String(item?.newpoint_file?.length) == queryLower.replace(/\s+/g, '')?.toLowerCase() ||
+        (item?.term_type?.name && item.term_type.name.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+        (item?.planning_code && item.planning_code.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+        (item?.group?.name && item.group.name.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+        String(item?.newpoint_detail?.length ?? 0) === queryLower ||
+        String(item?.newpoint_file?.length ?? 0) === queryLower ||
 
-        formatDate(item?.shipper_file_submission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '').toLowerCase()) ||
-        formatTime(item?.shipper_file_submission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '').toLowerCase()) ||
-        formatDateNoTime(item?.shipper_file_submission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '').toLowerCase()) ||
-        formatDateTimeSecNoPlusSeven(item?.shipper_file_submission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '').toLowerCase()) ||
-        formatDateNoTime(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '').toLowerCase()) ||
-        formatDateNoTime(item?.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '').toLowerCase())
-      )
+        (item?.shipper_file_submission_date && formatDate(item.shipper_file_submission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+        (item?.shipper_file_submission_date && formatTime(item.shipper_file_submission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+        (item?.shipper_file_submission_date && formatDateNoTime(item.shipper_file_submission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+        (item?.shipper_file_submission_date && formatDateTimeSecNoPlusSeven(item.shipper_file_submission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+        (item?.start_date && formatDateNoTime(item.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+        (item?.end_date && formatDateNoTime(item.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower))
+      );
     });
     setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
     setFilteredDataTable(filtered);
@@ -153,14 +151,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
       // ถ้า user เป็น shipper
       // https://app.clickup.com/t/86ert2k28 ตามที่คุยกัน หากเป็น shipper user ถ้ามี filter ชื่อ shipper ให้ค้างชื่อ shipper ตัวเองไว้เลย ไม่ต้องขึ้นเป็น dropdown ให้เลือก - ปรับทั้ง system
       if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-        setSrchShipper(userDT?.account_manage?.[0]?.group?.id)
+        setSrchShipper([userDT?.account_manage?.[0]?.group?.id])
       }
 
       const response: any = await getService(`/master/newpoint`);
 
       // shipper เห็นแค่ของตัวเอง
       if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-        let filter_response_only_own_shipper = response?.filter((item: any) => item?.group?.id === userDT?.account_manage?.[0]?.group?.id)
+        let filter_response_only_own_shipper = (response || [])?.filter((item: any) => item?.group?.id === userDT?.account_manage?.[0]?.group?.id)
         setData(filter_response_only_own_shipper);
         setFilteredDataTable(filter_response_only_own_shipper);
       } else {
@@ -190,7 +188,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [dataFile, setDataFile] = useState<any>([]);
 
   const openAllFileModal = (id?: any, data?: any) => {
-    const filtered = dataTable?.find((item: any) => item.id === id);
+    const filtered = (dataTable || [])?.find((item: any) => item?.id === id);
     setDataFile(filtered)
     setMdFileView(true)
   };
@@ -199,7 +197,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [mdViewPoint, setMdViewPoint] = useState<any>(false);
 
   const openViewPointModal = (id?: any, data?: any) => {
-    const filtered = dataTable?.find((item: any) => item.id === id);
+    const filtered = (dataTable || [])?.find((item: any) => item?.id === id);
     setDataFile(filtered)
     setMdViewPoint(true)
   };
@@ -240,7 +238,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [columnVisibility, setColumnVisibility] = useState<any>(
-    Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+    Object.fromEntries((initialColumns || []).map((column: any) => [column?.key, column?.visible]))
   );
 
   const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
@@ -275,9 +273,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             value={srchShipper}
             onChange={(e) => setSrchShipper(e.target.value)}
             isDisabled={userDT?.account_manage?.[0]?.user_type_id == 3 ? true : false}
-            options={shipperGroupData?.data?.map((item: any) => ({
-              value: item.id,
-              label: item.name
+            options={(shipperGroupData?.data || [])?.map((item: any) => ({
+              value: item?.id,
+              label: item?.name
             }))}
           />
 
@@ -288,9 +286,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             type="select-multi-checkbox"
             value={srchTermType}
             onChange={(e) => setSrchTermType(e.target.value)}
-            options={termTypeMaster?.data?.filter((f: any) => f?.id !== 4)?.map((item: any) => ({
+            options={(termTypeMaster?.data || [])?.filter((f: any) => f?.id !== 4)?.map((item: any) => ({
               value: item?.id?.toString(),
-              label: item.name
+              label: item?.name
             }))}
           />
 
@@ -302,9 +300,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             value={srchPlanningCode}
             onChange={(e) => setSrchPlanningCode(e.target.value)}
             placeholder="Select Planning Code"
-            options={dataTable?.map((item: any) => ({
+            options={(dataTable || [])?.map((item: any) => ({
               value: item?.id?.toString(),
-              label: item.planning_code
+              label: item?.planning_code
             }))}
           />
 

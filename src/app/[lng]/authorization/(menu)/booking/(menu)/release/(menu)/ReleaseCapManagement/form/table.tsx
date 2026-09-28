@@ -190,60 +190,60 @@ const TableReleaseCapMgn: React.FC<TableProps> = ({ tableData, openReasonModal, 
                             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                 <tr className="h-9">
 
-                                    {columnVisibility.submission_time && (
+                                    {columnVisibility?.submission_time && (
                                         <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("submission_time", sortState, setSortState, setSortedData, tableData)}>
                                             {`Submission Time`}
                                             {getArrowIcon("submission_time")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.group && (
+                                    {columnVisibility?.group && (
                                         <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("group.name", sortState, setSortState, setSortedData, tableData)}>
                                             {`Shipper Name`}
                                             {getArrowIcon("group.name")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.contract_code && (
+                                    {columnVisibility?.contract_code && (
                                         <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("contract_code_id", sortState, setSortState, setSortedData, tableData)}>
                                             {`Contract Code`}
                                             {getArrowIcon("contract_code_id")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.detail && (
+                                    {columnVisibility?.detail && (
                                         <th scope="col" className={`${table_header_style} text-center`} >
                                             {`Detail`}
                                         </th>
                                     )}
 
-                                    {columnVisibility.status && (
+                                    {columnVisibility?.status && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("release_capacity_status.name", sortState, setSortState, setSortedData, tableData)} >
                                             {`Status`}
                                             {getArrowIcon("release_capacity_status.name")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.reason && (
+                                    {columnVisibility?.reason && (
                                         <th scope="col" className={`${table_header_style} text-center`} >
                                             {`Reason`}
                                         </th>
                                     )}
 
-                                    {columnVisibility.file && (
+                                    {columnVisibility?.file && (
                                         <th scope="col" className={`${table_header_style}`} >
                                             {`File`}
                                         </th>
                                     )}
 
-                                    {columnVisibility.req_code && (
+                                    {columnVisibility?.req_code && (
                                         <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("request_code", sortState, setSortState, setSortedData, tableData)}>
                                             {`Requested Code`}
                                             {getArrowIcon("request_code")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.action && (
+                                    {columnVisibility?.action && (
                                         <th scope="col" className={`${table_header_style} text-center`}>
                                             {`Action`}
                                         </th>
@@ -260,19 +260,19 @@ const TableReleaseCapMgn: React.FC<TableProps> = ({ tableData, openReasonModal, 
                                             key={row?.id}
                                             className={`${table_row_style}`}
                                         >
-                                            {columnVisibility.submission_time && (
+                                            {columnVisibility?.submission_time && (
                                                 <td className="px-2 py-1 text-[#464255]">{row?.submission_time ? formatDate(row?.submission_time) : ''}</td>
                                             )}
 
-                                            {columnVisibility.group && (
+                                            {columnVisibility?.group && (
                                                 <td className="px-2 py-1 text-[#464255]">{row?.group ? row?.group?.name : ''}</td>
                                             )}
 
-                                            {columnVisibility.contract_code && (
+                                            {columnVisibility?.contract_code && (
                                                 <td className="px-2 py-1 text-[#464255]">{row?.contract_code ? row?.contract_code?.contract_code : ''}</td>
                                             )}
 
-                                            {columnVisibility.detail && (
+                                            {columnVisibility?.detail && (
                                                 <td className="px-2 py-1">
                                                     <div className="relative inline-block text-left ">
                                                         <BtnDetailTable
@@ -284,11 +284,11 @@ const TableReleaseCapMgn: React.FC<TableProps> = ({ tableData, openReasonModal, 
                                                 </td>
                                             )}
 
-                                            {columnVisibility.status && (
+                                            {columnVisibility?.status && (
                                                 <td className="px-2 py-1 justify-center ">{row?.release_capacity_status && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.release_capacity_status?.color }}>{`${row?.release_capacity_status?.name}`}</div>}</td>
                                             )}
 
-                                            {columnVisibility.reason && (() => {
+                                            {columnVisibility?.reason && (() => {
                                                 const reasonsArray = row?.release_capacity_active
                                                     // .map((item: any) => item.reasons)
                                                     .map((item: any) => item)
@@ -334,7 +334,7 @@ const TableReleaseCapMgn: React.FC<TableProps> = ({ tableData, openReasonModal, 
                                                 );
                                             })()}
 
-                                            {columnVisibility.file && (
+                                            {columnVisibility?.file && (
                                                 <td className="px-2 py-1 text-center">
                                                     <div className="inline-flex items-center justify-center relative">
                                                         {/* <button
@@ -367,7 +367,7 @@ const TableReleaseCapMgn: React.FC<TableProps> = ({ tableData, openReasonModal, 
                                                 </td>
                                             )}
 
-                                            {columnVisibility.req_code && (
+                                            {columnVisibility?.req_code && (
                                                 <td className="px-2 py-1 text-[#464255]">{row?.requested_code ? row?.requested_code : ''}</td>
                                             )}
 
@@ -389,7 +389,7 @@ const TableReleaseCapMgn: React.FC<TableProps> = ({ tableData, openReasonModal, 
                                                 }
                                             ] */}
 
-                                            {columnVisibility.action && (
+                                            {columnVisibility?.action && (
                                                 <td className="px-2 py-1">
                                                     <div className="relative inline-block text-left">
                                                         <BtnActionTable

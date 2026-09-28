@@ -97,13 +97,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [srchArea, setSrchArea] = useState<any>([]);
   const [srchStartDate, setSrchStartDate] = useState<Date | null>(null);
   const [srchEndDate, setSrchEndDate] = useState<Date | null>(null);
-
+  
   const handleFieldSearch = () => {
     // const res_filtered_date: any = filterStartEndDate(dataTable, srchStartDate, srchEndDate); // เดิมโรงงาน
     const res_filtered_date: any = filterStartEndDateNewLogic(dataTable, srchStartDate, srchEndDate); // v1.0.90 ปรับ logic filter start date และ end date https://app.clickup.com/t/86erqt8ed
     const result_2 = res_filtered_date?.filter((item: any) => {
       return (
-        (srchMeteredPointName ? item?.metered_point_name.toLowerCase().includes(srchMeteredPointName.toLowerCase()) : true) &&
+        (srchMeteredPointName ? item?.metered_point_name?.toLowerCase()?.includes(srchMeteredPointName.toLowerCase()) : true) &&
         // (srchEntryExit ? item?.entry_exit_id && item?.entry_exit_id.toString().toLowerCase().includes(srchEntryExit.toLowerCase()) : true) &&
         // (srchZone ? item?.zone?.name == srchZone?.value : true) &&
         // (srchArea ? item?.area?.id == srchArea : true)
@@ -311,21 +311,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const openEditForm = (id: any) => {
     //  fetchDataDiv(id);
     setSelectedId(id);
-    const filteredData = dataTable.find((item: any) => item.id === id);
+    const filteredData = (dataTable || [])?.find((item: any) => item?.id === id);
     if (filteredData) {
-      fdInterface.id = filteredData.id;
-      fdInterface.metered_point_name = filteredData.metered_point_name;
-      fdInterface.description = filteredData.description;
-      fdInterface.point_type_id = filteredData.point_type_id;
-      fdInterface.entry_exit_id = filteredData.entry_exit_id;
-      fdInterface.customer_type_id = filteredData.customer_type_id;
-      fdInterface.non_tpa_point_id = filteredData.non_tpa_point_id;
-      fdInterface.nomination_point_id = filteredData.nomination_point_id;
-      fdInterface.zone_id = filteredData.zone_id;
-      fdInterface.area_id = filteredData.area_id;
-      fdInterface.ref_id = filteredData.ref_id;
-      fdInterface.start_date = new Date(filteredData.start_date);
-      fdInterface.end_date = filteredData.end_date ? new Date(filteredData.end_date) : null;
+      fdInterface.id = filteredData?.id;
+      fdInterface.metered_point_name = filteredData?.metered_point_name;
+      fdInterface.description = filteredData?.description;
+      fdInterface.point_type_id = filteredData?.point_type_id;
+      fdInterface.entry_exit_id = filteredData?.entry_exit_id;
+      fdInterface.customer_type_id = filteredData?.customer_type_id;
+      fdInterface.non_tpa_point_id = filteredData?.non_tpa_point_id;
+      fdInterface.nomination_point_id = filteredData?.nomination_point_id;
+      fdInterface.zone_id = filteredData?.zone_id;
+      fdInterface.area_id = filteredData?.area_id;
+      fdInterface.ref_id = filteredData?.ref_id;
+      fdInterface.start_date = filteredData?.start_date ? new Date(filteredData.start_date) : null;
+      fdInterface.end_date = filteredData?.end_date ? new Date(filteredData.end_date) : null;
     }
     setFormMode('edit');
     setFormData(fdInterface);
@@ -333,21 +333,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   };
 
   const openViewForm = (id: any) => {
-    const filteredData = dataTable.find((item: any) => item.id === id);
+    const filteredData = (dataTable || [])?.find((item: any) => item?.id === id);
     if (filteredData) {
-      fdInterface.id = filteredData.id;
-      fdInterface.metered_point_name = filteredData.metered_point_name;
-      fdInterface.description = filteredData.description;
-      fdInterface.point_type_id = filteredData.point_type_id;
-      fdInterface.entry_exit_id = filteredData.entry_exit_id;
-      fdInterface.customer_type_id = filteredData.customer_type_id;
-      fdInterface.non_tpa_point_id = filteredData.non_tpa_point_id;
-      fdInterface.nomination_point_id = filteredData.nomination_point_id;
-      fdInterface.zone_id = filteredData.zone_id;
-      fdInterface.area_id = filteredData.area_id;
-      fdInterface.ref_id = filteredData.ref_id;
-      fdInterface.start_date = new Date(filteredData.start_date);
-      fdInterface.end_date = filteredData.end_date ? new Date(filteredData.end_date) : null;
+      fdInterface.id = filteredData?.id;
+      fdInterface.metered_point_name = filteredData?.metered_point_name;
+      fdInterface.description = filteredData?.description;
+      fdInterface.point_type_id = filteredData?.point_type_id;
+      fdInterface.entry_exit_id = filteredData?.entry_exit_id;
+      fdInterface.customer_type_id = filteredData?.customer_type_id;
+      fdInterface.non_tpa_point_id = filteredData?.non_tpa_point_id;
+      fdInterface.nomination_point_id = filteredData?.nomination_point_id;
+      fdInterface.zone_id = filteredData?.zone_id;
+      fdInterface.area_id = filteredData?.area_id;
+      fdInterface.ref_id = filteredData?.ref_id;
+      fdInterface.start_date = filteredData?.start_date ? new Date(filteredData.start_date) : null;
+      fdInterface.end_date = filteredData?.end_date ? new Date(filteredData.end_date) : null;
     }
     setFormMode('view');
     setFormData(fdInterface);
@@ -411,9 +411,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [headData, setHeadData] = useState<any>();
 
   const openHistoryForm = async (id: any) => {
+    if (!id) return;
     try {
       const response: any = await getService(`/master/account-manage/history?type=metering-point&method=all&id_value=${id}`);
-      const valuesArray = response.map((item: any) => item.value);
+      const valuesArray = (response || [])?.map((item: any) => item?.value);
 
       let mappings = [
         // { key: "entry_exit.name", title: "Entry/Exit" },
@@ -421,7 +422,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         { key: "metered_point_name", title: "Metered Point Name" },
       ];
       let result = mappings.map(({ key, title }) => {
-        const value = key.split('.').reduce((acc, part) => acc && acc[part], valuesArray[0]);
+        const value = key.split('.').reduce((acc, part) => acc && acc[part], valuesArray?.[0]);
         return {
           title,
           value: value || "",

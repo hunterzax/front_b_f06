@@ -20,7 +20,7 @@ const TableBalOperateAndInstruct: React.FC<TableProps> = ({ tableData, isLoading
         if (tableData && tableData.length > 0) {
 
             // change each tableData.row_data into root and change create.create_by to root create_by_account : {"first_name": create.create_by.first_name, "last_name": create.create_by.last_name, "create_date": create?.create_date}
-            const transformed_history = tableData.map((item: any) => {
+            const transformed_history = (tableData || [])?.map((item: any) => {
                 const {
                     row_data,
                     create,
@@ -159,7 +159,7 @@ const TableBalOperateAndInstruct: React.FC<TableProps> = ({ tableData, isLoading
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -267,7 +267,7 @@ const TableBalOperateAndInstruct: React.FC<TableProps> = ({ tableData, isLoading
                                     </td>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div>
                                             <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

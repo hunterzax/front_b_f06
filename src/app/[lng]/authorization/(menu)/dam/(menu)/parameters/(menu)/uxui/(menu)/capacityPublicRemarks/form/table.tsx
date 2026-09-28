@@ -87,40 +87,40 @@ const TableCapRemark: React.FC<TableProps> = ({ openEditForm, openViewForm, open
                     <table className="w-full table-fixed text-sm text-left rtl:text-right text-gray-500">
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <th scope="col" className={`${table_sort_header_style} min-w-[80px] w-[120px] max-w-[150px]`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`Start Date`}
                                         {getArrowIcon("start_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <th scope="col" className={`${table_sort_header_style} min-w-[80px] w-[120px] max-w-[150px]`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`End Date`}
                                         {getArrowIcon("end_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.remark && (
+                                {columnVisibility?.remark && (
                                     <th scope="col" className={`${table_header_style} !w-[1000px] !max-w-[1500px]`}>
                                         {`Remarks`}
                                     </th>
                                 )}
 
-                                {/* {columnVisibility.remark && (
+                                {/* {columnVisibility?.remark && (
                                     <th scope="col" className={`${table_header_style} text-left !w-[300px]`}>
                                         Remarks
                                     </th>
                                 )} */}
 
-                                {columnVisibility.create_by && (
+                                {columnVisibility?.create_by && (
                                     <th scope="col" className={`${table_sort_header_style} min-w-[80px] w-[120px] max-w-[150px]`} onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Created by`}
                                         {getArrowIcon("create_by_account.first_name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} min-w-[80px] w-[120px] max-w-[150px] text-center`}>
                                         {`Action`}
                                     </th>
@@ -135,15 +135,15 @@ const TableCapRemark: React.FC<TableProps> = ({ openEditForm, openViewForm, open
                                         key={row?.id}
                                         className={`border-b ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} h-12 `}
                                     >
-                                        {columnVisibility.start_date && (
+                                        {columnVisibility?.start_date && (
                                             <td className="px-2 py-1 text-[#464255] min-w-[80px] w-[120px] max-w-[150px]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.end_date && (
+                                        {columnVisibility?.end_date && (
                                             <td className="px-2 py-1 text-[#0DA2A2] min-w-[80px] w-[120px] max-w-[150px]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.remark && (
+                                        {columnVisibility?.remark && (
                                             // <td className="px-2 py-1 text-left ">
                                             //     <td className="px-2 py-1 text-[#464255]  ">{row?.remark ? row?.remark : ''}</td>
                                             // </td>
@@ -160,7 +160,7 @@ const TableCapRemark: React.FC<TableProps> = ({ openEditForm, openViewForm, open
                                         )}
 
 
-                                        {/* {columnVisibility.remark && (
+                                        {/* {columnVisibility?.remark && (
                                             <td className="px-2 py-1 text-left">
                                                 <div className="text-[#464255] truncate w-[450px]" title={row?.remark}>
                                                     {row?.remark ? row?.remark : ''}
@@ -168,7 +168,7 @@ const TableCapRemark: React.FC<TableProps> = ({ openEditForm, openViewForm, open
                                             </td>
                                         )} */}
 
-                                        {/* {columnVisibility.remark && (
+                                        {/* {columnVisibility?.remark && (
                                             <td className="px-2 py-1 text-left !w-[300px]">
                                                 <div
                                                     className="text-[#464255] truncate  md:max-w-[800px] lg:max-w-[1000px] xl:max-w-ful lw-full whitespace-nowrapover flow-hidden text-ellipsis cursor-default"
@@ -179,7 +179,7 @@ const TableCapRemark: React.FC<TableProps> = ({ openEditForm, openViewForm, open
                                             </td>
                                         )} */}
 
-                                        {/* {columnVisibility.remark && (
+                                        {/* {columnVisibility?.remark && (
                                             <td className="px-2 py-1 text-left w-[1000px]">
                                                 <div
                                                     className="text-[#464255] truncate whitespace-nowrap overflow-hidden text-ellipsis cursor-default w-full"
@@ -190,7 +190,7 @@ const TableCapRemark: React.FC<TableProps> = ({ openEditForm, openViewForm, open
                                             </td>
                                         )} */}
 
-                                        {columnVisibility.create_by && (
+                                        {columnVisibility?.create_by && (
                                             <td className="px-2 py-1 min-w-[80px] w-[120px] max-w-[150px]">
                                                 <div>
                                                     <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -199,7 +199,7 @@ const TableCapRemark: React.FC<TableProps> = ({ openEditForm, openViewForm, open
                                             </td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1 min-w-[80px] w-[120px] max-w-[150px]">
                                                 {/* <div className="relative inline-block text-left "> */}
                                                 <div className="relative inline-flex justify-center items-center w-full">

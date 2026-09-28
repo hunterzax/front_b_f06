@@ -2,7 +2,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import Spinloading from "@/components/other/spinLoading";
 import { useEffect, useState } from "react";
-import { findAllByDisplayValue } from "@testing-library/react";
 import DatePickaForm from "@/components/library/dateRang/dateSelectForm";
 import dayjs from "dayjs";
 import { formatFormDate, formatWatchFormDate, getMinDate } from "@/utils/generalFormatter";
@@ -71,7 +70,6 @@ const ModalAction: React.FC<FormExampleProps> = ({
         }
 
         fetchAndSetData();
-        fetchAndSetData();
     }, [mode, setValue]);
 
     const handleClose = () => {
@@ -88,25 +86,25 @@ const ModalAction: React.FC<FormExampleProps> = ({
 
     const handleFileChange = async (e: any) => {
         setIsLoading(true);
-        const file = e.target.files[0];
+        const file = e?.target?.files?.[0];
         if (file) {
             const validFileTypes = ['application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
             const maxSizeInMB = 10; // Maximum file size in MB
             const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
 
-            if (!validFileTypes.includes(file.type)) {
+            if (!validFileTypes.includes(file?.type)) {
                 setFileName('Invalid file type. Please upload a Excel file.');
-                // Invalid file type:'
+                setIsLoading(false);
                 return;
             }
 
-            if (file.size > maxSizeInBytes) {
+            if (file?.size > maxSizeInBytes) {
                 setFileName('The file is larger than 10 MB.');
-                // File size too large:
+                setIsLoading(false);
                 return;
             }
 
-            setFileName(file.name);
+            setFileName(file?.name || 'No file chosen');
             setFileUpload(file);
             // setModalMsg("Your file has been uploaded")
 
@@ -129,21 +127,12 @@ const ModalAction: React.FC<FormExampleProps> = ({
                 res_upload = await uploadFileServiceWithAuth('/master/planning-submission-file/upload', fileUpload, null, 'shipper_id')
 
                 if (res_upload?.response?.data?.status === 400 || res_upload?.response?.status === 500) {
-                    setModalErrorMsg(res_upload?.response?.data?.error ? res_upload?.response?.data?.error : "Something went wrong");
-                    setModalErrorOpen(true);
+                    setModalErrorMsg?.(res_upload?.response?.data?.error ? res_upload?.response?.data?.error : "Something went wrong");
+                    setModalErrorOpen?.(true);
                 } else {
-                    // warning ก่อนสำเร็จ
-                    // if (res_upload?.warning) {
-                    //     setModalWarningMsg("Total Entry & Total Exit equals zero.")
-                    //     setModalWarningOpen(true)
-                    //     setformActionOpen(false)
-                    // } else {
-                    //     setformActionOpen(false)
-                    //     setModalSuccessOpen(true);
-                    // }
-                    setModalSuccessMsg()
-                    setformActionOpen(false)
-                    setModalSuccessOpen(true);
+                    setModalSuccessMsg?.('');
+                    setformActionOpen?.(false);
+                    setModalSuccessOpen?.(true);
                 }
             } catch (error) {
                 // File upload failed:
@@ -185,7 +174,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                     })}
                                     className='bg-white p-8 rounded-[20px] shadow-lg w-full max-w'
                                 >
-                                    <h2 className="text-xl font-bold text-[#00ADEF] mb-4 pb-5">{mode === 'execute' ? 'Metering Process Execution' : mode === 'template' && 'Metering Process Execution From File'}</h2>
+                                    <h2 className="text-xl font-bold text-[#00ADEF] mb-4 pb-5">{mode === 'execute' ? 'Metering Process Execution' : mode === 'template' ? 'Metering Process Execution From File' : ''}</h2>
                                     {mode == 'execute' ?
                                         <div className="form-mode">
                                             <div className="grid grid-cols-2 gap-x-[20px] gap-y-2">
@@ -195,17 +184,17 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         {...register('start_date', { required: "Select start date" })}
                                                         placeHolder="Select Start Date"
                                                         mode={'create'}
-                                                        valueShow={watch("start_date") ? dayjs(watch("start_date")).format("DD/MM/YYYY") : undefined}
+                                                        valueShow={watch("start_date") && dayjs(watch("start_date"))?.isValid() ? dayjs(watch("start_date")).format("DD/MM/YYYY") : undefined}
                                                         // min={formattedStartDate || undefined}
                                                         // min={formattedStartDate ? formattedStartDate : new Date() || undefined}
                                                         min={new Date()}
-                                                        maxNormalForm={watch('end_date') && watch('end_date')} // ไม่ให้ start_date เกิน end_date
+                                                        maxNormalForm={watch('end_date') || undefined} // ไม่ให้ start_date เกิน end_date
                                                         allowClear
-                                                        isError={errors.start_date && !watch("start_date") ? true : false}
-                                                        onChange={(e: any) => { setValue('start_date', formatFormDate(e)), e == undefined && setValue('start_date', null, { shouldValidate: true, shouldDirty: true }); }}
+                                                        isError={errors?.start_date && !watch("start_date") ? true : false}
+                                                        onChange={(e: any) => { setValue('start_date', formatFormDate(e)); if (e == undefined) setValue('start_date', null, { shouldValidate: true, shouldDirty: true }); }}
                                                         forMode='form'
                                                     />
-                                                    {errors.start_date && !watch("start_date") && <p className={`${textErrorClass}`}>{'Select Start Date'}</p>}
+                                                    {errors?.start_date && !watch("start_date") && <p className={`${textErrorClass}`}>{'Select Start Date'}</p>}
                                                 </div>
 
                                                 <div className="pb-2">
@@ -216,14 +205,14 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeHolder="Select End Date"
                                                         mode={'create'}
                                                         // min={formattedStartDate || undefined}
-                                                        min={getMinDate(formattedStartDate)}
-                                                        valueShow={watch("end_date") ? dayjs(watch("end_date")).format("DD/MM/YYYY") : undefined}
+                                                        min={getMinDate(formattedStartDate) || undefined}
+                                                        valueShow={watch("end_date") && dayjs(watch("end_date"))?.isValid() ? dayjs(watch("end_date")).format("DD/MM/YYYY") : undefined}
                                                         allowClear
                                                         isError={errors?.end_date && !watch("end_date") ? true : false}
-                                                        onChange={(e: any) => { setValue('end_date', formatFormDate(e)), e == undefined && setValue('end_date', null, { shouldValidate: true, shouldDirty: true }); }}
+                                                        onChange={(e: any) => { setValue('end_date', formatFormDate(e)); if (e == undefined) setValue('end_date', null, { shouldValidate: true, shouldDirty: true }); }}
                                                         forMode='form'
                                                     />
-                                                    {errors.end_date && !watch("end_date") && <p className={`${textErrorClass}`}>{'Select end date'}</p>}
+                                                    {errors?.end_date && !watch("end_date") && <p className={`${textErrorClass}`}>{'Select end date'}</p>}
                                                 </div>
                                             </div>
                                             <div className="flex justify-end pt-8 gap-[40px]">

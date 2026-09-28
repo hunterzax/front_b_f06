@@ -105,9 +105,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [srchTypeDocument, setSrchTypeDocument] = useState('');
     // const [srchStartDate, setSrchStartDate] = useState<Date | null>(f_filter_gas_day ? dayjs(f_filter_gas_day).toDate() : toDayjs().add(1, 'day').toDate());
     const [srchStartDate, setSrchStartDate] = useState<Date | null>(
-        f_filter_gas_day
-            ? dayjs(f_filter_gas_day).toDate()
-            : toDayjs().add(1, 'day').startOf('day').toDate()
+        f_filter_gas_day ? dayjs(f_filter_gas_day).toDate()
+            : (!!status_from_somewhere_else ? null : toDayjs().add(1, 'day').startOf('day').toDate())
     );
     const [logsrchDate, setlogsrcDate] = useState<any>();
     const [srchCheckbox, setSrchCheckbox] = useState(false);
@@ -280,7 +279,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         // DATA GROUP
         // เอา List > Filter Shipper Name ให้กรองมาเฉพาะ Shipper ที่มีอยู่ในหน้านี้ https://app.clickup.com/t/86erwpj4q
         const uniqueGroups = Array.from(
-            new Map(response?.map((item: any) => [item.group.id, item.group])).values()
+            new Map((response || [])?.map((item: any) => [item?.group?.id, item?.group])).values()
         );
 
         if (logsrchDate !== srchStartDate || srchShipper?.length == 0) {
@@ -314,12 +313,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             return Array.from(new Map<string, any>(pairs).values());
         })();
 
-        setDataContract(uniqueContract);
+        // setDataContract(uniqueContract);
         if (logsrchDate !== srchStartDate || srchContractCode?.length == 0) {
             setDataContractOriginal(uniqueContract)
         }
 
-        if (contractCodeId && uniqueContract?.some((item: any) => item.id == Number(contractCodeId))) {
+        if (contractCodeId && uniqueContract?.some((item: any) => item?.id == Number(contractCodeId))) {
             setSrchContractCode([contractCodeId])
         }
 
@@ -520,7 +519,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setSrchContractCode([]);
         setSrchStatus([]);
         setSrchCheckbox(false)
-        setDataContract(dataContractOriginal)
+        // setDataContract(dataContractOriginal)
         setKey((prevKey) => prevKey + 1);
     };
 
@@ -834,7 +833,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // #region openAllFileModal
     const openAllFileModal = async (id?: any, data?: any) => {
         const data_file: any = await getService(`/master/query-shipper-nomination-file/query_shipper_nomination_file_url/${id}`);
-        const filtered = dataTable?.find((item: any) => item.id === id);
+        const filtered = dataTable?.find((item: any) => item?.id === id);
         const map_data = {
             ...filtered,
             query_shipper_nomination_file_url: data_file
@@ -850,7 +849,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // #region openReasonModal
     const openReasonModal = async (id: any, data: any, row: any) => {
-        const filtered = dataTable?.find((item: any) => item.id === id);
+        const filtered = dataTable?.find((item: any) => item?.id === id);
         const data_comment: any = await getService(`/master/query-shipper-nomination-file/query_shipper_nomination_file_comment/${id}`);
         setDataReason(data_comment)
         setDataReasonRow(filtered)
@@ -859,7 +858,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // #region openSubmissionModal
     const openSubmissionModal = async (id?: any, data?: any) => {
-        const filtered = dataTable?.find((item: any) => item.id === id);
+        const filtered = dataTable?.find((item: any) => item?.id === id);
         // const data_submission: any = await getService(`/master/query-shipper-nomination-file/submission_comment_query_shipper_nomination_file/${id}`);
         // const map_data = {
         //     ...filtered,
@@ -931,11 +930,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [dataModalAcceptReject, setDataModalAcceptReject] = useState([]);
 
     const handleAcceptReject = async (id?: any, mode?: any) => {
-        id = id.map((item: any) => item.id);
+        id = (id || []).map((item: any) => item?.id);
         if (id?.length > 1) {
             setMdStatType('all')
         } else {
-            const filter_data_x = dataTable?.filter((item: any) => item.id === id[0]);
+            const filter_data_x = dataTable?.filter((item: any) => item?.id === id?.[0]);
             setDataModalAcceptReject(filter_data_x)
             setMdStatType('one')
         }
@@ -980,7 +979,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     }
 
     const filterData = (id: any) => {
-        const filteredData = dataTable.find((item: any) => item.id === id);
+        const filteredData = (dataTable || []).find((item: any) => item?.id === id);
         return filteredData
     }
 
@@ -1101,8 +1100,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                         : true
                                 )
                                 .map((item: any) => ({
-                                    value: item.id,
-                                    label: item.name,
+                                    value: item?.id,
+                                    label: item?.name,
                                 }))
                             }
                         />
@@ -1116,8 +1115,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             onChange={(e,) => setSrchContractCode(e.target.value)}
                             options={
                                 dataContractOriginal?.filter((item: any) =>
-                                    srchShipper.length > 0
-                                        ? srchShipper.includes(item.group_id)
+                                    srchShipper?.length > 0
+                                        ? srchShipper.includes(item?.group_id)
                                         : true
                                 )
                                     .map((item: any) => ({
@@ -1137,7 +1136,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             onChange={(e) => setSrchStatus(e.target.value)}
                             options={nominationStatMaster?.data?.map((item: any) => ({
                                 value: item?.id?.toString(),
-                                label: item.name
+                                label: item?.name
                             }))}
                         />
 

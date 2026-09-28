@@ -203,44 +203,54 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                     {mode == 'execute' ?
                                         <div className="form-mode">
                                             <div className="grid grid-cols-2 gap-x-[20px] gap-y-2">
-                                                <div className="pb-2">
-                                                    <label className={labelClass}><span className="text-red-500">*</span>{`Start Date`}</label>
-                                                    <DatePickaForm
-                                                        {...register('start_date', { required: "Select start date" })}
-                                                        placeHolder="Select Start Date"
-                                                        mode={'create'}
-                                                        valueShow={watch("start_date") ? dayjs(watch("start_date")).format("DD/MM/YYYY") : undefined}
-                                                        // min={formattedStartDate || undefined}
-                                                        // min={formattedStartDate ? formattedStartDate : new Date() || undefined}
-                                                        // min={new Date()}
-                                                        // maxNormalForm={watch('end_date') && watch('end_date')} // ไม่ให้ start_date เกิน end_date
-                                                        maxNormalForm={watch("end_date") ? dayjs(watch("end_date")).add(1, 'day').format('YYYY-MM-DD') : dayjs().add(1, 'day').format('YYYY-MM-DD')}
-                                                        allowClear
-                                                        isError={errors.start_date && !watch("start_date") ? true : false}
-                                                        onChange={(e: any) => { setValue('start_date', formatFormDate(e)), e == undefined && setValue('start_date', null, { shouldValidate: true, shouldDirty: true }); }}
-                                                        forMode='form'
-                                                    />
-                                                    {errors.start_date && !watch("start_date") && <p className={`${textErrorClass}`}>{'Select Start Date'}</p>}
-                                                </div>
+                                                    <div className="pb-2">
+                                                        <label className={labelClass}><span className="text-red-500">*</span>{`Start Date`}</label>
+                                                        <DatePickaForm
+                                                            {...register('start_date', { required: "Select start date" })}
+                                                            placeHolder="Select Start Date"
+                                                            mode={'create'}
+                                                            valueShow={watch("start_date") ? dayjs(watch("start_date")).format("DD/MM/YYYY") : undefined}
+                                                            // min={formattedStartDate || undefined}
+                                                            // min={formattedStartDate ? formattedStartDate : new Date() || undefined}
+                                                            // min={new Date()}
+                                                            // maxNormalForm={watch('end_date') && watch('end_date')} // ไม่ให้ start_date เกิน end_date
+                                                            maxNormalForm={watch("end_date") ? dayjs(watch("end_date")).add(1, 'day').format('YYYY-MM-DD') : dayjs().add(1, 'day').format('YYYY-MM-DD')}
+                                                            allowClear
+                                                            isError={Boolean(errors?.start_date && !watch("start_date"))}
+                                                            onChange={(e: any) => {
+                                                                setValue('start_date', formatFormDate(e));
+                                                                if (e == undefined) {
+                                                                    setValue('start_date', null, { shouldValidate: true, shouldDirty: true });
+                                                                }
+                                                            }}
+                                                            forMode='form'
+                                                        />
+                                                        {errors?.start_date && !watch("start_date") && <p className={`${textErrorClass}`}>{'Select Start Date'}</p>}
+                                                    </div>
 
-                                                <div className="pb-2">
-                                                    <label className={labelClass}><span className="text-red-500">*</span>{`End Date`}</label>
-                                                    <DatePickaForm
-                                                        {...register('end_date', { required: "Select end date" })}
-                                                        readOnly={!formattedStartDate ? true : false}
-                                                        placeHolder="Select End Date"
-                                                        mode={'create'}
-                                                        // min={formattedStartDate || undefined}
-                                                        min={formattedStartDate ? dayjs(formattedStartDate).subtract(1, 'day').format('YYYY-MM-DD') : undefined}
-                                                        maxNormalForm={dayjs().add(1, 'day').format('YYYY-MM-DD')}
-                                                        valueShow={watch("end_date") ? dayjs(watch("end_date")).format("DD/MM/YYYY") : undefined}
-                                                        allowClear
-                                                        isError={errors?.end_date && !watch("end_date") ? true : false}
-                                                        onChange={(e: any) => { setValue('end_date', formatFormDate(e)), e == undefined && setValue('end_date', null, { shouldValidate: true, shouldDirty: true }); }}
-                                                        forMode='form'
-                                                    />
-                                                    {errors.end_date && !watch("end_date") && <p className={`${textErrorClass}`}>{'Select end date'}</p>}
-                                                </div>
+                                                    <div className="pb-2">
+                                                        <label className={labelClass}><span className="text-red-500">*</span>{`End Date`}</label>
+                                                        <DatePickaForm
+                                                            {...register('end_date', { required: "Select end date" })}
+                                                            readOnly={!formattedStartDate ? true : false}
+                                                            placeHolder="Select End Date"
+                                                            mode={'create'}
+                                                            // min={formattedStartDate || undefined}
+                                                            min={formattedStartDate && dayjs(formattedStartDate).isValid() ? dayjs(formattedStartDate).subtract(1, 'day').format('YYYY-MM-DD') : undefined}
+                                                            maxNormalForm={dayjs().add(1, 'day').format('YYYY-MM-DD')}
+                                                            valueShow={watch("end_date") ? dayjs(watch("end_date")).format("DD/MM/YYYY") : undefined}
+                                                            allowClear
+                                                            isError={Boolean(errors?.end_date && !watch("end_date"))}
+                                                            onChange={(e: any) => {
+                                                                setValue('end_date', formatFormDate(e));
+                                                                if (e == undefined) {
+                                                                    setValue('end_date', null, { shouldValidate: true, shouldDirty: true });
+                                                                }
+                                                            }}
+                                                            forMode='form'
+                                                        />
+                                                        {errors?.end_date && !watch("end_date") && <p className={`${textErrorClass}`}>{'Select end date'}</p>}
+                                                    </div>
                                             </div>
                                             <div className="flex justify-end pt-8 gap-[40px]">
                                                 <div className="font-light bg-slate-100 text-black flex items-center cursor-pointer" onClick={handleClose}>{`Cancel`}</div>

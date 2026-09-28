@@ -458,14 +458,14 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                 <div className="overflow-y-auto overflow-x-auto w-full h-[54dvh]">
                     {
                         // TABLE TAB MMBTU
-                        isLoading && tabIndex2ndTab == 0 ?
+                        !isLoading && tabIndex2ndTab == 0 ?
                             <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
                                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                     <tr className="h-20">
 
                                         {/* ที่ handleSort ส่ง paginatedData แทน dataTable เพราะข้อนี้ */}
                                         {/* All > Weekly > Nomination > MMSCF > Smart Sear แล้ว Sort Column ทำให้ Smart Search หลุด https://app.clickup.com/t/86euy05du */}
-                                        {columnVisibility.gas_day && (
+                                        {columnVisibility?.gas_day && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("gas_day_text", sortState, setSortState, setSortedData, dataTable)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("gas_day_text", sortState, setSortState, setSortedData, dataTable)}>
                                                 {`Gas Day`}
@@ -473,7 +473,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.area && (
+                                        {columnVisibility?.area && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, dataTable)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, dataTable)}>
                                                 {`Area`}
@@ -481,7 +481,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.total_cap && (
+                                        {columnVisibility?.total_cap && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalCap", sortState, setSortState, setSortedData, dataTable)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalCap", sortState, setSortState, setSortedData, dataTable)}>
                                                 {`Total`}
@@ -489,14 +489,14 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                             </th>
                                         )}
 
-                                        {/* {columnVisibility.nomination_point && (
+                                        {/* {columnVisibility?.nomination_point && (
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, tableData)}>
                                                 {`Nomination Point`}
                                                 {getArrowIcon("nomination_point")}
                                             </th>
                                         )} */}
 
-                                        {columnVisibility.utilization && (
+                                        {columnVisibility?.utilization && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("utilization", sortState, setSortState, setSortedData, dataTable)}>
                                                 {`Utilization (%)`}
@@ -505,7 +505,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                         )}
 
                                         {getVisibleHours().map(({ key, label, timeRange }) =>
-                                            columnVisibility[key] && (
+                                            columnVisibility?.[key] && (
                                                 <th
                                                     key={key}
                                                     scope="col"
@@ -525,8 +525,8 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
 
                                 <tbody>
                                     {
-                                        // sortedData?.length > 0 && sortedData?.map((row: any, index: any) => {
-                                        paginatedData?.length > 0 && paginatedData?.map((row: any, index: any) => {
+                                        // (sortedData || [])?.map((row: any, index: any) => {
+                                        (paginatedData || [])?.map((row: any, index: any) => {
 
                                             let find_validate = areaMaster?.data?.find((item: any) => item?.name === row?.area_text)
                                             const area_nominal_capacity = find_validate?.area_nominal_capacity
@@ -562,7 +562,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                     className={`${table_row_style}`}
                                                 >
 
-                                                    {columnVisibility.gas_day && (
+                                                    {columnVisibility?.gas_day && (
                                                         <td className="px-2 py-1 text-[#464255] ">{row?.gas_day_text ? row?.gas_day_text : ''}</td>
                                                     )}
 
@@ -592,22 +592,22 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.total_cap && (
+                                                    {columnVisibility?.total_cap && (
                                                         // <td className={`px-2 py-1 ${total_cap_validate ? 'text-[#464255]' : 'text-red-600'} text-right font-bold`}>{row?.totalCap ? formatNumberThreeDecimalNom(row?.totalCap) : ''}</td>
                                                         <td className={`px-2 py-1 ${total_cap_validate ? 'text-[#464255]' : 'text-red-600'} text-right font-bold`}>{row?.totalCap !== null && row?.totalCap !== undefined ? formatNumberThreeDecimalNom(row?.totalCap) : ''}</td>
 
                                                     )}
 
-                                                    {/* {columnVisibility.nomination_point && (
+                                                    {/* {columnVisibility?.nomination_point && (
                                                         <td className="px-2 py-1 text-[#464255] font-bold">{row?.nomination_point ? row?.nomination_point : ''}</td>
                                                     )} */}
 
-                                                    {columnVisibility.utilization && (
+                                                    {columnVisibility?.utilization && (
                                                         // <td className={`px-2 py-1 text-[#464255] ${row?.utilization > 100 && 'text-red-600'} text-right`}>{typeof row?.utilization === 'number' ? formatNumberTwoDecimalNom(row?.utilization) : ''}</td>
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.utilization > 100 && 'text-red-600'} text-right`}>{row?.utilization !== null && row?.utilization !== undefined && row?.utilization !== '' ? formatNumberTwoDecimalNom(row?.utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.h1 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h1 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h1_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H1 === 'number' || !isNaN(Number(row?.H1)) ? formatNumberThreeDecimalNom(row?.H1) : ''
@@ -616,7 +616,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h2 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h2 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h2_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H2 === 'number' || !isNaN(Number(row?.H2)) ? formatNumberThreeDecimalNom(row?.H2) : ''
@@ -625,7 +625,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h3 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h3 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h3_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H3 === 'number' || !isNaN(Number(row?.H3)) ? formatNumberThreeDecimalNom(row?.H3) : ''
@@ -634,7 +634,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h4 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h4 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h4_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H4 === 'number' || !isNaN(Number(row?.H4)) ? formatNumberThreeDecimalNom(row?.H4) : ''
@@ -643,7 +643,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h5 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h5 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h5_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H5 === 'number' || !isNaN(Number(row?.H5)) ? formatNumberThreeDecimalNom(row?.H5) : ''
@@ -652,7 +652,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h6 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h6 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h6_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H6 === 'number' || !isNaN(Number(row?.H6)) ? formatNumberThreeDecimalNom(row?.H6) : ''
@@ -661,7 +661,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h7 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h7 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h7_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H7 === 'number' || !isNaN(Number(row?.H7)) ? formatNumberThreeDecimalNom(row?.H7) : ''
@@ -670,7 +670,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h8 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h8 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h8_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H8 === 'number' || !isNaN(Number(row?.H8)) ? formatNumberThreeDecimalNom(row?.H8) : ''
@@ -679,7 +679,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h9 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h9 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h9_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H9 === 'number' || !isNaN(Number(row?.H9)) ? formatNumberThreeDecimalNom(row?.H9) : ''
@@ -688,7 +688,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h10 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h10 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h10_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H10 === 'number' || !isNaN(Number(row?.H10)) ? formatNumberThreeDecimalNom(row?.H10) : ''
@@ -697,7 +697,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h11 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h11 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h11_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H11 === 'number' || !isNaN(Number(row?.H11)) ? formatNumberThreeDecimalNom(row?.H11) : ''
@@ -706,7 +706,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h12 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h12 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h12_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H12 === 'number' || !isNaN(Number(row?.H12)) ? formatNumberThreeDecimalNom(row?.H12) : ''
@@ -715,7 +715,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h13 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h13 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h13_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H13 === 'number' || !isNaN(Number(row?.H13)) ? formatNumberThreeDecimalNom(row?.H13) : ''
@@ -724,7 +724,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h14 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h14 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         // <td className={`px-2 py-1 text-[#464255] text-right `}>
                                                         <td className={`px-2 py-1 ${h14_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
@@ -734,7 +734,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h15 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h15 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h15_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H15 === 'number' || !isNaN(Number(row?.H15)) ? formatNumberThreeDecimalNom(row?.H15) : ''
@@ -743,7 +743,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h16 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h16 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h16_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H16 === 'number' || !isNaN(Number(row?.H16)) ? formatNumberThreeDecimalNom(row?.H16) : ''
@@ -752,7 +752,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h17 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h17 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h17_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H17 === 'number' || !isNaN(Number(row?.H17)) ? formatNumberThreeDecimalNom(row?.H17) : ''
@@ -761,7 +761,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h18 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h18 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h18_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H18 === 'number' || !isNaN(Number(row?.H18)) ? formatNumberThreeDecimalNom(row?.H18) : ''
@@ -770,7 +770,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h19 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h19 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         // <td className={`px-2 py-1 text-[#464255] text-right `}>
                                                         <td className={`px-2 py-1 ${h19_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
@@ -780,7 +780,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h20 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h20 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h20_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H20 === 'number' || !isNaN(Number(row?.H20)) ? formatNumberThreeDecimalNom(row?.H20) : ''
@@ -789,7 +789,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h21 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h21 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h21_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H21 === 'number' || !isNaN(Number(row?.H21)) ? formatNumberThreeDecimalNom(row?.H21) : ''
@@ -798,7 +798,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h22 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h22 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h22_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H22 === 'number' || !isNaN(Number(row?.H22)) ? formatNumberThreeDecimalNom(row?.H22) : ''
@@ -807,7 +807,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h23 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h23 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h23_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H23 === 'number' || !isNaN(Number(row?.H23)) ? formatNumberThreeDecimalNom(row?.H23) : ''
@@ -816,7 +816,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h24 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h24 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h24_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // typeof row?.H24 === 'number' || !isNaN(Number(row?.H24)) ? formatNumberThreeDecimalNom(row?.H24) : ''
@@ -835,10 +835,10 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
 
                     {/******************* TABLE TAB IMBALANCE *******************/}
                     {
-                        isLoading && tabIndex2ndTab == 1 ? <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
+                        !isLoading && tabIndex2ndTab == 1 ? <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
                             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                 <tr className="h-20">
-                                    {columnVisibility.gas_day && (
+                                    {columnVisibility?.gas_day && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("gas_day_text", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("gas_day_text", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Gas Day`}
@@ -846,14 +846,14 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                         </th>
                                     )}
 
-                                    {/* {columnVisibility.area && (
+                                    {/* {columnVisibility?.area && (
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("area", sortState, setSortState, setSortedData, sortedData)}>
                                             {`Area`}
                                             {getArrowIcon("area")}
                                         </th>
                                     )} */}
 
-                                    {columnVisibility.imbalance && (
+                                    {columnVisibility?.imbalance && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("imbalance", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("imbalance", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Imbalance`}
@@ -861,7 +861,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                         </th>
                                     )}
 
-                                    {columnVisibility.imbalance_percent && (
+                                    {columnVisibility?.imbalance_percent && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("imbalance_percent", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("imbalance_percent", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Imbalance (%)`}
@@ -869,7 +869,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                         </th>
                                     )}
 
-                                    {columnVisibility.park && (
+                                    {columnVisibility?.park && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("park", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("park", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Park`}
@@ -877,7 +877,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                         </th>
                                     )}
 
-                                    {columnVisibility.unpark && (
+                                    {columnVisibility?.unpark && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("unpark", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("unpark", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Unpark`}
@@ -885,7 +885,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                         </th>
                                     )}
 
-                                    {columnVisibility.change_min_invent && (
+                                    {columnVisibility?.change_min_invent && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("change_min_invent", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("change_min_invent", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Change Min Invent`}
@@ -893,7 +893,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                         </th>
                                     )}
 
-                                    {columnVisibility.shrinkage && (
+                                    {columnVisibility?.shrinkage && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("shrinkage", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("shrinkage", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Shrinkage`}
@@ -906,7 +906,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
 
                             <tbody>
                                 {
-                                    sortedData.length > 0 && sortedData?.map((row: any, index: any) => {
+                                    (sortedData || [])?.map((row: any, index: any) => {
 
                                         return (
                                             <tr
@@ -914,7 +914,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                 className={`${table_row_style}`}
                                             >
 
-                                                {columnVisibility.gas_day && (
+                                                {columnVisibility?.gas_day && (
                                                     <td className="px-2 py-1 text-[#464255] ">{row?.gas_day_text ? row?.gas_day_text : ''}</td>
                                                 )}
 
@@ -944,27 +944,27 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                                                     </td>
                                                 )} */}
 
-                                                {columnVisibility.imbalance && (
+                                                {columnVisibility?.imbalance && (
                                                     <td className="px-2 py-1 text-[#464255] text-center">{row?.imbalance !== null && row?.imbalance !== undefined ? formatNumberThreeDecimalNom(row?.imbalance) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.imbalance_percent && (
+                                                {columnVisibility?.imbalance_percent && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.imbalance_percent !== null && row?.imbalance_percent !== undefined ? formatNumberThreeDecimalNom(row?.imbalance_percent) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.park && (
+                                                {columnVisibility?.park && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.park !== null && row?.park !== undefined ? formatNumberThreeDecimalNom(row?.park) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.unpark && (
+                                                {columnVisibility?.unpark && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.unpark !== null && row?.unpark !== undefined ? formatNumberThreeDecimalNom(row?.unpark) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.change_min_invent && (
+                                                {columnVisibility?.change_min_invent && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.change_min_invent !== null && row?.change_min_invent !== undefined ? formatNumberThreeDecimalNom(row?.change_min_invent) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.shrinkage && (
+                                                {columnVisibility?.shrinkage && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.shrinkage !== null && row?.shrinkage !== undefined ? formatNumberThreeDecimalNom(row?.shrinkage) : ''}</td>
                                                 )}
 
@@ -978,7 +978,7 @@ const TableDailyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, t
                     }
 
                     {
-                        isLoading && sortedData?.length <= 0 && <NodataTable />
+                        !isLoading && sortedData?.length <= 0 && <NodataTable />
                     }
                 </div>
             </div>

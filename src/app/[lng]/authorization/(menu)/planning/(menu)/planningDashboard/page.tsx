@@ -95,7 +95,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### DATA CHART ###############
     const [isLoading, setIsLoading] = useState<any>(false);
-    const [dataLongTermMain, setDataLongTermMain] = useState<any>([]);
+    const [dataExportLongTerm, setDataExportLongTerm] = useState<any[]>([]);
     const [dataLongTerm, setDataLongTerm] = useState<any>([]);
     const [dataLongTerm2, setDataLongTerm2] = useState<any>();
     const [filterDataLongTerm, setFilterDataLongTerm] = useState<any>([]);
@@ -113,9 +113,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         }
 
         setFilterDataMedTermEach(
-            data.map((entry: any) => ({
+            (data || [])?.map((entry: any) => ({
                 ...entry,
-                data: entry.data.map((item: any) => ({
+                data: (entry.data || [])?.map((item: any) => ({
                     ...item,
                     month: [...item.month],
                     value: [...item.value],
@@ -166,6 +166,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             // console.log('latestPerGroupLongTerm : ', latestPerGroupLongTerm);
             let test_res_long_term = assignColorsToGroups(latestPerGroupLongTerm);
             // console.log('test_res_long_term : ', test_res_long_term);
+            const res_long_term_filtered_for_export = test_res_long_term
+                .map((item: any) => {
+                    item.data = filterOnlyEntry(item.data);
+                    return item;
+                })
+                .filter((item: any) => item.data.length > 0);
+            setDataExportLongTerm(res_long_term_filtered_for_export);
 
             // ============ แปลงข้อมูล long term ============
             const res_sum_long = sumValuesByArea(test_res_long_term); // ข้อมูลกราฟหลัก long term
@@ -182,6 +189,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 }
                 acc[areaId].groups.push({
                     name: item.group.name,
+                    company_name: item.group.company_name,
                     sumValues: item.sumValues,
                     // color: item.area.color
                     color: item.group.color
@@ -194,7 +202,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             // setDataLongTerm(test_res_long_term); // เอาไว้ filter fix
 
             const res_sum_long_2 = filterOnlyEntry(res_sum_long) // ให้ Default ค่าเป็น Entry ไว้ https://app.clickup.com/t/86ev16nj6
-            setDataLongTermMain(res_sum_long_2); // ใช้กับ chart หลัก เดิมใช้ res_sum_long
             setFilterDataLongTerm(res_sum_long_2) // เดิมใช้ res_sum_long
 
             // ให้ Default ค่าเป็น Entry ไว้ https://app.clickup.com/t/86ev16nj6
@@ -353,7 +360,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### DATA TABLE ###############
     const [tabIndex, setTabIndex] = useState(0);
+    const [tabIndex2ndTab, setTabIndex2ndTab] = useState(1);
     const handleChange = (event: any, newValue: any) => {
+        if(tabIndex2ndTab != 1 && tabIndex != newValue){
+            setTabIndex2ndTab(1)
+            fetchDataEachTermAndSheet(1)
+        }
         setTabIndex(newValue);
         setfilterList({
             month: null,
@@ -380,7 +392,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // const [srchStartDate, setSrchStartDate] = useState<any>(null);
     const [srchStartYear, setSrchStartYear] = useState<any>('');
     const [srchStartYearMedTerm, setSrchStartYearMedTerm] = useState<any>('');
-    const [srchStartYearShortTerm, setSrchStartYearShortTerm] = useState<any>('');
     const [srchStartDay, setSrchStartDay] = useState<any>('');
     const [srchArea, setSrchArea] = useState<any>([]);
     // const [srchEntryExit, setSrchEntryExit] = useState('');
@@ -430,6 +441,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     // return isEntryExitMatch && isAreaMatch && isYearMatch;
                 })
                 ?.map((entry: any) => {
+                    if (entry == null) return entry;
                     // Check if srchStartYear is provided
                     if (!srchStartYear) {
                         return entry; // If empty, return entry unchanged
@@ -444,7 +456,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
                     return {
                         ...entry,
-                        year: entry?.year?.filter((year: string) => parseInt(year) >= searchYear), // Keep valid years only
+                        year: entry.year?.filter((year: string) => parseInt(year) >= searchYear), // Keep valid years only
                         value: validIndices?.map((index: any) => entry.value[index]), // Keep only values at valid indices
                     };
                 }),
@@ -464,6 +476,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             }
             acc[areaId].groups.push({
                 name: item.group.name,
+                company_name: item.group.company_name,
                 sumValues: item.sumValues,
                 // color: item.area.color
                 color: item.group.color
@@ -473,6 +486,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setDataLongTerm2(groupedByArea) // ใช้กับ chart ย่อยด้านล่าง
 
         // ============ แปลงข้อมูล long term ============
+        setDataExportLongTerm(filteredResult);
         const res_sum_long = sumValuesByArea(filteredResult); // ข้อมูลกราฟหลัก long term
         setFilterDataLongTerm(res_sum_long);
     };
@@ -482,7 +496,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setSrchArea([]);
         // setSrchEntryExit('');
         setSrchEntryExit(1); // ให้ Default ค่าเป็น Entry ไว้ https://app.clickup.com/t/86ev16nj6
-        // setFilterDataLongTerm(dataLongTermMain);
         // resetSubLongTermChart();
 
         await fetchData();
@@ -502,6 +515,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             }
             acc[areaId].groups.push({
                 name: item.group.name,
+                company_name: item.group.company_name,
                 sumValues: item.sumValues,
                 // color: item.area.color
                 color: item.group.color
@@ -521,7 +535,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             (item: any) => item?.data?.length > 0,
         );
 
-        return filter_length_.map((item: any, index: any) => (
+        return (filter_length_ || [])?.map((item: any, index: any) => (
             <div key={`${item?.group?.id ?? index}`} className="col-span-2 w-full h-auto border rounded-[6px] shadow-sm p-2">
                 <div className="w-full h-full overflow-y-auto font-bold text-[#58585A]">
                     <div className="flex justify-between items-center w-full pb-2 pr-2">
@@ -625,7 +639,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     useEffect(() => {
         // re-map short term each
         if (filterDataShortTermEach.length > 0) {
-            const filter_length_ = filterDataShortTermEach?.filter((item: any) => item?.data?.length > 0)
+            const filter_length_ = filterDataShortTermEach.filter((item: any) => item?.data?.length > 0)
 
             const minmaxOfdata = getMinMaxMonth(filter_length_);
 
@@ -650,7 +664,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             const newMappedData = filter_length_?.map((item: any, index: any) => {
 
-                if (item.data.length == 0) return null;
+                if (!item || (item.data || []).length == 0) return null;
 
                 let makeItem: any;
 
@@ -664,7 +678,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     }
                 } else {
                     // แปลง data หาค่า [0] ของ data ทุกตัว เพื่อเอาวันที่เริ่มต้นของ graph
-                    const trans = item?.data?.map((d: any) => d?.day?.[0]);
+                    const trans = (item.data || []).map((d: any) => d?.day?.[0]);
 
                     // หาเดือน แรกสุดใน data
                     const getMinDateBE = (dates: string[]) => {
@@ -705,7 +719,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             <div className="flex justify-between items-center w-full pb-2 pr-2">
                                 <div className="py-[15px] pl-5">
                                     <h2 className="text-[16px] font-bold text-[#58585A]">
-                                        {item?.group?.name}
+                                        {item.group?.name || ''}
                                         {/* {`Planning no. ${item?.planning_code}`} */}
                                     </h2>
                                 </div>
@@ -786,6 +800,176 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     }, [tabIndex])
 
+    
+    const fetchDataEachTermAndSheet = async (subTabIndex: number) => {
+        try {
+            const sheet = subTabIndex == 0 ? 'low' : subTabIndex == 1 ? 'normal' : 'high';
+            switch (tabIndex) {
+                case 0:
+                    let res_long_term: any = await getService(`/master/planning-dashboard/long-term?sheet=${sheet}`);
+    
+                    // 🟠 ฝากดู Planning > Dashboard > Shipper login ต้องเห็นเฉพาะข้อมูลของตัวเอง ตอนนี้เห็นของทุกคน (กันส่งมา 2026-03-09)
+                    if (userDT?.account_manage?.[0]?.user_type?.id == 3) { // shipper
+                        const filter_long_term_only_shipper = res_long_term?.filter((item: any) => {
+                            return item?.group?.id == userDT?.account_manage?.[0]?.group?.id
+                        })
+                        res_long_term = filter_long_term_only_shipper
+                    }
+    
+                    // ถ้า data_res_long.group.id ซ้ำกัน กรอง data_res_long แค่ shipper_file_submission_date วันเวลาล่าสุดแค่ตัวเดียว
+                    // v1.0.90 ควรที่จะแสดงเป็นข้อมู lasted ของแต่ล่ะ shipper https://app.clickup.com/t/86ert2k27
+                    const latestPerGroupLongTerm = keepLatestPerGroupByPeriod(res_long_term);
+        
+                    let test_res_long_term = assignColorsToGroups(latestPerGroupLongTerm);
+    
+                    // ============ แปลงข้อมูล long term ============
+                    const res_sum_long = sumValuesByArea(test_res_long_term); // ข้อมูลกราฟหลัก long term
+    
+                    // ============ set ข้อมูล long term ============
+                    setDataLongTerm(latestPerGroupLongTerm); // เอาไว้ filter
+    
+
+                    let filteredDataLong: any = latestPerGroupLongTerm
+
+                    // Filter Entry Exit นะ
+                    if (srchEntryExit) {
+                        filteredDataLong = filteredDataLong
+                            ?.map((dataObj: any) => {
+                                const filteredData = dataObj?.data?.filter((entry: any) => entry?.entry_exit_id === srchEntryExit);
+                                return filteredData.length > 0 ? { ...dataObj, data: filteredData } : null;
+                            })
+                            ?.filter(Boolean);
+                    }
+
+                    // Filter Year และ Area นะ
+                    const filteredResult = filteredDataLong?.map((item: any) => ({
+                        ...item,
+                        data: item.data
+                            ?.filter((entry: any) => {
+                                // Extract year from srchStartDate
+                                const searchYearFormatted = parseInt(srchStartYear);
+                                const isYearMatch = srchStartYear !== '' ? Array.isArray(entry?.year) && entry?.year.some((entryYear: string) => compareYearOnly(entryYear, searchYearFormatted)) : true;
+                                const isAreaMatch = srchArea?.length > 0 ? srchArea.includes(entry?.area?.name) : true; // New filter for area
+
+                                return isAreaMatch && isYearMatch;
+                                // return isEntryExitMatch && isAreaMatch && isYearMatch;
+                            })
+                            ?.map((entry: any) => {
+                                if (entry == null) return entry;
+                                // Check if srchStartYear is provided
+                                if (!srchStartYear) {
+                                    return entry; // If empty, return entry unchanged
+                                }
+
+                                const searchYear = parseInt(srchStartYear);
+
+                                // Get valid indices where year >= searchYear
+                                const validIndices = entry.year
+                                    ?.map((year: string, index: number) => (parseInt(year) >= searchYear ? index : -1))
+                                    ?.filter((index: any) => index !== -1); // Remove -1 (invalid years)
+
+                                return {
+                                    ...entry,
+                                    year: entry.year?.filter((year: string) => parseInt(year) >= searchYear), // Keep valid years only
+                                    value: validIndices?.map((index: any) => entry.value[index]), // Keep only values at valid indices
+                                };
+                            }),
+                    }));
+
+                    // ============ แปลงข้อมูลย่อย long term ============
+                    let data_long_term_each_group_filtered = sumDataByAreaAndGroup(filteredResult);
+                    const groupedByAreaFiltered = data_long_term_each_group_filtered?.reduce((acc, item) => {
+
+                        const areaId = item.area.id;
+                        if (!acc[areaId]) {
+                            acc[areaId] = {
+                                area: item.area,
+                                years: item.years,
+                                groups: []
+                            };
+                        }
+                        acc[areaId].groups.push({
+                            name: item.group.name,
+                            company_name: item.group.company_name,
+                            sumValues: item.sumValues,
+                            // color: item.area.color
+                            color: item.group.color
+                        });
+                        return acc;
+                    }, {});
+                    setDataLongTerm2(groupedByAreaFiltered) // ใช้กับ chart ย่อยด้านล่าง
+
+                    // ============ แปลงข้อมูล long term ============
+                    setDataExportLongTerm(filteredResult);
+                    const res_sum_long_filtered = sumValuesByArea(filteredResult); // ข้อมูลกราฟหลัก long term
+                    setFilterDataLongTerm(res_sum_long_filtered);
+                    break;
+                case 1:
+                    let res_med_term: any = await getService(`/master/planning-dashboard/medium-term?sheet=${sheet}`);
+    
+                    // 🟠 ฝากดู Planning > Dashboard > Shipper login ต้องเห็นเฉพาะข้อมูลของตัวเอง ตอนนี้เห็นของทุกคน (กันส่งมา 2026-03-09)
+                    if (userDT?.account_manage?.[0]?.user_type?.id == 3) { // shipper
+                        const filter_med_term_only_shipper = res_med_term?.filter((item: any) => {
+                            return item?.group?.id == userDT?.account_manage?.[0]?.group?.id
+                        })
+                        res_med_term = filter_med_term_only_shipper
+                    }
+                    // ============ แปลงข้อมูล med term ============
+                    // เช็ค res_med_.group.id ที่ซ้ำกัน
+                    // จากนั้นเข้าไปเช็ค res_med_.data ของตัวที่ซ้ำว่า
+                    // 1. data.area.id ที่ซ้ำกันของแต่ละ res_med_ แล้วเช็ค key month ว่ามีซ้ำกันหรือไม่ ถ้ามีซ้ำ ให้เช็คว่า res_med_.shipper_file_submission_date อันไหนใหม่กว่า ให้เอา data.value ที่ index ตรงกับ month ที่ซ้ำของตัวที่ใหม่กว่ามาใช้
+                    // 2. แต่ละ object ที่ map ใหม่ต้องโครงสร้างเหมือนเดิม
+                    // 3. ให้เอาคีย์ month ที่น้อยที่สุดและมากที่สุดมา map ลงให้ถูกต้อง พร้อม value ที่ index ตรงกัน
+        
+                    // R : ควรแสดงแค่ค่าของไฟล์ planning version ล่าสุด ตอนนี้เหมือนเอาทุก version มารวมกัน เอาค่าล่าสุดของเดือนนั้นๆมาแสดง https://app.clickup.com/t/86ev5f74b
+                    const test_result = mergeResMed(res_med_term, "latestValueByEachPlanningFile"); // ถ้า day ซ้ำกันให้เอาจาก shipper_file_submission_date ที่ใหม่กว่า
+    
+                    // v1.0.90 ควรที่จะแสดงเป็นข้อมู lasted ของแต่ล่ะ shipper https://app.clickup.com/t/86ert2k27
+    
+                    // ============ set ข้อมูล medium term ============
+                    const test_result_2 = prependMissingMonthsFromCurrent(test_result)  // ฟังก์ชั่นนี้จะเพิ่ม label และข้อมูลของเดือนปัจจุบันมาให้ (กรณีไม่มีข้อมูลจริง ๆ จาก api อันที่เพิ่มไปจะเป็น null) v1.0.90 Graph ควรที่จะเริ่มพร้อมกัน https://app.clickup.com/t/86ert2k39
+                    // med term only
+                    setDataMedTermOriginal(test_result_2);
+                    setDataMedTerm(test_result_2);        // --> ของ chart Total            เดิมใช้ test_result
+                    setFilterDataMedTerm(test_result_2);  // --> ของ chart Total            เดิมใช้ test_result
+                    setDataMedTermEachGroup(test_result_2)    // --> ของ chart each shipper เดิมใช้ test_result
+                    // filterDataMedTermEach จะถูก set จาก ChartMediumTermAll หลัง filter แล้ว
+                    break;
+                case 2:
+                    let res_short_term: any = await getService(`/master/planning-dashboard/short-term?sheet=${sheet}`);
+    
+                    // 🟠 ฝากดู Planning > Dashboard > Shipper login ต้องเห็นเฉพาะข้อมูลของตัวเอง ตอนนี้เห็นของทุกคน (กันส่งมา 2026-03-09)
+                    if (userDT?.account_manage?.[0]?.user_type?.id == 3) { // shipper
+                        const filter_short_term_only_shipper = res_short_term?.filter((item: any) => {
+                            return item?.group?.id == userDT?.account_manage?.[0]?.group?.id
+                        })
+                        res_short_term = filter_short_term_only_shipper
+                    }
+    
+                    // ============ แปลงข้อมูล short term ============
+                    // R : ควรแสดงแค่ค่าของไฟล์ planning version ล่าสุด ตอนนี้เหมือนเอาทุก version มารวมกัน เอาค่าล่าสุดของเดือนนั้นๆมาแสดง https://app.clickup.com/t/86ev5f74b
+                    const test_result_short = mergeResMedByDay(res_short_term, "latestValueByEachPlanningFile"); // โครงสร้างเหมือน res_med_ แต่ใช้ key "day" แทน "month"
+    
+                    // ============ set ข้อมูล short term ============
+                    // const res_short_term_processed = prependMissingDaysFromCurrent(res_short_term_sum_by_area) // ฟังก์ชั่นนี้จะเพิ่ม label และข้อมูลของเดือนปัจจุบันมาให้ (กรณีไม่มีข้อมูลจริง ๆ จาก api อันที่เพิ่มไปจะเป็น null) v1.0.90 Graph ควรที่จะเริ่มพร้อมกัน https://app.clickup.com/t/86ert2k39
+                    const res_short_term_processed = prependMissingDaysFromCurrent(test_result_short)
+                    setDataShortTermOriginal(res_short_term_processed)
+                    setDataShortTerm(res_short_term_processed);            // --> ของ chart Total         เดิมใช้ res_short_term_sum_by_area
+                    setFilterDataShortTerm(res_short_term_processed);      // --> ของ chart Total         เดิมใช้ res_short_term_sum_by_area
+                    setDataShortTermEachGroup(res_short_term_processed)    // --> ของ chart each shipper  เดิมใช้ res_short_term_sum_by_area
+                    setFilterDataShortTermEach(res_short_term_processed)   // --> ของ chart each shipper  เดิมใช้ res_short_term_sum_by_area
+                    setDataShortTermEachMain(res_short_term_processed)     // --> ของ chart each shipper  เดิมใช้ res_short_term_sum_by_area
+                    break;
+                default:
+                    break;
+            }
+        } catch (err) {
+            // setError(err.message);
+        } finally {
+            setIsLoading(true);
+        }
+    }
+
     const resetArray = (tab: number) => {
 
         // ทั้งหมดนี้คือการ reset data ก่อนจะลง chart เพื่อให้ reset ทั้ง filter / labels ที่ค้างไว้ เมื่อเปลี่ยน tabs
@@ -819,6 +1003,54 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 break;
         }
     }
+
+    const subTab = (
+        <Tabs
+            value={tabIndex2ndTab}
+            onChange={(e, value) => {
+                if(tabIndex2ndTab != value){
+                    setIsLoading(false)
+                    fetchDataEachTermAndSheet(value)
+                }
+                setTabIndex2ndTab(value)
+            }}
+            aria-label="wrapped label tabs example"
+            sx={{
+                '& .Mui-selected': {
+                    color: '#00ADEF !important',
+                    fontWeight: 'bold !important',
+                },
+                '& .MuiTabs-indicator': {
+                    backgroundColor: '#00ADEF !important',
+                    width: '59px !important',
+                    transform: 'translateX(35%)',
+                    bottom: '10px',
+                },
+                '& .MuiTab-root': {
+                    minWidth: 'auto !important',
+                },
+            }}
+        >
+            {['Low', 'Normal', 'High'].map((label, index) => (
+                <Tab
+                    key={label}
+                    label={label}
+                    id={`tab-${index}`}
+                    sx={{
+                        fontFamily: 'Tahoma !important',
+                        textTransform: 'none',
+                        padding: '8px 16px',
+                        minWidth: '35px',
+                        maxWidth: '103px',
+                        flexShrink: 0,
+                        color: tabIndex2ndTab === index ? '#58585A' : '#9CA3AF',
+                    }}
+                />
+            ))}
+
+        </Tabs>
+    )
+
 
     return (
         <div className="space-y-2">
@@ -869,11 +1101,27 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
                 {/* Tab long term */}
                 {
-                    tabIndex == 0 && <div className="grid grid-cols-2 gap-4 pt-2 pb-2">
+                    tabIndex == 0 && 
+                    <div className="grid grid-cols-2 gap-4 pt-2 pb-2">
                         {/* CHART 1 MAIN */}
                         <div className="col-span-2 w-full h-auto border rounded-[10px] shadow-sm p-2">
-                            <div className="py-[15px] pl-5">
-                                <h2 className="text-[16px] font-bold text-[#58585A] ">{`Long term`}</h2>
+                            {subTab}
+                            <div className="flex justify-between w-full">
+                                <div className="py-[15px] pl-5 ">
+                                    <h2 className="text-[16px] font-bold text-[#58585A] ">{`Long term`}</h2>
+                                </div>
+
+                                {/* Align buttons to the right */}
+                                <div className="flex gap-2 justify-end">
+                                    <BtnGeneral
+                                        textRender={"Export"}
+                                        iconNoRender={false}
+                                        modeIcon={"export"}
+                                        bgcolor={"#17AC6B"}
+                                        generalFunc={() => exportToExcel(dataExportLongTerm, "long_term_total")}
+                                        can_export={userPermission ? userPermission?.f_export : false}
+                                    />
+                                </div>
                             </div>
 
                             <aside className="flex flex-wrap sm:flex-row gap-2 pb-2 w-full pl-[20px]">
@@ -944,6 +1192,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                         dataChart={areaData}
                                         userPermission={userPermission}
                                         find_area={find_area}
+                                        onExport={() => {
+                                            const dataExportLongTermByArea = dataExportLongTerm
+                                                .map((item: any) => {
+                                                    const data = (item.data || []).filter((dataItem: any) => dataItem.area.id === areaData?.area?.id);
+                                                    return { ...item, data };
+                                                })
+                                                .filter((item: any) => item.data.length > 0);
+                                            exportToExcel(dataExportLongTermByArea, "long_term_total")
+                                        }}
                                     />
                                 )
                             }
@@ -973,6 +1230,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                                 srchStartYearMedTerm={srchStartYearMedTerm} // เอาไว้ใช้ตอนกด full view ข้อมูลข้างในจะได้เหมือนข้างนอก
                                                 setfilterList={setfilterList} // เอาไว้ใช้ที่ chart ลูก
                                                 filterList={filterList}
+                                                subTabComponent={subTab}
                                             />
                                             : <NodataTable />
                                         :
@@ -983,7 +1241,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         
 
                         {/* Chart ย่อย */}
-                        {mappedDataMedTermEach}
+                        {isLoading ? mappedDataMedTermEach : <ChartSkeleton />}
                     </div>
                 }
 
@@ -1010,6 +1268,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                                 setSrchStartDay={setSrchStartDay}
                                                 setfilterList={setfilterList} // เอาไว้ใช้ที่ chart ลูก
                                                 filterList={filterList}
+                                                subTabComponent={subTab}
                                             />
 
                                             :
@@ -1022,7 +1281,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         </div>
 
                         {/* Chart ย่อย */}
-                        {mappedDataShortTermEach}
+                        {isLoading ? mappedDataShortTermEach : <ChartSkeleton />}
                     </div>
                 }
             </div>
@@ -1043,35 +1302,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             />
 
 
-            {/* <ModalFullViewMedium
-                mode={modeView}
-                data={dataView}
-                dataOriginal={dataMedTerm}
-                isAll={isAll}
-                open={openView && modeView == 'Medium term'}
-                onClose={() => {
-                    setOpenView(false);
-                }}
-                shipperGroupData={shipperGroupData}
-                areaMaster={areaMaster}
-                entryExitMaster={entryExitMaster}
-                srchStartYearMedTerm={srchStartYearMedTerm}
-            />
-
-            <ModalFullViewShort
-                mode={modeView}
-                data={dataView}
-                dataOriginal={dataShortTerm}
-                open={openView && modeView == 'Short term'}
-                isAll={isAll}
-                onClose={() => {
-                    setOpenView(false);
-                }}
-                shipperGroupData={shipperGroupData}
-                areaMaster={areaMaster}
-                entryExitMaster={entryExitMaster}
-                srchStartDateMain={srchStartYearShortTerm}
-            /> */}
         </div>
 
     );

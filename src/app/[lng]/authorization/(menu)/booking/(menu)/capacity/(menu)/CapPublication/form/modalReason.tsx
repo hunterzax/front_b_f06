@@ -78,8 +78,8 @@ const ModalReason: React.FC<FormExampleProps> = ({
                                                 {...register('remark', { required: false})}
                                                 value={watch('remark') || ''}
                                                 onChange={(e) => {
-                                                    if (e.target.value.length <= 2000) {
-                                                        setValue('remark', e.target.value);
+                                                    if ((Array.isArray(e?.target?.value) ? e?.target?.value : []).length <= 2000) {
+                                                        setValue('remark', e?.target?.value ?? "");
                                                     }
                                                 }}
                                                 label=""
@@ -143,7 +143,7 @@ const ModalReason: React.FC<FormExampleProps> = ({
                                                 type="submit"
                                                 className="w-[167px] font-light bg-[#00ADEF] text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
                                             >
-                                                {mode === "create" ? "Edit" : "Edit"}
+                                                Edit
                                             </button>
                                         )}
                                     </div>

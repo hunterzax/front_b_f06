@@ -2,7 +2,7 @@
 import "@/app/globals.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ModalComponent from "@/components/other/ResponseModal";
-import { getService, postService, putService } from "@/utils/postService";
+import { deleteService, getService, postService, putService } from "@/utils/postService";
 import { replaceEmptyStringsWithNull } from "@/components/other/fillBlankWithNull";
 import ModalAction from "./form/modalAction";
 import { fillMissingUpdateByAccount, filterStartEndDate, filterStartEndDateNewLogic, findRoleConfigByMenuName, formatDateNoTime, generateUserPermission } from "@/utils/generalFormatter";
@@ -27,6 +27,9 @@ import { ColumnDef, Row, VisibilityState } from "@tanstack/react-table";
 import BtnActionTable from "@/components/other/btnActionInTable";
 import getUserValue from "@/utils/getuserValue";
 // import { createRedisInstance } from "../../../../../../../../../../redis";
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import ModalDelete from "./form/modalDelete";
+
 interface ClientProps {
     params: {
         lng: string;
@@ -155,6 +158,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     };
     const [formData, setFormData] = useState(fdInterface);
 
+   
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [deleteData, setDeleteData] = useState<any>();
+    const [modalModalSuccessMsg, setModalSuccessMsg] = useState('');
+
     const handleFormSubmit = async (data: any) => {
         const newData = replaceEmptyStringsWithNull(data)
         if (typeof data.end_date !== 'string' || data.end_date == 'Invalid Date') {
@@ -219,6 +227,25 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         const res_update = await putService(`/master/parameter/announcement-status/${id}`, data);
         await fetchData();
         if (resetForm) resetForm(); // reset form
+    }
+
+    const handleDelete = async (data: any) => {
+        console.log('deleteData : ', deleteData);
+        const res_del: any = await deleteService(`/master/parameter/announcement-delete/${deleteData?.id}`);
+        if (res_del?.response?.data?.status === 400) {
+            setFormOpen(false);
+            setModalErrorMsg(res_del?.response?.data?.error);
+            setModalErrorOpen(true)
+        } else {
+            setFormOpen(false);
+            setModalSuccessMsg('Data has been deleted.')
+            setModalSuccessOpen(true);
+            setTimeout(() => {
+                setDeleteOpen(false)
+            }, 200);
+        }
+
+        await fetchData();
     }
 
     const openEditForm = (id: any) => {
@@ -377,7 +404,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         }
     };
 
-    const columns = useMemo<ColumnDef<any>[]>(
+    const columns = useMemo<ColumnDef<any>[]>( 
         () => [
             {
                 accessorKey: "status",
@@ -412,7 +439,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.topic || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
-                    return (<div className="font-bold">{row?.topic && row?.topic}</div>)
+                    return (<div className="font-bold">{row?.topic}</div>)
                 }
             },
             {
@@ -423,7 +450,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.detail || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
-                    return (<div>{row?.detail && row?.detail}</div>)
+                    return (<div>{row?.detail}</div>)
                 }
             },
             {
@@ -530,6 +557,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         };
     }, [popoverRef]);
 
+     const openDeleteForm = async (id: any) => {
+            console.log('id : ', id);
+            // filteredDataTable
+            const filteredData = filteredDataTable.find((item: any) => item.id === id);
+            setDeleteData(filteredData);
+            setDeleteOpen(true);
+            // fetchData();
+        }
+
     const toggleMenu = (mode: any, id: any) => {
         switch (mode) {
             case "view":
@@ -542,11 +578,17 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 setOpenPopoverId(null);
                 setAnchorPopover(null)
                 break;
+            case "delete":
+                openDeleteForm(id);
+                setAnchorPopover(null)
+                setOpenPopoverId(null); // close popover
+                break;
             case "history":
                 openHistoryForm(id);
                 setOpenPopoverId(null);
                 setAnchorPopover(null)
                 break;
+
         }
     }
 
@@ -738,11 +780,31 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             userPermission?.f_edit && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("edit", openPopoverId) }}><EditOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> Edit</li>
                         }
                         {
+                            userPermission?.f_edit && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("delete", openPopoverId) }}><DeleteOutlineOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`Delete`}</li>
+                        }
+                        {
                             userPermission?.f_view && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("history", openPopoverId) }}><RestoreOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> History</li>
                         }
                     </ul>
                 </div>
             </Popover>
+            
+            <ModalComponent
+                open={isModalSuccessOpen}
+                handleClose={handleCloseModal}
+                title="Success"
+                description={`${modalModalSuccessMsg}`}
+            />
+          
+            <ModalDelete
+                data={deleteData}
+                open={deleteOpen}
+                onClose={() => {
+                    setDeleteOpen(false);
+                }}
+                onSubmit={handleDelete}
+                setResetForm={setResetForm}
+            />
         </div>
     );
 };

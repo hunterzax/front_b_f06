@@ -94,35 +94,35 @@ const TableTermAndCondition: React.FC<TableProps> = ({ openEditForm, openViewFor
                     <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
-                                {columnVisibility.topic && (
+                                {columnVisibility?.topic && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("topic", sortState, setSortState, setSortedData, tableData)}>
                                         {`Topic`}
                                         {getArrowIcon("topic")}
                                     </th>
                                 )}
 
-                                {columnVisibility.file && (
+                                {columnVisibility?.file && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("url", sortState, setSortState, setSortedData, tableData)}>
                                         {`File`}
                                         {getArrowIcon("url")}
                                     </th>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`Start Date`}
                                         {getArrowIcon("start_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`End Date`}
                                         {getArrowIcon("end_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -137,11 +137,11 @@ const TableTermAndCondition: React.FC<TableProps> = ({ openEditForm, openViewFor
                                         key={row?.id}
                                         className={`${table_row_style}`}
                                     >
-                                        {columnVisibility.topic && (
-                                            <td className="px-2 py-1 text-[#464255] font-bold">{row?.topic && row?.topic}</td>
+                                        {columnVisibility?.topic && (
+                                            <td className="px-2 py-1 text-[#464255] font-bold">{row?.topic}</td>
                                         )}
 
-                                        {columnVisibility.file && (
+                                        {columnVisibility?.file && (
                                             <td className="px-2 py-1 text-[#464255]">
                                                 <div className="flex items-center">
                                                     <button
@@ -161,15 +161,15 @@ const TableTermAndCondition: React.FC<TableProps> = ({ openEditForm, openViewFor
                                             </td>
                                         )}
 
-                                        {columnVisibility.start_date && (
+                                        {columnVisibility?.start_date && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.end_date && (
+                                        {columnVisibility?.end_date && (
                                             <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 {/* <div className="relative inline-block text-left "> */}
                                                 <div className="relative inline-flex justify-center items-center w-full">

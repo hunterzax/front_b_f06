@@ -103,38 +103,38 @@ const TableConfigMasterPath: React.FC<TableProps> = ({ openEditForm, openViewFor
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.status && (
+                                {columnVisibility?.status && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("active", sortState, setSortState, setSortedData, tableData)}>
                                         {`Status`}
                                         {getArrowIcon("active")}
                                     </th>
                                 )}
-                                {columnVisibility.path_no && (
+                                {columnVisibility?.path_no && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("path_no", sortState, setSortState, setSortedData, tableData)}>
                                         {`Path No.`}
                                         {getArrowIcon("path_no")}
                                     </th>
                                 )}
-                                {columnVisibility.revised_cap && (
+                                {columnVisibility?.revised_cap && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("first_path.name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Revised Capacity Path`}
                                         {getArrowIcon("first_path.name")}
 
                                     </th>
                                 )}
-                                {columnVisibility.create_by && (
+                                {columnVisibility?.create_by && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Created by`}
                                         {getArrowIcon("create_by_account.first_name")}
                                     </th>
                                 )}
-                                {/* {columnVisibility.update_by && (
+                                {/* {columnVisibility?.update_by && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by", sortState, setSortState, setSortedData, tableData)}>
                                         {`Updated by`}
                                         {getArrowIcon("update_by")}
                                     </th>
                                 )} */}
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -145,12 +145,10 @@ const TableConfigMasterPath: React.FC<TableProps> = ({ openEditForm, openViewFor
                         <tbody>
                             {sortedData && sortedData.map((row: any, index: any) => {
                                 return (
-                                    <tr
-                                        key={row?.id}
-                                        className={`${table_row_style}`}
+                                    <tr key={row?.id ?? index} className={`${table_row_style}`}
                                     >
 
-                                        {/* {columnVisibility.status && (
+                                        {/* {columnVisibility?.status && (
                                             <td className="px-2 py-1">{
                                                 row?.active ?
                                                     //  <div className="flex  justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.color }}>{`${row?.name}`}</div>
@@ -167,7 +165,7 @@ const TableConfigMasterPath: React.FC<TableProps> = ({ openEditForm, openViewFor
                                                     </div>
                                             }</td>
                                         )} */}
-                                        {columnVisibility.status && (
+                                        {columnVisibility?.status && (
                                             <td className="px-2 py-1">{
                                                 <div>
                                                     <label className="relative inline-block w-11 h-6 cursor-pointer">
@@ -185,21 +183,21 @@ const TableConfigMasterPath: React.FC<TableProps> = ({ openEditForm, openViewFor
                                                 </div>
                                             }</td>
                                         )}
-                                        {columnVisibility.path_no && (
+                                        {columnVisibility?.path_no && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.path_no}</td>
                                         )}
                                         {/* <td className="px-2 py-1  justify-center ">{row?.entry_exit && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color }}>{`${row?.entry_exit?.name}`}</div>}</td> */}
 
-                                        {columnVisibility.revised_cap && (
+                                        {columnVisibility?.revised_cap && (
                                             <td className="flex px-2 py-1 items-center">
-                                                {row?.revised_capacity_path?.map((item: any, index: any) => (
-                                                    <React.Fragment key={item.id}>
+                                                {(row?.revised_capacity_path || [])?.map((item: any, index: any) => (
+                                                    <React.Fragment key={item?.id ?? index}>
                                                         <div
                                                             className={`flex justify-center items-center`}
                                                             style={{
                                                                 backgroundColor: item?.area?.color,
-                                                                width: item?.revised_capacity_path_type_id === 1 ? '30px' : '30px',
-                                                                height: item?.revised_capacity_path_type_id === 1 ? '30px' : '30px',
+                                                                width: '30px',
+                                                                height: '30px',
                                                                 borderRadius: item?.revised_capacity_path_type_id === 1 ? '4px' : '50%',
                                                             }}
                                                         >
@@ -216,7 +214,7 @@ const TableConfigMasterPath: React.FC<TableProps> = ({ openEditForm, openViewFor
                                             </td>
                                         )}
 
-                                        {columnVisibility.create_by && (
+                                        {columnVisibility?.create_by && (
                                             <td className="px-2 py-1 text-[#464255]">
                                                 <div>
                                                     <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -225,7 +223,7 @@ const TableConfigMasterPath: React.FC<TableProps> = ({ openEditForm, openViewFor
                                             </td>
                                         )}
 
-                                        {/* {columnVisibility.update_by && (
+                                        {/* {columnVisibility?.update_by && (
                                             <td className="px-2 py-1 text-[#464255]">
                                                 <div>
                                                     <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
@@ -233,7 +231,7 @@ const TableConfigMasterPath: React.FC<TableProps> = ({ openEditForm, openViewFor
                                                 </div>
                                             </td>
                                         )} */}
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 {/* <div className="relative inline-block text-left "> */}
                                                 <div className="relative inline-flex justify-center items-center w-full">

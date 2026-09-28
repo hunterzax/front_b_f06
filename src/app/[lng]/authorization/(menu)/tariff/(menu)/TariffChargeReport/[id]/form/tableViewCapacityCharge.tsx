@@ -118,24 +118,24 @@ const TableViewCapacityCharge: React.FC<TableProps> = ({ tableData, isLoading, c
                 </thead>
 
                 <tbody>
-                    {sortedData && sortedData?.map((row: any, index: number) => (
+                    {(sortedData || [])?.map((row: any, index: number) => (
                         <tr
                             key={index}
-                            className={`${table_row_style} ${row.isSummary ? "bg-gray-200 font-bold" : ""}`}
+                            className={`${table_row_style} ${row?.isSummary ? "bg-gray-200 font-bold" : ""}`}
                         >
-                            <td className={`px-2 py-1 justify-center w-[200px] ${row.isSummary && "bg-[#E0F7FF]"} ${row.isGrandTotal && "bg-[#FFFEE0]"}`}>
+                            <td className={`px-2 py-1 justify-center w-[200px] ${row?.isSummary && "bg-[#E0F7FF]"} ${row?.isGrandTotal && "bg-[#FFFEE0]"}`}>
                                 {/* <div
                                     className={`p-1 text-[#464255] text-center items-center justify-center`}
                                 >
-                                    {row.area_text}
+                                    {row?.area_text}
                                 </div> */}
 
                                 {
-                                    (row.isSummary || row.isGrandTotal) ?
+                                    (row?.isSummary || row?.isGrandTotal) ?
                                         <div
                                             className={`p-1 text-[#464255] font-semibold `}
                                         >
-                                            {row.area_text}
+                                            {row?.area_text}
                                         </div>
 
                                         : row?.areaObj?.entry_exit_id == 2 ?
@@ -144,7 +144,7 @@ const TableViewCapacityCharge: React.FC<TableProps> = ({ tableData, isLoading, c
                                                     className="flex text-center items-center justify-center rounded-full p-1 text-[#464255]"
                                                     style={{ backgroundColor: row?.areaObj?.color, width: '40px', height: '40px', color: getContrastTextColor(row?.areaObj?.color) }}
                                                 >
-                                                    {`${row.area_text}`}
+                                                    {`${row?.area_text}`}
                                                 </div>
                                             </div>
                                             :
@@ -153,32 +153,32 @@ const TableViewCapacityCharge: React.FC<TableProps> = ({ tableData, isLoading, c
                                                     className="flex text-center items-center justify-center rounded-lg p-1 text-[#464255]"
                                                     style={{ backgroundColor: row?.areaObj?.color, width: '40px', height: '40px', color: getContrastTextColor(row?.areaObj?.color) }}
                                                 >
-                                                    {`${row.area_text}`}
+                                                    {`${row?.area_text}`}
                                                 </div>
                                             </div>
                                 }
                             </td>
 
-                            <td className={`px-2 py-1 justify-center  text-right text-[#464255] ${row.isSummary && "bg-[#E0F7FF] font-semibold"} ${row.isGrandTotal && "bg-[#FFFEE0] font-semibold"}`}>
-                                {/* {row.capacityMMBTUValue !== null && row.capacityMMBTUValue !== undefined ? formatNumberFourDecimalNom(row.capacityMMBTUValue) : ''} */}
+                            <td className={`px-2 py-1 justify-center  text-right text-[#464255] ${row?.isSummary && "bg-[#E0F7FF] font-semibold"} ${row?.isGrandTotal && "bg-[#FFFEE0] font-semibold"}`}>
+                                {/* {row?.capacityMMBTUValue !== null && row?.capacityMMBTUValue !== undefined ? formatNumberFourDecimalNom(row?.capacityMMBTUValue) : ''} */}
 
                                 {/* Row Total แสดงเป็นจำนวนเต็ม https://app.clickup.com/t/86euzxxuy */}
-                                {/* {row.capacityMMBTUValue !== null && row.capacityMMBTUValue !== undefined ? formatNumber(row.capacityMMBTUValue) : ''} */}
-                                {/* {row.capacityMMBTUValue !== null && row.capacityMMBTUValue !== undefined ? formatNumberNoDecimal(row.capacityMMBTUValue) : ''} */}
+                                {/* {row?.capacityMMBTUValue !== null && row?.capacityMMBTUValue !== undefined ? formatNumber(row?.capacityMMBTUValue) : ''} */}
+                                {/* {row?.capacityMMBTUValue !== null && row?.capacityMMBTUValue !== undefined ? formatNumberNoDecimal(row?.capacityMMBTUValue) : ''} */}
 
                                 {/* เดิมโรงงาน */}
-                                {/* {row.capacityMMBTUValue !== null && row.capacityMMBTUValue !== undefined ? formatNumberFourDecimalNom(row.capacityMMBTUValue) : ''} */} 
+                                {/* {row?.capacityMMBTUValue !== null && row?.capacityMMBTUValue !== undefined ? formatNumberFourDecimalNom(row?.capacityMMBTUValue) : ''} */} 
 
                                 {/* 1. Tariff Charge Report > ในหน้า View ของ Type Demand Charge ตรง row Total สีฟ้า ต้อง round ค่าแล้วแสดงเป็นจำนวนเต็ม ส่วนบรรทัดสีเหลืองค่ามันมาจาก sum row ฟ้า ก็ต้องแสดงเป็นจำนวนเต็มเหมือนกัน */}
-                                {row.capacityMMBTUValue !== null && row.capacityMMBTUValue !== undefined ? (row.isSummary || row.isGrandTotal) ? formatNumberNoDecimal(row.capacityMMBTUValue)  : formatNumberFourDecimalNom(row.capacityMMBTUValue) : ''}
+                                {row?.capacityMMBTUValue !== null && row?.capacityMMBTUValue !== undefined ? (row?.isSummary || row?.isGrandTotal) ? formatNumberNoDecimal(row?.capacityMMBTUValue)  : formatNumberFourDecimalNom(row?.capacityMMBTUValue) : ''}
                             </td>
 
 
                             {/* Tariff Detail > Type Capacity Charge ตรง Column Detail ถ้าไม่มีสิทธิ์เห็นเมนู Capacity Contract Management ก็ให้ Hide Column Detail ไปเลย https://app.clickup.com/t/86euq74fb */}
                             {
-                                canView && <td className={`px-2 py-1  text-[#464255] w-[180px] text-center ${row.isSummary && "bg-[#E0F7FF]"} ${row.isGrandTotal && "bg-[#FFFEE0]"}`}>
+                                canView && <td className={`px-2 py-1  text-[#464255] w-[180px] text-center ${row?.isSummary && "bg-[#E0F7FF]"} ${row?.isGrandTotal && "bg-[#FFFEE0]"}`}>
                                     {
-                                        (!row.isSummary && !row.isGrandTotal) && <div className="relative inline-block text-left ">
+                                        (!row?.isSummary && !row?.isGrandTotal) && <div className="relative inline-block text-left ">
                                             <BtnDetailGeneral
                                                 handleFunc={routeToSomewhere}
                                                 row_id={''}

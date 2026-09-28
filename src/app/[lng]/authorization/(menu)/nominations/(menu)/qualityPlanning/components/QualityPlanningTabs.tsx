@@ -10,7 +10,7 @@ export function QualityPlanningTabs({
   tabIndex,
   onTabChange,
 }: QualityPlanningTabsProps) {
-  const tabs: TabType[] = ['intraday', 'daily', 'weekly'];
+  const tabs: TabType[] = ['intraday', 'all', 'daily', 'weekly'];
 
   return (
     <Tabs

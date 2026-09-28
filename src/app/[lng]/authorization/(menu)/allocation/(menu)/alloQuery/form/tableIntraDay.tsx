@@ -108,7 +108,7 @@ const TableIntraDay: React.FC<TableProps> = ({ openEditForm, openViewForm, table
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData?.map((row: any, key: any) => {
+                            {(sortedData || [])?.map((row: any, key: any) => {
                                 return (
                                     <tr
                                         key={key}

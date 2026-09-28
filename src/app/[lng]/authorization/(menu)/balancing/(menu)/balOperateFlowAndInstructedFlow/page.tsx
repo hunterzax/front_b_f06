@@ -138,16 +138,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         //     filtered_data = response?.filter((item: any) => item.execute_timestamp === maxTimestamp);
         // }
 
-        const filtered = filtered_data?.map((entry: any) => {
-            const zoneMatch = srchZone.length ? srchZone.includes(entry?.zone) : true;
+        const filtered = (filtered_data || [])?.map((entry: any) => {
+            const zoneMatch = (Array.isArray(srchZone) && srchZone.length > 0) ? srchZone.includes(entry?.zone) : true;
             const timestampMatch = srchTimeStamp ? entry?.valuesData?.timestamp === srchTimeStamp : true;
 
-            const filteredShipperData = entry.shipperData?.filter((shipperGroup: any) => {
-                const shipperNameMatch = srchShipperName.length > 0 ? srchShipperName.includes(shipperGroup?.shipperName) : true;
+            const filteredShipperData = (entry?.shipperData || []).filter((shipperGroup: any) => {
+                const shipperNameMatch = (Array.isArray(srchShipperName) && srchShipperName.length > 0) ? srchShipperName.includes(shipperGroup?.shipperName) : true;
                 return shipperNameMatch;
             }) || [];
 
-            if ((zoneMatch && timestampMatch) && filteredShipperData?.length > 0) {
+            if ((zoneMatch && timestampMatch) && (filteredShipperData?.length ?? 0) > 0) {
                 return {
                     ...entry,
                     shipperData: filteredShipperData,
@@ -245,8 +245,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             const volumeAdjustRate_mmscfdMatch_no_comma = normalize(formatNumberFourDecimalNoComma(entry?.valuesData?.volumeAdjustRate_mmscfd)).includes(queryLower);
             const volumeAdjustRate_mmscfhMatch_no_comma = normalize(formatNumberFourDecimalNoComma(entry?.valuesData?.volumeAdjustRate_mmscfh)).includes(queryLower);
 
-            const filteredShipperData = entry.shipperData?.map((shipperGroup: any) => {
-                const find_shipper = dataShipperGroup?.find((itemx: any) => itemx?.name.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim().includes(queryLower))
+            const filteredShipperData = (entry?.shipperData || [])?.map((shipperGroup: any) => {
+                const find_shipper = dataShipperGroup?.find((itemx: any) => itemx?.name?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim().includes(queryLower))
                 const shipperNameMatch = normalize(shipperGroup?.shipperName) == find_shipper?.id_name?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim();
                 // const shipperNameMatch = normalize(shipperGroup?.shipperName).includes(queryLower); 
                 const timestampMatch = normalize(shipperGroup?.timestamp).includes(queryLower);
@@ -547,7 +547,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const openEditForm = (id: any, id_main: any) => {
         setSelectedId(id);
         setFormMode('edit');
-        const filteredData = filteredDataTable.find((item: any) => item.id === id_main);
+        const filteredData = (filteredDataTable || [])?.find((item: any) => item.id === id_main);
         const filteredData2 = filteredData?.shipperData?.find((item: any) => item.id === id);
         setFormData(filteredData2);
         setFormOpen(true);
@@ -555,7 +555,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const openViewForm = (id: any, id_main: any) => {
         setFormMode('view');
-        const filteredData = filteredDataTable.find((item: any) => item.id === id_main);
+        const filteredData = (filteredDataTable || [])?.find((item: any) => item.id === id_main);
         const filteredData2 = filteredData?.shipperData?.find((item: any) => item.id === id);
         setFormData(filteredData2);
         setFormOpen(true);
@@ -578,7 +578,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const openAllFileModal = (id?: any, main_id?: any, data?: any) => {
 
-        const filteredData = filteredDataTable.find((item: any) => item.id === main_id);
+        const filteredData = (filteredDataTable || [])?.find((item: any) => item.id === main_id);
         setFormData(filteredData);
         const filteredData2 = filteredData?.shipperData?.find((item: any) => item.id === id);
         setDataFile(filteredData2)
@@ -646,7 +646,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     ];
 
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))
     );
 
     const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
@@ -698,7 +698,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             const response: any = await getService(`/master/account-manage/history?type=instructed-operation-flow-shippers&method=all&id_value=${id}`);
 
-            const valuesArray = response.map((item: any) => item.value);
+            const valuesArray = (response || [])?.map((item: any) => item.value);
 
 
             let mappings = [
@@ -708,7 +708,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 { key: "zone", title: "Zone" },
                 // { key: "review_code", title: "Review Code" },
             ];
-            let result = mappings.map(({ key, title }) => {
+            let result = (mappings || [])?.map(({ key, title }) => {
                 const value = key.split('.').reduce((acc, part) => acc && acc[part], valuesArray[0]);
                 return {
                     title,

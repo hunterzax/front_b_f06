@@ -55,7 +55,7 @@ const TableBalAdjustmentDailyImbalance = forwardRef<any, TableProps>(({ openEdit
     }, [tableData]);
 
     // เอาไว้ span column แบบ dynamic เคสเปิด ปิดไส้ใน
-    const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility[col.key]).length || 1;
+    const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility?.[col.key]).length || 1;
 
     const [openPopoverId, setOpenPopoverId] = useState(null);
     const popoverRef = useRef<HTMLDivElement>(null);
@@ -132,60 +132,60 @@ const TableBalAdjustmentDailyImbalance = forwardRef<any, TableProps>(({ openEdit
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.gas_day && (
+                                {columnVisibility?.gas_day && (
                                     <th rowSpan={2} scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, tableData)}>
                                         {`Gas Day`}
                                         {getArrowIcon("gas_day")}
                                     </th>
                                 )}
 
-                                {columnVisibility.shipper_name && (
+                                {columnVisibility?.shipper_name && (
                                     <th rowSpan={2} scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("group.name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Shipper Name`}
                                         {getArrowIcon("group.name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.zone && (
+                                {columnVisibility?.zone && (
                                     <th rowSpan={2} scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zone", sortState, setSortState, setSortedData, tableData)}>
                                         {`Zone`}
                                         {getArrowIcon("zone")}
                                     </th>
                                 )}
 
-                                {columnVisibility.adjust_imbalance && (
+                                {columnVisibility?.adjust_imbalance && (
                                     <th rowSpan={2} scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("adjust_imbalance", sortState, setSortState, setSortedData, tableData)}>
                                         {`Adjust Imbalance (MMBTU)`}
                                         {getArrowIcon("adjust_imbalance")}
                                     </th>
                                 )}
 
-                                {columnVisibility.daily_imbalance && (
+                                {columnVisibility?.daily_imbalance && (
                                     <th colSpan={getVisibleChildCount("daily_imbalance")} scope="col" className={`${table_header_style} text-center`} >
                                         {`Daily Imbalance (MMBTU)`}
                                     </th>
                                 )}
 
-                                {columnVisibility.intraday_imbalance && (
+                                {columnVisibility?.intraday_imbalance && (
                                     <th colSpan={getVisibleChildCount("intraday_imbalance")} scope="col" className={`${table_header_style} text-center`} >
                                         {`Intraday Imbalance (MMBTU)`}
                                     </th>
                                 )}
 
-                                {columnVisibility.comment && (
+                                {columnVisibility?.comment && (
                                     <th rowSpan={2} scope="col" className={`${table_header_style} text-center`}>
                                         {`Comment`}
                                     </th>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <th rowSpan={2} scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Updated by`}
                                         {getArrowIcon("update_by_account.first_name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th rowSpan={2} scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -194,28 +194,28 @@ const TableBalAdjustmentDailyImbalance = forwardRef<any, TableProps>(({ openEdit
 
                             <tr className="h-9 bg-[#00ADEF]">
 
-                                {columnVisibility.daily_initial_imbalance && (
+                                {columnVisibility?.daily_initial_imbalance && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("dailyAccIm", sortState, setSortState, setSortedData, tableData)}>
                                         {`Initial Imbalance`}
                                         {getArrowIcon("dailyAccIm")}
                                     </th>
                                 )}
 
-                                {columnVisibility.daily_final_imbalance && (
+                                {columnVisibility?.daily_final_imbalance && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("finalDailyAccIm", sortState, setSortState, setSortedData, tableData)}>
                                         {`Final Imbalance`}
                                         {getArrowIcon("finalDailyAccIm")}
                                     </th>
                                 )}
 
-                                {columnVisibility.intraday_initial_imbalance && (
+                                {columnVisibility?.intraday_initial_imbalance && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("intradayAccIm", sortState, setSortState, setSortedData, tableData)}>
                                         {`Initial Imbalance`}
                                         {getArrowIcon("intradayAccIm")}
                                     </th>
                                 )}
 
-                                {columnVisibility.intraday_final_imbalance && (
+                                {columnVisibility?.intraday_final_imbalance && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("finalIntradayAccIm", sortState, setSortState, setSortedData, tableData)}>
                                         {`Final Imbalance`}
                                         {getArrowIcon("finalIntradayAccIm")}
@@ -225,7 +225,7 @@ const TableBalAdjustmentDailyImbalance = forwardRef<any, TableProps>(({ openEdit
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData?.map((row: any, index: any) => {
+                            {(sortedData || [])?.map((row: any, index: any) => {
                                 let canEditCheck = true
 
                                 if (closeBalanceData) {
@@ -297,7 +297,7 @@ const TableBalAdjustmentDailyImbalance = forwardRef<any, TableProps>(({ openEdit
                                         {/* เพิ่ม Field Comment ในหน้า List , Edit , History https://app.clickup.com/t/86eujrg8t */}
                                         {/* ในหน้า List , History เอาไว้ข้างหน้า Column Updated by ที่เป็น icon รูป comment */}
                                         {/* ในหน้า Edit เพิ่ม field ให้สามารถใส่ comment ได้ด้วย */}
-                                        {columnVisibility.comment && (
+                                        {columnVisibility?.comment && (
                                             <td className="px-2 py-1 text-center">
                                                 <div className="inline-flex items-center justify-center relative">
 
@@ -321,7 +321,7 @@ const TableBalAdjustmentDailyImbalance = forwardRef<any, TableProps>(({ openEdit
                                             </td>
                                         )}
 
-                                        {columnVisibility.updated_by && (
+                                        {columnVisibility?.updated_by && (
                                             <td className="px-2 py-1">
                                                 <div>
                                                     <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
@@ -330,7 +330,7 @@ const TableBalAdjustmentDailyImbalance = forwardRef<any, TableProps>(({ openEdit
                                             </td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 <div className="relative inline-flex justify-center items-center w-full">
                                                     <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view && !userPermission?.f_edit ? true : false} />

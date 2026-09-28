@@ -61,55 +61,55 @@ const TableVentCommissioningOtherGasHistory: React.FC<TableProps> = ({ tableData
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-9">
 
-                        {columnVisibility.gas_day && (
+                        {columnVisibility?.gas_day && (
                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Gas Day`}
                                 {getArrowIcon("gas_day")}
                             </th>
                         )}
 
-                        {columnVisibility.shipper_name && (
+                        {columnVisibility?.shipper_name && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("group.name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Shipper Name`}
                                 {getArrowIcon("group.name")}
                             </th>
                         )}
 
-                        {columnVisibility.zone && (
+                        {columnVisibility?.zone && (
                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zone.name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Zone`}
                                 {getArrowIcon("zone.name")}
                             </th>
                         )}
 
-                        {columnVisibility.vent_gas && (
+                        {columnVisibility?.vent_gas && (
                             <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSort("vent_gas_value_mmbtud", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Vent Gas (MMBTU)`}
                                 {getArrowIcon("vent_gas_value_mmbtud")}
                             </th>
                         )}
 
-                        {columnVisibility.commissioning_gas && (
+                        {columnVisibility?.commissioning_gas && (
                             <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSort("commissioning_gas_value_mmbtud", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Commissioning Gas (MMBTU)`}
                                 {getArrowIcon("commissioning_gas_value_mmbtud")}
                             </th>
                         )}
 
-                        {columnVisibility.other_gas && (
+                        {columnVisibility?.other_gas && (
                             <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSort("other_gas_value_mmbtud", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Other Gas (MMBTU)`}
                                 {getArrowIcon("other_gas_value_mmbtud")}
                             </th>
                         )}
 
-                        {columnVisibility.comment && (
+                        {columnVisibility?.comment && (
                             <th scope="col" className={`${table_header_style} text-center`} >
                                 {`Comment`}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSortUpdateByFirstName("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -120,21 +120,21 @@ const TableVentCommissioningOtherGasHistory: React.FC<TableProps> = ({ tableData
                 </thead>
 
                 <tbody>
-                    {sortedData && sortedData?.map((row: any, index: any) => {
+                    {(sortedData || [])?.map((row: any, index: any) => {
                         return (
                             <tr
                                 key={row?.id}
                                 className={`${table_row_style}`}
                             >
-                                {columnVisibility.gas_day && (
+                                {columnVisibility?.gas_day && (
                                     <td className="px-2 py-1 text-[#464255] text-center">{row?.gas_day_text ? formatDateNoTime(row?.gas_day_text) : ''}</td>
                                 )}
 
-                                {columnVisibility.shipper_name && (
+                                {columnVisibility?.shipper_name && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.group ? row?.group?.name : ''}</td>
                                 )}
 
-                                {/* {columnVisibility.zone && (
+                                {/* {columnVisibility?.zone && (
                                     <td className="px-2 py-1 text-center align-middle">
                                         {row?.zone && (
                                             <div className="inline-flex w-[100px] items-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone?.color }}>
@@ -145,7 +145,7 @@ const TableVentCommissioningOtherGasHistory: React.FC<TableProps> = ({ tableData
                                 )} */}
 
                                 {/* History : Zone มันยังขึ้น tag สีอยู่ ขึ้นให้เหมือนกับหน้า list https://app.clickup.com/t/86eujrgeq */}
-                                {columnVisibility.zone && (
+                                {columnVisibility?.zone && (
                                     <td className="px-2 py-1 text-center align-middle">
                                         {row?.zone && (
                                             <div className="inline-flex w-[100px] items-center justify-center rounded-full p-1 text-[#464255]" >
@@ -155,19 +155,19 @@ const TableVentCommissioningOtherGasHistory: React.FC<TableProps> = ({ tableData
                                     </td>
                                 )}
 
-                                {columnVisibility.vent_gas && (
+                                {columnVisibility?.vent_gas && (
                                     <td className="px-4 py-1 text-[#464255] text-right">{row?.vent_gas_value_mmbtud ? formatNumberFourDecimal(row?.vent_gas_value_mmbtud) : ''}</td>
                                 )}
 
-                                {columnVisibility.commissioning_gas && (
+                                {columnVisibility?.commissioning_gas && (
                                     <td className="px-4 py-1 text-[#464255] text-right">{row?.commissioning_gas_value_mmbtud ? formatNumberFourDecimal(row?.commissioning_gas_value_mmbtud) : ''}</td>
                                 )}
 
-                                {columnVisibility.other_gas && (
+                                {columnVisibility?.other_gas && (
                                     <td className="px-4 py-1 text-[#464255] text-right">{row?.other_gas_value_mmbtud ? formatNumberFourDecimal(row?.other_gas_value_mmbtud) : ''}</td>
                                 )}
 
-                                {columnVisibility.comment && (
+                                {columnVisibility?.comment && (
                                     <td className="px-2 py-1 text-center">
                                         <div className="inline-flex items-center justify-center relative">
                                             {/* <button
@@ -201,7 +201,7 @@ const TableVentCommissioningOtherGasHistory: React.FC<TableProps> = ({ tableData
                                     </td>
                                 )}
 
-                                {/* {columnVisibility.updated_by && (
+                                {/* {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div>
                                             <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
@@ -210,7 +210,7 @@ const TableVentCommissioningOtherGasHistory: React.FC<TableProps> = ({ tableData
                                     </td>
                                 )} */}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div>
                                             {/* History Updated by ให้ขึ้นชื่อคนสร้างตั้งแต่ Row แรกเลย */}

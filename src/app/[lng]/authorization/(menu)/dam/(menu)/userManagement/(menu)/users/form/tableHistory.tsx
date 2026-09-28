@@ -74,7 +74,7 @@ const TableUserHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                 <table className="table-auto min-w-full text-sm rtl:text-right text-gray-500 whitespace-nowrap">
                     <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                         <tr className="h-9">
-                            {columnVisibility.login_mode && (
+                            {columnVisibility?.login_mode && (
                                 // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("account_manage", sortState, setSortState, setSortedData, tableData)}>
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("login_mode_.name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`Login Mode`}
@@ -82,7 +82,7 @@ const TableUserHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                 </th>
                             )}
 
-                            {columnVisibility.status && (
+                            {columnVisibility?.status && (
                                 <th
                                     scope="col"
                                     className={`${table_sort_header_style}`}
@@ -102,14 +102,14 @@ const TableUserHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                 </th>
                             )}
 
-                            {columnVisibility.id_name && (
+                            {columnVisibility?.id_name && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("user_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`User ID`}
                                     {getArrowIcon("user_id")}
                                 </th>
                             )}
 
-                            {columnVisibility.company_name && (
+                            {columnVisibility?.company_name && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("group_name_", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {/* {`Company/Group Name`} */}
                                     {`Group Name`}
@@ -117,90 +117,90 @@ const TableUserHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                 </th>
                             )}
 
-                            {columnVisibility.user_type && (
+                            {columnVisibility?.user_type && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("user_type_.name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`User Type`}
                                     {getArrowIcon("user_type_.name")}
                                 </th>
                             )}
 
-                            {columnVisibility.division_name && (
+                            {columnVisibility?.division_name && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("division_.division_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`Division Name`}
                                     {getArrowIcon("division_.division_name")}
                                 </th>
                             )}
 
-                            {columnVisibility.first_name && (
+                            {columnVisibility?.first_name && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`First Name`}
                                     {getArrowIcon("first_name")}
                                 </th>
                             )}
 
-                            {columnVisibility.last_name && (
+                            {columnVisibility?.last_name && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("last_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`Last Name`}
                                     {getArrowIcon("last_name")}
                                 </th>
                             )}
 
-                            {columnVisibility.type && (
+                            {columnVisibility?.type && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("user_type_name_", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`Type`}
                                     {getArrowIcon("user_type_name_")}
                                 </th>
                             )}
 
-                            {columnVisibility.role_default && (
+                            {columnVisibility?.role_default && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("role_name_", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`Role`}
                                     {getArrowIcon("role_name_")}
                                 </th>
                             )}
 
-                            {columnVisibility.telephone && (
+                            {columnVisibility?.telephone && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("telephone", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`Telephone`}
                                     {getArrowIcon("telephone")}
                                 </th>
                             )}
 
-                            {columnVisibility.email && (
+                            {columnVisibility?.email && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("email", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`Email`}
                                     {getArrowIcon("email")}
                                 </th>
                             )}
 
-                            {columnVisibility.start_date && (
+                            {columnVisibility?.start_date && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`Start Date`}
                                     {getArrowIcon("start_date")}
                                 </th>
                             )}
 
-                            {columnVisibility.end_date && (
+                            {columnVisibility?.end_date && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`End Date`}
                                     {getArrowIcon("end_date")}
                                 </th>
                             )}
                             {/* 
-                            {columnVisibility.reason && (
+                            {columnVisibility?.reason && (
                                 <th scope="col" className={`${table_header_style}`} >
                                     {`Reason`}
                                 </th>
                             )} */}
 
-                            {/* {columnVisibility.last_login && (
+                            {/* {columnVisibility?.last_login && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("login_logs", sortState, setSortState, setSortedData, tableDataOrigin)}>
                                     {`Lasted Login`}
                                     {getArrowIcon("login_logs")}
                                 </th>
                             )} */}
 
-                            {columnVisibility.update_by && (
+                            {columnVisibility?.update_by && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableDataOrigin))}>
                                     {`Updated by`}
                                     {getArrowIcon("update_by_account.first_name")}
@@ -212,19 +212,19 @@ const TableUserHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                     </thead>
 
                     <tbody>
-                        {sortedData && sortedData?.map((row: any, index: any) => {
+                        {(sortedData || [])?.map((row: any, index: any) => {
 
                             return (
                                 <tr
                                     key={row?.id}
                                     className={`border-b ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} h-12 `}
                                 >
-                                    {columnVisibility.login_mode && (
+                                    {columnVisibility?.login_mode && (
                                         // <td className="px-2 py-1 justify-center ">{row?.account_manage[0]?.mode_account && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.account_manage[0]?.mode_account.color }}>{row?.account_manage[0]?.mode_account.name} Mode</div>}</td>
                                         <td className="px-2 py-1 justify-center ">{row?.login_mode_ && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.login_mode_.color }}>{row?.login_mode_.name} Mode</div>}</td>
                                     )}
 
-                                    {columnVisibility.status && (
+                                    {columnVisibility?.status && (
                                         <td className="px-2 py-1 ">
                                             {/* <div>
                                                     <label className="relative inline-block w-10 h-6 ">
@@ -247,19 +247,19 @@ const TableUserHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                     )}
 
                                     {/* (2 = TSO, 3 = Shipper, 4 = Other) */}
-                                    {columnVisibility.id_name && (
+                                    {columnVisibility?.id_name && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.user_id}</td>
                                     )}
 
-                                    {/* {columnVisibility.company_name && (
+                                    {/* {columnVisibility?.company_name && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.account_manage[0]?.group?.name}</td>
                                     )} */}
 
-                                    {columnVisibility.company_name && (
+                                    {columnVisibility?.company_name && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.group_name_}</td>
                                     )}
 
-                                    {columnVisibility.user_type && (
+                                    {columnVisibility?.user_type && (
                                         <td className="px-2 py-1 justify-center">
                                             {/* {
                                                 row?.account_manage[row?.account_manage?.length - 1]?.user_type &&
@@ -272,21 +272,21 @@ const TableUserHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                         </td>
                                     )}
 
-                                    {columnVisibility.division_name && (
+                                    {columnVisibility?.division_name && (
                                         // <td className="px-2 py-1 text-[#464255]">{row?.account_manage[row?.account_manage?.length - 1]?.division?.division_name}</td>
                                         <td className="px-2 py-1 text-[#464255]">{row?.division_ ? row?.division_?.division_name : ''}</td>
                                     )}
 
-                                    {columnVisibility.first_name && (
+                                    {columnVisibility?.first_name && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.first_name}</td>
                                     )}
 
-                                    {columnVisibility.last_name && (
+                                    {columnVisibility?.last_name && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.last_name}</td>
                                     )}
 
                                     {/* บอกว่า user มาจากไหน PTT, TPA website, Manual */}
-                                    {columnVisibility.type && (
+                                    {columnVisibility?.type && (
                                         <td className="px-2 py-1 justify-center ">
                                             {
                                                 <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: String(row?.type_account?.color) }}>{row?.type_account?.name}</div>
@@ -294,16 +294,16 @@ const TableUserHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                         </td>
                                     )}
 
-                                    {columnVisibility.role_default && (
+                                    {columnVisibility?.role_default && (
                                         // <td className="px-2 py-1 text-[#464255]">{row?.account_manage[0]?.account_role[0]?.role?.name}</td>
                                         <td className="px-2 py-1 text-[#464255]">{row?.role_name_}</td>
                                     )}
 
-                                    {columnVisibility.telephone && (
+                                    {columnVisibility?.telephone && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.telephone ? maskLastFiveDigits(row?.telephone) : ''}</td>
                                     )}
 
-                                    {columnVisibility.email && (
+                                    {columnVisibility?.email && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.email ? anonymizeEmail(row?.email) : ''}</td>
                                     )}
 
@@ -312,17 +312,17 @@ const TableUserHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                         start_date: "2025-02-21T00:00:00.000Z"
                                     */}
 
-                                    {columnVisibility.start_date && (
+                                    {columnVisibility?.start_date && (
                                         // <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateTimeSec(row?.start_date) : ''}</td>
                                         <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTimeNoPlusSeven(row?.start_date) : ''}</td>
                                     )}
 
-                                    {columnVisibility.end_date && (
+                                    {columnVisibility?.end_date && (
                                         // <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateTimeSec(row?.end_date) : ''}</td>
                                         <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTimeNoPlusSeven(row?.end_date) : ''}</td>
                                     )}
 
-                                    {/* {columnVisibility.reason && (
+                                    {/* {columnVisibility?.reason && (
                                     <td className="px-2 py-1 text-center">
                                         <div className="inline-flex items-center justify-center relative">
                                             <button
@@ -340,11 +340,11 @@ const TableUserHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                     </td>
                                 )} */}
 
-                                    {/* {columnVisibility.last_login && (
+                                    {/* {columnVisibility?.last_login && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.login_logs?.length > 0 ? formatDate(row?.login_logs[0]?.create_date) : ''}</td>
                                 )} */}
 
-                                    {columnVisibility.update_by && (
+                                    {columnVisibility?.update_by && (
                                         <td className="px-2 py-1">
                                             {/* <div>
                                                 <span className="text-[#464255]">{row?.updated_by_account?.first_name} {row?.updated_by_account?.last_name}</span>

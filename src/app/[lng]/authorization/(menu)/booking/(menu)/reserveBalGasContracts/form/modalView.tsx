@@ -67,7 +67,7 @@ const ModalView: React.FC<FormExampleProps> = ({
     const [dataInTable, setDataInTable] = useState<any>([]);
 
     useEffect(() => {
-        setColumnVisibility(Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible])))
+        setColumnVisibility(Object.fromEntries((initialColumns || [])?.map((column: any) => [column?.key, column?.visible])))
 
         if (mode === "edit" || mode === "view") {
             setDataInTable([])
@@ -82,7 +82,7 @@ const ModalView: React.FC<FormExampleProps> = ({
 
             setDataInTable((prev: any) => [
                 ...prev,
-                ...(Array.isArray(data?.reserve_balancing_gas_contract_detail) ? data?.reserve_balancing_gas_contract_detail.map((item: any) => ({
+                ...(Array.isArray(data?.reserve_balancing_gas_contract_detail) ? data.reserve_balancing_gas_contract_detail.map((item: any) => ({
                     zone: item?.zone,
                     entry_exit: item?.entry_exit,
                     area: item?.area,
@@ -95,7 +95,7 @@ const ModalView: React.FC<FormExampleProps> = ({
 
             setSortedData((prev: any) => [
                 ...prev,
-                ...(Array.isArray(data?.reserve_balancing_gas_contract_detail) ? data?.reserve_balancing_gas_contract_detail.map((item: any) => ({
+                ...(Array.isArray(data?.reserve_balancing_gas_contract_detail) ? data.reserve_balancing_gas_contract_detail.map((item: any) => ({
                     zone: item?.zone,
                     entry_exit: item?.entry_exit,
                     area: item?.area,
@@ -145,7 +145,7 @@ const ModalView: React.FC<FormExampleProps> = ({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const openToggle = Boolean(anchorEl);
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))
     );
 
     const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
@@ -229,7 +229,7 @@ const ModalView: React.FC<FormExampleProps> = ({
                                             <table className="w-full max-h-[200px] text-sm text-center justify-center rtl:text-right text-gray-500 ">
                                                 <thead className="text-sm rounded-tl-[10px] rounded-tr-[10px] text-[#ffffff] h-[35px] bg-[#1473A1] sticky z-1">
                                                     <tr>
-                                                        {columnVisibility.zone && (
+                                                        {columnVisibility?.zone && (
                                                             <th
                                                                 // className="rounded-tl-[10px] text-center"
                                                                 className={`${table_sort_header_style} !rounded-tl-[10px] `}
@@ -240,7 +240,7 @@ const ModalView: React.FC<FormExampleProps> = ({
                                                             </th>
                                                         )}
 
-                                                        {columnVisibility.area && (
+                                                        {columnVisibility?.area && (
                                                             <th
                                                                 // className="text-left"
                                                                 className={`${table_sort_header_style} `}
@@ -251,7 +251,7 @@ const ModalView: React.FC<FormExampleProps> = ({
                                                             </th>
                                                         )}
 
-                                                        {columnVisibility.entry_exit && (
+                                                        {columnVisibility?.entry_exit && (
                                                             <th
                                                                 // className="text-left"
                                                                 className={`${table_sort_header_style} `}
@@ -262,7 +262,7 @@ const ModalView: React.FC<FormExampleProps> = ({
                                                             </th>
                                                         )}
 
-                                                        {columnVisibility.nomination_point && (
+                                                        {columnVisibility?.nomination_point && (
                                                             <th
                                                                 // className="text-left"
                                                                 className={`${table_sort_header_style} `}
@@ -273,7 +273,7 @@ const ModalView: React.FC<FormExampleProps> = ({
                                                             </th>
                                                         )}
 
-                                                        {columnVisibility.start_date && (
+                                                        {columnVisibility?.start_date && (
                                                             <th
                                                                 // className="text-left"
                                                                 className={`${table_sort_header_style} `}
@@ -284,7 +284,7 @@ const ModalView: React.FC<FormExampleProps> = ({
                                                             </th>
                                                         )}
 
-                                                        {columnVisibility.end_date && (
+                                                        {columnVisibility?.end_date && (
                                                             <th
                                                                 // className="text-left"
                                                                 className={`${table_sort_header_style} `}
@@ -295,7 +295,7 @@ const ModalView: React.FC<FormExampleProps> = ({
                                                             </th>
                                                         )}
 
-                                                        {columnVisibility.daily_reserve_cap && (
+                                                        {columnVisibility?.daily_reserve_cap && (
                                                             <th
                                                                 // className="!rounded-tr-[10px] w-[20%] text-left"
                                                                 className={`${table_sort_header_style} !rounded-tr-[10px] w-[20%] text-left`}
@@ -309,17 +309,17 @@ const ModalView: React.FC<FormExampleProps> = ({
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {/* {dataInTable && dataInTable?.map((row: any, index: any) => ( */}
-                                                    {sortedData && sortedData?.map((row: any, index: any) => (
+                                                    {/* {(dataInTable || [])?.map((row: any, index: any) => ( */}
+                                                    {(sortedData || [])?.map((row: any, index: any) => (
                                                         <tr
-                                                            key={row.id}
+                                                            key={row?.id ?? index}
                                                             className={`${table_row_style}`}
                                                         >
-                                                            {columnVisibility.zone && (
-                                                                <td className="px-2 py-1 items-center text-center justify-center ">{row?.zone && <div className="flex w-[100px] items-center text-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone?.color }}>{`${row?.zone?.name}`}</div>}</td>
+                                                            {columnVisibility?.zone && (
+                                                                <td className="px-2 py-1 items-center text-center justify-center ">{row?.zone && <div className="flex w-[100px] items-center text-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone?.color }}>{`${row?.zone?.name ?? ''}`}</div>}</td>
                                                             )}
 
-                                                            {columnVisibility.area && (
+                                                            {columnVisibility?.area && (
                                                                 <td className="px-2 py-1 justify-center ">
                                                                     {
                                                                         row?.area?.entry_exit_id == 2 ?
@@ -340,23 +340,23 @@ const ModalView: React.FC<FormExampleProps> = ({
                                                                 </td>
                                                             )}
 
-                                                            {columnVisibility.entry_exit && (
-                                                                <td className="px-2 py-1  justify-center ">{row?.entry_exit && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color }}>{`${row?.entry_exit?.name}`}</div>}</td>
+                                                            {columnVisibility?.entry_exit && (
+                                                                <td className="px-2 py-1  justify-center ">{row?.entry_exit && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color }}>{`${row?.entry_exit?.name ?? ''}`}</div>}</td>
                                                             )}
 
-                                                            {columnVisibility.nomination_point && (
+                                                            {columnVisibility?.nomination_point && (
                                                                 <td className="px-2 py-1 text-[#464255]">{row?.nom_point && row?.nom_point?.nomination_point}</td>
                                                             )}
 
-                                                            {columnVisibility.start_date && (
+                                                            {columnVisibility?.start_date && (
                                                                 <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                                             )}
 
-                                                            {columnVisibility.end_date && (
+                                                            {columnVisibility?.end_date && (
                                                                 <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                                             )}
 
-                                                            {columnVisibility.daily_reserve_cap && (
+                                                            {columnVisibility?.daily_reserve_cap && (
                                                                 <td className="px-2 py-1 text-[#464255] text-right">{row?.daily_reverse_cap ? formatNumberThreeDecimal(row?.daily_reverse_cap) : ''}</td>
                                                             )}
                                                         </tr>

@@ -45,42 +45,42 @@ const TableRoleHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
             <table className="min-w-full text-sm text-left rtl:text-right text-gray-500 whitespace-nowrap ">
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-9">
-                        {columnVisibility.user_type && (
+                        {columnVisibility?.user_type && (
                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("user_type_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`User Type`}
                                 {getArrowIcon("user_type_id")}
                             </th>
                         )}
 
-                        {columnVisibility.role_name && (
+                        {columnVisibility?.role_name && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Role Name`}
                                 {getArrowIcon("name")}
                             </th>
                         )}
 
-                        {columnVisibility.start_date && (
+                        {columnVisibility?.start_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Start Date`}
                                 {getArrowIcon("start_date")}
                             </th>
                         )}
 
-                        {columnVisibility.end_date && (
+                        {columnVisibility?.end_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`End Date`}
                                 {getArrowIcon("end_date")}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
                             </th>
                         )}
 
-                        {columnVisibility.update_permission_by_account && (
+                        {columnVisibility?.update_permission_by_account && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_permission_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Updated Role Management`}
                                 {getArrowIcon("update_permission_by_account.first_name")}
@@ -96,7 +96,7 @@ const TableRoleHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                             key={row?.id}
                             className={`${table_row_style}`}
                         >
-                            {columnVisibility.user_type && (
+                            {columnVisibility?.user_type && (
                                 <td className="px-2 py-1 justify-center">
                                     {
                                         row?.user_type &&
@@ -107,19 +107,19 @@ const TableRoleHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                 </td>
                             )}
 
-                            {columnVisibility.role_name && (
+                            {columnVisibility?.role_name && (
                                 <td className="px-2 py-1 text-[#464255]">{row?.name}</td>
                             )}
 
-                            {columnVisibility.start_date && (
+                            {columnVisibility?.start_date && (
                                 <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                             )}
 
-                            {columnVisibility.end_date && (
+                            {columnVisibility?.end_date && (
                                 <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                             )}
 
-                            {columnVisibility.updated_by && (
+                            {columnVisibility?.updated_by && (
                                 <td className="px-2 py-1">
                                     <div>
                                         <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
@@ -128,7 +128,7 @@ const TableRoleHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                 </td>
                             )}
 
-                            {columnVisibility.update_permission_by_account && (
+                            {columnVisibility?.update_permission_by_account && (
                                 <td className="px-2 py-1">
                                     <div>
                                         <span className="text-[#464255]">{row?.update_permission_by_account?.first_name} {row?.update_permission_by_account?.last_name}</span>

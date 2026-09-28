@@ -61,60 +61,60 @@ export const ContractRowWhite = ({
     const item = contract?.values?.find((item: any) => item?.tag === tag);
    
     // return item ? formatNumberFourDecimal(item.value) : '';
-    return item !== null && item !== undefined ? formatNumberFourDecimalNom(item.value) : '';
+    return item !== null && item !== undefined && item?.value !== null && item?.value !== undefined ? formatNumberFourDecimalNom(item.value) : '';
   };
 
   // Helper function to get formatted absolute value by tag
   const getFormattedAbsValueByTag = (tag: string) => {
     const item = contract?.values?.find((item: any) => item?.tag === tag);
     // return item ? formatNumberFourDecimal(Math.abs(item.value)) : '';
-    return item !== null && item !== undefined ? formatNumberFourDecimalNom(Math.abs(item.value)) : '';
+    return item !== null && item !== undefined && item?.value !== null && item?.value !== undefined ? formatNumberFourDecimalNom(Math.abs(item.value)) : '';
   };
 
-  let find_shipper_name = shipperGroupData?.find((item: any) => {
+  let find_shipper_name = (shipperGroupData || [])?.find((item: any) => {
     let filtered = item?.id_name == shipperItem?.shipper
     return filtered
   })
 
   return (
     <tr
-      key={`contract-${row.request_number}-${cIdx}-${index}`}
+      key={`contract-${row?.request_number ?? ''}-${cIdx ?? ''}-${index}`}
       className={table_row_style}
     >
       {/* สามารถ Freeze column ถึง column ไหนได้ ซึ่งยังอยากให้เห็นข้อมูล ตรง  row total ครบอยู่ https://app.clickup.com/t/86eujrg5x */}
-      {columnVisibility.gas_day && (
-        <td className="px-2 py-1 text-[#5A4600] bg-[#ffffff] text-center sticky left-0 z-[2]" colSpan={1}>
-          {row?.gas_day ? toDayjs(row?.gas_day).format("DD/MM/YYYY") : ""}
+      {columnVisibility?.gas_day && (
+        <td className="w-[260px] text-[#5A4600] bg-[#ffffff] text-center sticky left-0 z-[2]" colSpan={1}>
+          {row?.gas_day ? (toDayjs(row?.gas_day)?.isValid() ? toDayjs(row?.gas_day)?.format("DD/MM/YYYY") : "") : ""}
         </td>
       )}
 
       {/* UNDER Summary Pane */}
-      {columnVisibility.summary_pane && (<>
+      {columnVisibility?.summary_pane && (<>
 
-        {columnVisibility.shipper_name && (
-          <td className={`px-2 py-1 text-[#5A4600] bg-[#ffffff] text-center sticky left-[120px] z-[2]  ${!columnVisibility.gas_day && '!left-[0px]'}`} colSpan={1}>
+        {columnVisibility?.shipper_name && (
+          <td className={`w-[260px] text-[#5A4600] bg-[#ffffff] text-center sticky left-[260px] z-[2]  ${!columnVisibility?.gas_day && '!left-[0px]'}`} colSpan={1}>
             {/* {shipperItem?.shipper || ""} */}
-            <div className="w-[200px]">{find_shipper_name ? find_shipper_name?.name : shipperItem?.shipper}</div>
+            <div className="">{find_shipper_name ? find_shipper_name?.name : shipperItem?.shipper}</div>
           </td>
         )}
 
-        {columnVisibility.contract_code && (
+        {columnVisibility?.contract_code && (
           <td
-            className={`px-2 py-1 text-[#5A4600] bg-[#ffffff] text-center sticky z-[2]
-              ${(columnVisibility?.gas_day && !columnVisibility.shipper_name) ? 'left-[120px]' // ถ้าไม่ปิด gas_day แต่ปิด shipper_name
-                : (!columnVisibility?.gas_day && columnVisibility.shipper_name) ? 'left-[216px]' // ถ้าปิด gas_day แต่ไม่ปิด shipper_name
-                  : (!columnVisibility?.gas_day && !columnVisibility.shipper_name) ? 'left-0' // ถ้าปิดทั้งคู่
-                    : 'left-[352px]' // default
+            className={`w-[260px] text-[#5A4600] bg-[#ffffff] text-center sticky z-[2]
+              ${(columnVisibility?.gas_day && !columnVisibility?.shipper_name) ? 'left-[260px]' // ถ้าไม่ปิด gas_day แต่ปิด shipper_name
+                : (!columnVisibility?.gas_day && columnVisibility?.shipper_name) ? 'left-[260px]' // ถ้าปิด gas_day แต่ไม่ปิด shipper_name
+                  : (!columnVisibility?.gas_day && !columnVisibility?.shipper_name) ? 'left-0' // ถ้าปิดทั้งคู่
+                    : 'left-[520px]' // default
               }
             `}
             colSpan={1}
           >
-            <div className="w-[150px]">{contract?.contract || ""}</div>
+            <div className="">{contract?.contract || ""}</div>
           </td>
         )}
 
         {/* "total_entry_east" */}
-        {columnVisibility.east_total_entry_mmbtud && (
+        {columnVisibility?.east_total_entry_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[0]?.value) : ''} */}
             {getFormattedValueByTag('total_entry_east')}
@@ -122,7 +122,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "total_entry_west" */}
-        {columnVisibility.west_total_entry_mmbtud && (
+        {columnVisibility?.west_total_entry_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[1]?.value) : ''} */}
             {getFormattedValueByTag('total_entry_west')}
@@ -130,7 +130,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "total_entry_east-west" */}
-        {columnVisibility.east_west_total_entry_mmbtud && (
+        {columnVisibility?.east_west_total_entry_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[2]?.value) : ''} */}
             {getFormattedValueByTag('total_entry_east-west')}
@@ -138,7 +138,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "total_exit_east" */}
-        {columnVisibility.east_total_exit_mmbtud && (
+        {columnVisibility?.east_total_exit_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[3]?.value) : ''} */}
             {getFormattedValueByTag('total_exit_east')}
@@ -146,7 +146,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "total_exit_west" */}
-        {columnVisibility.west_total_exit_mmbtud && (
+        {columnVisibility?.west_total_exit_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[4]?.value) : ''} */}
             {getFormattedValueByTag('total_exit_west')}
@@ -154,7 +154,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "total_exit_east-west" */}
-        {columnVisibility.east_west_total_exit_mmbtud && (
+        {columnVisibility?.east_west_total_exit_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[5]?.value) : ''} */}
             {getFormattedValueByTag('total_exit_east-west')}
@@ -162,7 +162,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "imbZone_east" */}
-        {columnVisibility.east_imbalance_zone_mmbtud && (
+        {columnVisibility?.east_imbalance_zone_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[63]?.value) : ''} */}
             {getFormattedValueByTag('imbZone_east')}
@@ -170,7 +170,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "imbZone_west" */}
-        {columnVisibility.west_imbalance_zone_mmbtud && (
+        {columnVisibility?.west_imbalance_zone_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[64]?.value) : ''} */}
             {getFormattedValueByTag('imbZone_west')}
@@ -178,7 +178,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "imbZone_total" */}
-        {columnVisibility.total_imbalance_zone_mmbtud && (
+        {columnVisibility?.total_imbalance_zone_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[65]?.value) : ''} */}
             {getFormattedValueByTag('imbZone_total')}
@@ -186,7 +186,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "InstructedFlow_east" */}
-        {columnVisibility.east_instructed_flow_mmbtud && (
+        {columnVisibility?.east_instructed_flow_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[32]?.value) : ''} */}
             {getFormattedValueByTag('instructedFlow_east')}
@@ -194,7 +194,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "InstructedFlow_west" */}
-        {columnVisibility.west_instructed_flow_mmbtud && (
+        {columnVisibility?.west_instructed_flow_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[33]?.value) : ''} */}
             {getFormattedValueByTag('instructedFlow_west')}
@@ -202,7 +202,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* ******************** "Instructed Flow EAST-WEST" ******************** */}
-        {columnVisibility.east_west_instructed_flow_mmbtud && (
+        {columnVisibility?.east_west_instructed_flow_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {'no_data'} */}
             {getFormattedValueByTag('instructedFlow_east-west')}
@@ -210,7 +210,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "shrinkage_east" */}
-        {columnVisibility.east_shrinkage_volume_mmbtud && (
+        {columnVisibility?.east_shrinkage_volume_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[6]?.value) : ''} */}
             {getFormattedValueByTag('shrinkage_east')}
@@ -218,7 +218,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "shrinkage_west" */}
-        {columnVisibility.west_shrinkage_volume_mmbtud && (
+        {columnVisibility?.west_shrinkage_volume_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[7]?.value) : ''} */}
             {getFormattedValueByTag('shrinkage_west')}
@@ -226,7 +226,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "park_east" */}
-        {columnVisibility.east_park_mmbtud && (
+        {columnVisibility?.east_park_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[12]?.value) : ''} */}
             {getFormattedValueByTag('park_east')}
@@ -234,7 +234,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "park_west" */}
-        {columnVisibility.west_park_mmbtud && (
+        {columnVisibility?.west_park_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[13]?.value) : ''} */}
             {getFormattedValueByTag('park_west')}
@@ -242,7 +242,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "Unpark_east" */}
-        {columnVisibility.east_unpark_mmbtud && (
+        {columnVisibility?.east_unpark_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[15]?.value) : ''} */}
             {getFormattedValueByTag('Unpark_east')}
@@ -250,7 +250,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "Unpark_west" */}
-        {columnVisibility.west_unpark_mmbtud && (
+        {columnVisibility?.west_unpark_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[16]?.value) : ''} */}
             {getFormattedValueByTag('Unpark_west')}
@@ -258,7 +258,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "SodPark_east" */}
-        {columnVisibility.east_sod_park_mmbtud && (
+        {columnVisibility?.east_sod_park_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[20]?.value) : ''} */}
             {getFormattedValueByTag('SodPark_east')}
@@ -266,7 +266,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "SodPark_west" */}
-        {columnVisibility.west_sod_park_mmbtud && (
+        {columnVisibility?.west_sod_park_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[21]?.value) : ''} */}
             {getFormattedValueByTag('SodPark_west')}
@@ -274,7 +274,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "EodPark_east" */}
-        {columnVisibility.east_eod_park_mmbtud && (
+        {columnVisibility?.east_eod_park_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[23]?.value) : ''} */}
             {getFormattedValueByTag('EodPark_east')}
@@ -282,7 +282,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "EodPark_west" */}
-        {columnVisibility.west_eod_park_mmbtud && (
+        {columnVisibility?.west_eod_park_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[24]?.value) : ''} */}
             {getFormattedValueByTag('EodPark_west')}
@@ -290,7 +290,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "minInventoryChange_east" */}
-        {columnVisibility.east_min_inventory_change_mmbtud && (
+        {columnVisibility?.east_min_inventory_change_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[9]?.value) : ''} */}
             {getFormattedValueByTag('minInventoryChange_east')}
@@ -298,7 +298,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "minInventoryChange_west" */}
-        {columnVisibility.west_min_inventory_change_mmbtud && (
+        {columnVisibility?.west_min_inventory_change_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[10]?.value) : ''} */}
             {getFormattedValueByTag('minInventoryChange_west')}
@@ -306,7 +306,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "reserveBal_east" */}
-        {columnVisibility.east_reserve_bal_mmbtud && (
+        {columnVisibility?.east_reserve_bal_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[18]?.value) : ''} */}
             {getFormattedValueByTag('reserveBal_east')}
@@ -314,7 +314,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "reserveBal_west" */}
-        {columnVisibility.west_reserve_bal_mmbtud && (
+        {columnVisibility?.west_reserve_bal_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[19]?.value) : ''} */}
             {getFormattedValueByTag('reserveBal_west')}
@@ -322,7 +322,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "adjustDailyImb_east" */}
-        {columnVisibility.east_adjust_imbalance_mmbtud && (
+        {columnVisibility?.east_adjust_imbalance_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[66]?.value) : ''} */}
             {getFormattedValueByTag('adjustDailyImb_east')}
@@ -330,7 +330,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "adjustDailyImb_west" */}
-        {columnVisibility.west_adjust_imbalance_mmbtud && (
+        {columnVisibility?.west_adjust_imbalance_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[67]?.value) : ''} */}
             {getFormattedValueByTag('adjustDailyImb_west')}
@@ -338,7 +338,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "ventGas_east" */}
-        {columnVisibility.east_vent_gas && (
+        {columnVisibility?.east_vent_gas && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[26]?.value) : ''} */}
             {getFormattedValueByTag('ventGas_east')}
@@ -346,7 +346,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "ventGas_west" */}
-        {columnVisibility.west_vent_gas && (
+        {columnVisibility?.west_vent_gas && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[27]?.value) : ''} */}
             {getFormattedValueByTag('ventGas_west')}
@@ -354,7 +354,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "commissioningGas_east" */}
-        {columnVisibility.east_commissioning_gas && (
+        {columnVisibility?.east_commissioning_gas && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[28]?.value) : ''} */}
             {getFormattedValueByTag('commissioningGas_east')}
@@ -362,7 +362,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "commissioningGas_west" */}
-        {columnVisibility.west_commissioning_gas && (
+        {columnVisibility?.west_commissioning_gas && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[29]?.value) : ''} */}
             {getFormattedValueByTag('commissioningGas_west')}
@@ -370,7 +370,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "otherGas_east" */}
-        {columnVisibility.east_other_gas && (
+        {columnVisibility?.east_other_gas && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[30]?.value) : ''} */}
             {getFormattedValueByTag('otherGas_east')}
@@ -378,7 +378,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "otherGas_west" */}
-        {columnVisibility.west_other_gas && (
+        {columnVisibility?.west_other_gas && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[31]?.value) : ''} */}
             {getFormattedValueByTag('otherGas_west')}
@@ -386,7 +386,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "dailyImb_east" */}
-        {columnVisibility.east_daily_imb_mmbtud && (
+        {columnVisibility?.east_daily_imb_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[68]?.value) : ''} */}
             {getFormattedValueByTag('dailyImb_east')}
@@ -394,7 +394,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "dailyImb_west" */}
-        {columnVisibility.west_daily_imb_mmbtud && (
+        {columnVisibility?.west_daily_imb_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[69]?.value) : ''} */}
             {getFormattedValueByTag('dailyImb_west')}
@@ -402,7 +402,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "aip" */}
-        {columnVisibility.total_aip_mmbtud && (
+        {columnVisibility?.total_aip_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[72]?.value) : ''} */}
             {getFormattedValueByTag('aip')}
@@ -410,7 +410,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "AIN (MMBTU/D)" */}
-        {columnVisibility.total_ain_mmbtud && (
+        {columnVisibility?.total_ain_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {'no_data'} */}
             {getFormattedValueByTag('ain')}
@@ -418,7 +418,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "% IMB" */}
-        {columnVisibility.total_percentage_imb && (
+        {columnVisibility?.total_percentage_imb && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {'no_data'} */}
             {getFormattedValueByTag('absimb')}
@@ -426,7 +426,7 @@ export const ContractRowWhite = ({
         )}
 
         {/* "absimb" */}
-        {columnVisibility.total_percentage_abslmb && (
+        {columnVisibility?.total_percentage_abslmb && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
             {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[73]?.value) : ''} */}
             {getFormattedAbsValueByTag('absimb')}
@@ -434,66 +434,74 @@ export const ContractRowWhite = ({
         )}
 
         {/* "accImbMonth_east" */}
-        {columnVisibility.east_acc_imb_month_mmbtud && (
+        {columnVisibility?.east_acc_imb_month_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
-            {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[77]?.value) : ''} */}
-            {getFormattedValueByTag('accImbMonth_east')}
+            {/* {getFormattedValueByTag('accImbMonth_east')}  */}
+            {/* https://app.clickup.com/t/9018502823/86ewwaxq3 */}
+            {""}
           </td>
         )}
 
         {/* "accImbMonth_west" */}
-        {columnVisibility.west_acc_imb_month_mmbtud && (
+        {columnVisibility?.west_acc_imb_month_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
-            {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[78]?.value) : ''} */}
-            {getFormattedValueByTag('accImbMonth_west')}
+            {/* {getFormattedValueByTag('accImbMonth_west')} */}
+            {/* https://app.clickup.com/t/9018502823/86ewwaxq3 */}
+            {""}
           </td>
         )}
 
         {/* "accImb_east" */}
-        {columnVisibility.east_acc_imb_mmbtud && (
+        {columnVisibility?.east_acc_imb_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
-            {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[81]?.value) : ''} */}
-            {getFormattedValueByTag('accImb_east')}
+            {/* {getFormattedValueByTag('accImb_east')} */}
+            {/* https://app.clickup.com/t/9018502823/86ewwaxq3 */}
+            {""}
           </td>
         )}
 
         {/* "accImb_west" */}
-        {columnVisibility.west_acc_imb_mmbtud && (
+        {columnVisibility?.west_acc_imb_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
-            {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[82]?.value) : ''} */}
-            {getFormattedValueByTag('accImb_west')}
+            {/* {getFormattedValueByTag('accImb_west')} */}
+            {/* https://app.clickup.com/t/9018502823/86ewwaxq3 */}
+            {""}
           </td>
         )}
 
         {/* "accImbInv_east" */}
-        {columnVisibility.east_acc_imb_inv_mmbtud && (
+        {columnVisibility?.east_acc_imb_inv_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
-            {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[81]?.value) : ''} */}
-            {getFormattedValueByTag('accImbInv_east')}
+            {/* {getFormattedValueByTag('accImbInv_east')} */}
+            {/* https://app.clickup.com/t/9018502823/86ewwaxq3 */}
+            {""}
           </td>
         )}
 
         {/* "accImbInv_west" */}
-        {columnVisibility.west_acc_imb_inv_mmbtud && (
+        {columnVisibility?.west_acc_imb_inv_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
-            {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[82]?.value) : ''} */}
-            {getFormattedValueByTag('accImbInv_west')}
+            {/* {getFormattedValueByTag('accImbInv_west')} */}
+            {/* https://app.clickup.com/t/9018502823/86ewwaxq3 */}
+            {""}
           </td>
         )}
 
         {/* "minInventory_east" */}
-        {columnVisibility.east_min_inventory_mmbtud && (
+        {columnVisibility?.east_min_inventory_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
-            {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[74]?.value) : ''} */}
-            {getFormattedValueByTag('minInventory_east')}
+            {/* {getFormattedValueByTag('minInventory_east')} */}
+            {/* https://app.clickup.com/t/9018502823/86ewwaxq3 */}
+            {""}
           </td>
         )}
 
         {/* "minInventory_west" */}
-        {columnVisibility.west_min_inventory_mmbtud && (
+        {columnVisibility?.west_min_inventory_mmbtud && (
           <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
-            {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[75]?.value) : ''} */}
-            {getFormattedValueByTag('minInventory_west')}
+            {/* {getFormattedValueByTag('minInventory_west')} */}
+            {/* https://app.clickup.com/t/9018502823/86ewwaxq3 */}
+            {""}
           </td>
         )}
 
@@ -503,11 +511,11 @@ export const ContractRowWhite = ({
 
 
       {/* UNDER Detail Pane */}
-      {columnVisibility.detail_pane && (
+      {columnVisibility?.detail_pane && (
         <>
 
           {/* "detail_entry_east_gsp" */}
-          {columnVisibility.gsp && (
+          {columnVisibility?.gsp && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[34]?.value) : ''} */}
               {getFormattedValueByTag('detail_entry_east_gsp')}
@@ -515,7 +523,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_entry_east_bypassGas" */}
-          {columnVisibility.bypass_gas && (
+          {columnVisibility?.bypass_gas && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[35]?.value) : ''} */}
               {getFormattedValueByTag('detail_entry_east_bypassGas')}
@@ -523,7 +531,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_entry_east_lng" */}
-          {columnVisibility.lng && (
+          {columnVisibility?.lng && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[36]?.value) : ''} */}
               {getFormattedValueByTag('detail_entry_east_lng')}
@@ -533,7 +541,7 @@ export const ContractRowWhite = ({
 
           {/* "detail_entry_east_others" */}
           {/* Sum of all detail_entry_east_ tags except excluded ones */}
-          {columnVisibility.others_east && (
+          {columnVisibility?.others_east && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {`no_data`} */}
               {/* kom */}
@@ -544,7 +552,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_entry_west_yadana" */}
-          {columnVisibility.ydn && (
+          {columnVisibility?.ydn && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[37]?.value) : ''} */}
               {getFormattedValueByTag('detail_entry_west_yadana')}
@@ -552,7 +560,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_entry_west_yetagun" */}
-          {columnVisibility.ytg && (
+          {columnVisibility?.ytg && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[38]?.value) : ''} */}
               {getFormattedValueByTag('detail_entry_west_yetagun')}
@@ -560,7 +568,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_entry_west_zawtika" */}
-          {columnVisibility.ztk && (
+          {columnVisibility?.ztk && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[39]?.value) : ''} */}
               {getFormattedValueByTag('detail_entry_west_zawtika')}
@@ -568,7 +576,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_entry_west_others" */}
-          {columnVisibility.others_west && (
+          {columnVisibility?.others_west && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {`no_data`} */}
               {(sumDetail(contract?.values, 'detail_entry_west_', ['yadana', 'yetagun', 'zawtika', 'F2andG']))}
@@ -576,7 +584,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_entry_east-west_ra6East" */}
-          {columnVisibility.ra6_east && (
+          {columnVisibility?.ra6_east && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[40]?.value) : ''} */}
               {getFormattedValueByTag('detail_entry_east-west_ra6East')}
@@ -584,7 +592,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_entry_east-west_ra6West" */}
-          {columnVisibility.ra6_west && (
+          {columnVisibility?.ra6_west && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[41]?.value) : ''} */}
               {getFormattedValueByTag('detail_entry_east-west_ra6West')}
@@ -592,7 +600,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_entry_east-west_bvw10East" */}
-          {columnVisibility.bvw10_east && (
+          {columnVisibility?.bvw10_east && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[42]?.value) : ''} */}
               {getFormattedValueByTag('detail_entry_east-west_bvw10East')}
@@ -600,7 +608,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_entry_east-west_bvw10West" */}
-          {columnVisibility.bvw10_West && (
+          {columnVisibility?.bvw10_West && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[43]?.value) : ''} */}
               {getFormattedValueByTag('detail_entry_east-west_bvw10West')}
@@ -608,7 +616,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_east_egat" */}
-          {columnVisibility.egat && (
+          {columnVisibility?.egat && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[44]?.value) : ''} */}
               {getFormattedValueByTag('detail_exit_east_egat')}
@@ -616,7 +624,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_east_ipp" */}
-          {columnVisibility.ipp && (
+          {columnVisibility?.ipp && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[45]?.value) : ''} */}
               {getFormattedValueByTag('detail_exit_east_ipp')}
@@ -624,7 +632,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_east_others" */}
-          {columnVisibility.others_east_exit && (
+          {columnVisibility?.others_east_exit && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {`no_data`} */}
               {/* {formatNumberFourDecimal(sumDetail(contract?.values, 'detail_exit_east_', ['egat', 'ipp', 'F2andG']))} */}
@@ -637,7 +645,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_west_egat" */}
-          {columnVisibility.egat_west && (
+          {columnVisibility?.egat_west && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[49]?.value) : ''} */}
               {getFormattedValueByTag('detail_exit_west_egat')}
@@ -645,7 +653,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_west_ipp" */}
-          {columnVisibility.ipp_west && (
+          {columnVisibility?.ipp_west && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[50]?.value) : ''} */}
               {getFormattedValueByTag('detail_exit_west_ipp')}
@@ -653,7 +661,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_west_others" */}
-          {columnVisibility.others_west_exit && (
+          {columnVisibility?.others_west_exit && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {`no_data`} */}
               {(sumDetail(contract?.values, 'detail_exit_west_', ['egat', 'ipp', 'F2andG']))}
@@ -661,7 +669,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_east-west_egat" */}
-          {columnVisibility.egat_east_west && (
+          {columnVisibility?.egat_east_west && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[54]?.value) : ''} */}
               {getFormattedValueByTag('detail_exit_east-west_egat')}
@@ -669,7 +677,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_east-west_ipp" */}
-          {columnVisibility.ipp_east_west && (
+          {columnVisibility?.ipp_east_west && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[55]?.value) : ''} */}
               {getFormattedValueByTag('detail_exit_east-west_ipp')}
@@ -677,7 +685,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_east-west_others" */}
-          {columnVisibility.others_east_west_exit && (
+          {columnVisibility?.others_east_west_exit && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {`no_data`} */}
               {(sumDetail(contract?.values, 'detail_exit_east-west_', ['egat', 'ipp', 'F2andG']))}
@@ -685,7 +693,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_east_F2andG" */}
-          {columnVisibility.east_f2andg && (
+          {columnVisibility?.east_f2andg && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[59]?.value) : ''} */}
               {getFormattedValueByTag('detail_exit_east_F2andG')}
@@ -693,7 +701,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_west_F2andG" */}
-          {columnVisibility.west_f2andg && (
+          {columnVisibility?.west_f2andg && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[60]?.value) : ''} */}
               {getFormattedValueByTag('detail_exit_west_F2andG')}
@@ -701,7 +709,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_E_east" */}
-          {columnVisibility.east_e && (
+          {columnVisibility?.east_e && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[61]?.value) : ''} */}
               {getFormattedValueByTag('detail_exit_E_east')}
@@ -709,7 +717,7 @@ export const ContractRowWhite = ({
           )}
 
           {/* "detail_exit_E_west" */}
-          {columnVisibility.west_e && (
+          {columnVisibility?.west_e && (
             <td className={`px-2 py-1 text-[#5A4600] text-right`} scope="col">
               {/* {contract?.values ? formatNumberFourDecimal(contract?.values?.[62]?.value) : ''} */}
               {getFormattedValueByTag('detail_exit_E_west')}

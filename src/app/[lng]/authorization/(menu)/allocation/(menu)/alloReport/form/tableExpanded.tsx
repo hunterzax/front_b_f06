@@ -1,5 +1,3 @@
-"use client";
-
 import React, {
     useState,
     useEffect,
@@ -204,14 +202,14 @@ const TableExpanded: React.FC<TableProps> = ({
     // ================= CALLBACK =================
     useEffect(() => {
         if (onFilteredDataChange) {
-            const filtered = table.getFilteredRowModel().rows.map(r => r.original);
+            const filtered = table?.getFilteredRowModel?.()?.rows?.map(r => r.original);
             onFilteredDataChange(filtered);
         }
     }, [globalFilter, columnVisibilityState, data]);
 
     useEffect(() => {
         if (onSortDataChange) {
-            const sorted = table.getSortedRowModel().rows.map(r => r.original);
+            const sorted = table?.getSortedRowModel?.()?.rows?.map(r => r.original);
             onSortDataChange(sorted);
         }
     }, [sorting]);
@@ -276,9 +274,7 @@ const TableExpanded: React.FC<TableProps> = ({
                                     }
 
 
-                                    {filterProps &&
-                                        filterProps
-                                    }
+                                    {filterProps}
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 justify-end">
@@ -288,7 +284,7 @@ const TableExpanded: React.FC<TableProps> = ({
                                         onKeyDown={handleQueryKeyPress}
                                         onBlur={handleQueryBlur}
                                     />
-                                    {exportBtn && exportBtn}
+                                    {exportBtn}
                                 </div>
                             </div>
                         )}
@@ -301,7 +297,7 @@ const TableExpanded: React.FC<TableProps> = ({
                                 {table?.getAllLeafColumns()?.map((column) => {
 
                                     return (
-                                        <div key={column.id} className="text-sm mt-2">
+                                        <div key={column?.id} className="text-sm mt-2">
                                             <label className="flex items-center gap-2">
                                                 <input
                                                     type="checkbox"
@@ -334,21 +330,21 @@ const TableExpanded: React.FC<TableProps> = ({
 
                                 {/* HEADER */}
                                 <thead className="bg-[#1473A1] text-white sticky top-0">
-                                    {table.getHeaderGroups().map(hg => (
+                                    {(table?.getHeaderGroups?.() || [])?.map(hg => (
                                         <tr key={hg.id}>
-                                            {hg.headers.map((header, index) => {
+                                            {(hg.headers || [])?.map((header, index) => {
 
-                                                const getStyle: any = columns?.find((item: any) => item?.accessorKey == (header?.column?.columnDef as any)?.accessorKey);
-                                                const canSort = header.column.getCanSort()
+                                                const getStyle: any = (columns || []).find((item: any) => item?.accessorKey == (header?.column?.columnDef as any)?.accessorKey);
+                                                const canSort = header?.column?.getCanSort() || false;
                                                 const enableSorting = canSort || header?.column?.columnDef?.enableSorting == true;
-                                                const size = header.getSize() == 150 ? undefined : header.getSize() // 150 is default size of column
-                                                const meta = header.column.columnDef.meta as any
+                                                const size = header?.getSize() == 150 ? undefined : header?.getSize() // 150 is default size of column
+                                                const meta = header?.column?.columnDef?.meta as any
                                                 const width = getStyle?.width ? getStyle?.width : size ? size : meta?.width ? meta?.width : '100%'
                                                 const align = getStyle?.align ? getStyle?.align : meta?.align ? meta?.align : 'left'
 
                                                 return (
                                                     <th
-                                                        key={header.id}
+                                                        key={header?.id}
                                                         scope="col"
                                                         colSpan={header.colSpan}
                                                         className={`${enableSorting ? table_sort_header_style : table_header_style} ${index == 0 ? 'rounded-tl-md' : (hg?.headers?.length - 1 == index) && 'rounded-tr-md'} text-center relative z-50`}
@@ -359,7 +355,7 @@ const TableExpanded: React.FC<TableProps> = ({
                                                             justifyItems: (enableSorting || !['center', 'right', 'left', 'start', 'end'].includes(align)) ? undefined : align
                                                         }}
                                                     >
-                                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                                        {flexRender(header?.column?.columnDef?.header, header?.getContext?.())}
 
                                                         {enableSorting && <div className={`absolute right-0 top-1/2 transform -translate-y-1/2 flex flex-col items-center -space-y-3`}>
                                                             <ArrowDropUpIcon sx={{ fontSize: 18, opacity: header.column.getIsSorted() === "asc" ? 1 : 0.4, }} />
@@ -375,7 +371,7 @@ const TableExpanded: React.FC<TableProps> = ({
 
                                 {/* BODY (ของมึง + expand) */}
                                 <tbody>
-                                    {table.getRowModel().rows.map((row: any) => {
+                                    {(table?.getRowModel?.()?.rows || [])?.map((row: any) => {
                                         const dataRow = row.original;
                                         // const id = dataRow?.id ?? row.id;
                                         const id = dataRow?.id + '_' + dataRow?.request_number;
@@ -392,7 +388,7 @@ const TableExpanded: React.FC<TableProps> = ({
                                                         const isFirst = index === 0;
 
                                                         return (
-                                                            <td key={cell.id} className="px-3 py-2">
+                                                            <td key={cell?.id || `cell_${index}`} className="px-3 py-2">
 
                                                                 <div className="flex gap-2 items-center">
 
@@ -405,7 +401,7 @@ const TableExpanded: React.FC<TableProps> = ({
                                                                         </span>
                                                                     )}
 
-                                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                                    {flexRender(cell?.column?.columnDef?.cell, cell.getContext())}
 
                                                                 </div>
 
@@ -437,34 +433,38 @@ const TableExpanded: React.FC<TableProps> = ({
 
                                                                 {row.getVisibleCells().map((cell: any, index: number) => {
                                                                     const column = cell.column;
-                                                                    const accessorKey = column.columnDef.accessorKey;
+                                                                    const accessorKey = `${column?.columnDef?.accessorKey || ''}`;
 
                                                                     return (
-                                                                        <td key={column.id} className="px-3 py-2">
+                                                                        <td key={column?.id || `${i}_${index}`} className="px-3 py-2">
+                                                                            {
+                                                                                accessorKey === "capacity_right" 
+                                                                                ? <></> // https://app.clickup.com/t/9018502823/86ey4nagv
+                                                                                :
+                                                                                <div className="flex gap-2 items-center">
 
-                                                                            <div className="flex gap-2 items-center">
+                                                                                    {/* icon placeholder */}
+                                                                                    {index === 0 && (
+                                                                                        <span className="w-[25px]" />
+                                                                                    )}
 
-                                                                                {/* icon placeholder */}
-                                                                                {index === 0 && (
-                                                                                    <span className="w-[25px]" />
-                                                                                )}
+                                                                                    {/* render detail row */}
+                                                                                    {column?.id !== 'publication' && column?.columnDef?.cell
+                                                                                        ? flexRender(
+                                                                                            column.columnDef.cell,
+                                                                                            {
+                                                                                                row: {
+                                                                                                    original: detailRow
+                                                                                                },
+                                                                                                getValue: () =>
+                                                                                                    detailRow[accessorKey as string]
+                                                                                            }
+                                                                                        )
+                                                                                        : column?.id !== 'publication' ? detailRow[accessorKey as string] : null
+                                                                                    }
 
-                                                                                {/* render detail row */}
-                                                                                {column?.id !== 'publication' && column.columnDef.cell
-                                                                                    ? flexRender(
-                                                                                        column.columnDef.cell,
-                                                                                        {
-                                                                                            row: {
-                                                                                                original: detailRow
-                                                                                            },
-                                                                                            getValue: () =>
-                                                                                                detailRow[accessorKey as string]
-                                                                                        }
-                                                                                    )
-                                                                                    : column?.id !== 'publication' ? detailRow[accessorKey as string] : null
-                                                                                }
-
-                                                                            </div>
+                                                                                </div>
+                                                                            }
 
                                                                         </td>
                                                                     );

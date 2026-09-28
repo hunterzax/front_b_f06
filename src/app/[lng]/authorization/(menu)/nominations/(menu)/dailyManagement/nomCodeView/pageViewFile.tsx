@@ -42,7 +42,7 @@ const PageViewFile: React.FC<FormExampleProps> = ({
                         {
                             dataFiles?.length > 0 ?
                                 dataFiles?.map((item: any) => (
-                                    <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                                    <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                         <div className="flex flex-col p-2">
 
                                             {/* <div className="mb-2 flex justify-between">
@@ -61,7 +61,7 @@ const PageViewFile: React.FC<FormExampleProps> = ({
                                                     </span>
 
                                                     <span className='rounded-md bg-[#D3E6F8] px-4 font-semibold text-[#464255]'> {item?.nomination_version?.version} </span>
-                                                    <span className='font-light'>By <span className="font-bold !text-[#58585A]">{item?.create_by_account && item?.create_by_account?.first_name + ' ' + item?.create_by_account?.last_name}</span></span>
+                                                    <span className='font-light'>By <span className="font-bold !text-[#58585A]">{item?.create_by_account ? `${item?.create_by_account?.first_name || ''} ${item?.create_by_account?.last_name || ''}` : ''}</span></span>
                                                 </div>
                                                 <span className="text-gray-500">{formatDate(item?.create_date)}</span>
                                             </div>

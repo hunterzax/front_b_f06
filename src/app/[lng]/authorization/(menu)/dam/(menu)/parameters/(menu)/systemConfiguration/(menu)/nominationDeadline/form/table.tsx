@@ -88,49 +88,49 @@ const TableNomiDeadline: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.user_type && (
+                                {columnVisibility?.user_type && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("user_type_id", sortState, setSortState, setSortedData, tableData)}>
                                         {`User Type`}
                                         {getArrowIcon("user_type_id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.process_type && (
+                                {columnVisibility?.process_type && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("process_type_id", sortState, setSortState, setSortedData, tableData)}>
                                         {`Process Type`}
                                         {getArrowIcon("process_type_id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.nom_type && (
+                                {columnVisibility?.nom_type && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("nomination_type_id", sortState, setSortState, setSortedData, tableData)}>
                                         {`Nomination Type`}
                                         {getArrowIcon("nomination_type_id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.time && (
+                                {columnVisibility?.time && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("custom_endtime", sortState, setSortState, setSortedData, tableData)}>
                                         {`Time`}
                                         {getArrowIcon("custom_endtime")}
                                     </th>
                                 )}
 
-                                {columnVisibility.before_gas && (
+                                {columnVisibility?.before_gas && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("before_gas_day", sortState, setSortState, setSortedData, tableData)}>
                                         {`Before Gas Day`}
                                         {getArrowIcon("before_gas_day")}
                                     </th>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`Start Date`}
                                         {getArrowIcon("start_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`End Date`}
                                         {getArrowIcon("end_date")}
@@ -139,7 +139,7 @@ const TableNomiDeadline: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                                 {/* <th scope="col" className="whitespace-nowrap px-2 py-1">
                                     {`Created by`}
                                 </th> */}
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -154,7 +154,7 @@ const TableNomiDeadline: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                                         key={row?.id}
                                         className={`${table_row_style}`}
                                     >
-                                        {columnVisibility.user_type && (
+                                        {columnVisibility?.user_type && (
                                             <td className="px-2 py-1 justify-center">
                                                 {
                                                     row?.user_type &&
@@ -163,11 +163,11 @@ const TableNomiDeadline: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                                             </td>
                                         )}
 
-                                        {columnVisibility.process_type && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.process_type && row?.process_type?.name}</td>
+                                        {columnVisibility?.process_type && (
+                                            <td className="px-2 py-1 text-[#464255]">{row?.process_type?.name}</td>
                                         )}
 
-                                        {columnVisibility.nom_type && (
+                                        {columnVisibility?.nom_type && (
                                             <td className="px-2 py-1 text-[#464255]">
                                                 <div className="flex justify-center items-center w-full">
                                                     {/* <div className="w-[200px] text-center py-1 rounded-[20px]" style={{background: row?.nomination_type?.color}}>{row?.nomination_type && row?.nomination_type?.name + " Nomination"}</div> */}
@@ -176,7 +176,7 @@ const TableNomiDeadline: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                                             </td>
                                         )}
 
-                                        {columnVisibility.time && (
+                                        {columnVisibility?.time && (
                                             <td className="px-2 py-1 text-[#464255]">
                                                 {/* {row?.hour !== undefined && String(row?.hour).padStart(2, '0')}
                                                 {`:`}
@@ -185,20 +185,20 @@ const TableNomiDeadline: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                                             </td>
                                         )}
 
-                                        {columnVisibility.before_gas && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.before_gas_day && row?.before_gas_day}</td>
+                                        {columnVisibility?.before_gas && (
+                                            <td className="px-2 py-1 text-[#464255]">{row?.before_gas_day}</td>
                                         )}
 
                                         {/* <td className="px-2 py-1 text-right text-[#464255]">{formatNumber(row?.area_nominal_capacity)}</td> */}
-                                        {columnVisibility.start_date && (
+                                        {columnVisibility?.start_date && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.end_date && (
+                                        {columnVisibility?.end_date && (
                                             <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 {/* <div className="relative inline-block text-left "> */}
                                                 <div className="relative inline-flex justify-center items-center w-full">

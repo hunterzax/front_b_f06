@@ -91,7 +91,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [smartquery, setsmartquery] = useState<string>('')
   const [clearSmartQuery, setClearSmartQuery] = useState<boolean>(false)
 
-  const [columnVisibility, setColumnVisibility] = useState<any>(Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible])))
+  const [columnVisibility, setColumnVisibility] = useState<any>(Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible])))
 
   const handleClick = async (id: number | undefined, res_?: any, subRes_?: any) => {
     if (!id) return
@@ -215,23 +215,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         })
       }
       let res_main_data: any = []
-      // res_main_data = await getService(`/master/waiting-list`);
-      //   // console.log('res_main_data : ', res_main_data);
-      // setWaitingListData(res_main_data);
-
-      // const text_ = "Capacity Management"
-      // res_main_data = await getService(`/master/waiting-list/v2?menuName=${text_}`);
-      // setWaitingListData((pre:any) => ({...pre, ...res_main_data,}));
-      // // const text_ = "Allocation"
-      // // res_main_data = await getService(`/master/waiting-list/v2?menuName=${text_}`);
-      // // setWaitingListData((pre:any) => ({...pre, ...res_main_data,}));
-      // const text_ = "Nominations"
-      // res_main_data = await getService(`/master/waiting-list/v2?menuName=${text_}`);
-      // setWaitingListData((pre:any) => ({...pre, ...res_main_data,}));
-      // // const text_ = "Event"
-      // // res_main_data = await getService(`/master/waiting-list/v2?menuName=${text_}`);
-      // // setWaitingListData((pre:any) => ({...pre, ...res_main_data,}));
-
+     
       setDataTable(newData)
       setFilteredDataTable(newData)
 
@@ -278,90 +262,110 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   const detailCard = (key: string) => {
     const listDetail: any = [
+
+      // Capacity Management
       {
         key: 'Release Capacity Management',
-        desc: 'This status means the request has been submitted and is awaiting approval from the TSO.'
+        desc: 'This status means the request has been submitted and is awaiting approval from the TSO.',
+        menuId: 60
       },
       {
         key: 'Capacity Contract Management',
-        desc: 'This status means the request is pending approval from the TSO.'
+        desc: 'This status means the request is pending approval from the TSO.',
+        menuId: 50
       },
       {
         key: 'Capacity Contract Management (Saved)',
-        desc: 'This status means the request is pending Saved.'
+        desc: 'This status means the request is pending Saved.',
+        menuId: 50
       },
       {
         key: 'Capacity Contract Management (Confirmed)',
-        desc: 'This status means the request is pending Confirmed.'
+        desc: 'This status means the request is pending Confirmed.',
+        menuId: 50
       },
       {
         key: 'Capacity Contract List',
-        desc: 'This status means the request is pending approval from the TSO.'
+        desc: 'This status means the request is pending approval from the TSO.',
+        menuId: 53
       },
       {
         key: 'Capacity Contract List (Saved)',
-        desc: 'This status means the request is pending Saved.'
+        desc: 'This status means the request is pending Saved.',
+        menuId: 53
       },
       {
         key: 'Capacity Contract List (Confirmed)',
-        desc: 'This status means the request is pending Confirmed.'
+        desc: 'This status means the request is pending Confirmed.',
+        menuId: 53
       },
 
+      // Allocation
       {
         key: 'Allocation Review',
-        desc: 'status means the Shipper has successfully reviewed and confirmed the Allocated values.'
+        desc: 'status means the Shipper has successfully reviewed and confirmed the Allocated values.',
+        menuId: 81
       },
       {
         key: 'Allocation Management',
-        desc: 'This status means the Shipper has completed the review of the Allocated values, and the request is now pending review by the TSO.'
+        desc: 'This status means the Shipper has completed the review of the Allocated values, and the request is now pending review by the TSO.',
+        menuId: 82
       },
+
+      // Nom
       {
         key: 'Daily Management',
-        desc: 'This status means the Shipper has completed the submission, and the request is now pending review by the TSO.'
+        desc: 'This status means the Shipper has completed the submission, and the request is now pending review by the TSO.',
+        menuId: 65
       },
       {
         key: 'Daily Adjustment',
-        desc: 'This status means the Shipper has submitted an adjustment, and the request is now pending review by the TSO.'
+        desc: 'This status means the Shipper has submitted an adjustment, and the request is now pending review by the TSO.',
+        menuId: 68
       },
       {
         key: 'Weekly Management',
-        desc: 'This status means the Shipper has completed the submission, and the request is now pending review by the TSO.'
+        desc: 'This status means the Shipper has completed the submission, and the request is now pending review by the TSO.',
+        menuId: 66
       },
       {
         key: 'Daily Query Shipper Nomination File',
-        desc: 'This status means the Shipper has completed the submission, and the request is now pending review by the TSO.'
+        desc: 'This status means the Shipper has completed the submission, and the request is now pending review by the TSO.',
+        menuId: 64
       },
       {
         key: 'Weekly Query Shipper Nomination File',
-        desc: 'This status means the Shipper has completed the submission, and the request is now pending review by the TSO.'
+        desc: 'This status means the Shipper has completed the submission, and the request is now pending review by the TSO.',
+        menuId: 64
       },
-      {
-        key: 'Offspec Gas',
-        desc: 'This status means the Event document is not yet completed and is pending closure by the TSO.'
-      },
-      {
-        key: 'Emergency/Difficult Day',
-        desc: 'This status means the Event document is not yet completed and is pending closure by the TSO.'
-      },
-      {
-        key: 'OFO/IF',
-        desc: 'This status means the Event document is not yet completed and is pending closure by the TSO.'
-      },
+      
+      // Event
       {
         key: 'Offspec Gas (Acknowledge)',
-        desc: 'This status means the Event document is not yet acknowledged by the Shipper.'
+        desc: 'This status means the Event document is not yet acknowledged by the Shipper.',
+        menuId: 107
       },
       {
         key: 'Emergency/Difficult Day (Acknowledge)',
-        desc: 'This status means the Event document is not yet acknowledged by the Shipper.'
+        desc: 'This status means the Event document is not yet acknowledged by the Shipper.',
+        menuId: 106
       },
       {
         key: 'OFO/IF (Acknowledge)',
-        desc: 'This status means the Event document is not yet acknowledged by the Shipper.'
+        desc: 'This status means the Event document is not yet acknowledged by the Shipper.',
+        menuId: 1013
       }
     ]
+    const menuPermiss = userDT?.account_manage?.[0]?.account_role?.[0]?.role?.menus_config
+  
+    const filterPermission = menuPermiss && menuPermiss?.length > 0 ? listDetail.filter((f:any) => {
+      const find = menuPermiss.find((fm:any) => {
+        return fm?.menus_id === f.menuId
+      })
+      return find?.b_manage === true
+    }) : []
 
-    const getDetail: any = listDetail?.find((item: any) => item?.key == key)?.desc || null
+    const getDetail: any = filterPermission?.find((item: any) => item?.key == key)?.desc || null
 
     return getDetail
   }
@@ -399,57 +403,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     }))
   }
 
-  // function handleUpdateActiveButtonData({isFetchData = true, newData, menuName, query, res_, res_main_data}: {isFetchData?: boolean; newData?: any; menuName: string; query?: string; res_?: any; res_main_data?: any}) {
-  //   const menuConfig: any = res_ ? res_[menuName as keyof typeof res_] : menu_config[menuName as keyof typeof menu_config]
-  //   if (!menuConfig) {
-  //     return
-  //   }
-
-  //   let data: any = {}
-  //   const updateData = newData ?? (res_main_data || waitingListData)
-
-  //   let keys = Object.keys(updateData)
-  //   if (newData) {
-  //     const newskeys = Object.keys(newData)
-  //     keys.push(...newskeys)
-  //     keys = Array.from(new Set(keys))
-  //   }
-
-  //   let otherObj: any = []
-
-  //   const menu_ = menuName === 'CAPACITY MANAGEMENT' ? [...menuConfig?.keys, ...newKeysBook] : menuName === 'EVENT' ? [...menuConfig?.keys, ...newKeysEvent] : [...menuConfig?.keys]
-
-  //   menu_.map((key: string) => {
-  //     const targetKey = keys.find((k: string) => k.trim().toUpperCase() === key.trim().toUpperCase())
-  //     if (targetKey) {
-  //       const value = updateData[targetKey]
-
-  //       if (query) {
-  //         if (key.includes(query.trim().toUpperCase()) || (value?.remainingTasks && `${value.remainingTasks}`.includes(query))) {
-  //           data[targetKey] = value
-  //         }
-  //       } else {
-  //         data[targetKey] = value
-  //       }
-  //     } else {
-  //       const getEndpoint = menuConfig?.endpoints?.find((d: any) => d?.key.trim().toUpperCase() === key.trim().toUpperCase())
-  //       otherObj.push([getEndpoint?.key, {remainingTasks: 0}])
-  //     }
-  //   })
-  //   let dataArray = Object.entries(data)
-  //   let combinedArray = [...dataArray, ...otherObj]
-  //   let resultObj = Object.fromEntries(combinedArray)
-  //   setActiveButtonData(resultObj)
-  //   setWaitingListData((prev: any) => ({
-  //     ...prev,
-  //     ...resultObj
-  //   }))
-
-  //   setTimeout(() => {
-  //     setIsLoading(false)
-  //   }, 300)
-  // }
-
   function handleUpdateActiveButtonData({isFetchData = true, newData, menuName, query, res_, res_main_data}: {isFetchData?: boolean; newData?: any; menuName: string; query?: string; res_?: any; res_main_data?: any}) {
     const currentMenuConfig = res_ ?? menu_config
 
@@ -475,9 +428,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const otherObj: any[] = []
 
     const menuKeys = menuName === 'CAPACITY MANAGEMENT' ? [...menuConfig.keys, ...newKeysBook] : menuName === 'EVENT' ? [...menuConfig.keys, ...newKeysEvent] : [...menuConfig.keys]
-
+    console.log('menuKeys : ', menuKeys);
     menuKeys.forEach((key: string) => {
-      const targetKey = keys.find((currentKey: string) => currentKey.trim().toUpperCase() === key.trim().toUpperCase())
+      const targetKey = (keys || [])?.find((currentKey: string) => currentKey.trim().toUpperCase() === key.trim().toUpperCase())
 
       if (targetKey) {
         const value = updateData[targetKey]
@@ -508,7 +461,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const dataArray = Object.entries(data)
     const combinedArray = [...dataArray, ...otherObj]
     const resultObj = Object.fromEntries(combinedArray)
-
+    console.log('resultObj : ', resultObj);
+    // OFO/IF (Acknowledge)
     setActiveButtonData(resultObj)
 
     // Cache ข้อมูลแต่ละเมนูไว้รวมกัน
@@ -654,27 +608,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     [userPermission, user_permission, dataTable]
   )
 
-  // const getInit = async () => {
-  //   getPermission()
-  //   let userData: any = localStorage?.getItem('x9f3w1m8q2y0u5d7v1z')
-  //   userData = userData ? decryptData(userData) : null
-
-  //   let account_manage
-  //   try {
-  //     const parsedUserData = userData ? JSON.parse(userData) : null
-  //     account_manage = parsedUserData?.account_manage
-  //   } catch (error) {
-  //     account_manage = null
-  //   }
-
-  //   const menus_config = account_manage?.[0]?.account_role?.[0]?.role?.menus_config ?? []
-
-  //   const res_main_data = await fetchData()
-  //   const {res_, subRes_} = await transformMENU(menus_config)
-  //   if (filter_menu) {
-  //     handleClick(Number(filter_menu), res_, subRes_, res_main_data)
-  //   }
-  // }
   const getInit = async () => {
     getPermission()
 
@@ -712,14 +645,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
       },
       {path: 'nomination-adjustment', key: 'Daily Adjustment'},
       {path: 'allocation-review', key: 'Allocation Review'},
-      {path: 'allocation-management', key: 'Allocation Management'},
+      {path: 'allocation-management', key: 'Allocation Management'}
       // {path: 'offspec-gas', key: 'Offspec Gas'},
       // {path: 'emer', key: 'Emergency/Difficult Day'},
       // {path: 'ofo', key: 'OFO/IF'}
     ]
 
     const getMasterMENU = Object.fromEntries(
-      originalMenuWaitingList.map((item: any) => {
+      (originalMenuWaitingList || [])?.map((item: any) => {
         const getLeafMenus = (menu: any[]): any[] => {
           return menu.flatMap((m) => {
             if (!m.menu || m.menu.length === 0) {
@@ -743,9 +676,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           return !!match // เก็บเฉพาะที่เจอ match และ b_manage = true
         })
 
-        if (leafMenus.length === 0) return [item?.name?.toUpperCase(), {keys: [], endpoints: []}]
+        if (leafMenus.length === 0) return [item.name?.toUpperCase(), {keys: [], endpoints: []}]
 
-        if (item?.menu?.some((m: any) => m?.menus_config_id === 64)) {
+        if (item.menu.some((m: any) => m?.menus_config_id === 64)) {
           const dailyMenus = leafMenus.filter((m) => m?.url?.toLowerCase()?.includes('daily'))
           const weeklyMenus = leafMenus.filter((m) => m?.url?.toLowerCase()?.includes('weekly'))
 
@@ -864,7 +797,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             item?.name?.toUpperCase(),
             {
               keys: [...keys, ...newKeysEvent].map((m) => m?.toUpperCase()),
-              // endpoints: [...endpoints, ...newEnpoint_Event]
               endpoints: [...newEnpoint_Event]
             }
           ]
@@ -875,23 +807,23 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     )
 
     const getMenuList = [
-      ...data
+      ...(data || [])
         .filter(
           (d: any) =>
             d?.menus_id === 1021 && // menu login
             d?.b_manage === true
         )
         .map((d: any) => ({
-          id: d.menus_id,
-          name: d.menus ? d?.menus?.name.replace(/^Waiting List\s*/i, '') + ' Tracking' : '',
+          id: d?.menus_id,
+          name: d?.menus?.name ? (d?.menus?.name?.replace(/^Waiting List\s*/i, '') || '') + ' Tracking' : '',
           menuId: null
         })),
 
-      ...originalMenuWaitingList
-        .filter((item) => {
-          return data.some((d: any) => d?.menus_id === item?.menus_config_id && d?.b_manage === true)
+      ...(originalMenuWaitingList || [])
+        .filter((item: any) => {
+          return (data || []).some((d: any) => d?.menus_id === item?.menus_config_id && d?.b_manage === true)
         })
-        .map((item) => {
+        .map((item: any) => {
           return {
             id: item?.menus_config_id || null,
             name: item?.name || '',
@@ -899,8 +831,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           }
         })
     ]
-    console.log('getMasterMENU : ', getMasterMENU);
-    console.log('getMenuList : ', getMenuList);
+   
     setmenu_config(getMasterMENU)
     setSubMenu(getMenuList)
     return {
@@ -916,16 +847,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   return (
     <div className="h-[calc(100dvh-10%)] overflow-hidden">
       {isLoading && (
-          <div className="absolute inset-0 z-[9999] flex items-center justify-center bg-white/60">
-            <Spinloading spin={true} rounded={20} />
-          </div>
-        )}
+        <div className="absolute inset-0 z-[9999] flex items-center justify-center bg-white/60">
+          <Spinloading spin={true} rounded={20} />
+        </div>
+      )}
       <div className="flex h-full gap-2 overflow-hidden">
         <NavMenuCustom toggleNav={toggleNav} setToggleNav={setToggleNav} subMenu={subMenu} isLoading={isLoading} handleClick={handleClick} activeButton={activeButton} />
 
         <div className="w-[80%] h-full border-[#DFE4EA] gap-2 pt-2 rounded-xl  flex flex-col overflow-hidden relative">
-          {/* <Spinloading spin={isLoading} rounded={20} /> */}
-            
           <div className="flex-1 px-4 overflow-hidden">
             <div className="space-y-2 ">
               {subMenu
@@ -987,7 +916,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                       columns={columns}
                       isLoading={!isLoading}
                       exportBtn={<BtnGeneral bgcolor={'#24AB6A'} modeIcon={'export'} textRender={'Export'} generalFunc={() => exportToExcel(dataExport, 'login-tracking', columnVisibility)} can_export={userPermission ? userPermission?.f_export : false} />}
-                      initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
+                      initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
                       onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                       onFilteredDataChange={(filteredData: any) => {
                         const newData = filteredData || []
@@ -1042,39 +971,74 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                       />
                     </div>
                   </div>
-
+                        
                   {activeButtonData && (
-                    <div className={`max-h-[calc(100dvh-220px)] overflow-x-auto no-scrollbar grid gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4`}>
+                    <div className="max-h-[calc(100dvh-220px)] overflow-x-auto no-scrollbar grid gap-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                       {Object.keys(activeButtonData)?.map((key: any) => {
-                        const getKey: any = subMenu?.find((item: any) => item?.id == activeButton)?.name
+                        const getKey: any = subMenu?.find(
+                          (item: any) => item?.id == activeButton
+                        )?.name
 
-                        const getPath: any = [...menu_config[getKey?.toUpperCase()]?.endpoints]?.find((item: any) => item?.key == key)
+                        const getPath: any = [
+                          ...(menu_config?.[getKey?.toUpperCase()]?.endpoints || [])
+                        ]?.find((item: any) => item?.key == key)
+
+                        // หา detail ก่อน
+                        const detail = detailCard(getPath?.key)
+
+                        // ถ้าไม่มีใน detailCard ไม่ต้องแสดง Card
+                        if (!detail) {
+                          return null
+                        }
 
                         return (
                           <div
-                            className=" border-[#1C1D220F] border-[2px] p-4 rounded-xl overflow-hidden h-[250px] cursor-pointer hover:shadow-[1px_1px_1px_inset_rgba(20,115,161,1)] duration-200 ease-in-out"
+                            key={key}
+                            className="border-[#1C1D220F] border-[2px] p-4 rounded-xl overflow-hidden h-[250px] cursor-pointer hover:shadow-[1px_1px_1px_inset_rgba(20,115,161,1)] duration-200 ease-in-out"
                             onClick={() => {
                               const getFilter = getPathDetail(getPath?.key)
+
                               if (getFilter) {
-                                router.push(`/en/authorization/${getPath?.url}${getFilter}`)
+                                router.push(
+                                  `/en/authorization/${getPath?.url}${getFilter}`
+                                )
                               } else {
-                                router.push(`/en/authorization/${getPath?.url}`)
+                                router.push(
+                                  `/en/authorization/${getPath?.url}`
+                                )
                               }
                             }}
                           >
                             <div className="h-[70%] w-full">
-                              <p className="font-bold text-md text-[#58585A] line-clamp-2">{key == 'OF/IF' ? 'OFO/IF' : key}</p>
-                              {activeButtonData[key]?.status && <div className="mb-3">{`Status : ${activeButtonData[key]?.status}`}</div>}
-                              {detailCard(getPath?.key) && <div className="mb-6 opacity-70 text-sm">{detailCard(getPath?.key)}</div>}
+                              <p className="font-bold text-md text-[#58585A] line-clamp-2">
+                                {key == 'OF/IF' ? 'OFO/IF' : key}
+                              </p>
+
+                              {activeButtonData[key]?.status && (
+                                <div className="mb-3">
+                                  {`Status : ${activeButtonData[key]?.status}`}
+                                </div>
+                              )}
+
+                              <div className="mb-6 opacity-70 text-sm">
+                                {detail}
+                              </div>
                             </div>
+
                             <div className="h-[30%] flex flex-column sm:flex-row flex-wrap items-end justify-between">
                               <div className="w-full h-full flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
-                                  <FormatListBulletedIcon style={{fontSize: '12px'}} />
-                                  <span className="text-sm text-[#1473A1]">Remaining tasks</span>
+                                  <FormatListBulletedIcon
+                                    style={{fontSize: '12px'}}
+                                  />
+                                  <span className="text-sm text-[#1473A1]">
+                                    Remaining tasks
+                                  </span>
                                 </div>
 
-                                <div className="flex flex-wrap justify-end items-center font-bold text-5xl text-[#1473A1]">{activeButtonData[key]?.remainingTasks}</div>
+                                <div className="flex flex-wrap justify-end items-center font-bold text-5xl text-[#1473A1]">
+                                  {activeButtonData[key]?.remainingTasks}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1121,7 +1085,7 @@ const NavMenuCustom = ({toggleNav, setToggleNav, subMenu, isLoading, handleClick
           </>
         )}
       </header>
-
+        
       <div className="h-[calc(100vh-245px)] flex flex-col overflow-hidden">
         <div className="overflow-y-auto h-full scrollbar-hide">
           <section className={`${!toggleNav ? 'pl-[15px]' : 'pl-[5px]'} relative pt-2 `}>
@@ -1153,7 +1117,6 @@ const NavMenuCustom = ({toggleNav, setToggleNav, subMenu, isLoading, handleClick
                 )}
               </section>
             </header>
-
             {toggleNav &&
               subMenu?.map(({id, name}: any) => {
                 return (
@@ -1161,7 +1124,7 @@ const NavMenuCustom = ({toggleNav, setToggleNav, subMenu, isLoading, handleClick
                     <div
                       onClick={() => {
                         if (!isLoading) {
-                          void handleClick(id)
+                          handleClick(id)
                         }
                       }}
                       className={`text-sm flex justify-start items-center w-full px-4 rounded-[8px]

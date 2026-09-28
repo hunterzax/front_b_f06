@@ -217,5 +217,5 @@ export type ZoneMasterQuality = {
   v2_wobbe_index_min?: number;
 }
 
-export type TabType = 'intraday' | 'daily' | 'weekly';
+export type TabType = 'intraday' | 'daily' | 'weekly' | 'all';
 export type HourRange = '1-6 Hr.' | '7-12 Hr.' | '13-18 Hr.' | '19-24 Hr.' | 'All Day'; 

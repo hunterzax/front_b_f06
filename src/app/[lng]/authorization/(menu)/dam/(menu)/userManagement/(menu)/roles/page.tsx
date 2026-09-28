@@ -121,7 +121,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     formatTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
 
-                    item?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(query?.replace(/\s+/g, '').toLowerCase().trim()) ||
+                    (item?.name ? item?.name?.replace(/\s+/g, '').toLowerCase().trim().includes((query || '').replace(/\s+/g, '').toLowerCase().trim()) : false) ||
                     formatDateNoTime(item?.start_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
                     formatDateNoTime(item?.end_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase())
                 )

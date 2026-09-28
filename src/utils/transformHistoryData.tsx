@@ -1,6 +1,6 @@
 // เอาไว้แปลงคีย์ตอน export ทั้งหลาย
 import dayjs from "dayjs";
-import { cutUploadFileName, fillMissingUpdateByAccount, formatDate, formatDateNoTime, formatDateTimeSec, formatDateTimeSecNoPlusSeven, formatDateTimeSecPlusSeven, formatNumber, formatNumberFourDecimal, formatNumberFourDecimalNom, formatNumberSixDecimal, formatNumberSixDecimalNom, formatNumberThreeDecimal, formatNumberThreeDecimalNom, formatNumberTwoDecimal, formatNumberTwoDecimalNom, formatNumberTwoDecimalNomRound, formatStringToDDMMYYYY, roundNumber, sortRevisedCapacityPathByEdges, toDayjs } from "./generalFormatter";
+import { cutUploadFileName, fillMissingUpdateByAccount, formatDate, formatDateNoTime, formatDateTimeSec, formatDateTimeSecNoPlusSeven, formatDateTimeSecPlusSeven, formatNumber, formatNumberFourDecimal, formatNumberFourDecimalNom, formatNumberSixDecimal, formatNumberSixDecimalNom, formatNumberThreeDecimal, formatNumberThreeDecimalNom, formatNumberTwoDecimal, formatNumberTwoDecimalNom, formatNumberTwoDecimalNomRound, formatStringToDDMMYYYY, roundNumber, roundTo3, roundTo6, sortRevisedCapacityPathByEdges, toDayjs } from "./generalFormatter";
 import { parseToNumber } from "./number";
 
 export const transformGroupTSO = (dataMain: any, column?: any) => {
@@ -34,8 +34,8 @@ export const transformGroupTSO = (dataMain: any, column?: any) => {
                         filteredItem[key] = item?.end_date ? formatDateNoTime(item.end_date) : null;
                         break;
                     case 'updated_by':
-                        filteredItem[key] = item.update_by_account
-                            ? `${item.update_by_account.first_name} ${item.update_by_account.last_name} ${formatDateTimeSec(item?.update_date) || ''}`
+                        filteredItem[key] = item?.update_by_account
+                            ? `${item?.update_by_account?.first_name || ""} ${item?.update_by_account?.last_name || ""} ${formatDateTimeSec(item?.update_date) || ''}`
                             : null;
                         break;
                 }
@@ -87,8 +87,8 @@ export const transformGroupShippers = (dataMain: any, column?: any) => {
                         filteredItem[key] = item?.end_date ? formatDateNoTime(item.end_date) : null;
                         break;
                     case 'updated_by':
-                        filteredItem[key] = item.update_by_account
-                            ? `${item.update_by_account.first_name} ${item.update_by_account.last_name} ${formatDateTimeSec(item?.update_date) || ''}`
+                        filteredItem[key] = item?.update_by_account
+                            ? `${item?.update_by_account?.first_name || ""} ${item?.update_by_account?.last_name || ""} ${formatDateTimeSec(item?.update_date) || ''}`
                             : null;
                         break;
                 }
@@ -129,8 +129,8 @@ export const transformGroupOthers = (dataMain: any, column?: any) => {
                         filteredItem[key] = item?.end_date ? formatDateNoTime(item.end_date) : null;
                         break;
                     case 'updated_by':
-                        filteredItem[key] = item.update_by_account
-                            ? `${item.update_by_account.first_name} ${item.update_by_account.last_name} ${formatDateTimeSec(item?.update_date) || ''}`
+                        filteredItem[key] = item?.update_by_account
+                            ? `${item?.update_by_account?.first_name || ""} ${item?.update_by_account?.last_name || ""} ${formatDateTimeSec(item?.update_date) || ''}`
                             : null;
                         break;
                 }
@@ -235,8 +235,37 @@ export const transformArea = (dataMain: any, column?: any) => {
                         filteredItem[key] = item?.end_date ? formatDateNoTime(item?.end_date) : '';
                         break;
                     case 'updated_by':
-                        filteredItem[key] = item.update_by_account
-                            ? `${item.update_by_account.first_name} ${item.update_by_account.last_name} ${formatDateTimeSec(item?.update_date) || ''}`
+                        filteredItem[key] = item?.update_by_account
+                            ? `${item?.update_by_account?.first_name || ""} ${item?.update_by_account?.last_name || ""} ${formatDateTimeSec(item?.update_date) || ''}`
+                            : null;
+                        break;
+                }
+            }
+        });
+
+        return filteredItem;
+    });
+};
+
+export const transformASR = (dataMain: any, column?: any) => {
+
+    return dataMain?.map((item: any) => {
+        const filteredItem: any = {};
+        Object.keys(column).forEach(key => {
+            if (column[key]) {
+                switch (key) {
+                    case 'gas_day_from':
+                        filteredItem[key] =  item?.gas_day_from ? formatDateNoTime(item?.gas_day_from) : '';
+                        break;
+                    case 'gas_day_to':
+                        filteredItem[key] = item?.gas_day_to ? formatDateNoTime(item?.gas_day_to) : '';
+                        break;
+                    case 'file':
+                        filteredItem[key] = item?.file ? item?.file : '';
+                        break;
+                    case 'approved_by':
+                        filteredItem[key] = item.create_by_account
+                            ? `${item.create_by_account.first_name} ${item.create_by_account.last_name} ${formatDateTimeSec(item?.create_date) || ''}`
                             : null;
                         break;
                 }
@@ -277,7 +306,7 @@ export const transformContractPoint = (dataMain: any, column?: any) => {
                         break;
                     case 'updated_by':
                         filteredItem[key] = item?.update_by_account
-                            ? `${item.update_by_account.first_name} ${item.update_by_account.last_name} ${formatDateTimeSec(item?.update_date) || ''}`
+                            ? `${item?.update_by_account?.first_name || ""} ${item?.update_by_account?.last_name || ""} ${formatDateTimeSec(item?.update_date) || ''}`
                             : null;
                         break;
                 }
@@ -325,7 +354,7 @@ export const transformChartArea = (dataMain: any, column?: any) => {
         // start_date: item.start_date,
         // end_date: item.end_date,
         // updated_by: item.update_by_account
-        //     ? `${item.update_by_account.first_name} ${item.update_by_account.last_name}`
+        //     ? `${item?.update_by_account?.first_name || ""} ${item?.update_by_account?.last_name || ""}`
         //     : null,
     }));
 }
@@ -1194,7 +1223,7 @@ export const transformShipperNomReportTabZero = (dataMain: any, column?: any, ex
                     break;
                 case 'overusage':
                     // filteredItem[key] = item?.overusageMMBTUD !== null && item?.overusageMMBTUD !== undefined ? formatNumberFourDecimal(item?.overusageMMBTUD) : null;
-                    filteredItem[key] = item?.tmpOverUseage !== null && item?.tmpOverUseage !== undefined ? formatNumberThreeDecimal(item?.tmpOverUseage) : null;
+                    filteredItem[key] = item?.overusageMMBTUD !== null && item?.overusageMMBTUD !== undefined ? formatNumberThreeDecimal(item?.overusageMMBTUD) : null;
                     break;
                 case 'imbalance':
                     filteredItem[key] = item?.imbalanceMMBTUD !== null && item?.imbalanceMMBTUD !== undefined ? formatNumberThreeDecimal(item?.imbalanceMMBTUD) : null;
@@ -1206,7 +1235,8 @@ export const transformShipperNomReportTabZero = (dataMain: any, column?: any, ex
 }
 
 export const transformShipperNomReportTabWeekly = (dataMain: any, column?: any, extra_obj?: any) => {
-
+    console.log('-dataMain : ', dataMain);
+    console.log('-extra_obj : ', extra_obj);
     return dataMain?.map((item: any) => {
         const filteredItem: any = {};
 
@@ -1320,56 +1350,199 @@ export const transformTariffDetailPageKeys = (data: any) => {
     });
 };
 
-export const transformShipperNomReportView = (dataMain: any, column?: any, extra_obj?: any) => {
-    return dataMain?.map((item: any) => {
-        console.log('item : ', item);
+// export const transformShipperNomReportView = (dataMain: any, column?: any, extra_obj?: any) => {
+//     return dataMain?.map((item: any) => {
+//         // console.log('item : ', item);
+//         const filteredItem: any = {};
+//         Object.keys(column).forEach(key => {
+//             if (column[key]) {
+//                 switch (key) {
+//                     case 'gas_day':
+//                         filteredItem[key] = extra_obj?.tabIndex == 2 ? item?.weeklyDay?.[["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][extra_obj?.subTabIndex]]?.gas_day_text : (item?.gas_day_text || item?.gas_day);
+//                         break;
+//                     case 'area':
+//                         filteredItem[key] = item?.areaObj ? item?.areaObj?.name : null;
+//                         break;
+//                     case 'capacity_right':
+//                         filteredItem[key] = extra_obj?.tabIndex == 2 ?
+//                             formatNumberFourDecimal(item?.weeklyDay?.[["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][extra_obj?.subTabIndex]]?.capacityRightMMBTUD)
+//                             :
+//                             item?.capacityRightMMBTUD ? formatNumberFourDecimal(item?.capacityRightMMBTUD) : '0.0000';
+//                         break;
+//                     case 'nominated_value':
+//                         filteredItem[key] = extra_obj?.tabIndex == 2 ?
+//                             formatNumberFourDecimal(item?.weeklyDay?.[["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][extra_obj?.subTabIndex]]?.nominatedValueMMBTUD)
+//                             :
+//                             item?.nominatedValueMMBTUD ? formatNumberFourDecimal(item?.nominatedValueMMBTUD) : (item?.nominatedValueMMBTUD ===  null ? "" : '0.0000');
+//                         break;
+//                     case 'overusage':
+//                         // filteredItem[key] = item?.ovrusageMMBTUD ? formatNumberFourDecimal(item?.overusageMMBTUD) : '0.0000';
+//                         filteredItem[key] = extra_obj?.tabIndex == 2 ?
+//                             formatNumberFourDecimal(item?.weeklyDay?.[["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][extra_obj?.subTabIndex]]?.overusageMMBTUD)
+//                             :
+//                             item?.overusageMMBTUD ? formatNumberFourDecimal(item?.overusageMMBTUD) : (item?.nominatedValueMMBTUD ===  null ? "" : '0.0000');
+//                         break;
+//                 }
+//             }
+//         });
+
+//         // Daily > View > Export หัว Column ยังไม่มีหน่วย https://app.clickup.com/t/86ettypm2
+//         const keysToRename = ["capacity_right", "nominated_value", "overusage"];
+//         const updatedItem = Object.entries(filteredItem).reduce((acc: any, [key, value]): any => {
+//             if (keysToRename.includes(key)) {
+//                 acc[`${key}_mmbtud`] = value;
+//             } else {
+//                 acc[key] = value;
+//             }
+//             return acc;
+//         }, {} as Record<string, string>);
+
+//         return updatedItem;
+//     });
+// }
+export const transformShipperNomReportView = (
+    dataMain: any,
+    column?: any,
+    extra_obj?: any
+) => {
+    const days = [
+        "sunday",
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday"
+    ];
+
+    const transformItem = (item: any, day?: string) => {
         const filteredItem: any = {};
-        Object.keys(column).forEach(key => {
+        // ถ้า Weekly ให้ดึงข้อมูลตามวันที่ส่งเข้ามา
+        const weeklyData =
+            extra_obj?.tabIndex === 2 && day
+                ? item?.weeklyDay?.[day]
+                : null;
+
+        Object.keys(column).forEach((key) => {
             if (column[key]) {
                 switch (key) {
-                    case 'gas_day':
-                        filteredItem[key] = extra_obj?.tabIndex == 2 ? item?.weeklyDay?.[["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][extra_obj?.subTabIndex]]?.gas_day_text : (item?.gas_day_text || item?.gas_day);
+                    case "gas_day":
+                        if(extra_obj?.tabIndex === 2 && extra_obj?.subTabIndex === 7){
+                            filteredItem[key] = weeklyData?.gas_day_text;
+                        }
+                        // filteredItem[key] =
+                        //     extra_obj?.tabIndex === 2
+                        //         ? weeklyData?.gas_day_text
+                        //         : item?.gas_day_text || item?.gas_day;
                         break;
-                    case 'area':
-                        filteredItem[key] = item?.areaObj ? item?.areaObj?.name : null;
+
+                    case "area":
+                        filteredItem[key] =
+                            item?.areaObj
+                                ? item?.areaObj?.name
+                                : null;
                         break;
-                    case 'capacity_right':
-                        filteredItem[key] = extra_obj?.tabIndex == 2 ?
-                            formatNumberFourDecimal(item?.weeklyDay?.[["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][extra_obj?.subTabIndex]]?.capacityRightMMBTUD)
-                            :
-                            item?.capacityRightMMBTUD ? formatNumberFourDecimal(item?.capacityRightMMBTUD) : '0.0000';
+
+                    case "capacity_right":
+                        filteredItem[key] =
+                            extra_obj?.tabIndex === 2
+                                ? formatNumberThreeDecimal(
+                                    weeklyData?.capacityRightMMBTUD
+                                )
+                                : item?.capacityRightMMBTUD
+                                    ? formatNumberThreeDecimal(
+                                        item?.capacityRightMMBTUD
+                                    )
+                                    : "0.000";
                         break;
-                    case 'nominated_value':
-                        filteredItem[key] = extra_obj?.tabIndex == 2 ?
-                            formatNumberFourDecimal(item?.weeklyDay?.[["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][extra_obj?.subTabIndex]]?.nominatedValueMMBTUD)
-                            :
-                            item?.nominatedValueMMBTUD ? formatNumberFourDecimal(item?.nominatedValueMMBTUD) : (item?.nominatedValueMMBTUD ===  null ? "" : '0.0000');
+
+                    case "nominated_value":
+                        filteredItem[key] =
+                            extra_obj?.tabIndex === 2
+                                ? formatNumberThreeDecimal(
+                                    weeklyData?.nominatedValueMMBTUD
+                                )
+                                : item?.nominatedValueMMBTUD
+                                    ? formatNumberThreeDecimal(
+                                        item?.nominatedValueMMBTUD
+                                    )
+                                    : item?.nominatedValueMMBTUD === null
+                                        ? ""
+                                        : "0.000";
                         break;
-                    case 'overusage':
-                        // filteredItem[key] = item?.ovrusageMMBTUD ? formatNumberFourDecimal(item?.overusageMMBTUD) : '0.0000';
-                        filteredItem[key] = extra_obj?.tabIndex == 2 ?
-                            formatNumberFourDecimal(item?.weeklyDay?.[["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][extra_obj?.subTabIndex]]?.overusageMMBTUD)
-                            :
-                            item?.overusageMMBTUD ? formatNumberFourDecimal(item?.overusageMMBTUD) : (item?.nominatedValueMMBTUD ===  null ? "" : '0.0000');
+
+                    case "overusage":
+                        filteredItem[key] =
+                            extra_obj?.tabIndex === 2
+                                ? formatNumberThreeDecimal(
+                                    weeklyData?.overusageMMBTUD
+                                )
+                                : item?.overusageMMBTUD
+                                    ? formatNumberThreeDecimal(
+                                        item?.overusageMMBTUD
+                                    )
+                                    : item?.nominatedValueMMBTUD === null
+                                        ? ""
+                                        : "0.000";
                         break;
                 }
             }
         });
 
-        // Daily > View > Export หัว Column ยังไม่มีหน่วย https://app.clickup.com/t/86ettypm2
-        const keysToRename = ["capacity_right", "nominated_value", "overusage"];
-        const updatedItem = Object.entries(filteredItem).reduce((acc: any, [key, value]): any => {
-            if (keysToRename.includes(key)) {
-                acc[`${key}_mmbtud`] = value;
-            } else {
-                acc[key] = value;
-            }
-            return acc;
-        }, {} as Record<string, string>);
+        // Daily > View > Export หัว Column ยังไม่มีหน่วย
+        const keysToRename = [
+            "capacity_right",
+            "nominated_value",
+            "overusage"
+        ];
+
+        const updatedItem = Object.entries(filteredItem).reduce(
+            (acc: any, [key, value]): any => {
+                if (keysToRename.includes(key)) {
+                    acc[`${key}_mmbtud`] = value;
+                } else {
+                    acc[key] = value;
+                }
+
+                return acc;
+            },
+            {} as Record<string, any>
+        );
 
         return updatedItem;
-    });
-}
+    };
+
+    // =========================================================
+    // Weekly + All = Export ครบ 7 วัน
+    // Sunday -> Saturday
+    // =========================================================
+    if (
+        extra_obj?.tabIndex === 2 &&
+        extra_obj?.subTabIndex === 7
+    ) {
+        return days.flatMap((day) =>
+            (dataMain ?? []).map((item: any) =>
+                transformItem(item, day)
+            )
+        );
+    }
+
+    // =========================================================
+    // กรณีปกติ
+    // =========================================================
+    if (extra_obj?.tabIndex === 2) {
+        const selectedDay = days[extra_obj?.subTabIndex];
+
+        return (dataMain ?? []).map((item: any) =>
+            transformItem(item, selectedDay)
+        );
+    }
+
+    // Daily หรือ tab อื่น
+    return (dataMain ?? []).map((item: any) =>
+        transformItem(item)
+    );
+};
 
 
 export const transformAllocationShipperReportDownload = (dataMain: any, column?: any) => {
@@ -1757,7 +1930,6 @@ export const transformCurtailmentAlloc = (dataMain: any, column?: any) => {
 }
 
 export const transformShipperNomReportDetail = (dataMain: any, column?: any, extra_obj?: any) => {
-
     // extra_obj = {
     //     tabMainIndex: tabMainIndex, // จากหน้าแรก daily/weekly = 0, daily = 1, weekly = 2
     //     subTabIndex: subTabIndex, // จาก tab weekly -> tab ย่อยรายวัน sunday = 0, monday = 1, ... , saturday = 6
@@ -1767,24 +1939,30 @@ export const transformShipperNomReportDetail = (dataMain: any, column?: any, ext
     if ((extra_obj?.tabMainIndex == 0 && extra_obj?.tabEachZoneIndex == 0) || (extra_obj?.tabMainIndex == 1 && extra_obj?.tabEachZoneIndex == 0)) {
         // case 1 export tab daily/weekly -> entry/exit
         // case 2 export tab daily -> entry/exit
-        console.log('1');
+        // console.log('1');
+        // console.log('dataMain : ', dataMain);
         return dataMain?.map((item: any) => {
             let value_:any = "";
             let valueAll_:any = "";
+            let mmscf = item?.data_temp?.[9] === "MMSCFD"
             if(item?.nom?.nomination_type_id == 2 && extra_obj?.gasDay) { // 2 = weekly
                 const key_ = Object.keys(item?.headData || {}).find((k) => item.headData[k] === extra_obj.gasDay) || ''
-                value_ = (item.data_temp?.[key_] || item.data_temp?.[key_] == 0) ? formatNumberThreeDecimal((parseToNumber(item.data_temp?.[key_]) || 0) / 24) : '';
-                // value_ = (item?.data_temp[key_] === "0.000" || item?.data_temp[key_] === 0) ? 0 : ((!!parseToNumber(item?.data_temp[key_] ?? null) && (parseToNumber(item?.data_temp[key_] ?? null) || 0) / 24) || '')
+               
+                value_ = (item?.data_temp[key_] === "0.000" || item?.data_temp[key_] === 0) ? 0 : ((!!parseToNumber(item?.data_temp[key_] ?? null) && (parseToNumber(item?.data_temp[key_] ?? null) || 0)) || '')
                 
-                valueAll_ = item.data_temp?.[key_]
-                // valueAll_ = item?.nom?.nomination_type_id === 2 && value_ !== "" ? (value_?.toFixed(3) * 24) : item?.data_temp[key_]
-
+                valueAll_ = mmscf ?  (roundTo6(parseToNumber(value_)) * 24) : (roundTo3(parseToNumber(value_)) * 24) 
 
             }
+            // มีเวลาค่อยมาจัดโค้ด ผลลัพถูกหมดแล้ว
+            const fnVal = (k_:any) => item?.nom?.nomination_type_id === 2 ? ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(item?.data_temp[k_])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(item?.data_temp[k_])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
+            const fnTotal = (va_:any) => item?.nom?.nomination_type_id === 2 ? ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(va_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(va_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(va_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(va_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
             const filteredItem: any = {};
             Object.keys(column).forEach(key => {
                 if (column[key]) {
                     switch (key) {
+                        case 'zone':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["0"] : null;
+                            break;
                         case 'supply_demand':
                             filteredItem[key] = item?.data_temp ? item?.data_temp["1"] : null;
                             break;
@@ -1804,125 +1982,88 @@ export const transformShipperNomReportDetail = (dataMain: any, column?: any, ext
                             filteredItem[key] = item?.data_temp ? item?.data_temp["10"] : null;
                             break;
                         case 'wi':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["11"] : null;
-                            // filteredItem[key] = !isNaN(item?.data_temp["11"]) ? item?.data_temp["11"] : null;
                             filteredItem[key] = item?.data_temp['11'] ? formatNumberThreeDecimal(item?.data_temp['11']) : '';
                             break;
                         case 'hv':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["12"] : null;
-                            // filteredItem[key] = !isNaN(item?.data_temp["12"]) ? item?.data_temp["12"] : null;
-                            // console.log(`item?.data_temp['12'] : `, item?.data_temp['12']);
-                            // console.log(`item?.data_temp['12'] ? formatNumberThreeDecimal(item?.data_temp['12']) : '' : `, item?.data_temp['12'] ? formatNumberThreeDecimal(item?.data_temp['12']) : '');
-                            // console.log('- -- - - -');
                             filteredItem[key] = item?.data_temp['12'] ? formatNumberThreeDecimal(item?.data_temp['12']) : '';
                             break;
                         case 'sg':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["13"] : null;
-                            // filteredItem[key] = !isNaN(item?.data_temp["13"]) ? item?.data_temp["13"] : null;
                             filteredItem[key] = item?.data_temp['13'] ? formatNumberThreeDecimal(item?.data_temp['13']) : '';
                             break;
-
                         case 'h1':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["14"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["14"]) : null;
-                            // filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['14'])) || ''
-                            
+                            filteredItem[key] = fnVal("14");
                             break;
                         case 'h2':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["15"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["15"]) : null;
+                            filteredItem[key] = fnVal("15");
                             break;
                         case 'h3':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["16"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["16"]) : null;
+                            filteredItem[key] = fnVal("16");
                             break;
                         case 'h4':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["17"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["17"]) : null;
+                            filteredItem[key] = fnVal("17");
                             break;
                         case 'h5':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["18"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["18"]) : null;
+                            filteredItem[key] = fnVal("18");
                             break;
                         case 'h6':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["19"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["19"]) : null;
+                            filteredItem[key] = fnVal("19");
                             break;
                         case 'h7':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["20"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["20"]) : null;
+                            filteredItem[key] = fnVal("20");
                             break;
                         case 'h8':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["21"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["21"]) : null;
+                            filteredItem[key] = fnVal("21");
                             break;
                         case 'h9':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["22"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["22"]) : null;
+                            filteredItem[key] = fnVal("22");
                             break;
                         case 'h10':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["23"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["23"]) : null;
+                            filteredItem[key] = fnVal("23");
                             break;
                         case 'h11':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["24"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["24"]) : null;
+                            filteredItem[key] = fnVal("24");
                             break;
                         case 'h12':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["25"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["25"]) : null;
+                            filteredItem[key] = fnVal("25");
                             break;
                         case 'h13':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["26"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["26"]) : null;
+                            filteredItem[key] = fnVal("26");
                             break;
                         case 'h14':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["27"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["27"]) : null;
+                            filteredItem[key] = fnVal("27");
                             break;
                         case 'h15':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["28"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["28"]) : null;
+                            filteredItem[key] = fnVal("28");
                             break;
                         case 'h16':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["29"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["29"]) : null;
+                            filteredItem[key] = fnVal("29");
                             break;
                         case 'h17':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["30"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["30"]) : null;
+                            filteredItem[key] = fnVal("30");
                             break;
                         case 'h18':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["31"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["31"]) : null;
+                            filteredItem[key] = fnVal("31");
                             break;
                         case 'h19':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["32"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["32"]) : null;
+                            filteredItem[key] = fnVal("32");
                             break;
                         case 'h20':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["33"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["33"]) : null;
+                            filteredItem[key] = fnVal("33");
                             break;
                         case 'h21':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["34"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["34"]) : null;
+                            filteredItem[key] = fnVal("34");
                             break;
                         case 'h22':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["35"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["35"]) : null;
+                            filteredItem[key] = fnVal("35");
                             break;
                         case 'h23':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["36"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["36"]) : null;
+                            filteredItem[key] = fnVal("36");
                             break;
                         case 'h24':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["37"] : null;
-                            filteredItem[key] = value_ ? value_ : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["37"]) : null;
+                            filteredItem[key] = fnVal("37");
                             break;
                         case 'total':
-                            // filteredItem[key] = item?.data_temp ? item?.data_temp["38"] : null;
-                            filteredItem[key] = (valueAll_ || valueAll_ == 0) ? formatNumberThreeDecimalNom(valueAll_) : item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["38"]) : null;
+                            filteredItem[key] = fnTotal((valueAll_ == 0 && item?.nom?.nomination_type_id == 2 && extra_obj?.gasDay) ? (valueAll_) : item?.data_temp ? (item?.data_temp["38"]) : null);
                             break;
                     }
                 }
@@ -1933,7 +2074,7 @@ export const transformShipperNomReportDetail = (dataMain: any, column?: any, ext
 
     } else if (extra_obj?.tabMainIndex == 0 || (extra_obj?.tabMainIndex == 1 && extra_obj?.tabEachZoneIndex == 1)) {
         // case 3 export tab daily -> concept point
-        console.log('2');
+        // console.log('2');
         return dataMain?.map((item: any) => {
 
             let value_:any = "";
@@ -1953,6 +2094,448 @@ export const transformShipperNomReportDetail = (dataMain: any, column?: any, ext
             Object.keys(column).forEach(key => {
                 if (column[key]) {
                     switch (key) {
+                        case 'zone':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["0"] : null;
+                            break;
+                        case 'supply_demand':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["1"] : null;
+                            break;
+                        case 'concept_point':
+                            filteredItem[key] = item?.data_temp["3"]?.trim() !== "" ? item?.data_temp["3"] :
+                                item?.data_temp["4"]?.trim() !== "" ? item?.data_temp["4"] :
+                                    item?.data_temp["5"]?.trim() !== "" ? item?.data_temp["5"] : ''
+                            break;
+                        case 'concept_id':
+                            filteredItem[key] = item?.data_temp["3"]?.trim() !== "" ? item?.data_temp["3"] :
+                                item?.data_temp["4"]?.trim() !== "" ? item?.data_temp["4"] :
+                                    item?.data_temp["5"]?.trim() !== "" ? item?.data_temp["5"] : ''
+                            break;
+                        case 'unit':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["9"] : null;
+                            break;
+                        case 'entry_exit':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["10"] : null;
+                            break;
+
+                        case 'h1':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["14"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["14"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['14'])) || ''
+
+                            break;
+                        case 'h2':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["15"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["15"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['15'])) || ''
+                            break;
+                        case 'h3':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["16"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["16"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['16'])) || ''
+                            break;
+                        case 'h4':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["17"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["17"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['17'])) || ''
+                            break;
+                        case 'h5':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["18"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["18"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['18'])) || ''
+                            break;
+                        case 'h6':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["19"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["19"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['19'])) || ''
+                            break;
+                        case 'h7':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["20"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["20"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['20'])) || ''
+                            break;
+                        case 'h8':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["21"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["21"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['21'])) || ''
+                            break;
+                        case 'h9':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["22"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["22"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['22'])) || ''
+                            break;
+                        case 'h10':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["23"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["23"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['23'])) || ''
+                            break;
+                        case 'h11':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["24"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["24"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['24'])) || ''
+                            break;
+                        case 'h12':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["25"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["25"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['25'])) || ''
+                            break;
+                        case 'h13':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["26"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["26"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['26'])) || ''
+                            break;
+                        case 'h14':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["27"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["27"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['27'])) || ''
+                            break;
+                        case 'h15':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["28"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["28"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['28'])) || ''
+                            break;
+                        case 'h16':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["29"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["29"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['29'])) || ''
+                            break;
+                        case 'h17':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["30"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["30"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['30'])) || ''
+                            break;
+                        case 'h18':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["31"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["31"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['31'])) || ''
+                            break;
+                        case 'h19':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["32"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["32"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['32'])) || ''
+                            break;
+                        case 'h20':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["33"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["33"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['33'])) || ''
+                            break;
+                        case 'h21':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["34"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["34"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['34'])) || ''
+                            break;
+                        case 'h22':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["35"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["35"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['35'])) || ''
+                            break;
+                        case 'h23':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["36"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["36"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['36'])) || ''
+                            break;
+                        case 'h24':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["37"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["37"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(item?.data_temp['37'])) || ''
+                            break;
+                        case 'total':
+                            // filteredItem[key] = item?.data_temp ? item?.data_temp["38"] : null;
+                            // filteredItem[key] = item?.data_temp ? formatNumberThreeDecimalNom(item?.data_temp["38"]) : null;
+                            filteredItem[key] = (item?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(valueAll_) : formatNumberThreeDecimal(item?.data_temp['38'])) || ''
+                            break;
+                    }
+                }
+            });
+
+            return filteredItem;
+        });
+    } else if (extra_obj?.tabMainIndex == 0 || (extra_obj?.tabMainIndex == 2 && extra_obj?.tabEachZoneIndex == 1)) {
+        // case 4 export tab weekly --> concept point
+        // console.log('3');
+        return dataMain?.map((item: any) => {
+            const filteredItem: any = {};
+            Object.keys(column).forEach(key => {
+                if (column[key]) {
+                    switch (key) {
+                        case 'zone':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["0"] : null;
+                            break;
+                        case 'supply_demand':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["1"] : null;
+                            break;
+                        case 'concept_point':
+                            filteredItem[key] = item?.data_temp["3"]?.trim() !== "" ? item?.data_temp["3"] :
+                                item?.data_temp["4"]?.trim() !== "" ? item?.data_temp["4"] :
+                                    item?.data_temp["5"]?.trim() !== "" ? item?.data_temp["5"] : ''
+                            break;
+                        case 'concept_id':
+                            filteredItem[key] = item?.data_temp["3"]?.trim() !== "" ? item?.data_temp["3"] :
+                                item?.data_temp["4"]?.trim() !== "" ? item?.data_temp["4"] :
+                                    item?.data_temp["5"]?.trim() !== "" ? item?.data_temp["5"] : ''
+                            break;
+                        case 'unit':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["9"] : null;
+                            break;
+                        case 'entry_exit':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["10"] : null;
+                            break;
+                        case 'week_day':
+                            if (extra_obj?.day_text == "Sunday") {
+                                filteredItem[key] = item?.data_temp ? item?.data_temp["14"] : null;
+                            } else if (extra_obj?.day_text == "Monday") {
+                                filteredItem[key] = item?.data_temp ? item?.data_temp["15"] : null;
+                            } else if (extra_obj?.day_text == "Tuesday") {
+                                filteredItem[key] = item?.data_temp ? item?.data_temp["16"] : null;
+                            } else if (extra_obj?.day_text == "Wednesday") {
+                                filteredItem[key] = item?.data_temp ? item?.data_temp["17"] : null;
+                            } else if (extra_obj?.day_text == "Thursday") {
+                                filteredItem[key] = item?.data_temp ? item?.data_temp["18"] : null;
+                            } else if (extra_obj?.day_text == "Friday") {
+                                filteredItem[key] = item?.data_temp ? item?.data_temp["19"] : null;
+                            } else if (extra_obj?.day_text == "Saturday") {
+                                filteredItem[key] = item?.data_temp ? item?.data_temp["20"] : null;
+                            }
+                            break;
+                    }
+                }
+            });
+
+            return filteredItem;
+        });
+    } else if (extra_obj?.tabMainIndex == 2 && extra_obj?.tabEachZoneIndex < 7) {
+        // console.log('4');
+        // console.log('column : ', column);
+        // console.log('dataMain : ', dataMain);
+        return dataMain?.map((item: any) => {
+            const filteredItem: any = {};
+            Object.keys(column).forEach(key => {
+                if (column[key]) {
+                    switch (key) {
+                        case 'zone':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["0"] : null;
+                            break;
+                        case 'supply_demand':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["1"] : null;
+                            break;
+                        case 'area':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["2"] : null;
+                            break;
+                        case 'nomination_point':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["3"] : null;
+                            break;
+                        case 'unit':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["9"] : null;
+                            break;
+                        case 'type':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["6"] : null;
+                            break;
+                        case 'entry_exit':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["10"] : null;
+                            break;
+                        case 'wi':
+                            filteredItem[key] = !isNaN(item?.data_temp["11"]) ? formatNumberThreeDecimal(item?.data_temp["11"]) : null;
+                            break;
+                        case 'hv':
+                            filteredItem[key] = !isNaN(item?.data_temp["12"]) ? formatNumberThreeDecimal(item?.data_temp["12"]) : null;
+                            break;
+                        case 'sg':
+                            filteredItem[key] = !isNaN(item?.data_temp["13"]) ? formatNumberThreeDecimal(item?.data_temp["13"]) : null;
+                            break;
+                        case 'week_day':
+                            if (extra_obj?.day_text == "Sunday") {
+                                filteredItem[key] = item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["14"]) : null;
+                            } else if (extra_obj?.day_text == "Monday") {
+                                filteredItem[key] = item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["15"]) : null;
+                            } else if (extra_obj?.day_text == "Tuesday") {
+                                filteredItem[key] = item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["16"]) : null;
+                            } else if (extra_obj?.day_text == "Wednesday") {
+                                filteredItem[key] = item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["17"]) : null;
+                            } else if (extra_obj?.day_text == "Thursday") {
+                                filteredItem[key] = item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["18"]) : null;
+                            } else if (extra_obj?.day_text == "Friday") {
+                                filteredItem[key] = item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["19"]) : null;
+                            } else if (extra_obj?.day_text == "Saturday") {
+                                filteredItem[key] = item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["20"]) : null;
+                            }
+                            break;
+                    }
+                }
+            });
+
+            return filteredItem;
+        });
+    }
+
+}
+
+export const transformShipperNomReportDetailAll = (dataMain: any, column?: any, extra_obj?: any) => {
+    // extra_obj = {
+    //     tabMainIndex: tabMainIndex, // จากหน้าแรก daily/weekly = 0, daily = 1, weekly = 2
+    //     subTabIndex: subTabIndex, // จาก tab weekly -> tab ย่อยรายวัน sunday = 0, monday = 1, ... , saturday = 6
+    //     tabEachZoneIndex: tabMain, // จากหน้า detail tab entry/exit = 0, concept point = 1
+    // }
+
+    if ((extra_obj?.tabMainIndex == 0 && extra_obj?.tabEachZoneIndex == 0) || (extra_obj?.tabMainIndex == 1 && extra_obj?.tabEachZoneIndex == 0)) {
+        // case 1 export tab daily/weekly -> entry/exit
+        // case 2 export tab daily -> entry/exit
+        // console.log('1');
+        // console.log('dataMain : ', dataMain);
+        return dataMain?.map((item: any) => {
+            let value_:any = "";
+            let valueAll_:any = "";
+            let mmscf = item?.data_temp?.[9] === "MMSCFD"
+            if(item?.nom?.nomination_type_id == 2 && extra_obj?.gasDay) { // 2 = weekly
+                const key_ = Object.keys(item?.headData || {}).find((k) => item.headData[k] === extra_obj.gasDay) || ''
+               
+                value_ = (item?.data_temp[key_] === "0.000" || item?.data_temp[key_] === 0) ? 0 : ((!!parseToNumber(item?.data_temp[key_] ?? null) && (parseToNumber(item?.data_temp[key_] ?? null) || 0)) || '')
+                
+                valueAll_ = mmscf ?  (roundTo6(parseToNumber(value_)) * 24) : (roundTo3(parseToNumber(value_)) * 24) 
+
+            }
+            // มีเวลาค่อยมาจัดโค้ด ผลลัพถูกหมดแล้ว
+            const fnVal = (k_:any) => item?.nom?.nomination_type_id === 2 ? ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(item?.data_temp[k_])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(item?.data_temp[k_])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
+            const fnTotal = (va_:any) => item?.nom?.nomination_type_id === 2 ? ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(va_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(va_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(va_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(va_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
+            const filteredItem: any = {};
+            Object.keys(column).forEach(key => {
+                if (column[key]) {
+                    switch (key) {
+                        case 'zone':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["0"] : null;
+                            break;
+                        case 'supply_demand':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["1"] : null;
+                            break;
+                        case 'area':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["2"] : null;
+                            break;
+                        case 'nomination_point':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["3"] : null;
+                            break;
+                        case 'unit':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["9"] : null;
+                            break;
+                        case 'type':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["6"] : null;
+                            break;
+                        case 'entry_exit':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["10"] : null;
+                            break;
+                        case 'wi':
+                            filteredItem[key] = item?.data_temp['11'] ? formatNumberThreeDecimal(item?.data_temp['11']) : '';
+                            break;
+                        case 'hv':
+                            filteredItem[key] = item?.data_temp['12'] ? formatNumberThreeDecimal(item?.data_temp['12']) : '';
+                            break;
+                        case 'sg':
+                            filteredItem[key] = item?.data_temp['13'] ? formatNumberFourDecimal(item?.data_temp['13']) : ''; 
+                            break;
+                        case 'h1':
+                            filteredItem[key] = fnVal("14");
+                            break;
+                        case 'h2':
+                            filteredItem[key] = fnVal("15");
+                            break;
+                        case 'h3':
+                            filteredItem[key] = fnVal("16");
+                            break;
+                        case 'h4':
+                            filteredItem[key] = fnVal("17");
+                            break;
+                        case 'h5':
+                            filteredItem[key] = fnVal("18");
+                            break;
+                        case 'h6':
+                            filteredItem[key] = fnVal("19");
+                            break;
+                        case 'h7':
+                            filteredItem[key] = fnVal("20");
+                            break;
+                        case 'h8':
+                            filteredItem[key] = fnVal("21");
+                            break;
+                        case 'h9':
+                            filteredItem[key] = fnVal("22");
+                            break;
+                        case 'h10':
+                            filteredItem[key] = fnVal("23");
+                            break;
+                        case 'h11':
+                            filteredItem[key] = fnVal("24");
+                            break;
+                        case 'h12':
+                            filteredItem[key] = fnVal("25");
+                            break;
+                        case 'h13':
+                            filteredItem[key] = fnVal("26");
+                            break;
+                        case 'h14':
+                            filteredItem[key] = fnVal("27");
+                            break;
+                        case 'h15':
+                            filteredItem[key] = fnVal("28");
+                            break;
+                        case 'h16':
+                            filteredItem[key] = fnVal("29");
+                            break;
+                        case 'h17':
+                            filteredItem[key] = fnVal("30");
+                            break;
+                        case 'h18':
+                            filteredItem[key] = fnVal("31");
+                            break;
+                        case 'h19':
+                            filteredItem[key] = fnVal("32");
+                            break;
+                        case 'h20':
+                            filteredItem[key] = fnVal("33");
+                            break;
+                        case 'h21':
+                            filteredItem[key] = fnVal("34");
+                            break;
+                        case 'h22':
+                            filteredItem[key] = fnVal("35");
+                            break;
+                        case 'h23':
+                            filteredItem[key] = fnVal("36");
+                            break;
+                        case 'h24':
+                            filteredItem[key] = fnVal("37");
+                            break;
+                        case 'total':
+                            filteredItem[key] = fnTotal((valueAll_ == 0 && item?.nom?.nomination_type_id == 2 && extra_obj?.gasDay) ? (valueAll_) : item?.data_temp ? (item?.data_temp["38"]) : null);
+                            break;
+                    }
+                }
+            });
+
+            return filteredItem
+        })
+
+    } else if (extra_obj?.tabMainIndex == 0 || (extra_obj?.tabMainIndex == 1 && extra_obj?.tabEachZoneIndex == 1)) {
+        // case 3 export tab daily -> concept point
+        // console.log('2');
+        return dataMain?.map((item: any) => {
+
+            let value_:any = "";
+            let valueAll_:any = "";
+            if(item?.nom?.nomination_type_id == 2 && extra_obj?.gasDay) { // 2 = weekly
+                const key_ = Object.keys(item?.headData || {}).find((k) => item.headData[k] === extra_obj.gasDay) || ''
+                // value_ = (item.data_temp?.[key_] || item.data_temp?.[key_] == 0) ? formatNumberThreeDecimal((parseToNumber(item.data_temp?.[key_]) || 0) / 24) : '';
+                value_ = (item?.data_temp[key_] === "0.000" || item?.data_temp[key_] === 0) ? 0 : ((!!parseToNumber(item?.data_temp[key_] ?? null) && (parseToNumber(item?.data_temp[key_] ?? null) || 0) / 24) || '')
+                
+                // valueAll_ = item.data_temp?.[key_]
+                valueAll_ = item?.nom?.nomination_type_id === 2 && value_ !== "" ? (value_?.toFixed(3) * 24) : item?.data_temp[key_]
+
+
+            }
+
+            const filteredItem: any = {};
+            Object.keys(column).forEach(key => {
+                if (column[key]) {
+                    switch (key) {
+                        case 'zone':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["0"] : null;
+                            break;
                         case 'supply_demand':
                             filteredItem[key] = item?.data_temp ? item?.data_temp["1"] : null;
                             break;
@@ -2108,11 +2691,15 @@ export const transformShipperNomReportDetail = (dataMain: any, column?: any, ext
     } else if (extra_obj?.tabMainIndex == 0 || (extra_obj?.tabMainIndex == 2 && extra_obj?.tabEachZoneIndex == 1)) {
         // case 4 export tab weekly --> concept point
         console.log('3');
+        console.log('dataMain : ', dataMain);
         return dataMain?.map((item: any) => {
             const filteredItem: any = {};
             Object.keys(column).forEach(key => {
                 if (column[key]) {
                     switch (key) {
+                        case 'zone':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["0"] : null;
+                            break;
                         case 'supply_demand':
                             filteredItem[key] = item?.data_temp ? item?.data_temp["1"] : null;
                             break;
@@ -2153,15 +2740,34 @@ export const transformShipperNomReportDetail = (dataMain: any, column?: any, ext
                 }
             });
 
-            return filteredItem;
+            if(extra_obj?.subTabIndex === 7){
+                return {
+                    ...filteredItem,
+                    [`Sunday-${item?.headData?.['14']}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["14"]) : null,
+                    [`Monday-${item?.headData?.['15']}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["15"]) : null,
+                    [`Tuesday-${item?.headData?.['16']}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["16"]) : null,
+                    [`Wednesday-${item?.headData?.['17']}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["17"]) : null,
+                    [`Thursday-${item?.headData?.['18']}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["18"]) : null,
+                    [`Friday-${item?.headData?.['19']}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["19"]) : null,
+                    [`Saturday-${item?.headData?.['20']}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["20"]) : null,
+                };
+            }else{
+                return filteredItem;
+            }
+
         });
     } else if (extra_obj?.tabMainIndex == 2 && extra_obj?.tabEachZoneIndex < 7) {
-        console.log('4');
+        // console.log('4');
+        // console.log('column : ', column);
+        // console.log('dataMain : ', dataMain);
         return dataMain?.map((item: any) => {
             const filteredItem: any = {};
             Object.keys(column).forEach(key => {
                 if (column[key]) {
                     switch (key) {
+                        case 'zone':
+                            filteredItem[key] = item?.data_temp ? item?.data_temp["0"] : null;
+                            break;
                         case 'supply_demand':
                             filteredItem[key] = item?.data_temp ? item?.data_temp["1"] : null;
                             break;
@@ -2209,8 +2815,22 @@ export const transformShipperNomReportDetail = (dataMain: any, column?: any, ext
                     }
                 }
             });
+          
+            if(extra_obj?.subTabIndex === 7){
+                return {
+                    ...filteredItem,
+                    [`Sunday-${dayjs(item?.gas_day, "DD/MM/YYYY").add(0, "day").format("DD/MM/YYYY")}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["14"]) : null,
+                    [`Monday-${dayjs(item?.gas_day, "DD/MM/YYYY").add(1, "day").format("DD/MM/YYYY")}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["15"]) : null,
+                    [`Tuesday-${dayjs(item?.gas_day, "DD/MM/YYYY").add(2, "day").format("DD/MM/YYYY")}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["16"]) : null,
+                    [`Wednesday-${dayjs(item?.gas_day, "DD/MM/YYYY").add(3, "day").format("DD/MM/YYYY")}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["17"]) : null,
+                    [`Thursday-${dayjs(item?.gas_day, "DD/MM/YYYY").add(4, "day").format("DD/MM/YYYY")}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["18"]) : null,
+                    [`Friday-${dayjs(item?.gas_day, "DD/MM/YYYY").add(5, "day").format("DD/MM/YYYY")}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["19"]) : null,
+                    [`Saturday-${dayjs(item?.gas_day, "DD/MM/YYYY").add(6, "day").format("DD/MM/YYYY")}`]: item?.data_temp ? formatNumberThreeDecimal(item?.data_temp["20"]) : null,
+                };
+            }else{
+                return filteredItem;
+            }
 
-            return filteredItem;
         });
     }
 
@@ -2441,7 +3061,8 @@ export const transformNomUploadTemplateForShipper = (dataMain: any, column?: any
                         filteredItem[key] = item.upload_template_for_shipper_file?.[0]?.url || null;
                         break;
                     case 'comment':
-                        filteredItem[key] = item.upload_template_for_shipper_comment?.map((d: any) => d.comment).join(", ") || null;
+                        // filteredItem[key] = item.upload_template_for_shipper_comment?.map((d: any) => d.comment).join(", ") || null;
+                        filteredItem[key] = item.upload_template_for_shipper_comment?.map((d: any) => d.comment).join('\n') || null;
                         break;
                     case 'updated_by':
                         // filteredItem[key] = `${item?.update_by_account?.first_name || ''} ${item?.update_by_account?.last_name || ''} ${item?.update_date ? formatDate(item?.update_date) : ''}` || null;
@@ -2631,6 +3252,7 @@ export const transformRoleMgn = (dataMain: any, column?: any) => {
                         break;
                     case 'updated_by':
                         filteredItem[key] = `${item?.update_by_account?.first_name || ''} ${item?.update_by_account?.last_name || ''} ${item?.update_date ? formatDate(item?.update_date) : ''}` || null;
+                        break;
                     case 'update_permission_by_account':
                         filteredItem[key] = `${item?.update_permission_by_account?.first_name || ''} ${item?.update_permission_by_account?.last_name || ''} ${item?.update_permission_date ? formatDate(item?.update_permission_date) : ''}` || null;
                         break;

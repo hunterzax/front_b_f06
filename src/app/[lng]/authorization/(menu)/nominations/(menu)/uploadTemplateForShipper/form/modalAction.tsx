@@ -226,7 +226,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly || mode === 'edit'}
                                                 valueWatch={watch("shipper_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("shipper_id", e.target.value);
+                                                    setValue("shipper_id", e?.target?.value ?? "");
                                                     findContractCode(e.target.value, dataShipper);
                                                     if (errors?.shipper_id) { clearErrors('shipper_id') }
                                                 }}
@@ -257,7 +257,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("contract_code_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("contract_code_id", e.target.value);
+                                                    setValue("contract_code_id", e?.target?.value ?? "");
                                                     if (errors?.contract_code_id) { clearErrors('contract_code_id') }
                                                 }}
                                                 errors={errors?.contract_code_id}
@@ -303,7 +303,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("document_type", e.target.value);
+                                                    setValue("document_type", e?.target?.value ?? "");
                                                     // fetchData(e?.target);
                                                 }}
                                                 displayEmpty
@@ -394,8 +394,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 label=""
                                                 multiline
                                                 onChange={(e) => {
-                                                    if (e.target.value.length <= 255) {
-                                                        setValue("comment", e.target.value);
+                                                    if ((e?.target?.value?.length ?? 0) <= 255) {
+                                                        setValue("comment", e?.target?.value ?? "");
                                                     }
                                                 }}
                                                 placeholder="Enter Comment"

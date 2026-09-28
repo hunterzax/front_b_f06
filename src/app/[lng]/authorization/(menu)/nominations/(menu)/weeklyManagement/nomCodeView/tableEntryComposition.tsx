@@ -143,126 +143,126 @@ const TableEntryComposition: React.FC<any> = ({ tableData, isLoading, zoneMaster
                             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                 <tr className="h-9">
 
-                                    {columnVisibility.zone && (
+                                    {columnVisibility?.zone && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("0", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`Zone`}
                                             {getArrowIcon("0")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.point && (
+                                    {columnVisibility?.point && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("1", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`Point`}
                                             {getArrowIcon("1")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.co2 && (
+                                    {columnVisibility?.co2 && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("2", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`CO2 % mol`}
                                             {getArrowIcon("2")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.c1 && (
+                                    {columnVisibility?.c1 && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("3", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`C1 % mol`}
                                             {getArrowIcon("3")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.c2 && (
+                                    {columnVisibility?.c2 && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("4", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`C2 % mol`}
                                             {getArrowIcon("4")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.c3 && (
+                                    {columnVisibility?.c3 && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("5", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`C3 % mol`}
                                             {getArrowIcon("5")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.ic4 && (
+                                    {columnVisibility?.ic4 && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("6", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`IC4 % mol`}
                                             {getArrowIcon("6")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.nc4 && (
+                                    {columnVisibility?.nc4 && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("7", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`nC4 % mol`}
                                             {getArrowIcon("7")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.ic5 && (
+                                    {columnVisibility?.ic5 && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("8", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`IC5 % mol`}
                                             {getArrowIcon("8")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.nc5 && (
+                                    {columnVisibility?.nc5 && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("9", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`nC5 % mol`}
                                             {getArrowIcon("9")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.c6 && (
+                                    {columnVisibility?.c6 && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("10", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`C6 % mol`}
                                             {getArrowIcon("10")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.c7 && (
+                                    {columnVisibility?.c7 && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("11", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`C7 % mol`}
                                             {getArrowIcon("11")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.c2_plus && (
+                                    {columnVisibility?.c2_plus && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("12", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`C2+ % mol`}
                                             {getArrowIcon("12")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.n2 && (
+                                    {columnVisibility?.n2 && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("13", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`N2 % mol`}
                                             {getArrowIcon("13")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.o2 && (
+                                    {columnVisibility?.o2 && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("14", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`O2 % mol`}
                                             {getArrowIcon("14")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.h2s && (
+                                    {columnVisibility?.h2s && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("15", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`H2S % mol`}
                                             {getArrowIcon("15")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.s && (
+                                    {columnVisibility?.s && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("16", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`S % mol`}
                                             {getArrowIcon("16")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.hg && (
+                                    {columnVisibility?.hg && (
                                         <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("17", sortState, setSortState, setSortedData, sortedMasterData)}>
                                             {`HG % mol`}
                                             {getArrowIcon("17")}
@@ -273,13 +273,13 @@ const TableEntryComposition: React.FC<any> = ({ tableData, isLoading, zoneMaster
 
                             <tbody>
                                 {
-                                    paginatedData && paginatedData?.map((row: any, index: any) => {
+                                    (paginatedData || [])?.map((row: any, index: any) => {
                                         return (
                                             <tr
                                                 key={row?.id}
                                                 className={`${table_row_style}`}
                                             >
-                                                {columnVisibility.zone && (
+                                                {columnVisibility?.zone && (
                                                     <td className="px-2 py-1 h-[30px] justify-center">
                                                         {(() => {
                                                             const filter_zone = zoneMaster?.data?.find((item: any) => item.name === row?.["0"].trim() && item.entry_exit_id == 1);
@@ -300,11 +300,11 @@ const TableEntryComposition: React.FC<any> = ({ tableData, isLoading, zoneMaster
                                                     </td>
                                                 )}
 
-                                                {columnVisibility.point && (
+                                                {columnVisibility?.point && (
                                                     <td className="px-2 py-1 text-[#464255] min-w-[120px] text-center">{row?.["1"] ? row?.["1"] : ''}</td>
                                                 )}
 
-                                                {columnVisibility.co2 && (
+                                                {columnVisibility?.co2 && (
                                                     // <td className="px-2 py-1 text-[#464255] min-w-[120px] text-right">{row?.["2"] ? formatNumberThreeDecimal(row?.["2"]) : ''}</td>
                                                     // <td className={`px-2 py-1 min-w-[120px] text-right ${((parseFloat(row?.["2"]) < row?.zone?.zone_master_quality?.[0]?.v2_carbon_dioxide_min || parseFloat(row?.["2"]) > row?.zone?.zone_master_quality?.[0]?.v2_carbon_dioxide_max)) && isReserveNull ? "text-[#ED1B24]" : "text-[#464255]"}`}>{row?.["2"] ? formatNumberThreeDecimal(row?.["2"]) : ''}</td>
 
@@ -334,7 +334,7 @@ const TableEntryComposition: React.FC<any> = ({ tableData, isLoading, zoneMaster
                                                     </td>
                                                 )}
 
-                                                {columnVisibility.c1 && (
+                                                {columnVisibility?.c1 && (
                                                     // <td className="px-2 py-1 text-[#464255] min-w-[120px] text-right">{row?.["3"] ? formatNumberThreeDecimal(row?.["3"]) : ''}</td>
                                                     // <td className={`px-2 py-1 min-w-[120px] text-right ${((parseFloat(row?.["3"]) < row?.zone?.zone_master_quality?.[0]?.v2_methane_min || parseFloat(row?.["3"]) > row?.zone?.zone_master_quality?.[0]?.v2_methane_max)) && isReserveNull ? "text-[#ED1B24]" : "text-[#464255]"}`}>{row?.["3"] ? formatNumberThreeDecimal(row?.["3"]) : ''}</td>
                                                     <td
@@ -363,39 +363,39 @@ const TableEntryComposition: React.FC<any> = ({ tableData, isLoading, zoneMaster
                                                     </td>
                                                 )}
 
-                                                {columnVisibility.c2 && (
+                                                {columnVisibility?.c2 && (
                                                     <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right `}>{row?.["4"] ? formatNumberThreeDecimal(row?.["4"]) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.c3 && (
+                                                {columnVisibility?.c3 && (
                                                     <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.["5"] ? formatNumberThreeDecimal(row?.["5"]) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.ic4 && (
+                                                {columnVisibility?.ic4 && (
                                                     <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.["6"] ? formatNumberThreeDecimal(row?.["6"]) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.nc4 && (
+                                                {columnVisibility?.nc4 && (
                                                     <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.["7"] ? formatNumberThreeDecimal(row?.["7"]) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.ic5 && (
+                                                {columnVisibility?.ic5 && (
                                                     <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.["8"] ? formatNumberThreeDecimal(row?.["8"]) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.nc5 && (
+                                                {columnVisibility?.nc5 && (
                                                     <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.["9"] ? formatNumberThreeDecimal(row?.["9"]) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.c6 && (
+                                                {columnVisibility?.c6 && (
                                                     <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.["10"] ? formatNumberThreeDecimal(row?.["10"]) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.c7 && (
+                                                {columnVisibility?.c7 && (
                                                     <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.["11"] ? formatNumberThreeDecimal(row?.["11"]) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.c2_plus && (
+                                                {columnVisibility?.c2_plus && (
                                                     // <td className={`px-2 py-1 min-w-[120px] text-right ${((parseFloat(row?.["12"]) < row?.zone?.zone_master_quality?.[0]?.v2_c2_plus_min || parseFloat(row?.["12"]) > row?.zone?.zone_master_quality?.[0]?.v2_c2_plus_max)) && isReserveNull ? "text-[#ED1B24]" : "text-[#464255]"}`}>{row?.["12"] ? formatNumberThreeDecimal(row?.["12"]) : ''}</td>
                                                     <td
                                                         className={(() => {
@@ -423,7 +423,7 @@ const TableEntryComposition: React.FC<any> = ({ tableData, isLoading, zoneMaster
                                                     </td>
                                                 )}
 
-                                                {columnVisibility.n2 && (
+                                                {columnVisibility?.n2 && (
                                                     // <td className={`px-2 py-1 min-w-[120px] text-right ${((parseFloat(row?.["13"]) < row?.zone?.zone_master_quality?.[0]?.v2_nitrogen_min || parseFloat(row?.["13"]) > row?.zone?.zone_master_quality?.[0]?.v2_nitrogen_max)) && isReserveNull ? "text-[#ED1B24]" : "text-[#464255]"}`}>{row?.["13"] ? formatNumberThreeDecimal(row?.["13"]) : ''}</td>
                                                     <td
                                                         className={(() => {
@@ -451,7 +451,7 @@ const TableEntryComposition: React.FC<any> = ({ tableData, isLoading, zoneMaster
                                                     </td>
                                                 )}
 
-                                                {columnVisibility.o2 && (
+                                                {columnVisibility?.o2 && (
                                                     // <td className={`px-2 py-1 min-w-[120px] text-right ${((parseFloat(row?.["14"]) < row?.zone?.zone_master_quality?.[0]?.v2_oxygen_min || parseFloat(row?.["14"]) > row?.zone?.zone_master_quality?.[0]?.v2_oxygen_max)) && isReserveNull ? "text-[#ED1B24]" : "text-[#464255]"}`}>{row?.["14"] ? formatNumberThreeDecimal(row?.["14"]) : ''}</td>
                                                     <td
                                                         className={(() => {
@@ -480,7 +480,7 @@ const TableEntryComposition: React.FC<any> = ({ tableData, isLoading, zoneMaster
 
                                                 )}
 
-                                                {columnVisibility.h2s && (
+                                                {columnVisibility?.h2s && (
                                                     // <td className={`px-2 py-1 min-w-[120px] text-right ${((parseFloat(row?.["15"]) < row?.zone?.zone_master_quality?.[0]?.v2_hydrogen_sulfide_min || parseFloat(row?.["15"]) > row?.zone?.zone_master_quality?.[0]?.v2_hydrogen_sulfide_max)) && isReserveNull ? "text-[#ED1B24]" : "text-[#464255]"}`}>{row?.["15"] ? formatNumberThreeDecimal(row?.["15"]) : ''}</td>
                                                     <td
                                                         className={(() => {
@@ -508,7 +508,7 @@ const TableEntryComposition: React.FC<any> = ({ tableData, isLoading, zoneMaster
                                                     </td>
                                                 )}
 
-                                                {columnVisibility.s && (
+                                                {columnVisibility?.s && (
                                                     // <td className={`px-2 py-1 min-w-[120px] text-right ${((parseFloat(row?.["16"]) < row?.zone?.zone_master_quality?.[0]?.v2_total_sulphur_min || parseFloat(row?.["16"]) > row?.zone?.zone_master_quality?.[0]?.v2_total_sulphur_max)) && isReserveNull ? "text-[#ED1B24]" : "text-[#464255]"}`}>{row?.["16"] ? formatNumberThreeDecimal(row?.["16"]) : ''}</td>
                                                     <td
                                                         className={(() => {
@@ -536,7 +536,7 @@ const TableEntryComposition: React.FC<any> = ({ tableData, isLoading, zoneMaster
                                                     </td>
                                                 )}
 
-                                                {columnVisibility.hg && (
+                                                {columnVisibility?.hg && (
                                                     // <td className={`px-2 py-1 min-w-[120px] text-right ${((parseFloat(row?.["17"]) < row?.zone?.zone_master_quality?.[0]?.v2_mercury_min || parseFloat(row?.["17"]) > row?.zone?.zone_master_quality?.[0]?.v2_mercury_max)) && isReserveNull ? "text-[#ED1B24]" : "text-[#464255]"}`}>{row?.["17"] ? formatNumberThreeDecimal(row?.["17"]) : ''}</td>
                                                     <td
                                                         className={(() => {

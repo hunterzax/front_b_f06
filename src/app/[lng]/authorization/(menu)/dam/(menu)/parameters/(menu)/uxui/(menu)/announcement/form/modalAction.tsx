@@ -128,7 +128,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     {...register("topic", { required: "Type Topic" })}
                                                     onChange={(e) => {
                                                         if (e.target.value.length <= 255) {
-                                                            setValue('topic', e.target.value);
+                                                            setValue('topic', e?.target?.value ?? "");
                                                         }
                                                     }}
                                                     maxLength={255}
@@ -151,7 +151,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     value={watch('detail') || ''}
                                                     onChange={(e) => {
                                                         if (e.target.value.length <= 500) {
-                                                            setValue('detail', e.target.value);
+                                                            setValue('detail', e?.target?.value ?? "");
                                                         }
                                                     }}
                                                     label=""

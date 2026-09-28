@@ -343,7 +343,7 @@ export const downloadService = async (url: string, type?: any, fileName?: string
     }
 };
 
-export const postService = async (url: string, payload?: any) => {
+export const postService = async (url: string, payload?: any, callback?: (status: number) => void) => {
     try {
         const token = getCookieValue("v4r2d9z5m3h0c1p0x7l");
         let tokenFromLcstr: any = localStorage?.getItem("v4r2d9z5m3h0c1p0x7l");
@@ -379,6 +379,9 @@ export const postService = async (url: string, payload?: any) => {
             timeout: 600000
         })
 
+        if(callback) {
+            callback(res.status)
+        }
         if (IS_ENCRYPT == 'true') {
             const decryptedData = decryptResponse(res.data);
             return decryptedData
@@ -735,7 +738,7 @@ export const uploadFileService = async (url: string, file: File) => {
         const formData = new FormData();
         formData.append('file', file);
 
-        // const response: any = await axios.post(`http://34.87.62.61:8010/files/uploadfile/`, formData, { // test
+        // const response: any = await axios.post(`http://localhost:4006/uploadfile/`, formData, { // test
         const response: any = await axios.post(`${API_URL}${url}`, formData, {
             headers: { "content-type": "multipart/form-data" },
             timeout: 600000

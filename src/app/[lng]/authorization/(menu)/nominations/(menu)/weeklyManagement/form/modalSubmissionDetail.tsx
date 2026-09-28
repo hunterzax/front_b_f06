@@ -57,24 +57,24 @@ const ModalSubmissionDetails: React.FC<FormExampleProps> = ({
                                     console.log('e.target.value : ', e.target.value);
                                     console.log('data?.data_submission : ', data?.data_submission);
                                     setVersion(e.target.value)
-                                    const find_ = data?.data_submission?.find((f:any) => `${f?.id}` === e.target.value)?.submiss || []
+                                    const find_ = (data?.data_submission || [])?.find((f: any) => `${f?.id}` === e.target.value)?.submiss || []
                                     setDataSubmission((pre:any) => ({
                                         ...pre,
                                         submission_comment_query_shipper_nomination_file: find_ || []
                                     }))
                                 }}
-                                options={(data?.data_submission)?.map((item: any, ix:number) => ({
+                                options={(data?.data_submission || [])?.map((item: any, ix: number) => ({
                                     value: item?.id?.toString(),
-                                    label: ix === 0 ? "Last Version" : item.version
+                                    label: ix === 0 ? "Last Version" : (item?.version || '')
                                 }))}
                             />
                         </div>
 
                         <div className="mb-4 w-[100%] h-[400px] border border-[#DFE4EA] rounded-[6px] p-4">
                             <div
-                                className={`text-[#464255] font-light text-[14px] ${data?.submission_comment_query_shipper_nomination_file?.length > 10 ? 'max-h-[350px] overflow-y-auto' : ''}`}
+                                className={`text-[#464255] font-light text-[14px] ${(data?.submission_comment_query_shipper_nomination_file?.length ?? 0) > 10 ? 'max-h-[350px] overflow-y-auto' : ''}`}
                             >
-                                {data?.submission_comment_query_shipper_nomination_file?.map((item: any, index: number) => (
+                                {(data?.submission_comment_query_shipper_nomination_file || [])?.map((item: any, index: number) => (
                                     <div
                                         key={index}
                                         className="relative w-fit h-[30px] p-2 text-[13px] text-[#58585A] break-all"

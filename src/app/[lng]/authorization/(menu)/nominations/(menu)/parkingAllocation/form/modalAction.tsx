@@ -23,6 +23,7 @@ type FormExampleProps = {
     onClose: () => void;
     onSubmit: SubmitHandler<any>;
     setResetForm: (reset: () => void) => void;
+    srchStartDate?: any;
 };
 
 const ModalAction: React.FC<FormExampleProps> = ({
@@ -33,6 +34,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
     onClose,
     onSubmit,
     setResetForm,
+    srchStartDate
 }) => {
     const { control, register, handleSubmit, setValue, reset, clearErrors, resetField, formState: { errors }, watch, } = useForm<any>({ defaultValues: data, });
 
@@ -47,12 +49,21 @@ const ModalAction: React.FC<FormExampleProps> = ({
     // const isReadOnly = (mode === "view" || mode === 'edit');
     const isReadOnly = (mode === "view");
 
+    // useEffect(() => {
+    //     const fetchAndSetData = async () => {
+    //         setValue('gas_day', dayjs().add(1, 'day').format("YYYY-MM-DD"))
+    //     }
+    //     fetchAndSetData();
+    // }, [data, mode, setValue]);
     useEffect(() => {
-        const fetchAndSetData = async () => {
-            setValue('gas_day', dayjs().add(1, 'day').format("YYYY-MM-DD"))
-        }
-        fetchAndSetData();
-    }, [data, mode, setValue]);
+        if (!open) return
+
+        const defaultGasDay = srchStartDate
+            ? dayjs(srchStartDate).format('YYYY-MM-DD')
+            : dayjs().add(1, 'day').format('YYYY-MM-DD')
+
+        setValue('gas_day', defaultGasDay)
+    }, [open, srchStartDate, setValue])
 
     useEffect(() => {
         setResetForm(() => reset);
@@ -137,6 +148,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
         }, 500);
     };
 
+
     return (
         <Dialog
             open={open}
@@ -212,7 +224,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                             disabled={isReadOnly}
                                             valueWatch={watch("zone") || ""}
                                             handleChange={(e) => {
-                                                setValue("zone", e.target.value);
+                                                setValue("zone", e?.target?.value ?? "");
                                                 if (errors?.zone) { clearErrors('zone') }
                                             }}
                                             errors={errors?.zone}

@@ -58,7 +58,7 @@ const ModalImport: React.FC<FormExampleProps> = ({
     const [modalWarningMsg, setModalWarningMsg] = useState('');
 
     const handleClose = () => {
-        onClose();
+        if (onClose) onClose();
         setTimeout(() => {
             reset();
         }, 200);
@@ -71,7 +71,7 @@ const ModalImport: React.FC<FormExampleProps> = ({
     const [iserror, setiserror] = useState<boolean>(false);
 
     const handleFileChange = async (e: any) => {
-        const file = e.target.files[0];
+        const file = e?.target?.files?.[0];
 
         const setvalError = (text: any) => {
             setFileName('Maximum File 10 MB')
@@ -90,19 +90,19 @@ const ModalImport: React.FC<FormExampleProps> = ({
             const maxSizeInMB = 10; // Maximum file size in MB
             const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
 
-            if (!validFileTypes.includes(file.type)) {
+            if (!validFileTypes.includes(file?.type)) {
                 setvalError('Invalid file type. Please upload a Excel file.');
                 setTimeout(() => { setIsLoading(false) }, 300);
                 return;
             }
 
-            if (file.size > maxSizeInBytes) {
+            if (file?.size > maxSizeInBytes) {
                 setvalError('The file is larger than 10 MB.');
                 setTimeout(() => { setIsLoading(false) }, 300);
                 return;
             }
 
-            setFileName(file.name);
+            setFileName(file?.name);
             setFileUpload(file);
             if (errors?.upload_tranform) clearErrors('upload_tranform');
 
@@ -122,21 +122,23 @@ const ModalImport: React.FC<FormExampleProps> = ({
     const handleClickDownload = async (data: any) => {
         // ส่ง shipper_id ที่เป็น string
         // กับ contract_code
-        const res_download = await getService(`/master/allocation/gen-excel-template-url?contract_code_name=${data?.contract_code}&shipper_code=${data?.group_id}`);
+        const res_download = await getService(`/master/allocation/gen-excel-template-url?contract_code_name=${data?.contract_code ?? ''}&shipper_code=${data?.group_id ?? ''}`);
 
         if (res_download?.status === 400) {
-            setModalErrorMsg(res_download?.error);
-            setModalErrorOpen(true)
+            setModalErrorMsg?.(res_download?.error);
+            setModalErrorOpen?.(true)
         } else {
             // setModalSuccessOpen(true);
-            const { url, filename = "Allocation_Review.xlsx" } = res_download?.file
-            const link = document.createElement("a")
-            link.href = url
-            link.download = filename
-            link.target = "_blank"
-            document.body.appendChild(link)
-            link.click()
-            link.remove()
+            const { url, filename = "Allocation_Review.xlsx" } = res_download?.file || {}
+            if (url && typeof document !== 'undefined') {
+                const link = document.createElement("a")
+                link.href = url
+                link.download = filename
+                link.target = "_blank"
+                document.body.appendChild(link)
+                link.click()
+                link.remove()
+            }
 
             setTimeout(() => {
                 setOpenSelShipper(false);
@@ -153,27 +155,18 @@ const ModalImport: React.FC<FormExampleProps> = ({
                 res_upload = await uploadFileServiceWithAuth(`/master/allocation/allocation-review-import?ignore=${ignoreWaring}`, fileUpload, null)
                 
                 if (res_upload?.response?.data?.status === 400 || res_upload?.response?.status === 500) {
-                    setModalErrorMsg(res_upload?.response?.data?.error ? res_upload?.response?.data?.error : "Missing required columns, Please check the file structure"); // ปรับ Error Message เคสที่ไม่มี column gas day เลย หรือ เคสที่ column ใด column นึงหายไป (เคสStructure template ไม่เหมือนเดิม) https://app.clickup.com/t/86eu4duyz
-                    setModalErrorOpen(true);
+                    setModalErrorMsg?.(res_upload?.response?.data?.error ? res_upload?.response?.data?.error : "Missing required columns, Please check the file structure"); // ปรับ Error Message เคสที่ไม่มี column gas day เลย หรือ เคสที่ column ใด column นึงหายไป (เคสStructure template ไม่เหมือนเดิม) https://app.clickup.com/t/86eu4duyz
+                    setModalErrorOpen?.(true);
                 } else {
-                    // warning ก่อนสำเร็จ
-                    // if (res_upload?.warning) {
-                    //     setModalWarningMsg("Total Entry & Total Exit equals zero.")
-                    //     setModalWarningOpen(true)
-                    //     setformActionOpen(false)
-                    // } else {
-                    //     setformActionOpen(false)
-                    //     setModalSuccessOpen(true);
-                    // }
                     if (res_upload?.data?.warning && Array.isArray(res_upload.data.warning) && res_upload.data.warning.length > 0) {
-                        setModalWarningMsg(res_upload.data.warning.join('<br/>'))
-                        setModalWarningOpen(true)
+                        setModalWarningMsg?.(res_upload.data.warning.join('<br/>'))
+                        setModalWarningOpen?.(true)
                     } else {
-                        setModalSuccessMsg('File has been uploaded.')
-                        setModalSuccessOpen(true);
-                        setIsUpload(true)
+                        setModalSuccessMsg?.('File has been uploaded.')
+                        setModalSuccessOpen?.(true);
+                        setIsUpload?.(true)
                     }
-                    setformActionOpen(false)
+                    setformActionOpen?.(false)
                 }
             } catch (error) {
                 // File upload failed:
@@ -189,12 +182,8 @@ const ModalImport: React.FC<FormExampleProps> = ({
     const [idShipper, setIdShipper] = useState<any>();
 
     const checkIsShipper = (mode?: any) => {
-        if (userDT?.account_manage?.[0]?.user_type?.id !== 3) {
-            setOpenSelShipper(true)
-        } else {
-            setOpenSelShipper(true) // ข้างบนก็ true ข้างล่างก็ true อิหยังวะ
-        }
-    }
+        setOpenSelShipper(true);
+    };
 
     return (
         <>
@@ -216,7 +205,7 @@ const ModalImport: React.FC<FormExampleProps> = ({
                                         onSubmit={handleSubmit(async (data) => { // clear state when submit
                                             setIsLoading(true);
                                             setTimeout(async () => {
-                                                await onSubmit(data);
+                                                if (onSubmit) await onSubmit(data);
                                             }, 100);
                                         })}
                                         className='bg-white p-8 rounded-[20px] shadow-lg w-full max-w'
@@ -226,7 +215,7 @@ const ModalImport: React.FC<FormExampleProps> = ({
                                             <div className="form-mode">
                                                 <div className="grid grid-cols-2 gap-x-[20px] gap-y-2">
                                                     <div className="pb-2">
-                                                        <label className={labelClass}><span className="text-red-500">*</span>{`Start Date`}</label>
+                                                        <label className={labelClass}><span className="text-red-500">*</span>Start Date</label>
                                                         <DatePickaForm
                                                             {...register('start_date', { required: "Select start date" })}
                                                             placeHolder="Select Start Date"
@@ -237,15 +226,15 @@ const ModalImport: React.FC<FormExampleProps> = ({
                                                             min={new Date()}
                                                             maxNormalForm={watch('end_date') && watch('end_date')} // ไม่ให้ start_date เกิน end_date
                                                             allowClear
-                                                            isError={errors.start_date && !watch("start_date") ? true : false}
+                                                            isError={Boolean(errors?.start_date && !watch("start_date"))}
                                                             onChange={(e: any) => { setValue('start_date', formatFormDate(e)), e == undefined && setValue('start_date', null, { shouldValidate: true, shouldDirty: true }); }}
                                                             forMode='form'
                                                         />
-                                                        {errors.start_date && !watch("start_date") && <p className={`${textErrorClass}`}>{'Select Start Date'}</p>}
+                                                        {errors?.start_date && !watch("start_date") && <p className={`${textErrorClass}`}>{'Select Start Date'}</p>}
                                                     </div>
 
                                                     <div className="pb-2">
-                                                        <label className={labelClass}><span className="text-red-500">*</span>{`End Date`}</label>
+                                                        <label className={labelClass}><span className="text-red-500">*</span>End Date</label>
                                                         <DatePickaForm
                                                             {...register('end_date', { required: "Select end date" })}
                                                             readOnly={!formattedStartDate ? true : false}
@@ -255,17 +244,17 @@ const ModalImport: React.FC<FormExampleProps> = ({
                                                             // min={getMinDate(formattedStartDate)}
                                                             valueShow={watch("end_date") ? toDayjs(watch("end_date")).format("DD/MM/YYYY") : undefined}
                                                             allowClear
-                                                            isError={errors?.end_date && !watch("end_date") ? true : false}
+                                                            isError={Boolean(errors?.end_date && !watch("end_date"))}
                                                             onChange={(e: any) => { setValue('end_date', formatFormDate(e)), e == undefined && setValue('end_date', null, { shouldValidate: true, shouldDirty: true }); }}
                                                             forMode='form'
                                                         />
-                                                        {errors.end_date && !watch("end_date") && <p className={`${textErrorClass}`}>{'Select end date'}</p>}
+                                                        {errors?.end_date && !watch("end_date") && <p className={`${textErrorClass}`}>{'Select end date'}</p>}
                                                     </div>
                                                 </div>
                                                 <div className="flex justify-end pt-8 gap-[40px]">
-                                                    <div className="font-light bg-slate-100 text-black flex items-center cursor-pointer" onClick={handleClose}>{`Cancel`}</div>
+                                                    <div className="font-light bg-slate-100 text-black flex items-center cursor-pointer px-4 py-2 rounded-lg" onClick={handleClose}>Cancel</div>
                                                     <button type="submit" className="w-[167px] font-light bg-[#00ADEF] text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600">
-                                                        {`Execute`}
+                                                        Execute
                                                     </button>
                                                 </div>
                                             </div>
@@ -276,15 +265,15 @@ const ModalImport: React.FC<FormExampleProps> = ({
                                                     className={labelClass}
                                                 >
                                                     <span className="text-red-500">*</span>
-                                                    {`File`}
+                                                    File
                                                 </label>
 
                                                 {/* <div className="flex items-center col-span-2"> */}
-                                                <div className={`flex items-center col-span-2 -mt-2 rounded-[6px] ${errors.upload_tranform ? 'border  border-[#ff0000]' : ''}`}>
+                                                <div className={`flex items-center col-span-2 -mt-2 rounded-[6px] ${errors?.upload_tranform ? 'border  border-[#ff0000]' : ''}`}>
 
                                                     {/* "Choose File" button */}
                                                     <label className={`flex bg-[#00ADEF] text-white items-center justify-center font-light rounded-l-[6px] text-[16px] text-justify w-[40%] !h-[44px] px-2 cursor-pointer`}>
-                                                        {`Choose File`}
+                                                        Choose File
                                                         <input
                                                             id="url"
                                                             type="file"
@@ -310,7 +299,7 @@ const ModalImport: React.FC<FormExampleProps> = ({
                                                     </div>
                                                 </div>
                                                 <div className="text-[12px] text-[#1473A1] mt-1">{requireText}</div>
-                                                <div className={`text-[14px] text-red-500 col-span-2 -mt-1 flex justify-start w-full ${!errors.upload_tranform ? 'hidden' : 'block'}`}>
+                                                <div className={`text-[14px] text-red-500 col-span-2 -mt-1 flex justify-start w-full ${!errors?.upload_tranform ? 'hidden' : 'block'}`}>
                                                     <span>{errors?.upload_tranform && String(errors?.upload_tranform?.message)}</span>
                                                 </div>
 
@@ -322,20 +311,20 @@ const ModalImport: React.FC<FormExampleProps> = ({
                                                         onClick={() => checkIsShipper('download')}
                                                         className="w-[167px] h-[46px] font-normal text-white py-2 rounded-lg focus:outline-none text-[16px] bg-[#36B1AB] hover:bg-[#29938e] flex items-center justify-center"
                                                     >
-                                                        {`Template`}
+                                                        Template
                                                         <DownloadRoundedIcon sx={{ color: '#ffffff', fontSize: '20px', marginLeft: '8px' }} />
                                                     </button>
 
                                                     {/* Right Side - Cancel & Upload Buttons */}
                                                     <div className="flex items-center gap-4">
                                                         <div className="font-light bg-slate-100 text-black flex items-center cursor-pointer px-4 py-2 rounded-lg" onClick={handleClose}>
-                                                            {`Cancel`}
+                                                            Cancel
                                                         </div>
                                                         <label
                                                             onClick={() => handleClickUpload()}
                                                             className={`${fileName === "Maximum File 10 MB" ? 'bg-[#9CA3AF] text-[#FFFFFF] pointer-events-none' : 'hover:bg-[#28805a]'} w-[167px] h-[46px] font-bold bg-[#17AC6B] text-white py-2 px-5 rounded-lg cursor-pointer focus:outline-none flex items-center justify-center text-[16px]`}
                                                         >
-                                                            {`Upload`}
+                                                            Upload
                                                             <input
                                                                 type="button"
                                                                 className="hidden"
@@ -351,7 +340,7 @@ const ModalImport: React.FC<FormExampleProps> = ({
                                                     open={openSelShipper}
                                                     isLoading={isLoading}
                                                     userDT={userDT}
-                                                    shipperGroupData={Array.isArray(shipperGroupData) ? shipperGroupData : shipperGroupData?.data}
+                                                    shipperGroupData={Array.isArray(shipperGroupData) ? shipperGroupData : (Array.isArray(shipperGroupData?.data) ? shipperGroupData.data : [])}
                                                     dataContractOriginal={dataContractOriginal}
                                                     setIdShipper={setIdShipper}
                                                     onClose={() => {

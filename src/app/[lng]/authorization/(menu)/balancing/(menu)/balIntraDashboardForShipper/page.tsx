@@ -32,7 +32,7 @@ interface ClientProps {
     };
 }
 
-const ClientPage: React.FC<ClientProps> = (props) => {
+const ClientPage: React.FC<ClientProps> = () => {
     const router = useRouter();
 
     const [mdSendEmail, setMdSendEmail] = useState(false);
@@ -65,15 +65,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
-
-            // if (user_permission?.role_config) {
-            //     const updatedUserPermission = generateUserPermission(user_permission);
-            //     setUserPermission(updatedUserPermission);
-            // } else {
-            //     const permission = findRoleConfigByMenuName('Intraday Dashboard for Shipper', userDT)
-            //     setUserPermission(permission);
-            // }
+            if (user_permission) {
+                user_permission = JSON.parse(user_permission); // Convert JSON string to object
+            }
 
             // const permission = findRoleConfigByMenuName('Intraday Dashboard for Shipper', userDT)
             const permission = findRoleConfigByMenuName('Intraday Dashboard', userDT)
@@ -304,15 +298,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         // DATA TIMESTAMP
         const data_timestamp = Array.from(
             new Map(
-                res_?.map((item: any) => [item.execute_timestamp, { timestamp: toDayjs(item?.execute_timestamp * 1000).format('DD/MM/YYYY HH:mm'), execute_timestamp: item?.execute_timestamp }])
+                (Array.isArray(res_) ? res_ : [])?.map((item: any) => [item?.execute_timestamp, { timestamp: item?.execute_timestamp ? toDayjs(item.execute_timestamp * 1000).format('DD/MM/YYYY HH:mm') : '', execute_timestamp: item?.execute_timestamp }])
             ).values()
         );
 
         if (data_timestamp?.length > 0) {
             setDataTimestamp((prev: any[]) => {
-                const existingModes = new Set(prev.map(item => item.timestamp));
-                const newUniqueItems = data_timestamp.filter((item: any) => !existingModes.has(item.timestamp));
-                return [...prev, ...newUniqueItems]; // เติมมันเข้าไป และเช็คซ้ำด้วย
+                const existingModes = new Set((prev || []).map(item => item?.timestamp));
+                const newUniqueItems = data_timestamp.filter((item: any) => !existingModes.has(item?.timestamp));
+                return [...(prev || []), ...newUniqueItems]; // เติมมันเข้าไป และเช็คซ้ำด้วย
             });
         }
 
@@ -910,7 +904,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             // DATA TIMESTAMP
             const data_timestamp = Array.from(
                 new Map(
-                    response?.map((item: any) => [item.execute_timestamp, { timestamp: toDayjs(item?.execute_timestamp * 1000).format('DD/MM/YYYY HH:mm'), execute_timestamp: item?.execute_timestamp }])
+                    (Array.isArray(response) ? response : [])?.map((item: any) => [item?.execute_timestamp, { timestamp: item?.execute_timestamp ? toDayjs(item.execute_timestamp * 1000).format('DD/MM/YYYY HH:mm') : '', execute_timestamp: item?.execute_timestamp }])
                 ).values()
             );
             if (data_timestamp?.length > 0) {
@@ -1033,12 +1027,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const [columnVisibilityNew, setColumnVisibilityNew] = useState<any>(
-        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries((initialColumns || [])?.map((column: any) => [column?.key, column?.visible]))
     );
     const filteredColumns = initialColumns;
 
     useEffect(() => {
-        setColumnVisibilityNew(Object.fromEntries(filteredColumns?.map((column: any) => [column.key, column.visible])))
+        setColumnVisibilityNew(Object.fromEntries((filteredColumns || [])?.map((column: any) => [column?.key, column?.visible])))
     }, [])
 
     const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
@@ -1096,16 +1090,35 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         fetchData();
     }, [resetForm]);
 
-    useEffect(() => {
-        // เช็คว่าชื่อ shipper มีคำว่า ptt อยู่หรือไม่ จะเอาไป validate สีคอลัม Order east west
-        if (srchShipperName) {
-            const find_shipper = dataShipper?.find((item: any) => item.id_name == srchShipperName)
-            // const hasPTT = (find_shipper?.name ?? '').toLowerCase().includes('ptt');
-            const hasPTT = (find_shipper?.id_name ?? '').trim().toLowerCase() === 'ngp-s16-001';
+    // useEffect(() => {
+    //     // เช็คว่าชื่อ shipper มีคำว่า ptt อยู่หรือไม่ จะเอาไป validate สีคอลัม Order east west
+    //     if (srchShipperName) {
+    //         const find_shipper = dataShipper?.find((item: any) => item.id_name == srchShipperName)
+    //         // const hasPTT = (find_shipper?.name ?? '').toLowerCase().includes('ptt');
+    //         const hasPTT = (find_shipper?.id_name ?? '').trim().toLowerCase() === 'ngp-s16-001';
 
-            setIsIncludePtt(hasPTT)
-        }
-    }, [srchShipperName])
+    //         setIsIncludePtt(hasPTT)
+    //     }
+    // }, [srchShipperName])
+
+    useEffect(() => {
+    // ค่าที่ Table กำลังแสดงจริง
+    const appliedShipperName =
+        userDT?.account_manage?.[0]?.user_type_id === 3
+            ? userDT?.account_manage?.[0]?.group?.id_name
+            : uiFilter_?.shipperName;
+
+    const hasPTT =
+        (appliedShipperName ?? '')
+            .trim()
+            .toLowerCase() === 'ngp-s16-001';
+
+    setIsIncludePtt(hasPTT);
+}, [
+    uiFilter_?.shipperName,
+    userDT?.account_manage?.[0]?.user_type_id,
+    userDT?.account_manage?.[0]?.group?.id_name
+]);
 
     return (
         <div className=" space-y-2">
@@ -1128,9 +1141,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         value={srchType}
                         isDisabled={true}
                         onChange={(e) => setSrchType(e.target.value)}
-                        options={dataHvType?.map((item: any) => ({
-                            value: item.type,
-                            label: item.type
+                        options={(Array.isArray(dataHvType) ? dataHvType : [])?.map((item: any) => ({
+                            value: item?.type ?? '',
+                            label: item?.type ?? ''
                         }))}
                     />
  
@@ -1143,15 +1156,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 value={srchShipperName}
                                 isDisabled={srchType == undefined || srchType == '' || srchType == 'System' ? true : false}
                                 onChange={(e) => setSrchShipperName(e.target.value)}
-                                options={dataShipper
+                                options={(Array.isArray(dataShipper) ? dataShipper : [])
                                     ?.filter((item: any) => // เห็นแค่ชื่อตัวเอง
                                         userDT?.account_manage?.[0]?.user_type_id == 3
                                             ? item?.id === userDT?.account_manage?.[0]?.group?.id
                                             : true
                                     )
                                     .map((item: any) => ({
-                                        value: item.id_name,
-                                        label: item.name,
+                                        value: item?.id_name ?? '',
+                                        label: item?.name ?? '',
                                     }))
                                 }
                             />
@@ -1163,16 +1176,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 isDisabled={true}
                                 value={userDT?.account_manage?.[0]?.group?.id_name}
                                 onChange={(e) => setSrchShipperName(e.target.value)}
-                                options={dataShipper
+                                options={(Array.isArray(dataShipper) ? dataShipper : [])
                                     ?.filter((item: any) => // เห็นแค่ชื่อตัวเอง
                                         userDT?.account_manage?.[0]?.user_type_id == 3
                                             ? item?.id === userDT?.account_manage?.[0]?.group?.id
                                             : true
                                     )
                                     .map((item: any) => ({
-                                        // value: item.name,
-                                        value: item.id_name,
-                                        label: item.name,
+                                        value: item?.id_name ?? '',
+                                        label: item?.name ?? '',
                                     }))
                                 }
                             />

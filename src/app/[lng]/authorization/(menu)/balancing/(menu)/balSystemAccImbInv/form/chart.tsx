@@ -45,12 +45,10 @@ const ChartSystem: React.FC<Props> = ({
         const allowedHours = ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "24:00"];
         const genarateData: any = loadData; //real
 
-        const useData = genarateData?.data?.length > 0
-            ? genarateData.data[0].hour.filter((f: any) =>
-                // !!f?.zone &&
-                allowedHours.includes(f?.gas_hour_text)
-            )
-            : [];
+        const useData = (genarateData?.data?.[0]?.hour || [])?.filter((f: any) =>
+            // !!f?.zone &&
+            allowedHours.includes(f?.gas_hour_text)
+        ) || [];
 
         // const useData = loadData?.data?.length > 0 ? loadData?.data[0]?.hour?.filter((f: any) => !!f?.zone && f?.gas_hour_text !== "07:00") : [];
         const findHour: any = useData?.map((item: any) => {
@@ -60,7 +58,7 @@ const ChartSystem: React.FC<Props> = ({
 
         const fnTemplate = (template: any) => {
             console.log('useData : ', useData);
-            const setDataTemplate = template?.map((e: any, ix: number) => {
+            const setDataTemplate = (template || [])?.map((e: any, ix: number) => {
 
                 let styleChart = {}
 
@@ -75,7 +73,7 @@ const ChartSystem: React.FC<Props> = ({
                             //     return eH?.value?.[e?.key] !== null ? eH?.value?.[e?.key] : eH?.value?.[e?.key] == 0 ? 0 : null
                             // }),
                             data: useData?.map((eH: any) => {
-                                return eH?.valueOfEachZone[getZone] !== null ? eH?.valueOfEachZone[getZone]?.totalAccImbInv_percentage : eH?.valueOfEachZone[getZone]?.totalAccImbInv_percentage == 0 ? 0 : null
+                                return eH?.valueOfEachZone?.[getZone]?.totalAccImbInv_percentage ?? null;
                             }),
                             backgroundColor: e?.color,
                             stack: `Stack ${ix}`,
@@ -118,7 +116,7 @@ const ChartSystem: React.FC<Props> = ({
             return setDataTemplate
         }
 
-        const templateLabel = fnTemplate(genarateData?.templateLabelKeys)
+        const templateLabel = fnTemplate(genarateData?.templateLabelKeys || [])
 
         setlabelRender((pre: any) => findHour);
         setdataRender(templateLabel)
@@ -155,15 +153,15 @@ const ChartSystem: React.FC<Props> = ({
 
     function getDynamicYScaleX(dataArray: any) {
         // ดึงค่า numerical values จากทุก hour
-        const allValues = dataArray?.flatMap((dayItem: any) => {
-            if (!dayItem?.hour || !Array.isArray(dayItem.hour)) return [];
-            return dayItem.hour?.flatMap((hourItem: any) => {
+        const allValues = (dataArray || [])?.flatMap((dayItem: any) => {
+            if (!dayItem?.hour || !Array.isArray(dayItem?.hour)) return [];
+            return (dayItem?.hour || [])?.flatMap((hourItem: any) => {
                 if (!hourItem?.value) return [];
-                return Object.values(hourItem.value).filter((v: any) => typeof v === 'number' && !isNaN(v));
+                return Object.values(hourItem?.value || {}).filter((v: any) => typeof v === 'number' && !isNaN(v));
             });
         });
 
-        if (allValues?.length === 0) {
+        if (!allValues || allValues?.length === 0) {
             // ถ้าไม่มีข้อมูลจริงให้คำนวณจากข้อมูลที่ปัดเป็น default
             return { min: -20, max: 20, stepSize: 20 };
         }
@@ -190,19 +188,17 @@ const ChartSystem: React.FC<Props> = ({
         const allValues: number[] = [];
         const allowedHours = ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "24:00"];
 
-        dataArray?.forEach((dayItem: any) => {
-            if (!dayItem?.hour || !Array.isArray(dayItem.hour)) return;
+        (dataArray || [])?.forEach((dayItem: any) => {
+            if (!dayItem?.hour || !Array.isArray(dayItem?.hour)) return;
 
-            const dataHours = dayItem?.hour?.length > 0
-                ? dayItem?.hour.filter((f: any) =>
-                    allowedHours?.includes(f?.gas_hour_text)
-                )
-                : [];
+            const dataHours = (dayItem?.hour || []).filter((f: any) =>
+                allowedHours?.includes(f?.gas_hour_text)
+            );
 
-            dataHours.forEach((hourItem: any) => {
+            (dataHours || []).forEach((hourItem: any) => {
                 // ✅ ดึงค่าจาก hourItem.value (ยกเว้น totalAccImbInv_percentage)
-                if (hourItem?.value && typeof hourItem.value === 'object') {
-                    Object.entries(hourItem.value).forEach(([key, val]: [string, any]) => {
+                if (hourItem?.value && typeof hourItem?.value === 'object') {
+                    Object.entries(hourItem?.value || {}).forEach(([key, val]: [string, any]) => {
                         if (
                             key !== 'totalAccImbInv_percentage' &&
                             typeof val === 'number' &&
@@ -214,8 +210,8 @@ const ChartSystem: React.FC<Props> = ({
                 }
 
                 // ✅ ดึงค่าจาก hourItem.valueOfEachZone (เฉพาะ totalAccImbInv_percentage)
-                if (hourItem?.valueOfEachZone && typeof hourItem.valueOfEachZone === 'object') {
-                    Object.values(hourItem.valueOfEachZone).forEach((zone: any) => {
+                if (hourItem?.valueOfEachZone && typeof hourItem?.valueOfEachZone === 'object') {
+                    Object.values(hourItem?.valueOfEachZone || {}).forEach((zone: any) => {
                         const val = zone?.totalAccImbInv_percentage;
                         if (typeof val === 'number' && !isNaN(val)) {
                             allValues.push(val);
@@ -259,11 +255,11 @@ const ChartSystem: React.FC<Props> = ({
             datalabels: {
                 display: true, // แสดง label
                 align: (context: any) => {
-                    const value = context?.dataset?.data[context?.dataIndex];
+                    const value = context?.dataset?.data?.[context?.dataIndex];
                     return value == 0 ? 'top' : value >= 0 ? 'top' : 'bottom'; // ถ้าค่ามากกว่า 0 จะให้ label อยู่ด้านบน ถ้าน้อยกว่า 0 จะอยู่ด้านล่าง
                 },
                 anchor: (context: any) => {
-                    const value = context?.dataset?.data[context?.dataIndex];
+                    const value = context?.dataset?.data?.[context?.dataIndex];
                     return value == 0 ? 'center' : value >= 0 ? 'end' : 'start'; // ถ้าค่ามากกว่า 0 จะให้ label อยู่ด้านบน ถ้าน้อยกว่า 0 จะอยู่ด้านล่าง
                 },
                 // anchor: 'start', // กำหนดตำแหน่งแนวตั้งของ label
@@ -295,13 +291,13 @@ const ChartSystem: React.FC<Props> = ({
                         size: 12,       // ถ้าจะปรับขนาดตัวหนังสือด้วย
                         family: 'Arial' // กำหนดฟอนต์ (ถ้าต้องการ)
                     },
-                    generateLabels: (chart: any) => chart?.data?.datasets?.map((item: any, i: any) => {
-                        const backgroundColor = chart?.data?.datasets[i].backgroundColor;
+                    generateLabels: (chart: any) => (chart?.data?.datasets || [])?.map((item: any, i: any) => {
+                        const backgroundColor = chart?.data?.datasets?.[i]?.backgroundColor;
                         if (item?.type == 'line') {
                             return {
                                 datasetIndex: i,
                                 text: `${item?.label}`,
-                                hidden: chart.getDatasetMeta(i).hidden,
+                                hidden: chart?.getDatasetMeta ? chart.getDatasetMeta(i)?.hidden : false,
                                 fillStyle: backgroundColor,
                                 strokeStyle: backgroundColor,
                                 fontColor: '#787486',
@@ -314,7 +310,7 @@ const ChartSystem: React.FC<Props> = ({
                             return {
                                 datasetIndex: i,
                                 text: `${item?.label}`,
-                                hidden: chart.getDatasetMeta(i).hidden,
+                                hidden: chart?.getDatasetMeta ? chart.getDatasetMeta(i)?.hidden : false,
                                 fillStyle: backgroundColor,
                                 strokeStyle: backgroundColor,
                                 fontColor: '#787486',
@@ -334,14 +330,14 @@ const ChartSystem: React.FC<Props> = ({
                 callbacks: {
                     label: function (context: any) {
                         // context.formattedValue คือค่าที่โชว์ใน tooltip
-                        return `${context.dataset.label}: ${context.formattedValue}%`;
+                        return `${context?.dataset?.label || ""}: ${context?.formattedValue ?? ""}%`;
                     },
                     labelPointStyle: function (context: any) {
                         const canvas = document.createElement('canvas');
                         canvas.width = 10;
                         canvas.height = 10;
                         const ctx: any = canvas.getContext('2d');
-                        ctx.fillStyle = context?.dataset?.backgroundColor;
+                        ctx.fillStyle = context?.dataset?.backgroundColor || "#000";
                         ctx.beginPath();
                         ctx.arc(5, 5, 3, 0, 2 * Math.PI);
                         ctx.fill();

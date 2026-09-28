@@ -73,7 +73,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // ############### FIELD SEARCH ###############
     const [filteredDataTable, setFilteredDataTable] = useState<any>([]);
     const [dataExport, setDataExport] = useState<any>([]);
-    const [srchStatus, setSrchStatus] = useState('');
+    const [srchStatus, setSrchStatus] = useState<any>([]);
     const [srchEntry, setSrchEntry] = useState<any>([]);
     const [srchExit, setSrchExit] = useState<any>([]);
 
@@ -82,7 +82,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // 1. when srchEntry have value you should search dataTable.revised_capacity_path.area.id == srchEntry and dataTable.revised_capacity_path.area.entry_exit_id == 1
     // 1. when srchExit have value you should search dataTable.revised_capacity_path.area.id == srchExit and dataTable.revised_capacity_path.area.entry_exit_id == 2
     const handleFieldSearch = () => {
-        let stat = srchStatus === "1" ? true : false
+        // let stat = srchStatus === "1" ? true : false
+        const statusFilter = (srchStatus || [])?.map((s: any) => s === "1");
 
         // เดิมโรงงาน
         // const result = dataTable?.filter((item: any) => {
@@ -105,26 +106,27 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         // ใหม่ออลนิว
         const result = dataTable?.filter((item: any) => {
             // Check if revised_capacity_path contains matching areas
-            const hasEntry = srchEntry?.length > 0
+            const hasEntry = srchEntry.length > 0
                 ? item.revised_capacity_path.some(
-                    (path: any) => srchEntry.includes(path?.area?.id?.toString()) && path.area.entry_exit_id === 1
+                    (path: any) => srchEntry.includes(path?.area?.id ? path?.area?.id?.toString() : '') && path.area.entry_exit_id === 1
                 )
                 : true;
 
             const hasExit = srchExit?.length > 0
                 ? item.revised_capacity_path.some(
-                    (path: any) => srchExit.includes(path?.area?.id?.toString()) && path.area.entry_exit_id === 2
+                    (path: any) => srchExit.includes(path?.area?.id ? path?.area?.id?.toString() : '') && path.area.entry_exit_id === 2
                 )
                 : true;
 
-            return hasEntry && hasExit && (srchStatus ? item.active === stat : true);
+            // return hasEntry && hasExit && (srchStatus ? item.active === stat : true);
+            return hasEntry && hasExit && (statusFilter.length ? statusFilter.includes(item?.active) : true);
         });
         setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
         setFilteredDataTable(result);
     };
 
     const handleReset = () => {
-        setSrchStatus('')
+        setSrchStatus([]);
         setSrchEntry([])
         setSrchExit([]);
         setFilteredDataTable(dataTable);
@@ -194,10 +196,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             // get 1st area of path
             // List : Column Revised Capacity Path เพิ่ม Sorting https://app.clickup.com/t/86err1dwf
-            const updatedData = response.map((item: any) => ({
+            const updatedData = (response || [])?.map((item: any) => ({
                 ...item,
                 first_path: item.revised_capacity_path?.[0]?.area || null,
-                node_id: item.revised_capacity_path.map((node: any) => node.area_id) // เอาไว้ทำเช็คซ้ำตอน create หรือ duplicate
+                node_id: (item.revised_capacity_path || [])?.map((node: any) => node.area_id) // เอาไว้ทำเช็คซ้ำตอน create หรือ duplicate
             }));
 
             setData(updatedData);
@@ -293,10 +295,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setFormMode('edit');
         // fetchDataDiv(id);
         setSelectedId(id);
-        const filteredData = dataTable.find((item: any) => item.id === id);
+        const filteredData = (dataTable || [])?.find((item: any) => item.id === id);
         setPathNo(filteredData?.path_no)
         // 1. map node
-        // const nodeEditOrigin = filteredData?.revised_capacity_path.map((item:any, index:any) => ({
+        // const nodeEditOrigin = (filteredData?.revised_capacity_path || [])?.map((item:any, index:any) => ({
         //     id: item.area_id.toString(),
         //     data: {
         //         label: item.area.name,
@@ -318,7 +320,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         //     dragging: false
         // }));
 
-        setNodeEditData(filteredData?.revised_capacity_path.map((item: any, index: any) => ({
+        setNodeEditData((filteredData?.revised_capacity_path || [])?.map((item: any, index: any) => ({
             id: item.area_id.toString(),
             data: {
                 label: item.area.name,
@@ -341,7 +343,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             },
             dragging: false
         })))
-        setEdgeEditData(filteredData?.revised_capacity_path_edges.map((edge: any) => ({
+        setEdgeEditData((filteredData?.revised_capacity_path_edges || [])?.map((edge: any) => ({
             source: edge.source_id.toString(),
             sourceHandle: null,
             target: edge.target_id.toString(),
@@ -401,11 +403,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // #region POST
     const postDataFunc = async () => {
         const dataPost = {
-            nodes: nodeData.map((node: any) => ({
+            nodes: (nodeData || [])?.map((node: any) => ({
                 id: parseInt(node.id),
                 // label: node.data.label 
             })),
-            edges: edgeData.map((edge: any) => ({
+            edges: (edgeData || [])?.map((edge: any) => ({
                 source_id: parseInt(edge.source),
                 target_id: parseInt(edge.target)
             }))
@@ -418,7 +420,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         // ห้ามสร้าง path ซ้ำ
         // New / Duplicate จะต้องเช็คกับข้อมูล Master Path ที่สร้างไว้ก่อนหน้าแล้ว จะต้องสร้างไม่ได้ (ในความหมายนี้คือ ห้ามเหมือนกันทุกตัว ถ้าเหมือนกับตัวที่เคยสร้างไปแล้วจะต้องบันทึกไม่ได้) https://app.clickup.com/t/86euzxxte
-        const nodeIdsCreate = dataPost?.nodes.map((node: any) => node.id);
+        const nodeIdsCreate = (dataPost?.nodes || [])?.map((node: any) => node.id);
         const res_is_dup = hasMatchingNodeIds(dataTable, nodeIdsCreate);
 
         if (dataPost?.edges?.length <= 0 || dataPost?.nodes?.length <= 0 || !check_have_both_entry_exit) {
@@ -513,7 +515,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))
     );
 
     const handleColumnToggle = (columnKey: string | VisibilityState) => {
@@ -591,27 +593,34 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     const row: any = info?.row?.original
                     return (
                         <div className="flex px-2 py-1 items-center">
-                            {row?.revised_capacity_path?.map((item: any, index: any) => (
+                            {(row?.revised_capacity_path || []).map((item: any, index: any) => {
+                                if(item){
+                                    return (
                                 <React.Fragment key={item.id}>
                                     <div
                                         className={`flex justify-center items-center`}
                                         style={{
-                                            backgroundColor: item?.area?.color,
-                                            width: item?.revised_capacity_path_type_id === 1 ? '30px' : '30px',
-                                            height: item?.revised_capacity_path_type_id === 1 ? '30px' : '30px',
-                                            borderRadius: item?.revised_capacity_path_type_id === 1 ? '4px' : '50%',
+                                            backgroundColor: item.area?.color,
+                                            width: '30px',
+                                            height: '30px',
+                                            borderRadius: item.revised_capacity_path_type_id === 1 ? '4px' : '50%',
                                         }}
                                     >
                                         {/* <span className="text-white">{item?.area?.name}</span> */}
                                         {/* <span className={`${item?.revised_capacity_path_type_id === 1 ? 'text-white' : 'text-black'} text-[13px]`}>{item?.area?.name}</span> */}
-                                        <span className={`text-black text-[13px]`}>{item?.area?.name}</span>
+                                        <span className={`text-black text-[13px]`}>{item.area?.name || ''}</span>
                                     </div>
 
                                     {index < row?.revised_capacity_path?.length - 1 && (
                                         <span className="text-gray-500">{'→'}</span>
                                     )}
                                 </React.Fragment>
-                            ))}
+                                    )
+                                }
+                                else{
+                                    return <React.Fragment key={`revised_capacity_path_${index}`}></React.Fragment>;
+                                }
+                            })}
                         </div>
                     )
                 }
@@ -730,7 +739,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             // type="select"
                             type="select-multi-checkbox"
                             value={srchEntry}
-                            onChange={(e) => setSrchEntry(e.target.value)}
+                            onChange={(e) => setSrchEntry(e?.target?.value || [])}
                             options={areaEntry?.map((item: any) => ({
                                 value: item?.id?.toString(),
                                 label: item.name
@@ -743,7 +752,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             // type="select"
                             type="select-multi-checkbox"
                             value={srchExit}
-                            onChange={(e) => setSrchExit(e.target.value)}
+                            onChange={(e) => setSrchExit(e?.target?.value || [])}
                             options={areaExit?.map((item: any) => ({
                                 value: item?.id?.toString(),
                                 label: item.name
@@ -753,7 +762,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         <InputSearch
                             id="searchStat"
                             label="Status"
-                            type="select"
+                            type="select-multi-checkbox"
                             value={srchStatus}
                             onChange={(e) => setSrchStatus(e.target.value)}
                             options={[
@@ -785,7 +794,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             can_export={userPermission ? userPermission?.f_export : false} columnVisibility={columnVisibility} initialColumns={initialColumns}
                         />
                     }
-                    initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
+                    initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
                     onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                     onFilteredDataChange={(filteredData: any) => {
                         const newData = filteredData || [];

@@ -44,7 +44,7 @@ const ModalViewEmailGroup: React.FC<FormExampleProps> = ({
                             </div>
                             <div className='text-[#58585A] font-light text-[14px]'>
                                 {
-                                    emails && emails?.map((item: any, index: number) => (
+                                    (emails || [])?.map((item: any, index: number) => (
                                         <div
                                             key={index}
                                             className="relative w-fit h-[35px] p-2 text-[13px] text-[#58585A] break-all"

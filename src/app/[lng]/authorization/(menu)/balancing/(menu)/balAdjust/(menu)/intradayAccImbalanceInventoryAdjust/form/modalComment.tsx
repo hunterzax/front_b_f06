@@ -65,8 +65,8 @@ const ModalComment: React.FC<FormExampleProps> = ({
                         </div>
 
                         <div className={`mb-1 w-[100%] ${comments?.length > 2 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
-                            {comments && comments?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                            {(comments || [])?.map((item: any) => (
+                                <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
                                         <div className="mb-2 flex justify-between">
                                             <span className='font-light'>

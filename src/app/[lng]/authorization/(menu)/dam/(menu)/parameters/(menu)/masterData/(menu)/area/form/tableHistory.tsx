@@ -38,7 +38,7 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
             <table className="w-full text-sm text-left rtl:text-right table-auto">
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-1">
                     <tr className="h-9">
-                        {columnVisibility.entry_exit && (
+                        {columnVisibility?.entry_exit && (
                             <th
                                 scope="col"
                                 className={`${table_sort_header_style}`}
@@ -49,7 +49,7 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                             </th>
                         )}
 
-                        {columnVisibility.zone && (
+                        {columnVisibility?.zone && (
                             <th
                                 scope="col"
                                 className={`${table_sort_header_style}`}
@@ -60,7 +60,7 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                             </th>
                         )}
 
-                        {columnVisibility.name && (
+                        {columnVisibility?.name && (
                             <th
                                 scope="col"
                                 className={`${table_sort_header_style}`}
@@ -71,7 +71,7 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                             </th>
                         )}
 
-                        {columnVisibility.desc && (
+                        {columnVisibility?.desc && (
                             <th
                                 scope="col"
                                 className={`${table_sort_header_style}`}
@@ -82,7 +82,7 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                             </th>
                         )}
 
-                        {columnVisibility.area_nom_cap && (
+                        {columnVisibility?.area_nom_cap && (
                             <th
                                 scope="col"
                                 className={`${table_sort_header_style} text-center`}
@@ -93,7 +93,7 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                             </th>
                         )}
 
-                        {columnVisibility.supply_ref_quality && (
+                        {columnVisibility?.supply_ref_quality && (
                             <th
                                 scope="col"
                                 className={`${table_sort_header_style}`}
@@ -106,7 +106,7 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
 
 
 
-                        {columnVisibility.start_date && (
+                        {columnVisibility?.start_date && (
                             <th
                                 scope="col"
                                 className={`${table_sort_header_style}`}
@@ -117,7 +117,7 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                             </th>
                         )}
 
-                        {columnVisibility.end_date && (
+                        {columnVisibility?.end_date && (
                             <th
                                 scope="col"
                                 className={`${table_sort_header_style}`}
@@ -128,7 +128,7 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th
                                 scope="col"
                                 className={`${table_sort_header_style}`}
@@ -149,11 +149,11 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                 key={row?.id}
                                 className={`${table_row_style}`}
                             >
-                                {columnVisibility.entry_exit && (
+                                {columnVisibility?.entry_exit && (
                                     <td className="px-2 py-1  justify-center ">{row?.entry_exit && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color }}>{`${row?.entry_exit?.name}`}</div>}</td>
                                 )}
 
-                                {columnVisibility.zone && (
+                                {columnVisibility?.zone && (
                                     <td className="px-2 py-1 h-[30px] justify-center">
                                         {row?.zone && (
                                             <div
@@ -172,7 +172,7 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                     </td>
                                 )}
 
-                                {/* {columnVisibility.name && (
+                                {/* {columnVisibility?.name && (
                                     <td className="px-2 py-1 justify-center ">
                                         {
                                             row?.entry_exit_id == 2 ?
@@ -193,7 +193,7 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                     </td>
                                 )} */}
 
-                                {columnVisibility.name && (
+                                {columnVisibility?.name && (
                                     <td className="px-2 py-1 flex justify-center items-center">
                                         {row?.entry_exit_id == 2 ? (
                                             <div
@@ -214,19 +214,19 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                 )}
 
 
-                                {columnVisibility.desc && (
+                                {columnVisibility?.desc && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.description}</td>
                                 )}
 
-                                {columnVisibility.area_nom_cap && (
+                                {columnVisibility?.area_nom_cap && (
                                     <td className="px-2 py-1 text-right text-[#464255]">{row?.area_nominal_capacity ? formatNumberThreeDecimal(row?.area_nominal_capacity) : ''}</td>
                                 )}
 
-                                {/* {columnVisibility.supply_ref_quality && (
+                                {/* {columnVisibility?.supply_ref_quality && (
                                     <td className="px-2 py-1 text-right text-[#464255]">{!!row?.supply_reference_quality_area && formatNumberThreeDecimal(row?.supply_reference_quality_area)}</td>
                                 )} */}
 
-                                {columnVisibility.supply_ref_quality && (
+                                {columnVisibility?.supply_ref_quality && (
                                     <td className="flex justify-center items-center mt-2">
                                         {row?.supply_reference_quality_area_by ? (
                                             row?.supply_reference_quality_area_by?.entry_exit_id == 2 ? (
@@ -256,15 +256,15 @@ const TableAreaHistory: React.FC<TableProps> = ({ tableData, isLoading, columnVi
                                     </td>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div>
                                             <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

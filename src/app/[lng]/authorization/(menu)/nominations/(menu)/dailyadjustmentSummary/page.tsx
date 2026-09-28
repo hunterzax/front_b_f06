@@ -480,22 +480,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
                 const selctedShipperList = (!selectedShipper || selectedShipper?.length == 0) ? res_shipper_approve : res_shipper_approve.filter((group: any) => selectedShipper?.includes(group.name));
 
-                const contractCodeList = selctedShipperList.flatMap((shipper: any) => {
-                    let reserve_balancing_gas_contract = []
-                    if(shipper?.reserve_balancing_gas_contract && Array.isArray(shipper?.reserve_balancing_gas_contract) && shipper?.reserve_balancing_gas_contract?.length > 0){
-                        reserve_balancing_gas_contract = shipper?.reserve_balancing_gas_contract.map((item: any) => {
+                const contractCodeList = (selctedShipperList || []).flatMap((shipper: any) => {
+                    let reserve_balancing_gas_contract: any[] = [];
+                    if (shipper?.reserve_balancing_gas_contract && Array.isArray(shipper?.reserve_balancing_gas_contract) && (shipper?.reserve_balancing_gas_contract?.length ?? 0) > 0) {
+                        reserve_balancing_gas_contract = (shipper?.reserve_balancing_gas_contract || []).map((item: any) => {
                             return { ...item, contract_code: item?.res_bal_gas_contract }
-                        })
+                        });
                     }
-                    return [...(shipper.contract_code || []), ...reserve_balancing_gas_contract]
-                })
+                    return [...(shipper?.contract_code || []), ...reserve_balancing_gas_contract];
+                });
 
-                if(Array.isArray(srchContractCode)){
-                    const selectedContractCode = srchContractCode.filter(code => contractCodeList.some((contract: any) => contract.contract_code === code))
-                    setSrchContractCode(selectedContractCode)
+                if (Array.isArray(srchContractCode)) {
+                    const selectedContractCode = srchContractCode.filter(code => contractCodeList.some((contract: any) => contract?.contract_code === code));
+                    setSrchContractCode(selectedContractCode);
                 }
-                else if (!contractCodeList.some((contract: any) => contract.contract_code === srchContractCode)){
-                    setSrchContractCode([])
+                else if (!contractCodeList.some((contract: any) => contract?.contract_code === srchContractCode)) {
+                    setSrchContractCode([]);
                 }
                 setDataContract(contractCodeList); 
             } else {
@@ -503,7 +503,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 setDataContract([]);
             }
         });
-    }, [srchGasDayFrom, srchGasDayTo])
+    }, [srchGasDayFrom, srchGasDayTo]);
 
     return (
         <div className=" space-y-2">
@@ -542,35 +542,33 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         value={userDT?.account_manage?.[0]?.user_type_id == 3 ? [userDT?.account_manage?.[0]?.group?.name] : srchShipperName}
                         isDisabled={userDT?.account_manage?.[0]?.user_type_id == 3 ? true : false}
                         onChange={(e: any) => {
-                            setSrchShipperName(e.target.value)
-                            if(Array.isArray(e.target.value)){
-                                if(e.target.value.length > 0){
+                            const val = e?.target?.value ?? [];
+                            setSrchShipperName(val);
+                            if (Array.isArray(val)) {
+                                if ((val?.length ?? 0) > 0) {
                                     const contractCodeList = (dataContract || []).filter((item: any) => {
-                                        const selectedShipper = e.target.value
-                                        if(selectedShipper.length > 0){
-                                            return selectedShipper.includes(item?.group?.name)
+                                        const selectedShipper = val;
+                                        if ((selectedShipper?.length ?? 0) > 0) {
+                                            return selectedShipper.includes(item?.group?.name);
                                         }
-                                        else{
-                                            return true
+                                        else {
+                                            return true;
                                         }
-                                    })
-                                    const newSelectedContractCode = (srchContractCode || []).filter((code: any) => contractCodeList.some((item: any) => item.contract_code === code))
-                                    setSrchContractCode(newSelectedContractCode)
+                                    });
                                 }
-                            }
-                            else if (!dataContract.some((item: any) => item.group?.name === e.target.value)){
-                                setSrchContractCode([])
+                            } else if (!(dataContract || []).some((item: any) => item?.group?.name === val)) {
+                                setSrchContractCode([]);
                             }
                         }}
-                        options={dataShipper
+                        options={(dataShipper || [])
                             ?.filter((item: any) => // เห็นแค่ชื่อตัวเอง
                                 userDT?.account_manage?.[0]?.user_type_id == 3
                                     ? item?.id === userDT?.account_manage?.[0]?.group?.id
                                     : true
                             )
                             .map((item: any) => ({
-                                value: item.name,
-                                label: item.name,
+                                value: item?.name,
+                                label: item?.name,
                             }))
                         }
                     />

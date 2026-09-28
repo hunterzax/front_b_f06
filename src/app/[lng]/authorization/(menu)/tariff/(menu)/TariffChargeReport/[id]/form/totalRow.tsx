@@ -46,22 +46,22 @@ export const TariffTotalRow = ({
             )}
 
             {columnVisibility?.amount_baht && (
-                <td className={`px-2 py-1 text-[#1473A1] bg-[#00ADEF47] font-semibold min-w-[120px] text-right`}>{dataTotal ? formatNumberTwoDecimalNom(dataTotal?.amount) : ''}</td>
+                <td className={`px-2 py-1 text-[#1473A1] bg-[#00ADEF47] font-semibold min-w-[120px] text-right`}>{dataTotal?.amount !== null && dataTotal?.amount !== undefined ? formatNumberTwoDecimalNom(dataTotal?.amount) : ''}</td>
             )}
 
             {columnVisibility?.amount_operator_baht && (
-                <td className={`px-2 py-1 text-[#1473A1] bg-[#00ADEF47] font-semibold min-w-[120px] text-right`}>{dataTotal ? formatNumberTwoDecimalNom(dataTotal?.amount_operator) : ''}</td>
+                <td className={`px-2 py-1 text-[#1473A1] bg-[#00ADEF47] font-semibold min-w-[120px] text-right`}>{dataTotal?.amount_operator !== null && dataTotal?.amount_operator !== undefined ? formatNumberTwoDecimalNom(dataTotal?.amount_operator) : ''}</td>
             )}
 
             {columnVisibility?.amount_compare_baht && (
-                <td className={`px-2 py-1 text-[#1473A1] bg-[#00ADEF47] font-semibold min-w-[120px] text-right`}>{dataTotal ? formatNumberTwoDecimalNom(dataTotal?.amount_compare) : ''}</td>
+                <td className={`px-2 py-1 text-[#1473A1] bg-[#00ADEF47] font-semibold min-w-[120px] text-right`}>{dataTotal?.amount_compare !== null && dataTotal?.amount_compare !== undefined ? formatNumberTwoDecimalNom(dataTotal?.amount_compare) : ''}</td>
             )}
 
             {columnVisibility?.difference && (
-                <td className={`px-2 py-1 text-[#1473A1] bg-[#00ADEF47] font-semibold min-w-[120px] text-right`}>{dataTotal ? formatNumberTwoDecimalNom(dataTotal?.difference) : ''}</td>
+                <td className={`px-2 py-1 text-[#1473A1] bg-[#00ADEF47] font-semibold min-w-[120px] text-right`}>{dataTotal?.difference !== null && dataTotal?.difference !== undefined ? formatNumberTwoDecimalNom(dataTotal?.difference) : ''}</td>
             )}
 
-            {columnVisibility.action && (
+            {columnVisibility?.action && (
                 <td className="px-2 py-1 text-[#1473A1] bg-[#00ADEF47] font-semibold min-w-[120px] ">{''}</td>
             )}
         </tr>

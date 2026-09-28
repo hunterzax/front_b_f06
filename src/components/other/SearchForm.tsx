@@ -1,4 +1,3 @@
-"use client";
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { ArrowForwardIos, ArrowBackIos } from "@mui/icons-material"
 import Datepicker from "tailwind-datepicker-react";
@@ -28,6 +27,7 @@ interface InputSectionProps {
   customWidthPopup?: number | undefined;
   specialMenu?: string | undefined;
   sortOptionBy?: "asc" | "desc" | "none" | "dateMin" | "dateMax"; //dateMin == วันที่น้อยไปมาก || dateMax == วันที่มากไปน้อย
+  isFullWidth?: boolean;
 }
 
 interface DatePickerSectionProps {
@@ -45,6 +45,7 @@ interface DatePickerComponentProps {
 // const selectboxClass = "w-full h-[35px] sm:w-[150px] w-auto max-w-[200px] p-1 !rounded-lg text-gray-900 text-sm block outline-none"; // 2025-03-06 เก็บไว้ก่อน ของเดิม original
 // const selectboxClass = "w-auto h-[35px] min-w-[150px] max-w-[250px] p-1 !rounded-lg text-gray-900 text-sm block outline-none";
 const selectboxClass = "w-auto h-[35px] min-w-[150px] max-w-[500px] p-1 !rounded-lg text-[#9BA3AF] text-sm block outline-none";
+const selectboxFullWidthClass = "w-full h-[35px] p-1 !rounded-lg text-[#9BA3AF] text-sm block outline-none";
 const selectboxClassNew = "h-[40px] w-auto max-w-[200px] p-1 !rounded-lg text-gray-900 text-sm block outline-none";
 const textInputClass = "w-full h-[35px] sm:w-[150px] p-2 !ps-2 focus:!ps-2 hover:!ps-2 rounded-lg text-[#484558] text-xs block border border-[#DFE4EA] bg-white outline-none focus:border-[#d2d4d8]"
 
@@ -65,6 +66,7 @@ export const InputSearch: React.FC<InputSectionProps> = ({
   canReplaceOptionsWithEmpty = false,
   specialMenu = undefined, // ---> ยังไม่ได้ใช้ที่หน้าไหนเลย
   sortOptionBy = "asc",
+  isFullWidth = false,
   onChange
 }) => {
 
@@ -155,7 +157,7 @@ export const InputSearch: React.FC<InputSectionProps> = ({
   };
 
   return (
-    <section className="relative">
+    <section className={`relative ${isFullWidth ? "w-full min-w-0" : ""}`}>
       <label htmlFor={id} className="block mb-2 text-[14px] text-[#58585A]">
         {showRequire && <span className=" text-red-500">*</span>}
         {label}
@@ -191,7 +193,7 @@ export const InputSearch: React.FC<InputSectionProps> = ({
           />
         </div>
       ) : (
-        <div className="flex-1" id={id}>
+        <div className={isFullWidth ? "w-full min-w-0 overflow-hidden" : "flex-1"} id={id}>
           {
             selectboxMode == 'multi' ?
               <Select
@@ -317,11 +319,25 @@ export const InputSearch: React.FC<InputSectionProps> = ({
                             : []
                     }
                     
-                    className={`for_filter ${selectboxClass}`}
+                    className={`for_filter ${isFullWidth ? selectboxFullWidthClass : selectboxClass}`}
+                    fullWidth={isFullWidth}
                     sx={{
-                      minWidth: 180,
-                      width: customWidth ? customWidth: 210,
-                      maxWidth: 420,
+                      ...(isFullWidth
+                        ? {
+                            width: "100%",
+                            maxWidth: "100%",
+                            minWidth: 0,
+                            ".MuiSelect-select": {
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            },
+                          }
+                        : {
+                            minWidth: 180,
+                            width: customWidth ? customWidth : 210,
+                            maxWidth: 420,
+                          }),
                       ".MuiOutlinedInput-notchedOutline": { borderColor: "#DFE4EA" }, // #F174A9
                       "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#d2d4d8" },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#d2d4d8" },
@@ -405,9 +421,13 @@ export const InputSearch: React.FC<InputSectionProps> = ({
                       PaperProps: {
                         style: {
                           maxHeight: 48 * 4.5 + 8,
-                          width: "auto",
-                          minWidth: 180,
-                          maxWidth: 420,
+                          ...(isFullWidth
+                            ? {}
+                            : {
+                                width: "auto",
+                                minWidth: 180,
+                                maxWidth: 420,
+                              }),
                         },
                       },
                     }}
@@ -485,7 +505,7 @@ export const InputSearch: React.FC<InputSectionProps> = ({
                     } */}
 
                     {
-                      displayedOptions?.length > 0 && displayedOptions?.map((item: any) => (
+                      (displayedOptions || [])?.map((item: any) => (
                         <MenuItem key={item.value} value={item.value} sx={{ fontSize: "14px", color: "#454255" }} autoFocus={false}>
                           <Checkbox
                             // checked={isCheckAll || value?.includes(item.value)}
@@ -652,7 +672,7 @@ export const InputSearch: React.FC<InputSectionProps> = ({
                     } */}
 
                       {
-                        displayedOptions?.length > 0 && displayedOptions?.map((item: any) => (
+                        (displayedOptions || [])?.map((item: any) => (
                           <MenuItem key={item.value} value={item.value} sx={{ fontSize: "14px", color: "#454255" }} autoFocus={false}>
                             <Checkbox checked={isCheckAll || value?.includes(item.value)} sx={{ padding: "0px", marginRight: "8px" }} />
                             <ListItemText primary={item.label} primaryTypographyProps={{ sx: { fontSize: "14px" } }} autoFocus={false} />
@@ -676,11 +696,20 @@ export const InputSearch: React.FC<InputSectionProps> = ({
                       IconComponent={(props) => <>{value && !isDisabled ? <CloseIcon fontSize="small" className=' absolute top-[10px] right-[5px] !text-[15px] cursor-pointer' onClick={(e) => handleClearSelect(e)} /> : <ExpandMoreIcon {...props} fontSize="medium" />}</>} // ถ้า isDisable == true จะไม่ให้กด closeIcon
                       value={value}
                       disabled={isDisabled}
-                      className={selectboxClass}
+                      className={isFullWidth ? selectboxFullWidthClass : selectboxClass}
+                      fullWidth={isFullWidth}
                       sx={{
-                        minWidth: 180,
-                        width: customWidth ? customWidth : 'auto',
-                        maxWidth: customWidth ? customWidth : 320,
+                        ...(isFullWidth
+                          ? {
+                              width: "100%",
+                              maxWidth: "100%",
+                              minWidth: 0,
+                            }
+                          : {
+                              minWidth: 180,
+                              width: customWidth ? customWidth : "auto",
+                              maxWidth: customWidth ? customWidth : 320,
+                            }),
                         // paddingRight: 5,
                         '.MuiOutlinedInput-notchedOutline': {
                           borderColor: '#DFE4EA',
@@ -752,9 +781,13 @@ export const InputSearch: React.FC<InputSectionProps> = ({
                         PaperProps: {
                           sx: {
                             maxHeight: 48 * 4.5 + 8,
-                            width: customWidthPopup ? customWidthPopup : 'auto',
-                            minWidth: 180,
-                            maxWidth: customWidthPopup ? customWidthPopup : 320,
+                            ...(isFullWidth
+                              ? {}
+                              : {
+                                  width: customWidthPopup ? customWidthPopup : "auto",
+                                  minWidth: 180,
+                                  maxWidth: customWidthPopup ? customWidthPopup : 320,
+                                }),
                           },
                         },
                       }}

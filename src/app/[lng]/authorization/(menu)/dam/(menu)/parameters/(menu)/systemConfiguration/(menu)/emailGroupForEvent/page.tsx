@@ -34,7 +34,7 @@ interface ClientProps {
     };
 }
 
-const ClientPage: React.FC<ClientProps> = (props) => {
+const ClientPage: React.FC<ClientProps> = () => {
 
     // ############### Check Authen ###############
     const userDT: any = getUserValue();
@@ -376,15 +376,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => row?.user_type?.name || '',
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
                         <div className="flex items-center justify-center">
                             {
                                 row?.user_type &&
-                                <div className="flex w-[100px] bg-[#EEE4FF] justify-center !text-[14px] font-bold rounded-full p-1" style={{ backgroundColor: row?.user_type?.color, color: row?.user_type?.color_text }}>{row?.user_type?.name}</div>
+                                <div className="flex w-[100px] bg-[#EEE4FF] justify-center !text-[14px] font-bold rounded-full p-1" style={{ backgroundColor: row?.user_type?.color, color: row?.user_type?.color_text }}>{row?.user_type?.name ?? ''}</div>
                             }
                         </div>
-                    )
+                    );
                 },
                 width: 150,
                 align: 'center'
@@ -395,8 +396,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => row?.group?.name || '',
                 cell: (info) => {
-                    const row: any = info?.row?.original
-                    return (<div>{row?.group ? row?.group?.name : ''}</div>)
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
+                    return (<div>{row?.group?.name ?? ''}</div>);
                 },
                 width: 300,
             },
@@ -406,8 +408,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => row?.name || '',
                 cell: (info) => {
-                    const row: any = info?.row?.original
-                    return (<div>{row?.name && row?.name}</div>)
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
+                    return (<div>{row?.name ?? ''}</div>);
                 },
                 width: 400,
             },
@@ -415,29 +418,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorKey: "person",
                 header: "Email",
                 enableSorting: false,
-                accessorFn: (row: any) => row?.edit_email_group_for_event_match?.length || '',
+                accessorFn: (row: any) => row?.edit_email_group_for_event_match?.length || 0,
                 size: 60,
                 meta: {
                     align: 'center'
                 },
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
+                    const emailLength = row?.edit_email_group_for_event_match?.length ?? 0;
                     return (
                         <div className="inline-flex items-center justify-center relative">
-                            {/* <button
-                                type="button"
-                                className="flex items-center justify-center px-[2px] py-[2px] rounded-md hover:bg-blue-600 border border-[#DFE4EA] relative"
-                                onClick={() => openViewModal(row)}
-                                disabled={row?.edit_email_group_for_event_match.length <= 0 && true}
-                            >
-                                <SupervisorAccountRoundedIcon sx={{ fontSize: 18, color: '#1473A1', '&:hover': { color: '#ffffff' } }} />
-                            </button> */}
-
                             <button
                                 type="button"
                                 className={iconButtonClass}
                                 onClick={() => openViewModal(row)}
-                                disabled={row?.edit_email_group_for_event_match.length <= 0 && true}
+                                disabled={emailLength <= 0}
                             >
                                 <SupervisorAccountRoundedIcon
                                     fontSize="inherit"
@@ -447,10 +443,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             </button>
 
                             <span className="px-2 text-[#464255]">
-                                {row?.edit_email_group_for_event_match?.length}
+                                {emailLength}
                             </span>
                         </div>
-                    )
+                    );
                 }
             },
             {
@@ -458,15 +454,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 header: "Created by",
                 width: 150,
                 enableSorting: true,
-                accessorFn: (row) => `${`${row?.create_by_account?.first_name} ` || ''}${row?.create_by_account?.last_name} ${row?.create_date ? formatDate(row?.create_date) : ''}`,
+                accessorFn: (row: any) => `${row?.create_by_account?.first_name || ''} ${row?.create_by_account?.last_name || ''} ${row?.create_date ? formatDate(row?.create_date) : ''}`.trim(),
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
                         <div>
-                            <span className={`text-[#464255]`}>{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
+                            <span className={`text-[#464255]`}>{row?.create_by_account?.first_name ?? ''} {row?.create_by_account?.last_name ?? ''}</span>
                             <div className="text-gray-500 text-xs">{row?.create_date ? formatDateTimeSec(row?.create_date) : ''}</div>
                         </div>
-                    )
+                    );
                 },
             },
             {
@@ -474,15 +471,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 header: "Updated by",
                 width: 150,
                 enableSorting: true,
-                accessorFn: (row) => `${`${row?.update_by_account?.first_name} ` || ''}${row?.update_by_account?.last_name} ${row?.update_date ? formatDateTimeSec(row?.update_date) : ''}`,
+                accessorFn: (row: any) => `${row?.update_by_account?.first_name || ''} ${row?.update_by_account?.last_name || ''} ${row?.update_date ? formatDateTimeSec(row?.update_date) : ''}`.trim(),
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
                         <div>
-                            <span className={`text-[#464255]`}>{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
+                            <span className={`text-[#464255]`}>{row?.update_by_account?.first_name ?? ''} {row?.update_by_account?.last_name ?? ''}</span>
                             <div className="text-gray-500 text-xs">{row?.update_date ? formatDateTimeSec(row?.update_date) : ''}</div>
                         </div>
-                    )
+                    );
                 }
             },
             {
@@ -494,20 +492,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 size: 100,
                 cell: (info) => {
                     const row: any = info?.row?.original;
+                    if (!row) return null;
                     const getPermission: any = renderPermission();
 
                     return (
                         <BtnActionTable
                             togglePopover={togglePopover}
                             row_id={row?.id}
-                            disable={getPermission?.f_view == true ? false : true}
+                            disable={!getPermission?.f_view}
                         />
-                    )
+                    );
                 }
             },
-        ]
-        , []
-    )
+        ],
+        []
+    );
 
     const togglePopover = (id: any, anchor: any) => {
         if (openPopoverId === id) {
@@ -675,7 +674,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         can_export={userPermission ? userPermission?.f_export : false} columnVisibility={columnVisibility} initialColumns={initialColumns}
                     />
                 }
-                initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
+                initialColumns={Object.fromEntries((initialColumns || []).map((column: any) => [column?.key, column?.visible]))}
                 onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                 onFilteredDataChange={(filteredData: any) => {
                     const newData = filteredData || [];

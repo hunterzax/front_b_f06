@@ -120,27 +120,27 @@ const TableUser: React.FC<TableProps> = ({ openEditForm, openViewForm, openRole,
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                {columnVisibility.login_mode && (
+                {columnVisibility?.login_mode && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("account_manage[0].mode_account_id", sortState, setSortState, setSortedData, tableData)}>
                     {`Login Mode`}
                     {getArrowIcon("account_manage[0].mode_account_id")}
                   </th>
                 )}
 
-                {columnVisibility.status && (
+                {columnVisibility?.status && (
                   <th scope="col" className={`${table_header_style}`} >
                     {`Status`}
                   </th>
                 )}
 
-                {columnVisibility.id_name && (
+                {columnVisibility?.id_name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("user_id", sortState, setSortState, setSortedData, tableData)}>
                     {`User ID`}
                     {getArrowIcon("user_id")}
                   </th>
                 )}
 
-                {columnVisibility.company_name && (
+                {columnVisibility?.company_name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("account_manage.group.name", sortState, setSortState, setSortedData, tableData)}>
                     {/* {`Company/Group Name`} */}
                     {`Group Name`}
@@ -149,7 +149,7 @@ const TableUser: React.FC<TableProps> = ({ openEditForm, openViewForm, openRole,
                   </th>
                 )}
 
-                {columnVisibility.user_type && (
+                {columnVisibility?.user_type && (
                   // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("account_manage[0].user_type_id", sortState, setSortState, setSortedData, tableData)}>
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("account_manage.user_type.name", sortState, setSortState, setSortedData, tableData)}>
                     {`User Type`}
@@ -158,90 +158,90 @@ const TableUser: React.FC<TableProps> = ({ openEditForm, openViewForm, openRole,
                   </th>
                 )}
 
-                {columnVisibility.division_name && (
+                {columnVisibility?.division_name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("account_manage.division.division_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Division Name`}
                     {getArrowIcon("account_manage.division.division_name")}
                   </th>
                 )}
 
-                {columnVisibility.first_name && (
+                {columnVisibility?.first_name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("first_name", sortState, setSortState, setSortedData, tableData)}>
                     {`First Name`}
                     {getArrowIcon("first_name")}
                   </th>
                 )}
 
-                {columnVisibility.last_name && (
+                {columnVisibility?.last_name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("last_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Last Name`}
                     {getArrowIcon("last_name")}
                   </th>
                 )}
 
-                {columnVisibility.type && (
+                {columnVisibility?.type && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("type_account.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Type`}
                     {getArrowIcon("type_account.name")}
                   </th>
                 )}
 
-                {columnVisibility.role_default && (
+                {columnVisibility?.role_default && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("role.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Role`}
                     {getArrowIcon("role.name")}
                   </th>
                 )}
 
-                {columnVisibility.telephone && (
+                {columnVisibility?.telephone && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("telephone", sortState, setSortState, setSortedData, tableData)}>
                     {`Telephone`}
                     {getArrowIcon("telephone")}
                   </th>
                 )}
 
-                {columnVisibility.email && (
+                {columnVisibility?.email && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("email", sortState, setSortState, setSortedData, tableData)}>
                     {`Email`}
                     {getArrowIcon("email")}
                   </th>
                 )}
 
-                {columnVisibility.start_date && (
+                {columnVisibility?.start_date && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                     {`Start Date`}
                     {getArrowIcon("start_date")}
                   </th>
                 )}
 
-                {columnVisibility.end_date && (
+                {columnVisibility?.end_date && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}>
                     {`End Date`}
                     {getArrowIcon("end_date")}
                   </th>
                 )}
 
-                {columnVisibility.reason && (
+                {columnVisibility?.reason && (
                   <th scope="col" className={`${table_header_style}`} >
                     {`Reason`}
                   </th>
                 )}
 
-                {columnVisibility.update_by && (
+                {columnVisibility?.update_by && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("updated_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Updated by`}
                     {getArrowIcon("updated_by_account.first_name")}
                   </th>
                 )}
 
-                {columnVisibility.last_login && (
+                {columnVisibility?.last_login && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("login_logs.create_date", sortState, setSortState, setSortedData, tableData)}>
                     {`Lasted Login`}
                     {getArrowIcon("login_logs.create_date")}
                   </th>
                 )}
 
-                {columnVisibility.last_login && (
+                {columnVisibility?.last_login && (
                   <th scope="col" className={`${table_header_style} text-center`}>
                     {`Action`}
                     {/* {getArrowIcon("user_type_id")} */}
@@ -251,17 +251,17 @@ const TableUser: React.FC<TableProps> = ({ openEditForm, openViewForm, openRole,
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => (
+              {(sortedData || [])?.map((row: any, index: any) => (
                 <tr
                   key={row?.id}
                   className={`${table_row_style}`}
                 >
 
-                  {columnVisibility.login_mode && (
+                  {columnVisibility?.login_mode && (
                     <td className="px-2 py-1 justify-center ">{row?.account_manage[0]?.mode_account && <div className={`flex w-[100px] justify-center rounded-full p-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} `} style={{ backgroundColor: row?.status ? row?.account_manage[0]?.mode_account.color : '#EFECEC' }}>{row?.account_manage[0]?.mode_account.name} Mode</div>}</td>
                   )}
 
-                  {columnVisibility.status && (
+                  {columnVisibility?.status && (
                     <td className="px-2 py-1 ">
                       {/* <div>
                         <label className="relative inline-block w-10 h-6 cursor-pointer">
@@ -302,15 +302,15 @@ const TableUser: React.FC<TableProps> = ({ openEditForm, openViewForm, openRole,
                   )}
 
                   {/* (2 = TSO, 3 = Shipper, 4 = Other) */}
-                  {columnVisibility.id_name && (
+                  {columnVisibility?.id_name && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.user_id}</td>
                   )}
 
-                  {columnVisibility.company_name && (
+                  {columnVisibility?.company_name && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.account_manage[0]?.group?.name}</td>
                   )}
 
-                  {columnVisibility.user_type && (
+                  {columnVisibility?.user_type && (
                     <td className="px-2 py-1 justify-center">
                       {
                         row?.account_manage[row?.account_manage?.length - 1]?.user_type &&
@@ -328,20 +328,20 @@ const TableUser: React.FC<TableProps> = ({ openEditForm, openViewForm, openRole,
                     </td>
                   )}
 
-                  {columnVisibility.division_name && (
+                  {columnVisibility?.division_name && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.account_manage[row?.account_manage?.length - 1]?.division?.division_name}</td>
                   )}
 
-                  {columnVisibility.first_name && (
+                  {columnVisibility?.first_name && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.first_name}</td>
                   )}
 
-                  {columnVisibility.last_name && (
+                  {columnVisibility?.last_name && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.last_name}</td>
                   )}
 
                   {/* บอกว่า user มาจากไหน PTT, TPA website, Manual */}
-                  {columnVisibility.type && (
+                  {columnVisibility?.type && (
                     <td className="px-2 py-1 justify-center ">
                       {
                         <div className={`flex w-[100px] justify-center rounded-full p-1 ${row?.status ? "!text-[#464255]" : "!text-[#9CA3AF]"}`} style={{ backgroundColor: row?.status ? String(row?.type_account?.color) : '#EFECEC' }}>{row?.type_account?.name}</div>
@@ -364,27 +364,27 @@ const TableUser: React.FC<TableProps> = ({ openEditForm, openViewForm, openRole,
                       </button>
                     </div>
                   </td> */}
-                  {columnVisibility.role_default && (
+                  {columnVisibility?.role_default && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.role?.name}</td>
                   )}
 
-                  {columnVisibility.telephone && (
+                  {columnVisibility?.telephone && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.telephone ? maskLastFiveDigits(row?.telephone) : ''}</td>
                   )}
 
-                  {columnVisibility.email && (
+                  {columnVisibility?.email && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.email ? anonymizeEmail(row?.email) : ''}</td>
                   )}
 
-                  {columnVisibility.start_date && (
+                  {columnVisibility?.start_date && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                   )}
 
-                  {columnVisibility.end_date && (
+                  {columnVisibility?.end_date && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                   )}
 
-                  {columnVisibility.reason && (
+                  {columnVisibility?.reason && (
                     <td className="px-2 py-1 text-center">
                       <div className="inline-flex items-center justify-center relative">
                         {/* <button
@@ -422,7 +422,7 @@ const TableUser: React.FC<TableProps> = ({ openEditForm, openViewForm, openRole,
                     </div>
                   </td> */}
 
-                  {columnVisibility.update_by && (
+                  {columnVisibility?.update_by && (
                     <td className="px-2 py-1">
                       <div>
                         <span className={`${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.updated_by_account?.first_name} {row?.updated_by_account?.last_name}</span>
@@ -431,11 +431,11 @@ const TableUser: React.FC<TableProps> = ({ openEditForm, openViewForm, openRole,
                     </td>
                   )}
 
-                  {columnVisibility.last_login && (
+                  {columnVisibility?.last_login && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.login_logs?.length > 0 ? formatDate(row?.login_logs[0]?.create_date) : ''}</td>
                   )}
 
-                  {columnVisibility.action && (
+                  {columnVisibility?.action && (
                     <td className="px-2 py-1">
                       {/* <div className="relative inline-block text-left"> */}
                       <div className="relative inline-flex justify-center items-center w-full">

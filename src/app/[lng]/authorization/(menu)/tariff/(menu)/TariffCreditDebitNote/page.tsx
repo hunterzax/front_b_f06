@@ -67,7 +67,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 setUserPermission(updatedUserPermission);
             }
         } catch (error) {
-            // Failed to parse user_permission:
+            // Failed to parse user_permission
         }
     }
 
@@ -86,7 +86,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const handleFieldSearch = async () => {
         let url_ = `/master/tariff/tariffCreditDebitNote/findAllTariffCreditDebitNote?offset=0&limit=${itemsPerPage}`
 
-        if (srchShipper.length > 0) {
+        if (Array.isArray(srchShipper) && srchShipper.length > 0) {
             url_ += `&shipper_id=[${srchShipper}]`
         }
 
@@ -111,9 +111,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         const res_main_data = await getService(url_);
 
         // เติมของเข้า obj array
-        const main_data_with_format = res_main_data?.data?.map((item: any) => ({
+        const main_data_with_format = (res_main_data?.data || [])?.map((item: any) => ({
             ...item,
-            month_year_charge_format: dayjs(item.month_year_charge).format("MMMM YYYY")
+            month_year_charge_format: item?.month_year_charge ? dayjs(item.month_year_charge).format("MMMM YYYY") : ''
         }));
 
         setDataTableTotal(res_main_data?.total)
@@ -140,13 +140,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // ############### LIKE SEARCH ###############
     const handleSearch = (query: string) => {
         const queryLower = query.replace(/\s+/g, '')?.toLowerCase().trim();
-        const filtered = dataTable.filter(
+        const filtered = (dataTable || []).filter(
             (item: any) => {
                 return (
                     // item?.group?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     item?.shipper?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     item?.cndn_id?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    dayjs(item?.month_year_charge).format("MMMM YYYY")?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+                    (item?.month_year_charge && dayjs(item?.month_year_charge).isValid() ? dayjs(item?.month_year_charge).format("MMMM YYYY")?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
                     item?.tariff_type_charge?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     item?.tariff_credit_debit_note_type?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)
                 )
@@ -175,9 +175,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             const res_main_data = await getService(`/master/tariff/tariffCreditDebitNote/findAllTariffCreditDebitNote?offset=${offset}&limit=${limit}`);
 
             // เติมของเข้า obj array
-            const main_data_with_format = res_main_data?.data?.map((item: any) => ({
+            const main_data_with_format = (res_main_data?.data || [])?.map((item: any) => ({
                 ...item,
-                month_year_charge_format: dayjs(item.month_year_charge).format("MMMM YYYY")
+                month_year_charge_format: item?.month_year_charge ? dayjs(item.month_year_charge).format("MMMM YYYY") : ''
             }));
 
             setDataTableTotal(res_main_data?.total)
@@ -320,7 +320,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // #region OPEN EDIT
     const openEditForm = (id: any) => {
         setSelectedId(id);
-        const filteredData = dataTable.find((item: any) => item.id === id);
+        const filteredData = (dataTable || []).find((item: any) => item?.id === id);
         setFormMode('edit');
         setFormData(filteredData);
         setFormOpen(true);
@@ -328,7 +328,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // #region OPEN VIEW
     const openViewForm = (id: any) => {
-        const filteredData = dataTable.find((item: any) => item.id === id);
+        const filteredData = (dataTable || []).find((item: any) => item?.id === id);
         setFormMode('view');
         setFormData(filteredData);
         setFormOpen(true);
@@ -350,16 +350,17 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         try {
             const response: any = await getService(`/master/account-manage/history?type=tariff/tariffCreditDebitNote&method=all&id_value=${id}`);
 
-            const valuesArray = response.map((item: any) => item.value);
+            const rawList: any[] = Array.isArray(response) ? response : [];
+            const valuesArray = rawList.map((item: any) => item?.value);
 
-            let mappings = [
+            const mappings = [
                 { key: "shipper.name", title: "Shipper Name" },
                 { key: "month_year_charge", title: "Month/Year" },
                 { key: "tariff_credit_debit_note_type.name", title: "CNDN Type" },
                 { key: "tariff_type_charge.name", title: "Type Charge" },
             ];
-            let result = mappings.map(({ key, title }) => {
-                const value = key.split('.').reduce((acc, part) => acc && acc[part], valuesArray[0]);
+            const result = mappings.map(({ key, title }) => {
+                const value = key.split('.').reduce((acc: any, part: string) => (acc ? acc?.[part] : undefined), valuesArray?.[0]);
                 return {
                     title,
                     value: value || "",
@@ -367,11 +368,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             });
 
             // ถ้า title เป็น Month/Year ให้ format value dayjs().format("MMMM YYYY")
-            const formattedRes = result?.map((item) => {
-                if (item.title === "Month/Year") {
+            const formattedRes = result.map((item: any) => {
+                if (item?.title === "Month/Year") {
                     return {
                         ...item,
-                        value: dayjs(item.value).format("MMMM YYYY"), // 👉 Jan 2025
+                        value: item?.value && dayjs(item?.value).isValid() ? dayjs(item.value).format("MMMM YYYY") : item?.value || "", // 👉 Jan 2025
                     };
                 }
                 return item;
@@ -520,13 +521,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         onChange={(e) => {
                             setSrchShipper(e.target.value)
                         }}
-                        options={dataShipper
+                        options={(dataShipper || [])
                             ?.filter((item: any) =>
                                 userDT?.account_manage?.[0]?.user_type_id == 3 ? item?.id === userDT?.account_manage?.[0]?.group?.id : true // ถ้าเป็น shipper เอาแค่ของตัวเอง
                             )
-                            .map((item: any) => ({
-                                value: item.id,
-                                label: item.name,
+                            ?.map((item: any) => ({
+                                value: item?.id,
+                                label: item?.name,
                             }))
                         }
                     />
@@ -557,9 +558,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         type="select"
                         value={srchCNDNType}
                         onChange={(e) => setSrchCNDNType(e.target.value)}
-                        options={dataCndnType?.map((item: any) => ({
-                            value: item.id,
-                            label: item.name
+                        options={(dataCndnType || [])?.map((item: any) => ({
+                            value: item?.id,
+                            label: item?.name
                         }))}
                     />
 
@@ -569,9 +570,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         type="select"
                         value={srchTypeCharge}
                         onChange={(e) => setSrchTypeCharge(e.target.value)}
-                        options={dataTypeCharge?.map((item: any) => ({
-                            value: item.id,
-                            label: item.name
+                        options={(dataTypeCharge || [])?.map((item: any) => ({
+                            value: item?.id,
+                            label: item?.name
                         }))}
                         customWidth={245}
                     />
@@ -614,8 +615,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             specificMenu={'tariff-credit-debit-note'}
                             specificData={
                                 {
-                                    // "shipper_id": srchShipper?.length > 0 ? srchShipper[0] : '', // [0] ทำไว้กันแตกก่อน
-                                    "shipper_id": srchShipper?.length > 0 ? srchShipper : '', // [0] ทำไว้กันแตกก่อน
+                                    "shipper_id": (Array.isArray(srchShipper) && srchShipper.length > 0) ? srchShipper : '', // [0] ทำไว้กันแตกก่อน
                                     // "shipper_id": '',
                                     "month_year_charge": srchStartDate ? dayjs(srchStartDate).format("YYYY-MM-DD") : '', // 2025-08-01
                                     "cndn_id": srchCndnId ? srchCndnId : '',

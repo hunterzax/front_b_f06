@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useRef} from 'react'
 import React, {useState} from 'react'
 import TableSkeleton from '@/components/material_custom/DefaultSkeleton'
-import {formatNumberFourDecimal, formatNumberThreeDecimal, iconButtonClass, toDayjs} from '@/utils/generalFormatter'
+import {formatNumberFourDecimal, formatNumberThreeDecimal, getContrastTextColor, iconButtonClass, toDayjs} from '@/utils/generalFormatter'
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined'
 import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
@@ -13,6 +13,7 @@ import BtnActionTable from '@/components/other/btnActionInTable'
 import {handleSort, handleSortAllocMgn} from '@/utils/sortTable'
 
 interface TableProps {
+  lastRetrieving?: any,
   openEditForm: (id: any) => void
   openViewForm: (id: any) => void
   openReasonModal: (id?: any, data_comment?: any, row?: any) => void
@@ -346,6 +347,12 @@ const childSortAccessors: Record<
     child?.contract_code?.contract_code ??
     child?.contract_code_text,
 
+  'data.zone': (child: any) =>
+    child?.zone ,
+
+  'data.area': (child: any) =>
+    child?.area ,
+
   'data.review_code': (child: any) =>
   child?.review_code ??
   child?.reviewCode ??
@@ -383,7 +390,7 @@ const childSortAccessors: Record<
   //   child?.systemAllocation
 }
 
-const TableAlloManage: React.FC<TableProps> = ({checkedData, setcheckedData, filteredDataTable, setFilteredDataTable, openEditForm, openViewForm, tableData, isLoading, columnVisibility, userPermission, selectedItem, setselectedItem, openHistoryForm, openReasonModal, sortedData, setSortedData}) => {
+const TableAlloManage: React.FC<TableProps> = ({lastRetrieving, checkedData, setcheckedData, filteredDataTable, setFilteredDataTable, openEditForm, openViewForm, tableData, isLoading, columnVisibility, userPermission, selectedItem, setselectedItem, openHistoryForm, openReasonModal, sortedData, setSortedData}) => {
   const [tk, settk] = useState<boolean>(true)
   const [sortState, setSortState] = useState<{
     column: string | null
@@ -667,7 +674,7 @@ useEffect(() => {
 
           allocation_status: row?.status,
 
-          data: row.data.map((sub: any) => ({
+          data: (row.data || [])?.map((sub: any) => ({
             parent: row?.id,
             id: sub?.id,
             allocation_status:
@@ -1205,6 +1212,29 @@ const genManoStatus = (data: any[]) => {
                   {getArrowIcon('data.contract')}
                 </th>
               )}
+
+              {columnVisibility?.zone && (
+                <th
+                  scope="col"
+                  className={`${table_sort_header_style} bg-[#1473A1]`}
+                  onClick={() => handleSortAll('data.zone')}
+                >
+                  {`Zone`}
+                  {getArrowIcon('data.zone')}
+                </th>
+              )}
+              {columnVisibility?.area && (
+                <th
+                  scope="col"
+                  className={`${table_sort_header_style} text-center bg-[#1473A1]`}
+                  onClick={() => handleSortAll('data.area')}
+                >
+                  {`Area`}
+                  {getArrowIcon('data.area')}
+                </th>
+              )}
+
+
               {columnVisibility?.nompoint && (
                 <th
                   scope="col"
@@ -1217,11 +1247,11 @@ const genManoStatus = (data: any[]) => {
                   {getArrowIcon('point_text')}
                 </th>
               )}
+              {/* https://app.clickup.com/t/9018502823/86eub6dbb */}
               {columnVisibility?.entryexit && (
                 <th
                   scope="col"
                   className={`${table_sort_header_style} text-center bg-[#1473A1]`}
-                  // onClick={() => handleSort("data.entry_exit", sortState, setSortState, setSortedData, tableData)}
                   onClick={() => handleSortAll('entry_exit')}
                 >
                   {`Entry / Exit`}
@@ -1339,10 +1369,20 @@ const genManoStatus = (data: any[]) => {
           </thead>
 
           <tbody>
-            {sortedData &&
-              sortedData?.map((row: any, key: any) => {
-                console.log('-_ : ', ((row?.data?.length > 0 && genManoStatus(row?.data)) || [])); 
-                console.log('_ : ', ((row?.data?.length > 0 && genManoStatus(row?.data)) || [])?.filter((f:any) => f?.shipper_allocation_review !== null));
+            {(sortedData || [])?.map((row: any, key: any) => {
+                
+
+              const previous_allo_total = (((row?.data?.length > 0 && genManoStatus(row?.data)) || [])?.filter((f:any) => {
+                  const reviewDate = f?.allocation_management_shipper_review?.[0]?.create_date_num
+                  const ckRL = lastRetrieving && reviewDate ? lastRetrieving > reviewDate : false
+                  return (
+                    f?.shipper_allocation_review !== null && ckRL
+                  )
+                })?.length === 0)
+                            ? "" : // https://app.clickup.com/t/9018502823/86ev29x2b
+                          (row?.previous_allocation_tpa_for_review !== null && row?.previous_allocation_tpa_for_review !== undefined 
+                          ? ((row?.shipper_allocation_review !== null && row?.shipper_allocation_review !== undefined ? formatNumberFourDecimal(row?.previous_allocation_tpa_for_review) : null))  
+                          : null)
                 return (
                   <>
                     <tr
@@ -1358,7 +1398,7 @@ const genManoStatus = (data: any[]) => {
                       }}
                     >
                       {columnVisibility?.total && (
-                        // <td className="px-2 py-1 text-[#464255]">{row?.menus && row?.menus?.name}</td>
+                        // <td className="px-2 py-1 text-[#464255]">{row?.menus?.name}</td>
                         <td className="px-2 py-1 text-[#464255]">
                           <div className="flex gap-2">
                             <div className="cursor-pointer">{toggleData?.find((item: any) => item?.id == row?.id)?.toggle == true ? <KeyboardArrowUpIcon className="mr-[13px]" /> : <KeyboardArrowDownIcon className="mr-[13px]" />}</div>
@@ -1522,7 +1562,7 @@ const genManoStatus = (data: any[]) => {
                         <td className="px-2 py-1 text-[#464255]">
                           <div className="flex items-center justify-center gap-2">
                             {renderStatus(row?.data)}
-                            {/* <div className="w-[160px] p-1 text-center rounded-[50px]" style={{background: row?.status ? row?.status?.color : '#FFF1CE'}}>{row?.status && row?.status?.name}</div> */}
+                            {/* <div className="w-[160px] p-1 text-center rounded-[50px]" style={{background: row?.status ? row?.status?.color : '#FFF1CE'}}>{row?.status?.name}</div> */}
                           </div>
                         </td>
                       )}
@@ -1539,17 +1579,21 @@ const genManoStatus = (data: any[]) => {
 
                       {columnVisibility?.contract && <td className="px-2 py-1 text-[#464255]" />}
 
+                      {columnVisibility?.zone && <td className="px-2 py-1 text-[#464255]" />}
+
+                      {columnVisibility?.area && <td className="px-2 py-1 text-[#464255]" />}
+
                       {columnVisibility?.nompoint && (
                         <td className="px-2 py-1 text-[#06522E]">
                           <div className="font-bold">{row?.point_text ? row?.point_text : null}</div>
                         </td>
                       )}
-
+                        {/* https://app.clickup.com/t/9018502823/86eub6dbb */}
                       {columnVisibility?.entryexit && row?.entry_exit ? (
                         <td className="px-2 py-1 text-[#464255]">
                           <div className="flex items-center justify-center">
                             <div className="w-[120px] p-1 text-center rounded-[50px]" style={{background: row?.entry_exit == 'Exit' ? '#FFF3C8' : '#C8FED7'}}>
-                              {row?.entry_exit && row?.entry_exit}
+                              {row?.entry_exit}
                             </div>
                           </div>
                         </td>
@@ -1568,7 +1612,7 @@ const genManoStatus = (data: any[]) => {
                         <td className="px-2 py-1 text-[#06522E] text-right">
                           {/* <div className="font-bold">{row?.nomination_value ? formatNumberFourDecimal(row?.nomination_value) : null}</div> */}
                           {/* <div className="font-bold">{row?.nomination_value !== null && row?.nomination_value !== undefined ? formatNumberFourDecimal(row?.nomination_value) : null}</div> */}
-                          <div className="font-bold">{formatNumberThreeDecimal(row?.nomination_value || 0)}</div>
+                          <div className="font-bold">{formatNumberFourDecimal(row?.nomination_value || 0)}</div>
                         </td>
                       )}
 
@@ -1586,7 +1630,7 @@ const genManoStatus = (data: any[]) => {
 
                       {columnVisibility?.previous_allo && (
                         <td className="px-2 py-1 text-[#06522E] text-right">
-                          <div className="font-bold">{row?.previous_allocation_tpa_for_review !== null && row?.previous_allocation_tpa_for_review !== undefined ? formatNumberFourDecimal(row?.previous_allocation_tpa_for_review) : null}</div>
+                          <div className="font-bold">{previous_allo_total}</div>
                         </td>
                       )}
 
@@ -1653,7 +1697,12 @@ const genManoStatus = (data: any[]) => {
 
                     {/* EXPAND */}
                     {toggleData?.find((item: any) => item?.id == row?.id)?.toggle == true && row?.data?.length > 0 && genManoStatus(row?.data)?.map((item: any, key: any) => {
-                        let thisCheckItem: any = checkedData?.find((item: any) => item?.id == row?.id)
+                        const reviewDate = item?.allocation_management_shipper_review?.[0]?.create_date_num
+                        const ckRL = lastRetrieving && reviewDate ? lastRetrieving > reviewDate : false
+                        //https://app.clickup.com/t/9018502823/86ev29x2b
+                        const previous_allo = (((row?.data?.length > 0 && genManoStatus(row?.data)) || [])?.filter((f:any) => f?.shipper_allocation_review !== null)?.length === 0)
+                                 ? "" : 
+                                (ckRL && item?.previousAllocationTPAforReview !== null && item?.previousAllocationTPAforReview !== undefined ? formatNumberFourDecimal(item?.previousAllocationTPAforReview) : '')
 
                         return (
                           <tr key={'sub-' + key + row?.id} className={`${table_row_style}`}>
@@ -1892,6 +1941,39 @@ const genManoStatus = (data: any[]) => {
                               </td>
                             )}
 
+                            {columnVisibility?.zone && (
+                              <td className="px-2 py-1 text-center align-middle">
+                                {(row?.zone_obj || row?.zone) && (
+                                  <div className="inline-flex w-[100px] items-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone_obj?.color, color: getContrastTextColor(row?.zone_obj?.color) }}>
+                                    {row?.zone_obj?.name || row?.zone}
+                                  </div>
+                                )}
+                              </td>
+                            )}
+      
+                            {columnVisibility?.area && (
+                              <td className="px-2 py-1 justify-center flex min-w-[120px] text-center">
+                                {
+                                  (row?.area_obj || row?.area) ?
+                                    (row?.area_obj?.entry_exit_id == 2 || row?.entry_exit?.toUpperCase() == 'EXIT') ?
+                                      <div
+                                        className="flex justify-center items-center rounded-full p-1 text-[#464255]"
+                                        style={{ backgroundColor: row?.area_obj?.color, width: '40px', height: '40px' }}
+                                      >
+                                        {`${row?.area_obj?.name || row?.area}`}
+                                      </div>
+                                      :
+                                      <div
+                                        className="flex justify-center items-center rounded-lg p-1 text-[#464255]"
+                                        style={{ backgroundColor: row?.area_obj?.color, width: '40px', height: '40px' }}
+                                      >
+                                        {`${row?.area_obj?.name || row?.area}`}
+                                      </div>
+                                    : null
+                                }
+                              </td>
+                            )}
+
                             {columnVisibility?.nompoint && (
                               <td className="px-2 py-1 text-[#464255]">
                                 {/* <div>{item?.evidenUse ? item?.evidenUse?.data.point : null}</div> */}
@@ -1924,7 +2006,7 @@ const genManoStatus = (data: any[]) => {
                                 {/* <div className="text-right">{item?.nominationValue !== null && item?.nominationValue !== undefined ? formatNumberFourDecimal(item?.nominationValue) : ''}</div> */}
                                 {/* <div className="text-right">{item?.nominationValue !== null && item?.nominationValue !== undefined ? formatNumberFourDecimal(item?.nominationValue) : ''}</div> */}
                                 {/* <div className="text-right">{item?.nominationValue !== null && item?.nominationValue !== undefined ? formatNumberFourDecimal(Number(String(item?.nominationValue).replace(/,/g, '').trim())) : ''}</div> */}
-                                <div className="text-right">{formatNumberThreeDecimal(Number(String(item?.nominationValue || 0).replace(/,/g, '').trim()))}</div>
+                                <div className="text-right">{formatNumberFourDecimal(Number(String(item?.nominationValue || 0).replace(/,/g, '').trim()))}</div>
                               </td>
                             )}
 
@@ -1942,7 +2024,7 @@ const genManoStatus = (data: any[]) => {
 
                             {columnVisibility?.previous_allo && (
                               <td className="px-2 py-1 text-[#464255]">
-                                <div className="text-right">{item?.previousAllocationTPAforReview !== null && item?.previousAllocationTPAforReview !== undefined ? formatNumberFourDecimal(item?.previousAllocationTPAforReview) : ''}</div>
+                                <div className="text-right">{previous_allo}</div>
                               </td>
                             )}
 
@@ -1951,7 +2033,7 @@ const genManoStatus = (data: any[]) => {
                                 {/* <div className="text-right">{item?.shipperAllocationReview ? formatNumberFourDecimal(item?.shipperAllocationReview) : ''}</div> */}
                                 <div className="text-right">
                                   {
-                                  (item?.allocation_management_shipper_review !== null && item?.allocation_management_shipper_review !== undefined ? formatNumberFourDecimal(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review) : '')
+                                  (item?.allocation_management_shipper_review !== null && item?.allocation_management_shipper_review !== undefined && item?.allocation_management_shipper_review?.length > 0 ? formatNumberFourDecimal(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review) : '')
                                   }
                                 </div>
                               </td>
@@ -1960,8 +2042,8 @@ const genManoStatus = (data: any[]) => {
                             {/* List : Column Metering Value จะต้องขึ้นเฉพาะที่ Row เขียว ความเป็นจริงจะไม่สามารถขึ้นตามรายสัญญาได้ มันต้องขึ้นตามราย Nom Point (ตอนนี้ค่ามันเบิ้ล) เช่น ถ้าค่า Meter มา 1000 มันต้องแสดงแค่ 1000 ตอนนี้มันแสดงเป็น 2000 https://app.clickup.com/t/86eub6dgd */}
                             {columnVisibility?.metering_allo && (
                               <td className="px-2 py-1 text-[#464255]">
-                                {/* <div className="text-right">{item?.meteringValue ? formatNumberFourDecimal(item?.meteringValue) : ''}</div> */}
-                                <div className="text-right"> </div>
+                                <div className="text-right">{item?.meteringValue ? formatNumberFourDecimal(item?.meteringValue) : ''}</div>
+                                {/* <div className="text-right"> </div> */}
                               </td>
                             )}
 

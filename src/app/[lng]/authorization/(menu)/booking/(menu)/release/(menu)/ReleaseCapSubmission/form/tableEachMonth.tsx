@@ -96,7 +96,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                 <tr className="h-9">
 
-                                    {columnVisibility.contract_point && (
+                                    {columnVisibility?.contract_point && (
                                         <th scope="col" className={`${table_header_style}`} 
                                             // onClick={() => handleSort("contract_point", sortState, setSortState, setSortedData, tableData)}
                                         >
@@ -105,7 +105,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                         </th>
                                     )}
 
-                                    {columnVisibility.entry_exit && (
+                                    {columnVisibility?.entry_exit && (
                                         <th scope="col" className={`${table_header_style}`} 
                                             // onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, tableData)}
                                         >
@@ -114,7 +114,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                         </th>
                                     )}
 
-                                    {columnVisibility.start_date && (
+                                    {columnVisibility?.start_date && (
                                         <th scope="col" className={`${table_header_style}`} 
                                             // onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}
                                         >
@@ -123,7 +123,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                         </th>
                                     )}
 
-                                    {columnVisibility.end_date && (
+                                    {columnVisibility?.end_date && (
                                         <th scope="col" className={`${table_header_style}`} 
                                             // onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}
                                         >
@@ -132,7 +132,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                         </th>
                                     )}
 
-                                    {columnVisibility.contracted_mmbtu_d && (
+                                    {columnVisibility?.contracted_mmbtu_d && (
                                         <th scope="col" className={`${table_header_style}`} 
                                             // onClick={() => handleSort("contracted_mmbtu_d", sortState, setSortState, setSortedData, tableData)}
                                         >
@@ -141,7 +141,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                         </th>
                                     )}
 
-                                    {columnVisibility.contracted_mmscfd && (
+                                    {columnVisibility?.contracted_mmscfd && (
                                         <th scope="col" className={`${table_header_style}`} 
                                             // onClick={() => handleSort("contracted_mmscfd", sortState, setSortState, setSortedData, tableData)}
                                         >
@@ -150,13 +150,13 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                         </th>
                                     )}
 
-                                    {columnVisibility.release_mmscfd && (
+                                    {columnVisibility?.release_mmscfd && (
                                         <th scope="col" className={`${table_header_style}`} >
                                             {`Release (MMSCFD)`}
                                         </th>
                                     )}
 
-                                    {columnVisibility.release_mmbtud && (
+                                    {columnVisibility?.release_mmbtud && (
                                         <th scope="col" className={`${table_header_style}`} >
                                             {`Release (MMBTU/D)`}
                                         </th>
@@ -169,7 +169,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                 {
                                     // ถ้าจะเปิด region หาทุก exit ในทุก entry ไปเปิด servive getReleaseGroupByEntryAreaAndDate, หน้า ReleaseCapSubmission , ReleaseCapManagement ModalSubmissionDetails กับ useEffect ข้างบนด้วย
                                     // #region หาทุก exit ในทุก entry
-                                    // sortedData?.length > 0 && sortedData.map((row: any, index: any) => {
+                                    // sortedData?.length > 0 && (sortedData || [])?.map((row: any, index: any) => {
                                     //     let total: number = 0
                                     //     const subRow = row?.map((subRow: any, subRowIndex: any) => {
                                     //         const id = subRow?.booking_row_json_id
@@ -217,32 +217,32 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                     //                     key={`${index}.${subRowIndex}`}
                                     //                     className={`${table_row_style}`}
                                     //                 >
-                                    //                     {columnVisibility.contract_point && (
+                                    //                     {columnVisibility?.contract_point && (
                                     //                         <td className="px-2 py-1 text-[#464255]">{subRow?.temp_contract_point || ''}</td>
                                     //                     )}
 
-                                    //                     {columnVisibility.entry_exit && (
+                                    //                     {columnVisibility?.entry_exit && (
                                     //                         <td className="px-2 py-1  justify-center ">{subRow?.entry_exit && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: subRow?.entry_exit?.color }}>{`${subRow?.entry_exit?.name}`}</div>}</td>
                                     //                     )}
 
-                                    //                     {columnVisibility.start_date && (
+                                    //                     {columnVisibility?.start_date && (
                                     //                         <td className={`px-2 py-1 ${subRow?.temp_start_date? "text-[#464255]" : "text-[#9CA3AF]"}`}>{subRow?.temp_start_date || ''}</td>
                                     //                     )}
 
-                                    //                     {columnVisibility.end_date && (
+                                    //                     {columnVisibility?.end_date && (
                                     //                         <td className={`px-2 py-1 ${subRow?.temp_end_date? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{subRow?.temp_end_date ? formatDateNoTime(addDays(parse(subRow?.temp_end_date , 'dd/MM/yyyy', new Date()), subRow?.is_terminate != true ? 1 : 0).toISOString()) : ''}</td>
                                     //                     )}
 
-                                    //                     {columnVisibility.contracted_mmbtu_d && (
+                                    //                     {columnVisibility?.contracted_mmbtu_d && (
                                     //                         <td className="px-2 py-1 text-[#464255] text-right">{subRow?.total_contracted_mmbtu_d && formatNumberThreeDecimal(subRow?.total_contracted_mmbtu_d)}</td>
                                     //                     )}
 
-                                    //                     {columnVisibility.contracted_mmscfd && (
+                                    //                     {columnVisibility?.contracted_mmscfd && (
                                     //                         <td className="px-2 py-1 text-[#464255] text-right">{subRow?.total_contracted_mmscfd && formatNumberThreeDecimal(subRow?.total_contracted_mmscfd)}</td>
                                     //                     )}
 
 
-                                    //                     {columnVisibility.release_mmscfd && (
+                                    //                     {columnVisibility?.release_mmscfd && (
                                     //                         <td className="px-2 py-1 text-[#464255]">
                                     //                             <NumericFormat
                                     //                                 id={`${id}_release_mmscfd_${startDate}_${endDate}_${subRow?.temp_date}`}
@@ -273,7 +273,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                     //                                     let float: number = 0
 
                                     //                                     try {
-                                    //                                         const { value } = values;
+                                    //                                         const { value } = values || {};
                                     //                                         float = parseFloat(value)
                                     //                                         if(isNaN(float)){
                                     //                                             float = 0
@@ -287,7 +287,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                     //                                     let float: number | undefined = undefined
 
                                     //                                     try {
-                                    //                                         const { value } = values;
+                                    //                                         const { value } = values || {};
                                     //                                         float = parseFloat(value)
                                     //                                         if(isNaN(float)){
                                     //                                             float = undefined
@@ -311,7 +311,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                     //                         </td>
                                     //                     )}
 
-                                    //                     {columnVisibility.release_mmbtud && (
+                                    //                     {columnVisibility?.release_mmbtud && (
                                     //                         <td className="px-2 py-1 text-[#464255]">
                                     //                             <NumericFormat
                                     //                                 id={btuKey}
@@ -337,7 +337,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                     //                                     let float: number = 0
 
                                     //                                     try {
-                                    //                                         const { value } = values;
+                                    //                                         const { value } = values || {};
                                     //                                         float = parseFloat(value)
                                     //                                         if(isNaN(float)){
                                     //                                             float = 0
@@ -351,7 +351,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                     //                                     let float: number | undefined = undefined
 
                                     //                                     try {
-                                    //                                         const { value } = values;
+                                    //                                         const { value } = values || {};
                                     //                                         float = parseFloat(value)
                                     //                                         if(isNaN(float)){
                                     //                                             float = undefined
@@ -399,7 +399,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                     // })
                                     // #endregion หาทุก exit ในทุก entry
                                     //#region ของเดิม
-                                    sortedData?.length > 0 && sortedData.map((row: any, index: any) => {
+                                    sortedData?.length > 0 && (sortedData || [])?.map((row: any, index: any) => {
                                         let firstRow: any
                                         let total: number | undefined
                                         try {
@@ -449,32 +449,32 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                                         key={`${index}.${subRowIndex}`}
                                                         className={`${table_row_style}`}
                                                     >
-                                                        {columnVisibility.contract_point && (
+                                                        {columnVisibility?.contract_point && (
                                                             <td className="px-2 py-1 text-[#464255]">{subRow?.temp_contract_point || ''}</td>
                                                         )}
 
-                                                        {columnVisibility.entry_exit && (
+                                                        {columnVisibility?.entry_exit && (
                                                             <td className="px-2 py-1  justify-center ">{subRow?.entry_exit && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: subRow?.entry_exit?.color }}>{`${subRow?.entry_exit?.name}`}</div>}</td>
                                                         )}
 
-                                                        {columnVisibility.start_date && (
+                                                        {columnVisibility?.start_date && (
                                                             <td className={`px-2 py-1 ${subRow?.temp_start_date? "text-[#464255]" : "text-[#9CA3AF]"}`}>{subRow?.temp_start_date || ''}</td>
                                                         )}
 
-                                                        {columnVisibility.end_date && (
+                                                        {columnVisibility?.end_date && (
                                                             <td className={`px-2 py-1 ${subRow?.temp_end_date? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{subRow?.temp_end_date ? formatDateNoTime(addDays(parse(subRow?.temp_end_date , 'dd/MM/yyyy', new Date()), subRow?.is_terminate != true ? 1 : 0).toISOString()) : ''}</td>
                                                         )}
 
-                                                        {columnVisibility.contracted_mmbtu_d && (
+                                                        {columnVisibility?.contracted_mmbtu_d && (
                                                             <td className="px-2 py-1 text-[#464255] text-right">{subRow?.total_contracted_mmbtu_d && formatNumberThreeDecimal(subRow?.total_contracted_mmbtu_d)}</td>
                                                         )}
 
-                                                        {columnVisibility.contracted_mmscfd && (
+                                                        {columnVisibility?.contracted_mmscfd && (
                                                             <td className="px-2 py-1 text-[#464255] text-right">{subRow?.total_contracted_mmscfd && formatNumberThreeDecimal(subRow?.total_contracted_mmscfd)}</td>
                                                         )}
 
 
-                                                        {columnVisibility.release_mmscfd && (
+                                                        {columnVisibility?.release_mmscfd && (
                                                             <td className="px-2 py-1 text-[#464255]">
                                                                 <NumericFormat
                                                                     id={`${name}_release_mmscfd_${entryName}_${exitName}_${subRow?.temp_date}`}
@@ -504,7 +504,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                                                     isAllowed={(values) => {
                                                                         let float: number = 0
                                                                         try {
-                                                                            const { value } = values;
+                                                                            const { value } = values || {};
                                                                             float = parseFloat(value)
                                                                             if(isNaN(float)){
                                                                                 float = 0
@@ -519,7 +519,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                                                         let float: number | undefined = undefined
 
                                                                         try {
-                                                                            const { value } = values;
+                                                                            const { value } = values || {};
                                                                             float = parseFloat(value)
                                                                             if(isNaN(float)){
                                                                                 float = undefined
@@ -537,13 +537,13 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                                                             setError(`${name}_release_mmbtud_${entryName}_${exitName}_${subRow?.temp_date}`, { type: "alert", message: 'Password must be at least 10 characters' });
                                                                         }
                                                                         setValue(`${name}_release_mmscfd_${entryName}_${exitName}_${subRow?.temp_date}`, float, { shouldValidate: true });
-                                                                        callBack(subRow?.temp_contract_point, subRow.pathMatch, subRow.temp_date, 'mmscfd', float)
+                                                                        callBack(subRow?.temp_contract_point, subRow?.pathMatch, subRow?.temp_date, 'mmscfd', float)
                                                                     }}
                                                                 />
                                                             </td>
                                                         )}
 
-                                                        {columnVisibility.release_mmbtud && (
+                                                        {columnVisibility?.release_mmbtud && (
                                                             <td className="px-2 py-1 text-[#464255]">
                                                                 <NumericFormat
                                                                     id={`${name}_release_mmbtud_${entryName}_${exitName}_${subRow?.temp_date}`}
@@ -569,7 +569,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                                                         let float: number = 0
 
                                                                         try {
-                                                                            const { value } = values;
+                                                                            const { value } = values || {};
                                                                             float = parseFloat(value)
                                                                             if(isNaN(float)){
                                                                                 float = 0
@@ -584,7 +584,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                                                         let float: number | undefined = undefined
 
                                                                         try {
-                                                                            const { value } = values;
+                                                                            const { value } = values || {};
                                                                             float = parseFloat(value)
                                                                             if(isNaN(float)){
                                                                                 float = undefined
@@ -603,7 +603,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
                                                                             setError(`${name}_release_mmscfd_${entryName}_${exitName}_${subRow?.temp_date}`, { type: "alert", message: 'Password must be at least 10 characters' });
                                                                         }
                                                                         setValue(`${name}_release_mmbtud_${entryName}_${exitName}_${subRow?.temp_date}`, float, { shouldValidate: true });
-                                                                        callBack(subRow?.temp_contract_point, subRow.pathMatch, subRow.temp_date, 'mmbtud', float)
+                                                                        callBack(subRow?.temp_contract_point, subRow?.pathMatch, subRow?.temp_date, 'mmbtud', float)
                                                                     }}
                                                                 />
                                                             </td>
@@ -617,9 +617,7 @@ const TableReleaseCapSubEachMonth: React.FC<TableProps> = ({ tableData, callBack
     
                                             {/* TOTAL */}
     
-                                            <tr
-                                                key={row?.id}
-                                                className={`${table_row_style}`}
+                                            <tr key={row?.id ?? index} className={`${table_row_style}`}
                                             >
                                                 <td className="px-2 py-1 font-semibold text-[#464255] bg-[#00ADEF47]" colSpan={7}>{`Total`}</td>
                                                 <td className={`px-2 py-1 font-semibold text-[#464255] bg-[#00ADEF47] text-right ${total && total.toFixed(3) !== "0.000" ? 'text-[#ED1B24]' : ''}`}>

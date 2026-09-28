@@ -47,11 +47,11 @@ const TableSystemParamHistory: React.FC<TableProps> = ({ tableData, isLoading, c
     };
 
     const openInNewTab = (url: string) => {
-        if (url && url.trim() !== "") {
+        if (url && typeof url === 'string' && url.trim() !== "") {
             const validUrl = url.startsWith('http://') || url.startsWith('https://')
                 ? url : `https://${url}`;
 
-            window.open(validUrl, '_blank');
+            window.open(validUrl, '_blank', 'noopener,noreferrer');
         } else {
             // The file URL is not valid or unavailable.
         }
@@ -63,48 +63,48 @@ const TableSystemParamHistory: React.FC<TableProps> = ({ tableData, isLoading, c
             <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-9">
-                        {columnVisibility.module && (
+                        {columnVisibility?.module && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("menus_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Module`}
                                 {getArrowIcon("menus_id")}
                             </th>
                         )}
 
-                        {columnVisibility.system_parameter && (
+                        {columnVisibility?.system_parameter && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("system_parameter_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`System Parameter`}
                                 {getArrowIcon("system_parameter_id")}
                             </th>
                         )}
 
-                        {columnVisibility.value && (
+                        {columnVisibility?.value && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("value", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Value`}
                                 {getArrowIcon("value")}
                             </th>
                         )}
 
-                        {columnVisibility.link && (
+                        {columnVisibility?.link && (
                             <th scope="col" className={`${table_header_style} text-center`}>
                                 {`Link`}
                             </th>
                         )}
 
-                        {columnVisibility.start_date && (
+                        {columnVisibility?.start_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Start Date`}
                                 {getArrowIcon("start_date")}
                             </th>
                         )}
 
-                        {columnVisibility.end_date && (
+                        {columnVisibility?.end_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`End Date`}
                                 {getArrowIcon("end_date")}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -115,32 +115,31 @@ const TableSystemParamHistory: React.FC<TableProps> = ({ tableData, isLoading, c
                 </thead>
 
                 <tbody>
-                    {sortedData && sortedData?.map((row: any, index: any) => {
+                    {(sortedData || [])?.map((row: any, index: any) => {
+                        if (!row) return null;
                         return (
-                            <tr
-                                key={row?.id}
-                                className={`${table_row_style}`}
+                            <tr key={row?.id ?? index} className={`${table_row_style}`}
                             >
-                                {columnVisibility.module && (
-                                    <td className="px-2 py-1 text-[#464255]">{row?.menus && row?.menus?.name}</td>
+                                {columnVisibility?.module && (
+                                    <td className="px-2 py-1 text-[#464255]">{row?.menus?.name ?? ''}</td>
                                 )}
 
-                                {columnVisibility.system_parameter && (
-                                    <td className="px-2 py-1 text-[#464255]">{row?.system_parameter && row?.system_parameter?.name}</td>
+                                {columnVisibility?.system_parameter && (
+                                    <td className="px-2 py-1 text-[#464255]">{row?.system_parameter?.name ?? ''}</td>
                                 )}
 
-                                {columnVisibility.value && (
-                                    <td className="px-2 py-1 text-[#464255]">{row?.value && formatNumberFourDecimalNom(row?.value)}</td>
+                                {columnVisibility?.value && (
+                                    <td className="px-2 py-1 text-[#464255]">{row?.value ? formatNumberFourDecimalNom(row?.value) : ''}</td>
                                 )}
 
-                                {columnVisibility.link && (
+                                {columnVisibility?.link && (
                                     <td className="px-2 py-1 text-center justify-center">
                                         <div className="inline-flex items-center justify-center relative">
                                             <button
                                                 type="button"
-                                                disabled={row?.link ? false : true}
+                                                disabled={!row?.link}
                                                 className={`flex items-center justify-center px-[2px] py-[2px] border  ${row?.link ? 'border-[#A6CE39]' : 'border-[#9CA3AF80]'} rounded-md hover:bg-[#DFE4EA] hover:border hover:border-[#DFE4EA] relative`}
-                                                onClick={() => openInNewTab(row?.link)}
+                                                onClick={() => (row?.link ? openInNewTab(row?.link) : undefined)}
                                             >
                                                 <OpenInNewOutlinedIcon sx={{ fontSize: 18, color: row?.link ? '#A6CE39' : '#9CA3AF' }} />
                                             </button>
@@ -148,18 +147,18 @@ const TableSystemParamHistory: React.FC<TableProps> = ({ tableData, isLoading, c
                                     </td>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div>
-                                            <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
+                                            <span className="text-[#464255]">{row?.update_by_account ? `${row?.update_by_account?.first_name || ''} ${row?.update_by_account?.last_name || ''}` : ''}</span>
                                             <div className="text-gray-500 text-xs">{row?.update_date ? formatDateTimeSec(row?.update_date) : ''}</div>
                                         </div>
                                     </td>

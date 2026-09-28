@@ -110,13 +110,13 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                {columnVisibility.status && (
+                {columnVisibility?.status && (
                   <th scope="col" className={`${table_header_style}`}>
                     {`Status`}
                   </th>
                 )}
 
-                {columnVisibility.id_name && (
+                {columnVisibility?.id_name && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -127,7 +127,7 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
                   </th>
                 )}
 
-                {columnVisibility.name && (
+                {columnVisibility?.name && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -138,13 +138,13 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
                   </th>
                 )}
 
-                {columnVisibility.division_name && (
+                {columnVisibility?.division_name && (
                   <th scope="col" className={`${table_header_style}`}>
                     {`Division Name`}
                   </th>
                 )}
 
-                {columnVisibility.role_default && (
+                {columnVisibility?.role_default && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -155,7 +155,7 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
                   </th>
                 )}
 
-                {columnVisibility.telephone && (
+                {columnVisibility?.telephone && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -166,7 +166,7 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
                   </th>
                 )}
 
-                {columnVisibility.email && (
+                {columnVisibility?.email && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -177,7 +177,7 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
                   </th>
                 )}
 
-                {columnVisibility.start_date && (
+                {columnVisibility?.start_date && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -188,7 +188,7 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
                   </th>
                 )}
 
-                {columnVisibility.end_date && (
+                {columnVisibility?.end_date && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -199,7 +199,7 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
                   </th>
                 )}
 
-                {columnVisibility.action && (
+                {columnVisibility?.action && (
                   <th scope="col" className={`${table_header_style} text-center`}>
                     {`Action`}
                   </th>
@@ -209,10 +209,10 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
             </thead>
 
             <tbody>
-              {sortedData && sortedData.map((row: any, index: any) => (
-                <tr
-                  key={row?.id}
-                  className={`${table_row_style}`}
+              {(sortedData || [])?.map((row: any, index: any) => {
+                if (!row) return null;
+                return (
+                <tr key={row?.id ?? index} className={`${table_row_style}`}
                   style={{ backgroundColor: istrLoading && selectedKey == row?.id ? "#f8f8f8" : "#fff" }}
                 >
                   {/* <td className="px-2 py-1">
@@ -244,7 +244,7 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
                     </div>
                   </td> */}
 
-                  {columnVisibility.status && (
+                  {columnVisibility?.status && (
                     <td className="px-2 py-1">
                       <div>
                         <label className="relative inline-block w-11 h-6 cursor-pointer">
@@ -266,11 +266,11 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
                     </td>
                   )}
 
-                  {columnVisibility.id_name && (
+                  {columnVisibility?.id_name && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.id_name}</td>
                   )}
 
-                  {columnVisibility.name && (
+                  {columnVisibility?.name && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.name}</td>
                   )}
 
@@ -288,7 +288,7 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
                       </button>
                     </div>
                   </td> */}
-                  {columnVisibility.division_name && (
+                  {columnVisibility?.division_name && (
                     <td className="px-2 py-1 text-center">
                       <div className="inline-flex items-center justify-center relative">
                         {/* <button
@@ -314,41 +314,41 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
                           />
                         </button>
                         <span className="px-2 text-[#464255]">
-                          {row?.division.length}
+                          {row?.division?.length ?? 0}
                         </span>
                       </div>
                     </td>
                   )}
 
-                  {columnVisibility.role_default && (
+                  {columnVisibility?.role_default && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.role_default?.length > 0 ? row?.role_default[0]?.role ? row?.role_default[0]?.role?.name : '' : ''}</td>
                   )}
 
-                  {columnVisibility.telephone && (
+                  {columnVisibility?.telephone && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.telephone ? maskLastFiveDigits(row?.telephone) : ''}</td>
                   )}
 
-                  {columnVisibility.email && (
+                  {columnVisibility?.email && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.email ? anonymizeEmail(row?.email) : ''}</td>
                   )}
 
-                  {/* {columnVisibility.start_date && (
+                  {/* {columnVisibility?.start_date && (
                     <td className="px-2 py-1 text-[#464255]">{row.start_date ? formatDateNoTime(row.start_date) : ''}</td>
                   )}
 
-                  {columnVisibility.end_date && (
+                  {columnVisibility?.end_date && (
                     <td className="px-2 py-1 text-[#0DA2A2]">{row.end_date ? formatDateNoTime(row.end_date) : ''}</td>
                   )} */}
 
-                  {columnVisibility.start_date && (
-                    <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} `}>{row.start_date ? formatDateNoTime(row.start_date) : ''}</td>
+                  {columnVisibility?.start_date && (
+                    <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} `}>{row?.start_date ? formatDateNoTime(row.start_date) : ''}</td>
                   )}
 
-                  {columnVisibility.end_date && (
-                    <td className={`px-2 py-1 ${row?.status ? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{row.end_date ? formatDateNoTime(row.end_date) : ''}</td>
+                  {columnVisibility?.end_date && (
+                    <td className={`px-2 py-1 ${row?.status ? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{row?.end_date ? formatDateNoTime(row.end_date) : ''}</td>
                   )}
 
-                  {columnVisibility.action && (
+                  {columnVisibility?.action && (
                     <td className="px-2 py-1">
                       {/* <div className="relative inline-block text-left"> */}
                       <div className="relative inline-flex justify-center items-center w-full">
@@ -377,7 +377,8 @@ const TableTsoGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, openD
                   )}
 
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
           :

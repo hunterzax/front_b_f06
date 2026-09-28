@@ -19,9 +19,10 @@ interface TableProps {
     dataChart?: any;
     userPermission?: any;
     find_area?: any;
+    onExport?: () => void;
 }
 
-const ChartLongTerm2: React.FC<TableProps> = ({ dataChart, userPermission, find_area }) => {
+const ChartLongTerm2: React.FC<TableProps> = ({ dataChart, userPermission, find_area, onExport }) => {
     // ############### REDUX DATA ###############
     const { areaMaster } = useFetchMasters();
     const [forceRefetch, setForceRefetch] = useState(true);
@@ -41,24 +42,24 @@ const ChartLongTerm2: React.FC<TableProps> = ({ dataChart, userPermission, find_
 
     // ############### CHART DATA ###############
     // const dataCharts = [dataChart]; // Array of dataChart objects
-    const labels = dataChart.years;
+    const labels = dataChart?.years || [];
 
     // ผลรวมเหนือแท่ง bars
-    // const allYears = Array.from(new Set(dataChart.flatMap((item:any) => item.year)));
-    const totalValues = dataChart?.years?.map((year: any, index: any) =>
-        dataChart?.groups?.reduce((sum: any, item: any) => {
+    // const allYears = Array.from(new Set(dataChart.flatMap((item:any) => item?.year)));
+    const totalValues = (dataChart?.years || [])?.map((year: any, index: any) =>
+        (dataChart?.groups || [])?.reduce((sum: any, item: any) => {
 
             const yearIndex = index;
-            return sum + (yearIndex !== -1 ? item.sumValues[yearIndex] : 0);
+            return sum + (yearIndex !== -1 ? (item?.sumValues?.[yearIndex] ?? 0) : 0);
         }, 0)
     );
 
     const datasets = useMemo(() => {
-        return (dataChart as { groups: any[] })?.groups?.map((group: any) => {
+        return ((dataChart as { groups: any[] })?.groups || [])?.map((group: any) => {
             // const color_k = getRandomColor();
             return {
-                label: group.name,
-                data: group.sumValues,
+                label: group?.name || '',
+                data: group?.sumValues || [],
                 // backgroundColor: color_k,
                 backgroundColor: group?.color,
                 maxBarThickness: 100,
@@ -118,22 +119,32 @@ const ChartLongTerm2: React.FC<TableProps> = ({ dataChart, userPermission, find_
                     padding: 18,
                 },
                 // onClick: (e:any) => e.stopPropagation()
-                onClick: null
+                onClick: (_event: any, legendItem: any, legend: any) => {
+                    const chart = legend.chart
+                    const datasetIndex = legendItem.datasetIndex
+        
+                    if (datasetIndex === undefined) return
+        
+                    const currentlyVisible = chart.isDatasetVisible(datasetIndex)
+        
+                    chart.setDatasetVisibility(datasetIndex, !currentlyVisible)
+        
+                    chart.update()
+                },
             },
             tooltip: {
                 mode: 'index',
                 enabled: true,
                 intersect: false,
                 backgroundColor: 'white',
-                title: false,
-                titleColor: '#767676',
+                titleColor: "black",
                 bodyColor: '#767676',
                 padding: 5,
                 boxPadding: 5,
                 usePointStyle: true,
                 callbacks: {
-                    title: () => null,
-                    // headers: (tooltipItem: any) => `  ${formatNumber(tooltipItem.raw)} MMBTU`,
+                    // title: () => null,
+                    // headers: (tooltipItem: any) => `  ${formatNumber(tooltipItem?.raw)} MMBTU`,
                     label: (tooltipItem: any) => {
                         return tooltipItem?.dataset?.label + ': ' + `${formatNumberThreeDecimal(tooltipItem?.raw)}`
                     },
@@ -192,11 +203,10 @@ const ChartLongTerm2: React.FC<TableProps> = ({ dataChart, userPermission, find_
                     // if (chartWidth > 800) {
                     if (chartWidth > 1000) {
                         return 0;
-                        // } else if (chartWidth > 400) {
-                    } else if (chartWidth <= 1000) {
-                        return -45;
                     } else if (chartWidth <= 500) {
                         return -90;
+                    } else {
+                        return -45;
                     }
                 },
             },
@@ -215,8 +225,6 @@ const ChartLongTerm2: React.FC<TableProps> = ({ dataChart, userPermission, find_
                 stacked: true,
                 grid: { display: false },
                 min: 0,
-                // max: maxYValue,
-                // max: find_area?.[0]?.area_nominal_capacity !== 0 ? find_area?.[0]?.area_nominal_capacity : maxYValue,
                 max:
                     find_area?.[0]?.area_nominal_capacity !== 0
                         ? (
@@ -227,19 +235,18 @@ const ChartLongTerm2: React.FC<TableProps> = ({ dataChart, userPermission, find_
                         : maxYValue,
                 ticks: {
                     beginAtZero: true,
-                    // max: maxYValue, 
                 },
             },
         },
-        animation: {
-            onSuccess: () => {
-                const chart = ChartJS.getChart('LongtermChart');
-                if (chart) {
-                    const { legend }: any = chart;
-                    legend.top = -15;
-                }
-            },
-        }
+        // animation: {
+        //     onSuccess: () => {
+        //         const chart = ChartJS.getChart('LongtermChart');
+        //         if (chart) {
+        //             const { legend }: any = chart;
+        //             legend.top = -15;
+        //         }
+        //     },
+        // }
     };
 
     // ############### test line on bar chart ###############
@@ -405,6 +412,22 @@ const ChartLongTerm2: React.FC<TableProps> = ({ dataChart, userPermission, find_
                     </div>
                 </div>
             </aside>
+
+
+            {/* <div className="flex justify-between w-full">
+                <div/>
+
+                <div className="flex gap-2 justify-end">
+                    <BtnGeneral
+                        textRender={"Export"}
+                        iconNoRender={false}
+                        modeIcon={"export"}
+                        bgcolor={"#17AC6B"}
+                        generalFunc={() => onExport?.()}
+                        can_export={userPermission ? userPermission?.f_export : false}
+                    />
+                </div>
+            </div> */}
 
             <div className="flex justify-between items-center">
                 <span className="text-[16px] text-[#58585A] font-semibold ">

@@ -68,7 +68,7 @@ const TableViewCurtailsmentAlloc: React.FC<TableProps> = ({ tableData, isLoading
                 </thead>
 
                 <tbody>
-                    {sortedData?.length > 0 && sortedData?.map((row: any, index: any) => {
+                    {(sortedData || [])?.map((row: any, index: any) => {
                         return (
                             <tr
                                 key={row?.id}

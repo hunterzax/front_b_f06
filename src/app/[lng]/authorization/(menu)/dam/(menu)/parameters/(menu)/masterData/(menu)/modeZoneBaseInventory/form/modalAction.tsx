@@ -154,7 +154,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("zone_id", e.target.value);
+                                                    setValue("zone_id", e?.target?.value ?? "");
                                                     // fetchData(e?.target);
                                                 }}
                                                 displayEmpty
@@ -189,7 +189,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("zone_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("zone_id", e.target.value);
+                                                    setValue("zone_id", e?.target?.value ?? "");
                                                     if (errors?.zone_id) { clearErrors('zone_id') }
                                                 }}
                                                 errors={errors?.zone_id}
@@ -277,7 +277,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("high_difficult_day")}
-                                                        onChange={(e) => setValue("high_difficult_day", e.target.value)}
+                                                        onChange={(e) => setValue("high_difficult_day", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.high_difficult_day && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -294,7 +294,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("to_high_difficult_day")}
-                                                        onChange={(e) => setValue("to_high_difficult_day", e.target.value)}
+                                                        onChange={(e) => setValue("to_high_difficult_day", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_high_difficult_day && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -315,7 +315,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("high_red")}
-                                                        onChange={(e) => setValue("high_red", e.target.value)}
+                                                        onChange={(e) => setValue("high_red", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.high_red && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -332,7 +332,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("to_high_red")}
-                                                        onChange={(e) => setValue("to_high_red", e.target.value)}
+                                                        onChange={(e) => setValue("to_high_red", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_high_red && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -353,7 +353,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("high_orange")}
-                                                        onChange={(e) => setValue("high_orange", e.target.value)}
+                                                        onChange={(e) => setValue("high_orange", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.high_orange && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -370,7 +370,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         value={watch("to_high_orange")}
                                                         readOnly={isReadOnly}
                                                         {...register("to_high_orange")}
-                                                        onChange={(e) => setValue("to_high_orange", e.target.value)}
+                                                        onChange={(e) => setValue("to_high_orange", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_high_orange && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -391,7 +391,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("alert_high")}
-                                                        onChange={(e) => setValue("alert_high", e.target.value)}
+                                                        onChange={(e) => setValue("alert_high", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.alert_high && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -408,7 +408,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("to_alert_high")}
-                                                        onChange={(e) => setValue("to_alert_high", e.target.value)}
+                                                        onChange={(e) => setValue("to_alert_high", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_alert_high && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -429,7 +429,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("low_orange")}
-                                                        onChange={(e) => setValue("low_orange", e.target.value)}
+                                                        onChange={(e) => setValue("low_orange", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.low_orange && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -446,7 +446,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("to_low_orange")}
-                                                        onChange={(e) => setValue("to_low_orange", e.target.value)}
+                                                        onChange={(e) => setValue("to_low_orange", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_low_orange && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -467,7 +467,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("low_red")}
-                                                        onChange={(e) => setValue("low_red", e.target.value)}
+                                                        onChange={(e) => setValue("low_red", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.low_red && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -484,7 +484,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("to_low_red")}
-                                                        onChange={(e) => setValue("to_low_red", e.target.value)}
+                                                        onChange={(e) => setValue("to_low_red", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_low_red && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -505,7 +505,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("low_difficult_day")}
-                                                        onChange={(e) => setValue("low_difficult_day", e.target.value)}
+                                                        onChange={(e) => setValue("low_difficult_day", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.low_difficult_day && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}
@@ -522,7 +522,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         placeholder=""
                                                         readOnly={isReadOnly}
                                                         {...register("to_low_difficult_day")}
-                                                        onChange={(e) => setValue("to_low_difficult_day", e.target.value)}
+                                                        onChange={(e) => setValue("to_low_difficult_day", e?.target?.value ?? "")}
                                                         className={`${inputClass} ${errors.to_low_difficult_day && "border-red-500"}  ${isReadOnly && '!bg-[#EFECEC]'}`}
                                                         thousandSeparator={true}
                                                         decimalScale={2}

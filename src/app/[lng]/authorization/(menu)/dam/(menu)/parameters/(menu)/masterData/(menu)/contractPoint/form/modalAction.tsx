@@ -136,14 +136,11 @@ const ModalAction: React.FC<FormExampleProps> = ({
                 setValue('area_id', data?.area_id || '');
                 setValue('contract_point_start_date', formattedStartDate);
 
-                // const filteredArea = flatArea.filter((item: any) => item.zone_id === data?.zone_id);
-                // setAreaMaster(filteredArea)
-                // const filteredArea = areaMaster.filter((item: any) => item.zone_id === data?.zone_id);
-                const filteredArea = areaMasterData.filter((item: any) => item.zone_id === data?.zone_id);
+                const filteredArea = (areaMasterData || []).filter((item: any) => item.zone_id === data?.zone_id);
                 setAreaMaster(filteredArea)
 
-                const zone_name = zoneMasterData?.find((item: any) => item.id === data?.zone_id);
-                const area_name = areaMasterData?.find((item: any) => item.id === data?.area_id);
+                const zone_name = (zoneMasterData || []).find((item: any) => item.id === data?.zone_id);
+                const area_name = (areaMasterData || []).find((item: any) => item.id === data?.area_id);
 
                 setExportData([
                     {
@@ -476,17 +473,18 @@ const ModalAction: React.FC<FormExampleProps> = ({
 
     const validateNewPeriod = async (nominationPoint: any) => {
         const res_period = await postService('/master/asset/nomination-point-new-period-check', nominationPoint)
-        if (res_period?.isValid == true) {
+        if(res_period){
+        if (res_period.isValid == true) {
             return {
                 isValid: true,
                 validateList: []
             }
         }
         else {
-            if (res_period?.nominationPoint && res_period.nominationPoint.length == 1) {
+            if (res_period.nominationPoint && res_period.nominationPoint.length == 1) {
                 const startDateAtThai = toDayjs(nominationPoint.start_date).toISOString()
                 const endDateAtThai = nominationPoint.end_date ? toDayjs(nominationPoint.end_date).toISOString() : null
-                const isSamePoint = res_period?.nominationPoint?.some((item: any) => {
+                const isSamePoint = (res_period.nominationPoint || []).some((item: any) => {
                     return (item.start_date == nominationPoint.start_date || item.start_date == startDateAtThai)
                         && (item.end_date == nominationPoint.end_date || item.end_date == endDateAtThai || (!item.end_date && !nominationPoint.end_date))
                 })
@@ -498,13 +496,16 @@ const ModalAction: React.FC<FormExampleProps> = ({
                 }
             }
 
-            // if (res_period?.validateList) {
-            //     setModalErrorMsg(res_period?.validateList.join('<br/>'));
-            //     setModalErrorOpen(true)
-            // }
             return {
                 isValid: false,
-                validateList: res_period?.validateList
+                validateList: res_period.validateList || []
+            }
+        }
+        }
+        else{
+            return {
+                isValid: false,
+                validateList: []
             }
         }
     }
@@ -639,7 +640,11 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 bgcolor={"#24AB6A"}
                                                 modeIcon={'export'}
                                                 textRender={"Export"}
-                                                generalFunc={() => exportToExcel(exportData, 'contract-point-view-modal', columnVisibility)}
+                                                generalFunc={() => exportToExcel(exportData, 'contract-point-view-modal', columnVisibility,
+                                                    {
+                                                        nomination_points: nominationPoints,
+                                                    }
+                                                )}
                                                 can_export={true}
                                             />
                                         </div>
@@ -678,7 +683,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         resetField("area_id")
                                                         setNominationPoints(data?.nomination_point_list || [])
                                                     }
-                                                    setValue('entry_exit_id', e.target.value);
+                                                    setValue('entry_exit_id', e?.target?.value ?? "");
 
                                                     // เมื่อ edit เลือกเปลี่ยน Entry/Exit ข้อมูล Area ไม่ reset ให้เหมือน Zone และไม่สามารถ save ได้ แม้จะยังไม่ถึงวัน start date https://app.clickup.com/t/86erctycw
                                                     setValue('zone_id', '');
@@ -710,8 +715,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 {...register('description')}
                                                 readOnly={mode == 'view' ? true : false}
                                                 onChange={(e) => {
-                                                    if (e.target.value.length <= 50) {
-                                                        setValue('description', e.target.value);
+                                                    if ((e?.target?.value?.length ?? 0) <= 50) {
+                                                        setValue('description', e?.target?.value ?? "");
                                                     }
                                                 }}
                                                 maxLength={50}
@@ -744,7 +749,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         resetField("area_id")
                                                         setNominationPoints(data?.nomination_point_list || [])
                                                     }
-                                                    setValue("zone_id", e.target.value);
+                                                    setValue("zone_id", e?.target?.value ?? "");
 
                                                     if (errors?.zone_id) { clearErrors('zone_id') }
                                                 }}
@@ -774,10 +779,10 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("area_id") || ""}
                                                 handleChange={(e) => {
-                                                    if (watch("area_id") != e.target.value) {
+                                                    if (watch("area_id") != (e?.target?.value ?? "")) {
                                                         setNominationPoints([])
                                                     }
-                                                    setValue("area_id", e.target.value);
+                                                    setValue("area_id", e?.target?.value ?? "");
                                                     if (errors?.area_id) { clearErrors('area_id') }
                                                 }}
                                                 errors={errors?.area_id}
@@ -936,7 +941,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         valueWatch={watch("nomination_point") ? Array.isArray(watch("nomination_point")) ? watch("nomination_point") : [watch("nomination_point")] : []}
                                                         handleChange={(e) => {
                                                             const value = watch("nomination_point") ? Array.isArray(watch("nomination_point")) ? watch("nomination_point") : [watch("nomination_point")] : []
-                                                            const selectedValues = e.target.value as string[];
+                                                            const selectedValues = (e?.target?.value || []) as string[];
                                                             let newValues;
                                                             if (selectedValues.includes("all")) {
                                                                 newValues = value.length === nomSelectData.length ? [] : nomSelectData.map((item: any) => item.id);
@@ -1002,19 +1007,46 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {nominationPoints?.map((point: any, index: number) => (
-                                                    <tr key={`contract-nomination-point-${point.id}-${index}`}>
+                                                {nominationPoints?.map((point: any, index: number) => {
+                                                    let key = `contract-nomination-point--${index}`
+                                                    let pointStartDate = ''
+                                                    let pointEndDate = ''
+                                                    let pointNominationPoint = ''
+                                                    let pointCreateByFirstName = ''
+                                                    let pointCreateByLastName = ''
+                                                    let pointCreateDate = '-'
+                                                    if(point){
+                                                        if(point.id){
+                                                            key = `contract-nomination-point-${point.id}-${index}`
+                                                        }
+                                                        if(point.start_date){
+                                                            pointStartDate = formatDateNoTime(point.start_date)
+                                                        }
+                                                        if(point.end_date){
+                                                            pointEndDate = formatDateNoTime(point.end_date)
+                                                        }
+                                                        if(point.nomination_point){
+                                                            pointNominationPoint = point.nomination_point || ''
+                                                        }
+                                                        if(point.create_by_account){
+                                                            pointCreateByFirstName = point.create_by_account.first_name || ''
+                                                            pointCreateByLastName = point.create_by_account.last_name || ''
+                                                        }
+                                                        if(point.create_date){
+                                                            pointCreateDate = formatDateNoTime(point.create_date)
+                                                        }
+                                                    }
+                                                    return (
+                                                    <tr key={key}>
                                                         <td className={pxpyClass}>
-                                                            {/* {point.start_date ? new Date(point.start_date).toLocaleDateString() : ''} */}
-                                                            {point.start_date ? formatDateNoTime(point.start_date) : ''}
+                                                            {pointStartDate}
                                                         </td>
 
                                                         <td className={pxpyClass}>
-                                                            {/* {point.end_date ? new Date(point.end_date).toLocaleDateString() : ''} */}
-                                                            {point?.end_date ? formatDateNoTime(point?.end_date) : ''}
+                                                            {pointEndDate}
                                                         </td>
 
-                                                        <td className={pxpyClass}>{point?.nomination_point}</td>
+                                                        <td className={pxpyClass}>{pointNominationPoint}</td>
 
                                                         <td className={pxpyClass}>
                                                             <div>
@@ -1022,18 +1054,16 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 {
                                                                     mode == 'create' ?
                                                                         <span className="text-[#464255]">
-                                                                            {userDT ? `${userDT?.first_name} ${userDT?.last_name}` : ''}
+                                                                            {userDT ? `${userDT?.first_name || ''} ${userDT?.last_name || ''}` : ''}
                                                                         </span>
                                                                         :
                                                                         <span className="text-[#464255]">
-                                                                            {/* {point.create_by ? `User ${point.create_by}` : ''} */}
-                                                                            {point.create_by_account ? `${point?.create_by_account?.first_name} ${point?.create_by_account?.last_name}` : ''}
+                                                                            {point?.create_by_account ? `${pointCreateByFirstName} ${pointCreateByLastName}` : ''}
                                                                         </span>
                                                                 }
 
                                                                 <div className="text-gray-500 text-xs">
-                                                                    {/* {point.nomination_point?.create_date ? new Date(point.nomination_point.create_date).toLocaleDateString() : '-'} */}
-                                                                    {point?.create_date ? formatDateNoTime(point?.create_date) : '-'}
+                                                                    {pointCreateDate}
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -1047,7 +1077,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             </td>
                                                         }
                                                     </tr>
-                                                ))}
+                                                    )
+                                                })}
                                             </tbody>
                                         </table>
                                         {/* {
@@ -1144,7 +1175,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                 description={
                     <div>
                         {
-                            modalErrorMsg?.split('<br/>').length > 1 ?
+                            modalErrorMsg.split('<br/>').length > 1 ?
                                 <ul className="pl-6 text-start list-disc">
                                     {
                                         modalErrorMsg.split('<br/>').map(item => {

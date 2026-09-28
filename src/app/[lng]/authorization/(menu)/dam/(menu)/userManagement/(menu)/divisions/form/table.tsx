@@ -40,28 +40,28 @@ const TableDivision: React.FC<TableProps> = ({ dataTable, isLoading, columnVisib
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
              
-                                {columnVisibility.division_id && (
+                                {columnVisibility?.division_id && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("division_id", sortState, setSortState, setSortedData, dataTable)}>
                                         {`Division ID`}
                                         {getArrowIcon("division_id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.division_name && (
+                                {columnVisibility?.division_name && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("division_name", sortState, setSortState, setSortedData, dataTable)}>
                                         {`Division Name`}
                                         {getArrowIcon("division_name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.division_short_name && (
+                                {columnVisibility?.division_short_name && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("division_short_name", sortState, setSortState, setSortedData, dataTable)}>
                                         {`Division Short Name`}
                                         {getArrowIcon("division_short_name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.create_date && (
+                                {columnVisibility?.create_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("create_date", sortState, setSortState, setSortedData, dataTable)}>
                                         {`Create Date`}
                                         {getArrowIcon("create_date")}
@@ -73,25 +73,25 @@ const TableDivision: React.FC<TableProps> = ({ dataTable, isLoading, columnVisib
 
                         <tbody>
                             {
-                                sortedData && sortedData?.map((row: any, index: any) => (
+                                (sortedData || [])?.map((row: any, index: any) => (
                                     <tr
                                         key={row?.id}
                                         className={`${table_row_style}`}
                                     >
 
-                                        {columnVisibility.division_id && (
+                                        {columnVisibility?.division_id && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.division_id}</td>
                                         )}
 
-                                        {columnVisibility.division_name && (
+                                        {columnVisibility?.division_name && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.division_name}</td>
                                         )}
 
-                                        {columnVisibility.division_short_name && (
+                                        {columnVisibility?.division_short_name && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.division_short_name}</td>
                                         )}
 
-                                        {columnVisibility.create_date && (
+                                        {columnVisibility?.create_date && (
                                             <td className="px-2 py-1 text-[#464255]">
                                                 <div>
                                                     <span className="text-[#464255]">{formatDate(row?.create_date)}</span>

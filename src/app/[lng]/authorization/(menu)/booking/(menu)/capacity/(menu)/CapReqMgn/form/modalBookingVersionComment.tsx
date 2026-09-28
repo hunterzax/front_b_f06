@@ -114,13 +114,13 @@ const ModalBkComment: React.FC<FormExampleProps> = ({
 
                         <div className={`mb-1 w-[100%] ${comments?.length > 2 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
                             {/* {data?.booking_version_comment?.map((item: any) => ( */}
-                            {comments && comments?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                            {(comments || [])?.map((item: any) => (
+                                <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
                                         <div className="mb-2 flex justify-between">
                                             <span className='font-light'>
                                                 By <span className="font-bold text-[#58585A]">
-                                                    {item?.create_by_account?.first_name} {" "} {item?.create_by_account?.last_name}
+                                                    {item?.create_by_account ? `${item?.create_by_account?.first_name || ''} ${item?.create_by_account?.last_name || ''}` : ''}
                                                 </span>
                                             </span>
                                             <span className="text-[#9CA3AF] font-light">{formatDateTimeNoPlusSeven(item?.create_date)}</span>

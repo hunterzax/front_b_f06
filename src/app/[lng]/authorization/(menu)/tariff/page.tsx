@@ -1,8 +1,6 @@
 "use client";
-import { useTranslation } from "@/app/i18n/client";
 import getCookieValue from "@/utils/getCookieValue";
 import useRestrictedPage from "@/utils/checkRestrictedPage";
-import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
 
 interface ClientProps {
@@ -12,11 +10,6 @@ interface ClientProps {
 }
 
 const ClientPage: React.FC<ClientProps> = (props) => {
-    const {
-        params: { lng },
-    } = props;
-    const { t } = useTranslation(lng, "mainPage");
-
     // ############### Check Authen ###############
     const token = getCookieValue("v4r2d9z5m3h0c1p0x7l");
     useRestrictedPage(token);
@@ -29,7 +22,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         <PaymentsOutlinedIcon sx={{ color: "#00ADEF", fontSize: '60px' }} />
                     </div>
                 </div>
-                <div className="text-xs text-[#00ADEF] font-semibold !text-[40px] pt-6">{`Tariff`}</div>
+                <div className="text-xs text-[#00ADEF] font-semibold !text-[40px] pt-6">Tariff</div>
             </div>
         </div>
     );

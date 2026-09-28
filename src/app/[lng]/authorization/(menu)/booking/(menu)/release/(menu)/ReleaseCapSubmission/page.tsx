@@ -116,7 +116,7 @@ interface ClientProps {
 //     }
 // ]
 
-const ClientPage: React.FC<ClientProps> = (props) => {
+const ClientPage: React.FC<ClientProps> = () => {
 
     // ############### Check Authen ###############
     const userDT: any = getUserValue();
@@ -125,33 +125,27 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
-    let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-    // let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+    let user_permission: any = typeof window !== 'undefined' ? (getCookieValue("k3a9r2b6m7t0x5w1s8j") || localStorage?.getItem("k3a9r2b6m7t0x5w1s8j")) : null;
     user_permission = user_permission ? decryptData(user_permission) : null;
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+            }
 
-            // if (user_permission?.role_config) {
-            //     const updatedUserPermission = generateUserPermission(user_permission);
-            //     setUserPermission(updatedUserPermission);
-            // } else {
-            //     const permission = findRoleConfigByMenuName('Release Capacity Submission', userDT)
-            //     setUserPermission(permission);
-            // }
-
-            const permission = findRoleConfigByMenuName('Release Capacity Submission', userDT)
+            const permission = findRoleConfigByMenuName('Release Capacity Submission', userDT);
             if (permission) {
                 setUserPermission(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermission(updatedUserPermission);
             }
         } catch (error) {
             // Failed to parse user_permission:
         }
-    }
+    };
 
     // ############### REDUX DATA ###############
     // const { processTypeMaster, userTypeMaster, nominationTypeMaster, termTypeMaster, statCapReqMgn } = useFetchMasters();
@@ -182,20 +176,24 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const filterContractPointUnderContract = async (contract_code?: any) => {
         try {
-            const selectedContract = dataContract.find((item: any) => item.id == contract_code)
+            const selectedContract = (Array.isArray(dataContract) ? dataContract : []).find((item: any) => item?.id == contract_code);
             if (selectedContract) {
                 if (selectedContract?.contract_start_date) {
-                    setContractStartDate(toDayjs(selectedContract.contract_start_date).toDate())
+                    const dStart = toDayjs(selectedContract.contract_start_date);
+                    if (dStart && dStart.isValid()) setContractStartDate(dStart.toDate());
                 }
 
                 if (selectedContract?.terminate_date) {
-                    setContractEndDate(toDayjs(selectedContract.terminate_date).toDate())
+                    const dEnd = toDayjs(selectedContract.terminate_date);
+                    if (dEnd && dEnd.isValid()) setContractEndDate(dEnd.toDate());
                 }
                 else if (selectedContract?.extend_date) {
-                    setContractEndDate(toDayjs(selectedContract.extend_date).toDate())
+                    const dEnd = toDayjs(selectedContract.extend_date);
+                    if (dEnd && dEnd.isValid()) setContractEndDate(dEnd.toDate());
                 }
                 else if (selectedContract?.contract_end_date) {
-                    setContractEndDate(toDayjs(selectedContract.contract_end_date).toDate())
+                    const dEnd = toDayjs(selectedContract.contract_end_date);
+                    if (dEnd && dEnd.isValid()) setContractEndDate(dEnd.toDate());
                 }
             }
         } catch (error) {
@@ -206,76 +204,76 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             const response: any = await getService(`/master/release-capacity-submission?contract_code_id=${contract_code}`);
             const contractPoints = Array.from(
                 new Set(
-                    response?.data?.flatMap((data: any) => [
-                        data.entryData?.contract_point,
-                        data.exitData?.contract_point
+                    (Array.isArray(response?.data) ? response.data : []).flatMap((data: any) => [
+                        data?.entryData?.contract_point,
+                        data?.exitData?.contract_point
                     ]).filter(Boolean) // Remove null or undefined values
                 )
             );
 
             // Map contractPoints into options for the InputSearch component
-            const options: any = contractPoints.map((point) => ({
+            const options: any = (contractPoints || []).map((point) => ({
                 value: point,
                 label: point,
             }));
-            setContractPointOptions(options)
+            setContractPointOptions(options);
         } catch (error) {
 
         }
-    }
+    };
 
     const handleFieldSearch = async () => {
         try {
             setIsLoading(true);
-            setIsResetForm(true)
+            setIsResetForm(true);
             const response: any = await getService(`/master/release-capacity-submission?contract_code_id=${srchContractCode}`);
 
             if (response?.response?.data?.status === 400) {
                 setModalErrorMsg(response?.response?.data?.error);
-                setModalErrorOpen(true)
-                setIsDisableDocument(true)
+                setModalErrorOpen(true);
+                setIsDisableDocument(true);
             } else {
                 const responseApproved: any = await getService(`/master/release-capacity-submission/approved-release-capacity-submission-detail?contract_code_id=${srchContractCode}`);
-                setApprovedRelease(responseApproved)
+                setApprovedRelease(responseApproved);
 
                 if (response?.data) {
                     // Extract unique contract points from the dataTable
                     const contractPoints = Array.from(
                         new Set(
-                            response?.data?.flatMap((data: any) => [
-                                data.entryData?.contract_point,
-                                data.exitData?.contract_point
+                            (Array.isArray(response?.data) ? response.data : []).flatMap((data: any) => [
+                                data?.entryData?.contract_point,
+                                data?.exitData?.contract_point
                             ]).filter(Boolean) // Remove null or undefined values
                         )
                     );
 
                     // Map contractPoints into options for the InputSearch component
-                    const options: any = contractPoints.map((point) => ({
+                    const options: any = (contractPoints || []).map((point) => ({
                         value: point,
                         label: point,
                     }));
-                    setContractPointOptions(options)
+                    setContractPointOptions(options);
                 }
 
                 if (response?.contract_code_id && response?.group?.id) {
                     setDataPost({
-                        "contract_code_id": response.contract_code_id,
-                        "group_id": response.group.id,
+                        "contract_code_id": response?.contract_code_id,
+                        "group_id": response?.group?.id,
                         "data": []
-                    })
+                    });
                 }
-                if (srchPoint?.length > 0) {
-                    let filter_point = response.data.filter((item?: any) =>
-                        (srchPoint.includes(item.exitData.contract_point) || srchPoint.includes(item.entryData.contract_point))
+                if (Array.isArray(srchPoint) && srchPoint.length > 0) {
+                    let filter_point = (Array.isArray(response?.data) ? response.data : []).filter((item?: any) =>
+                        (srchPoint.includes(item?.exitData?.contract_point) || srchPoint.includes(item?.entryData?.contract_point))
                     );
-                    response.data = filter_point
+                    if (response) response.data = filter_point;
                 }
 
                 setData(response?.data || []);
                 setFilteredDataTable(response?.data || []);
-                setIsUpdateMutableDataTable(true)
-                setDataDetail(response)
-                setIsDisableDocument(false)
+                setIsUpdateMutableDataTable(true);
+                setDataDetail(response);
+                setIsDisableDocument(false);
             }
 
             setTimeout(() => {
@@ -283,27 +281,26 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             }, 1000);
         } catch (error) {
             setIsLoading(false);
-            setIsDisableDocument(true)
+            setIsDisableDocument(true);
         }
     };
 
     const handleReset = () => {
-        setDataPost({ ...dataPost, data: [] })
-        setIsResetForm(true)
-        setIsUpdateMutableDataTable(true)
-        setData([])
+        setDataPost({ ...dataPost, data: [] });
+        setIsResetForm(true);
+        setIsUpdateMutableDataTable(true);
+        setData([]);
         setFilteredDataTable([]);
-        setContractPointOptions([])
+        setContractPointOptions([]);
 
-        setSrchContractCode('')
-        setSrchShipper('')
-        setSrchStatus('')
+        setSrchContractCode('');
+        setSrchShipper('');
+        setSrchStatus('');
 
-        setSrchPoint([])
+        setSrchPoint([]);
 
         setSrchStartDate(null);
         setSrchEndDate(null);
-        // setFilteredDataTable(dataTable);
         setKey((prevKey) => prevKey + 1);
         setIsLoading(false);
     };
@@ -312,34 +309,36 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const handleSearch = (query: string) => {
         setSrchQuery(query);
 
-        const queryLower = query.toLowerCase().replace(/\s+/g, "").trim();
+        const queryLower = (query || '').toLowerCase().replace(/\s+/g, "").trim();
         let filtered: any = [];
 
         if (queryLower !== '') {
-            for (let i = 0; i < dataEachMonth?.length; i++) {
-                let findItem: any = dataEachMonth[i]?.filter((item: any) => {
+            const listEachMonth = Array.isArray(dataEachMonth) ? dataEachMonth : [];
+            for (let i = 0; i < listEachMonth.length; i++) {
+                const subList = Array.isArray(listEachMonth[i]) ? listEachMonth[i] : [];
+                let findItem: any = subList.filter((item: any) => {
+                    if (!item) return false;
                     return (
-                        item?.temp_contract_point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item?.entry_exit?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item?.temp_start_date?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item?.temp_end_date?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item?.total_contracted_mmbtu_d?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberThreeDecimal(item?.total_contracted_mmbtu_d)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-
-                        item?.total_contracted_mmscfd?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberThreeDecimal(item?.total_contracted_mmscfd)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)
-                    )
-                })
+                        (item?.temp_contract_point ? item.temp_contract_point.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (item?.entry_exit?.name ? item.entry_exit.name.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (item?.temp_start_date ? item.temp_start_date.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (item?.temp_end_date ? item.temp_end_date.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (item?.total_contracted_mmbtu_d != null && item.total_contracted_mmbtu_d.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (formatNumberThreeDecimal(item?.total_contracted_mmbtu_d) ? String(formatNumberThreeDecimal(item.total_contracted_mmbtu_d)).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (item?.total_contracted_mmscfd != null && item.total_contracted_mmscfd.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (formatNumberThreeDecimal(item?.total_contracted_mmscfd) ? String(formatNumberThreeDecimal(item.total_contracted_mmscfd)).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false)
+                    );
+                });
 
                 if (findItem?.length > 0) {
                     filtered.push([...findItem]);
                 }
             }
         } else {
-            filtered = dataEachMonth;
+            filtered = Array.isArray(dataEachMonth) ? dataEachMonth : [];
         }
 
-        setPaginatedData(filtered?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
+        setPaginatedData(filtered?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
     };
 
     // ############### DATA TABLE ###############
@@ -447,7 +446,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     //         const endDate = toDayjs(srchEndDate);
 
     //         let terminateDate: dayjs.Dayjs | undefined
-    //         const contract = dataContract.find((item: any) => item.id == srchContractCode)
+    //         const contract = (dataContract || [])?.find((item: any) => item.id == srchContractCode)
     //         if (contract?.terminate_date) {
     //             terminateDate = toDayjs(contract.terminate_date);
     //         }
@@ -872,7 +871,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     //         const endDate = toDayjs(srchEndDate);
 
     //         let terminateDate: dayjs.Dayjs | undefined
-    //         const contract = dataContract.find((item: any) => item.id == srchContractCode)
+    //         const contract = (dataContract || [])?.find((item: any) => item.id == srchContractCode)
     //         if (contract?.terminate_date) {
     //             terminateDate = toDayjs(contract.terminate_date);
     //         }
@@ -991,27 +990,27 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             const n = parseFloat(String(v).trim().replace(/,/g, ''));
             return Number.isNaN(n) ? null : n;
         };
-        const dmy = (d: any) => toDayjs(d).format('DD/MM/YYYY');
+        const dmy = (d: any) => { const parsed = toDayjs(d); return (parsed && parsed.isValid()) ? parsed.format('DD/MM/YYYY') : ''; };
         const arKey = (cp: any, eeid: any, area: any, zone: any, startDMY: any, endDMY: any) => `${cp}|${eeid}|${area}|${zone}|${startDMY}|${endDMY}`;
 
         try {
             const dataTable = newDataTable || filteredDataTable;
-            if (!dataTable || isStale()) return;
+            if (!dataTable || !Array.isArray(dataTable) || isStale()) return;
 
             // ------- index approvedRelease (sum) -------
             const approvedIndex = new Map<string, { total_release_mmbtu_d: number; total_release_mmscfd: number }>();
             for (const it of approvedRelease || []) {
                 const key = arKey(
-                    it.temp_contract_point,
-                    it.entry_exit_id,
-                    it.temp_area,
-                    it.temp_zone,
-                    dmy(it.temp_start_date),
-                    dmy(it.temp_end_date)
+                    it?.temp_contract_point,
+                    it?.entry_exit_id,
+                    it?.temp_area,
+                    it?.temp_zone,
+                    dmy(it?.temp_start_date),
+                    dmy(it?.temp_end_date)
                 );
                 const acc = approvedIndex.get(key) || { total_release_mmbtu_d: 0, total_release_mmscfd: 0 };
-                acc.total_release_mmbtu_d += safeNum(it.total_release_mmbtu_d) ?? 0;
-                acc.total_release_mmscfd += safeNum(it.total_release_mmscfd) ?? 0;
+                acc.total_release_mmbtu_d += safeNum(it?.total_release_mmbtu_d) ?? 0;
+                acc.total_release_mmscfd += safeNum(it?.total_release_mmscfd) ?? 0;
                 approvedIndex.set(key, acc);
             }
             if (isStale()) return;
@@ -1024,45 +1023,45 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 const entryMMBTU = (item?.entryData?.contracted_mmbtu_d_array || []).filter((x: any) => x?.value != null);
                 const exitMMBTU = (item?.exitData?.contracted_mmbtu_d_array || []).filter((x: any) => x?.value != null);
 
-                const entryByDate = new Map(entryMMBTU.map((x: any) => [x.date, x]));
-                const exitByDate = new Map(exitMMBTU.map((x: any) => [x.date, x]));
+                const entryByDate = new Map((entryMMBTU || []).map((x: any) => [x?.date, x]));
+                const exitByDate = new Map((exitMMBTU || []).map((x: any) => [x?.date, x]));
 
-                const entryMmscfdByDate = new Map((item?.entryData?.contracted_mmscfd_array || []).map((x: any) => [x.date, x]));
-                const exitMmscfdByDate = new Map((item?.exitData?.contracted_mmscfd_array || []).map((x: any) => [x.date, x]));
+                const entryMmscfdByDate = new Map((item?.entryData?.contracted_mmscfd_array || []).map((x: any) => [x?.date, x]));
+                const exitMmscfdByDate = new Map((item?.exitData?.contracted_mmscfd_array || []).map((x: any) => [x?.date, x]));
 
-                const entryRelMmbtuByDate = new Map((item?.entryData?.release_mmbtu_d_array || []).map((x: any) => [x.date, x]));
-                const exitRelMmbtuByDate = new Map((item?.exitData?.release_mmbtu_d_array || []).map((x: any) => [x.date, x]));
-                const entryRelMmscfdByDate = new Map((item?.entryData?.release_mmscfd_array || []).map((x: any) => [x.date, x]));
+                const entryRelMmbtuByDate = new Map((item?.entryData?.release_mmbtu_d_array || []).map((x: any) => [x?.date, x]));
+                const exitRelMmbtuByDate = new Map((item?.exitData?.release_mmbtu_d_array || []).map((x: any) => [x?.date, x]));
+                const entryRelMmscfdByDate = new Map((item?.entryData?.release_mmscfd_array || []).map((x: any) => [x?.date, x]));
+                const exitRelMmscfdByDate = new Map((item?.exitData?.release_mmscfd_array || []).map((x: any) => [x?.date, x]));
 
-                const entrySameMonth = entryMMBTU.filter((e: any) => exitByDate.has(e.date));
-                // entrySameMonth.length 239
-                const exitSameMonth = exitMMBTU.filter((x: any) => entryByDate.has(x.date));
+                const exitSameMonth = (exitMMBTU || []).filter((x: any) => entryByDate.has(x?.date));
 
-                const targetList = exitSameMonth.map((exit: any) => {
-                    const targetMapEntry: any = entryByDate.get(exit.date);
+                const targetList = (exitSameMonth || []).map((exit: any) => {
+                    const targetMapEntry: any = entryByDate.get(exit?.date);
                     const targetEntryMmscfd: any = entryMmscfdByDate.get(targetMapEntry?.date);
-                    const targetExitMmscfd: any = exitMmscfdByDate.get(exit.date);
+                    const targetExitMmscfd: any = exitMmscfdByDate.get(exit?.date);
 
-                    const targetMapReleaseEntry: any = entryRelMmbtuByDate.get(exit.date);
-                    const targetReleaseEntryMmscfd: any = entryRelMmscfdByDate.get(targetMapReleaseEntry?.date ?? exit.date);
-                    const targetMapReleaseExit: any = exitRelMmbtuByDate.get(exit.date);
+                    const targetMapReleaseEntry: any = entryRelMmbtuByDate.get(exit?.date);
+                    const targetReleaseEntryMmscfd: any = entryRelMmscfdByDate.get(targetMapReleaseEntry?.date ?? exit?.date);
+                    const targetMapReleaseExit: any = exitRelMmbtuByDate.get(exit?.date);
+                    const targetReleaseExitMmscfd: any = exitRelMmscfdByDate.get(targetMapReleaseExit?.date ?? exit?.date);
 
                     const releaseEntryValue = safeNum(targetMapReleaseEntry?.value) ?? 0;
                     const releaseExitValue = safeNum(targetMapReleaseExit?.value) ?? 0;
 
                     const entryKey = arKey(
-                        item.pathMatchEntry?.contract_point,
-                        item.pathMatchEntry?.entry_exit_id,
-                        item.pathMatchEntry?.area_text,
-                        item.pathMatchEntry?.zone_text,
+                        item?.pathMatchEntry?.contract_point,
+                        item?.pathMatchEntry?.entry_exit_id,
+                        item?.pathMatchEntry?.area_text,
+                        item?.pathMatchEntry?.zone_text,
                         targetMapEntry?.start_date,
                         targetMapEntry?.end_date
                     );
                     const exitKey = arKey(
-                        item.pathMatchExit?.contract_point,
-                        item.pathMatchExit?.entry_exit_id,
-                        item.pathMatchExit?.area_text,
-                        item.pathMatchExit?.zone_text,
+                        item?.pathMatchExit?.contract_point,
+                        item?.pathMatchExit?.entry_exit_id,
+                        item?.pathMatchExit?.area_text,
+                        item?.pathMatchExit?.zone_text,
                         exit?.start_date,
                         exit?.end_date
                     );
@@ -1070,19 +1069,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     const approvedExit = approvedIndex.get(exitKey) || { total_release_mmbtu_d: 0, total_release_mmscfd: 0 };
 
                     const eVal = safeNum(targetMapEntry?.value);
-                    const entryContractedMmbtuD = eVal == null ? targetMapEntry?.value : eVal - (approvedEntry.total_release_mmbtu_d ?? 0);
+                    const entryContractedMmbtuD = eVal == null ? targetMapEntry?.value : eVal - (approvedEntry?.total_release_mmbtu_d ?? 0);
 
                     const eMmscfd = safeNum(targetEntryMmscfd?.value);
-                    const entryContractedMmscfd = eMmscfd == null ? targetEntryMmscfd?.value : eMmscfd - (approvedEntry.total_release_mmscfd ?? 0);
+                    const entryContractedMmscfd = eMmscfd == null ? targetEntryMmscfd?.value : eMmscfd - (approvedEntry?.total_release_mmscfd ?? 0);
 
                     const xVal = safeNum(exit?.value);
-                    const exitContractedMmbtuD = xVal == null ? exit?.value : xVal - (approvedExit.total_release_mmbtu_d ?? 0);
+                    const exitContractedMmbtuD = xVal == null ? exit?.value : xVal - (approvedExit?.total_release_mmbtu_d ?? 0);
+
+                    const xMmscfd = safeNum(targetExitMmscfd?.value);
+                    const exitContractedMmscfd = xMmscfd == null ? targetExitMmscfd?.value : xMmscfd - (approvedExit?.total_release_mmscfd ?? 0);
 
                     const entryObj = {
-                        booking_row_json_id: item.pathMatchEntry?.id,
-                        temp_contract_point: item.pathMatchEntry?.contract_point,
-                        temp_zone: item.pathMatchEntry?.zone_text,
-                        temp_area: item.pathMatchEntry?.area_text,
+                        booking_row_json_id: item?.pathMatchEntry?.id,
+                        temp_contract_point: item?.pathMatchEntry?.contract_point,
+                        temp_zone: item?.pathMatchEntry?.zone_text,
+                        temp_area: item?.pathMatchEntry?.area_text,
 
                         temp_start_date: targetMapEntry?.start_date,
                         temp_end_date: targetMapEntry?.end_date,
@@ -1093,44 +1095,45 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         total_release_mmscfd: targetReleaseEntryMmscfd?.value,
 
                         temp_date: targetMapEntry?.date,
-                        temp_from_date: item.entryData?.start_date,
-                        temp_to_date: item.entryData?.end_date,
+                        temp_from_date: item?.entryData?.start_date,
+                        temp_to_date: item?.entryData?.end_date,
 
-                        entry_exit_id: item.pathMatchEntry?.entry_exit_id,
-                        entry_exit: item.pathMatchEntry?.entry_exit,
+                        entry_exit_id: item?.pathMatchEntry?.entry_exit_id,
+                        entry_exit: item?.pathMatchEntry?.entry_exit,
                         pathMatch: {
-                            id: item.pathMatch?.id,
-                            entry: { name: item.entryData?.area_text },
-                            exit: { name: item.exitData?.area_text },
+                            id: item?.pathMatch?.id,
+                            entry: { name: item?.entryData?.area_text },
+                            exit: { name: item?.exitData?.area_text },
                         },
-                        path: item.path,
+                        path: item?.path,
                     };
 
                     const exitObj = {
-                        booking_row_json_id: item.pathMatchExit?.id,
-                        temp_contract_point: item.pathMatchExit?.contract_point,
-                        temp_zone: item.pathMatchExit?.zone_text,
-                        temp_area: item.pathMatchExit?.area_text,
+                        booking_row_json_id: item?.pathMatchExit?.id,
+                        temp_contract_point: item?.pathMatchExit?.contract_point,
+                        temp_zone: item?.pathMatchExit?.zone_text,
+                        temp_area: item?.pathMatchExit?.area_text,
 
                         temp_start_date: exit?.start_date,
                         temp_end_date: exit?.end_date,
 
                         total_contracted_mmbtu_d: exitContractedMmbtuD ?? exit?.value,
                         total_release_mmbtu_d: targetMapReleaseExit?.value,
-                        total_contracted_mmscfd: targetExitMmscfd?.value,
+                        total_contracted_mmscfd: exitContractedMmscfd ?? targetExitMmscfd?.value,
+                        total_release_mmscfd: targetReleaseExitMmscfd?.value,
 
                         temp_date: exit?.date,
-                        temp_from_date: item.exitData?.start_date,
-                        temp_to_date: item.exitData?.end_date,
+                        temp_from_date: item?.exitData?.start_date,
+                        temp_to_date: item?.exitData?.end_date,
 
-                        entry_exit_id: item.pathMatchExit?.entry_exit_id,
-                        entry_exit: item.pathMatchExit?.entry_exit,
+                        entry_exit_id: item?.pathMatchExit?.entry_exit_id,
+                        entry_exit: item?.pathMatchExit?.entry_exit,
                         pathMatch: {
-                            id: item.pathMatch?.id,
-                            entry: { name: item.entryData?.area_text },
-                            exit: { name: item.exitData?.area_text },
+                            id: item?.pathMatch?.id,
+                            entry: { name: item?.entryData?.area_text },
+                            exit: { name: item?.exitData?.area_text },
                         },
-                        path: item.path,
+                        path: item?.path,
                     };
 
                     totalItem++;
@@ -1145,24 +1148,25 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             if (isStale()) return;
 
-            const targetData = newData.reduce((acc: any[], row: any) => acc.concat(row), []);
+            const targetData = (newData || []).reduce((acc: any[], row: any) => acc.concat(row || []), []);
 
             // ---------- Filter (no mutation) ----------
             const startDate = toDayjs(srchStartDate);
             const endDate = toDayjs(srchEndDate);
 
             let terminateDate: dayjs.Dayjs | undefined;
-            const contractFound = dataContract.find((it: any) => it.id == srchContractCode);
+            const contractFound = (dataContract || [])?.find((it: any) => it?.id == srchContractCode);
             if (contractFound?.terminate_date) terminateDate = toDayjs(contractFound.terminate_date);
 
-            const filteredData = targetData?.filter((row: any[]) => {
-                const filteredByDate = row?.map((it: any) => {
+            const filteredData = (targetData || [])?.filter((row: any[]) => {
+                const filteredByDate = (row || [])?.map((it: any) => {
                     let result = true;
                     const tmpStart = toDayjs(it?.temp_start_date, 'DD/MM/YYYY');
-                    const tmpEnd = toDayjs(it?.temp_end_date, 'DD/MM/YYYY').add(1, 'day').startOf('day');
+                    const rawEnd = toDayjs(it?.temp_end_date, 'DD/MM/YYYY');
+                    const tmpEnd = (rawEnd && rawEnd.isValid()) ? rawEnd.add(1, 'day').startOf('day') : null;
 
-                    if (result && startDate.isValid() && tmpStart.isValid()) result = tmpStart.isSameOrBefore(startDate);
-                    if (result && endDate.isValid() && tmpEnd.isValid()) result = tmpEnd.isSameOrAfter(endDate);
+                    if (result && startDate.isValid() && tmpStart && tmpStart.isValid()) result = tmpStart.isSameOrBefore(startDate);
+                    if (result && endDate.isValid() && tmpEnd && tmpEnd.isValid()) result = tmpEnd.isSameOrAfter(endDate);
 
                     if (result && terminateDate?.isValid()) {
                         if (tmpStart.isValid()) result = tmpStart.isBefore(terminateDate);
@@ -1170,7 +1174,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
                     // **ไม่ mutate**: ถ้าต้อง clamp end → คืนสำเนาใหม่
                     if (result && terminateDate?.isValid()) {
-                        if (tmpEnd.isValid() && tmpEnd.isAfter(terminateDate)) {
+                        if (tmpEnd && tmpEnd.isValid() && tmpEnd.isAfter(terminateDate)) {
                             return {
                                 ...it,
                                 temp_end_date: terminateDate.format('DD/MM/YYYY'),
@@ -1181,7 +1185,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     return result ? it : null;
                 }).filter(Boolean);
 
-                return filteredByDate.length == row.length;
+                return filteredByDate.length == row?.length;
             });
 
             if (isStale()) return;
@@ -1192,16 +1196,17 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             if (filteredData) {
                 onlyReleaseArray = filteredData.filter((row: any[]) => {
-                    const canReleaseRow = row?.filter((subRow: any) => {
+                    const ensureRow = row || [];
+                    const canReleaseRow = ensureRow.filter((subRow: any) => {
                         const haveMmbtud = subRow?.total_release_mmbtu_d != undefined;
                         const needMmscfd = subRow?.total_contracted_mmscfd != undefined;
                         const haveMmscfd = !needMmscfd || subRow?.total_release_mmscfd != undefined;
                         return haveMmbtud && haveMmscfd;
                     });
-                    if (canSubmit && canReleaseRow.length > 0 && canReleaseRow.length != row.length) {
+                    if (canSubmit && canReleaseRow.length > 0 && canReleaseRow.length != ensureRow.length) {
                         canSubmit = false;
                     }
-                    return canReleaseRow.length == row.length;
+                    return canReleaseRow.length == ensureRow.length;
                 });
 
                 if (onlyReleaseArray.length < 1) canSubmit = false;
@@ -1249,29 +1254,29 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         if (srchContractCode) {
             try {
                 getService(`/master/release-capacity-submission?contract_code_id=${srchContractCode}`).then(response => {
-                    if (response?.data) {
+                    if (response?.data && Array.isArray(response.data)) {
                         // Extract unique contract points from the dataTable
                         const contractPoints = Array.from(
                             new Set(
-                                response?.data?.flatMap((data: any) => [
-                                    data.entryData?.contract_point,
-                                    data.exitData?.contract_point
+                                response.data.flatMap((data: any) => [
+                                    data?.entryData?.contract_point,
+                                    data?.exitData?.contract_point
                                 ]).filter(Boolean) // Remove null or undefined values
                             )
                         );
 
                         // Map contractPoints into options for the InputSearch component
-                        const options: any = contractPoints.map((point) => ({
+                        const options: any = (contractPoints || []).map((point) => ({
                             value: point,
                             label: point,
                         }));
-                        setContractPointOptions(options)
+                        setContractPointOptions(options);
                     }
                 });
             } catch (error) {
             }
         }
-    }, [srchContractCode])
+    }, [srchContractCode]);
 
     useEffect(() => {
         fetchData();
@@ -1290,9 +1295,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const openSubmissionModal = (id?: any, data?: any) => {
 
-        const filtered = dataTable?.find((item: any) => item.id === id);
-        setDataSubmission(filtered)
-        setMdSubmissionView(true)
+        const filtered = (Array.isArray(dataTable) ? dataTable : []).find((item: any) => item?.id === id);
+        setDataSubmission(filtered);
+        setMdSubmissionView(true);
     };
 
     // ############### MODAL ADD DOCS ###############
@@ -1302,7 +1307,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         // const filtered = dataTable?.find((item: any) => item.id === id);
         // setDataSubmission(filtered)
-        setMdAddDoc(true)
+        setMdAddDoc(true);
     };
 
     // ############### PAGINATION ###############
@@ -1322,9 +1327,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     useEffect(() => {
         if (dataEachMonth) {
-            setPaginatedData(dataEachMonth.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
+            setPaginatedData((Array.isArray(dataEachMonth) ? dataEachMonth : []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
         }
-    }, [dataEachMonth, currentPage, itemsPerPage])
+    }, [dataEachMonth, currentPage, itemsPerPage]);
 
     // ############### COLUMN SHOW/HIDE ###############
     const initialColumns: any = [
@@ -1336,13 +1341,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         { key: 'contracted_mmscfd', label: 'Contracted (MMSCFD)', visible: true },
         { key: 'release_mmscfd', label: 'Release (MMSCFD)', visible: true },
         { key: 'release_mmbtud', label: 'Release (MMBTU/D)', visible: true },
-        // { key: 'action', label: 'Action', visible: true }
     ];
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries((initialColumns || [])?.map((column: any) => [column?.key, column?.visible]))
     );
 
     const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
@@ -1366,19 +1370,19 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         label="Contract Code"
                         type="select"
                         value={srchContractCode}
-                        // onChange={(e) => setSrchContractCode(e.target.value)}
                         onChange={(e) => {
-                            setSrchContractCode(e.target.value)
-                            filterContractPointUnderContract(e.target.value)
-                            setSrchPoint([])
+                            setSrchContractCode(e.target.value);
+                            filterContractPointUnderContract(e.target.value);
+                            setSrchPoint([]);
                         }}
-                        options={dataContract
+                        options={(Array.isArray(dataContract) ? dataContract : [])
                             ?.filter((item: any) => {
+                                if (!item) return false;
                                 return userDT?.account_manage?.[0]?.user_type_id !== 3 || item?.group_id === userDT?.account_manage?.[0]?.group?.id;
                             })
                             .map((item: any) => ({
-                                value: item?.id?.toString(),
-                                label: item?.contract_code,
+                                value: item?.id != null ? String(item.id) : '',
+                                label: item?.contract_code ?? '',
                             }))
                         }
                     />

@@ -1,7 +1,6 @@
 "use client";
-import Image from "next/image";
-// import { useTranslation } from "@/app/i18n";
 import { useEffect, useState } from "react";
+import CustomerLogo from "@/components/other/CustomerLogo";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { getNoTokenService, getService, postService, postServiceNoAuth } from "@/utils/postService";
@@ -80,13 +79,7 @@ const ResetPwdPage: React.FC<any> = (props) => {
       <div className="w-full h-full flex justify-center items-center">
         <div className="bg-white w-[500px] h-auto rounded-[20px]">
           <div className="w-full h-[150px] flex justify-center items-center mt-[1rem]">
-            <Image
-              src={`/assets/icon/ptt-logo-2.svg`}
-              width={150}
-              height={30}
-              alt={`/assets/icon/ptt-logo-2.svg`}
-              priority
-            />
+            <CustomerLogo width={150} height={30} />
           </div>
           <div className="text-center text-[#2B2A87] text-[28px] font-bold mb-[3rem]">{"Reset Your Password"}</div>
           <div className="mb-10">

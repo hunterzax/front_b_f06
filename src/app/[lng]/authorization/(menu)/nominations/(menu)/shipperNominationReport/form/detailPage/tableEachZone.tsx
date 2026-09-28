@@ -1,7 +1,8 @@
 import {useEffect} from 'react'
 import React, {useState} from 'react'
 import TableSkeleton from '@/components/material_custom/DefaultSkeleton'
-import {exportToExcel, formatNumberThreeDecimal, formatNumberThreeDecimalNoComma, getContrastTextColor, removeComma, sumDataNomShipperReport, sumDataNomShipperReportConcept} from '@/utils/generalFormatter'
+// import {exportToExcel, formatNumberFourDecimal, formatNumberSixDecimal, formatNumberThreeDecimal, formatNumberThreeDecimalNoComma, getContrastTextColor, removeComma, sumDataNomShipperReport, sumDataNomShipperReportConcept} from '@/utils/generalFormatter'
+import { exportToExcel, formatNumberFourDecimal, formatNumberSixDecimal, formatNumberThreeDecimal, formatNumberThreeDecimalNoComma, getContrastTextColor, removeComma, roundTo3, roundTo4, roundTo6, sumDataNomShipperReport, sumDataNomShipperReportConcept} from '@/utils/generalFormatter'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import {table_col_arrow_sort_style, table_row_style, table_sort_header_style} from '@/utils/styles'
@@ -16,6 +17,7 @@ import BtnGeneral from '@/components/other/btnGeneral'
 import SearchInput from '@/components/other/searchInput'
 import {parseToNumber} from '@/utils/number'
 
+
 const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, tempData, setTempData, tempDataConcept, setTempDataConcept, areaMaster, entryExitMaster, setIsEdited, tabEntry, tabConcept, tabMainIndex, subTabIndex, subTabIndexview, gasDay}) => {
   const [sortedDataOriginal0, setSortedDataOriginal0] = useState<any>([])
   const [sortedDataOriginal1, setSortedDataOriginal1] = useState<any>([])
@@ -27,12 +29,26 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
   const [filterTabConcept, setFilterTabConcept] = useState<any>([])
 
   const [sortState, setSortState] = useState({column: null, direction: null})
-    
+    console.log('...');
   useEffect(() => {
-    // console.log('tableData?.conceptPointZone : ', tableData?.conceptPointZone);
+    // console.log('tableData : ', tableData); 
+    // console.log('[S_GSP2]["MMSCFD"]tableData : ', tableData?.nominaionPointZone?.[0]?.zone?.filter((f:any) => f?.data_temp?.[3] === "S_GSP2" && f?.data_temp?.[9] === "MMSCFD")); 
+    // console.log('[S_GSP2]["MMBTU/D"]tableData : ', tableData?.nominaionPointZone?.[0]?.zone?.filter((f:any) => f?.data_temp?.[3] === "S_GSP2" && f?.data_temp?.[9] === "MMBTU/D")); 
+    // // 1223.8735833333333 // nom?.nomination_type_id === 2 - 50.9947326389
+    // 703.9887916666667 // nom?.nomination_type_id === 2 - 29.3328663194
+    // 5825.981124999999 // nom?.nomination_type_id === 2 - 242.749213542
+    // 323.0768125
+    // 7753.8435
+
+    // MMBTU > point ที่มีการเอาค่า weekly มาแสดง มันต้องเอาค่ามา /24 แล้ว round 3 ก่อน ถึงจะเอาค่ามา sum รวมกันได้ แล้วแสดงทศนิยม 3 ตำแหน่ง
+    // MMSCFD > point ที่มีการเอาค่า weekly มาแสดง มันต้องเอาค่ามา /24 แล้ว round 6 ก่อน ถึงจะเอาค่ามา sum รวมกันได้ แล้วแสดงทศนิยม 6 ตำแหน่ง
+
+  // const test = tableData?.nominaionPointZone[0]?.zone?.filter((f:any) => f?.data_temp?.[3] === "LMPT1" && f?.data_temp?.[9] === "MMSCFD")
+  // console.log('[LMPT1] test : ', test);
+
     const result_tab_zero = sumDataNomShipperReport(tableData?.nominaionPointZone[0]?.zone)
     const result_tab_one = sumDataNomShipperReportConcept(tableData?.conceptPointZone[0]?.zone)
-
+    console.log('### result_tab_zero : ', result_tab_zero);
     const data_tab_zero = result_tab_zero?.map(({data_temp, ...rest}) => ({
       ...rest,
       ...data_temp,
@@ -44,7 +60,6 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
       ...data_temp,
       data_temp // keep original data_temp intact
     }))
-    console.log('CP data_tab_one : ', data_tab_one);
     setSortedDataOriginal0(data_tab_zero)
     setSortedDataOriginal1(data_tab_one)
     setSortedData(data_tab_zero)
@@ -69,6 +84,8 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
   const handleSearch = (query: string) => {
     if (tabMain == 0) {
       const filtered = filterTabZero?.filter((item: any) => {
+          console.log(item['38']);
+
         const queryLower = query.replace(/\s+/g, '')?.toLowerCase().trim()
         return (
           item['1']?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
@@ -82,7 +99,6 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
           item['9']?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
           item['10']?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
           //value area =====================================================================================
-
           (!isNaN(item['11']) && item['11']?.toString()?.includes(queryLower)) ||
           (!isNaN(item['12']) && item['12']?.toString()?.includes(queryLower)) ||
           (!isNaN(item['13']) && item['13']?.toString()?.includes(queryLower)) ||
@@ -110,7 +126,7 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
           (!isNaN(item['35']) && item['35']?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
           (!isNaN(item['36']) && item['36']?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
           (!isNaN(item['37']) && item['37']?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-          (!isNaN(item['38']) && item['38']?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+          (!isNaN(item['38']) && String(item['38'])?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
           (!isNaN(item['11']) && formatNumberThreeDecimal(item['11'])?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
           (!isNaN(item['12']) && formatNumberThreeDecimal(item['12'])?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
           (!isNaN(item['13']) && formatNumberThreeDecimal(item['13'])?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
@@ -562,12 +578,10 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
   useEffect(() => {
     if (tabMain == 0) {
       if (sortedData) {
-        console.log('sortedData : ', sortedData)
         setPaginatedData(sortedData?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
       }
     } else {
       if (sortedDataTabConcept) {
-        console.log('sortedDataTabConcept : ', sortedDataTabConcept)
         setPaginatedData(sortedDataTabConcept?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
       }
     }
@@ -578,10 +592,7 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
     return days[subTabIndex] || ''
   }
 
-  useEffect(() => {
-    console.log('tabMainIndex : ', tabMainIndex);
-  }, [tabMainIndex])
-  
+console.log('_columnVisibility : ', columnVisibility);
 
   return (
     <div className={`relative  rounded-t-md z-1`}>
@@ -707,21 +718,21 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-20">
                 {/* tabs concept point */}
-                {columnVisibility.supply_demand && (
+                {columnVisibility?.supply_demand && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort('1', sortState, setSortState, tabMain === 0 ? setSortedData : setSortedDataTabConcept, tabMain === 0 ? sortedDataOriginal0 : sortedDataOriginal1)}>
                     {`Supply/Demand`}
                     {getArrowIcon('1')}
                   </th>
                 )}
 
-                {columnVisibility.area && (
+                {columnVisibility?.area && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort('area_text', sortState, setSortState, tabMain === 0 ? setSortedData : setSortedDataTabConcept, tabMain === 0 ? sortedDataOriginal0 : sortedDataOriginal1)}>
                     {`Area`}
                     {getArrowIcon('area_text')}
                   </th>
                 )}
 
-                {columnVisibility.nomination_point && (
+                {columnVisibility?.nomination_point && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px] `} onClick={() => handleSort('3', sortState, setSortState, tabMain === 0 ? setSortedData : setSortedDataTabConcept, tabMain === 0 ? sortedDataOriginal0 : sortedDataOriginal1)}>
                     {`Nomination Point`}
                     {getArrowIcon('3')}
@@ -729,7 +740,7 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
                 )}
 
                 {/* tabs concept point */}
-                {columnVisibility.concept_id && (
+                {columnVisibility?.concept_id && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSortConcept(['3', '4', '5'], sortState, setSortState, tabMain === 0 ? setSortedData : setSortedDataTabConcept, tabMain === 0 ? sortedDataOriginal0 : sortedDataOriginal1)}>
                     {`Concept ID`}
                     {getArrowIcon('3,4,5')}
@@ -737,14 +748,14 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
                 )}
 
                 {/* tabs concept point */}
-                {columnVisibility.unit && (
+                {columnVisibility?.unit && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort('9', sortState, setSortState, tabMain === 0 ? setSortedData : setSortedDataTabConcept, tabMain === 0 ? sortedDataOriginal0 : sortedDataOriginal1)}>
                     {`Unit`}
                     {getArrowIcon('9')}
                   </th>
                 )}
 
-                {columnVisibility.type && (
+                {columnVisibility?.type && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort('6', sortState, setSortState, tabMain === 0 ? setSortedData : setSortedDataTabConcept, tabMain === 0 ? sortedDataOriginal0 : sortedDataOriginal1)}>
                     {`Type`}
                     {getArrowIcon('6')}
@@ -752,28 +763,28 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
                 )}
 
                 {/* tabs concept point */}
-                {columnVisibility.entry_exit && (
+                {columnVisibility?.entry_exit && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort('10', sortState, setSortState, tabMain === 0 ? setSortedData : setSortedDataTabConcept, tabMain === 0 ? sortedDataOriginal0 : sortedDataOriginal1)}>
                     {`Entry/Exit`}
                     {getArrowIcon('10')}
                   </th>
                 )}
 
-                {columnVisibility.wi && (
+                {columnVisibility?.wi && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort('11', sortState, setSortState, tabMain === 0 ? setSortedData : setSortedDataTabConcept, tabMain === 0 ? sortedDataOriginal0 : sortedDataOriginal1)}>
                     {`WI`}
                     {getArrowIcon('11')}
                   </th>
                 )}
 
-                {columnVisibility.hv && (
+                {columnVisibility?.hv && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort('12', sortState, setSortState, tabMain === 0 ? setSortedData : setSortedDataTabConcept, tabMain === 0 ? sortedDataOriginal0 : sortedDataOriginal1)}>
                     {`HV`}
                     {getArrowIcon('12')}
                   </th>
                 )}
 
-                {columnVisibility.sg && (
+                {columnVisibility?.sg && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort('13', sortState, setSortState, tabMain === 0 ? setSortedData : setSortedDataTabConcept, tabMain === 0 ? sortedDataOriginal0 : sortedDataOriginal1)}>
                     {`SG`}
                     {getArrowIcon('13')}
@@ -784,7 +795,7 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
                   let countmanoSort: any = index + 14 //data length => get sort data
 
                   return (
-                    columnVisibility[key] && (
+                    columnVisibility?.[key] && (
                       <th
                         key={key}
                         scope="col"
@@ -799,14 +810,14 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
                   )
                 })}
 
-                {columnVisibility.total && tabMainIndex !== 2 && (
+                {columnVisibility?.total && tabMainIndex !== 2 && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort('38', sortState, setSortState, tabMain === 0 ? setSortedData : setSortedDataTabConcept, tabMain === 0 ? sortedDataOriginal0 : sortedDataOriginal1)}>
                     {`Total`}
                     {getArrowIcon('38')}
                   </th>
                 )}
 
-                {columnVisibility.week_day && tabMainIndex == 2 && (
+                {columnVisibility?.week_day && tabMainIndex == 2 && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort('14', sortState, setSortState, tabMain === 0 ? setSortedData : setSortedDataTabConcept, tabMain === 0 ? sortedDataOriginal0 : sortedDataOriginal1)}>
                     <div>{getDayNameBySubTabIndex(subTabIndex < 7 ? subTabIndex : subTabIndexview)}</div>
                     <div>
@@ -823,30 +834,29 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
             </thead>
 
             <tbody>
-              {paginatedData?.length > 0 &&
-                paginatedData?.map((row: any, index: any) => {
+              {(paginatedData || [])?.map((row: any, index: any) => {
                   let key_: any = ''
                   let value_: any = ''
                   let valueAll_: any = ''
                   if (tabMainIndex !== 2 && row?.nom?.nomination_type_id == 2) {
                     key_ = Object.keys(row?.headData || {}).find((k) => row.headData[k] === gasDay) || ''
-                    value_ = (row?.data_temp[key_] === "0.000" || row?.data_temp[key_] === 0) ? 0 : ((!!parseToNumber(row?.data_temp[key_] ?? null) && (parseToNumber(row?.data_temp[key_] ?? null) || 0) / 24) || '')
-                    
-                    valueAll_ = row?.nom?.nomination_type_id === 2 && value_ !== "" ? (value_?.toFixed(3) * 24) : row?.data_temp[key_]
+                    value_ = (row?.data_temp[key_] === "0.000" || row?.data_temp[key_] === 0) ? 0 : ((!!parseToNumber(row?.data_temp[key_] ?? null) && (parseToNumber(row?.data_temp[key_] ?? null) || 0)) || '')
+                    valueAll_ = row?.data_temp?.[9] === "MMSCFD" ?  (roundTo6(parseToNumber(value_)) * 24) : (roundTo3(parseToNumber(value_)) * 24) 
+                    // console.log('valueAll_ : ', valueAll_);
                   }
+                  // console.log('row : ', row);
 
                   let selectedDay: any = getDayNameBySubTabIndex(subTabIndex < 7 ? subTabIndex : subTabIndexview)
 
                   const wi_ = row?.data_temp['11']
                   const hv_ = row?.data_temp['12']
                   const sg_ = row?.data_temp['13']
-                  // console.log('row : ', row);
 
                   return (
                     <tr key={index} className={`${table_row_style}`}>
-                      {columnVisibility.supply_demand && <td className="px-2 py-1 text-[#464255] ">{row?.data_temp['1'] ? row?.data_temp['1'] : ''}</td>}
+                      {columnVisibility?.supply_demand && <td className="px-2 py-1 text-[#464255] ">{row?.data_temp['1'] ? row?.data_temp['1'] : ''}</td>}
 
-                      {columnVisibility.concept_id && <td className="px-2 py-1 text-[#464255]">{row?.data_temp['3']?.trim() !== '' ? row?.data_temp['3'] : row?.data_temp['4']?.trim() !== '' ? row?.data_temp['4'] : row?.data_temp['5']?.trim() !== '' ? row?.data_temp['5'] : ''}</td>}
+                      {columnVisibility?.concept_id && <td className="px-2 py-1 text-[#464255]">{row?.data_temp['3']?.trim() !== '' ? row?.data_temp['3'] : row?.data_temp['4']?.trim() !== '' ? row?.data_temp['4'] : row?.data_temp['5']?.trim() !== '' ? row?.data_temp['5'] : ''}</td>}
 
                       {columnVisibility?.area && (
                         <td className={`px-2 py-1 ${row?.status ? 'text-[#464255]' : 'text-[#9CA3AF]'} !justify-center items-center text-center flex`}>
@@ -866,13 +876,13 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
                         </td>
                       )}
 
-                      {columnVisibility.nomination_point && <td className="px-2 py-1 text-[#464255]">{row?.data_temp['3'] ? row?.data_temp['3'] : ''}</td>}
+                      {columnVisibility?.nomination_point && <td className="px-2 py-1 text-[#464255]">{row?.data_temp['3'] ? row?.data_temp['3'] : ''}</td>}
 
-                      {columnVisibility.unit && <td className="px-2 py-1 text-[#464255]">{row?.data_temp['9'] ? row?.data_temp['9'] : ''}</td>}
+                      {columnVisibility?.unit && <td className="px-2 py-1 text-[#464255]">{row?.data_temp['9'] ? row?.data_temp['9'] : ''}</td>}
 
-                      {columnVisibility.type && <td className="px-2 py-1 text-[#464255]">{row?.data_temp['6'] ? row?.data_temp['6'] : ''}</td>}
+                      {columnVisibility?.type && <td className="px-2 py-1 text-[#464255]">{row?.data_temp['6'] ? row?.data_temp['6'] : ''}</td>}
 
-                      {columnVisibility.entry_exit && (
+                      {columnVisibility?.entry_exit && (
                         <td className="px-2 py-1  justify-center ">
                           {(() => {
                             const filter_entry_exit = entryExitMaster?.data?.find((item: any) => item.name === row?.data_temp['10']?.trim())
@@ -881,7 +891,7 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
                         </td>
                       )}
 
-                      {columnVisibility.wi && (
+                      {columnVisibility?.wi && (
                         <td
                           className={`px-2 py-1 text-[#464255] text-right 
                                 ${row?.data_temp?.['11'] !== undefined && row?.newObj?.['11']?.min !== undefined && row?.newObj?.['11']?.max !== undefined && (row.data_temp['11'] < row.newObj['11'].min || row.data_temp['11'] > row.newObj['11'].max) ? 'text-[#ED1B24]' : ''}
@@ -891,164 +901,170 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
                         </td>
                       )}
 
-                      {columnVisibility.hv && (
+                      {columnVisibility?.hv && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['12']) < row?.newObj?.['12']?.min || parseFloat(row?.data_temp['12']) > row?.newObj?.['12']?.max ? 'text-[#ED1B24]' : ''}`}>
-                          {row?.data_temp['12'] ? formatNumberThreeDecimal(row?.data_temp['12']) : ''}
+                          {row?.data_temp['12'] ? formatNumberThreeDecimal(row?.data_temp['12']) : ''} 
                         </td> 
                       )}
 
-                      {columnVisibility.sg && <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['13']) > parseFloat(row?.newObj?.['13']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                        {row?.data_temp['13'] ? formatNumberThreeDecimal(row?.data_temp['13']) : ''}
+                      {columnVisibility?.sg && <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['13']) > parseFloat(row?.newObj?.['13']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
+                        {row?.data_temp['13'] ? formatNumberFourDecimal(row?.data_temp['13']) : ''}
                         </td>}
 
-                      {columnVisibility.h1 && (tabIndex == 1 || tabIndex == 0) && (
+                      {columnVisibility?.h1 && (tabIndex == 1 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['14']) > parseFloat(row?.newObj?.['14']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['14'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',')  : roundTo3(value_)?.toFixed(3).replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['14'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['14'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
+                          {/* |{row?.data_temp['14']}
+                          |{value_} */}
                         </td>
                       )}
 
-                      {columnVisibility.h2 && (tabIndex == 1 || tabIndex == 0) && (
+                      {columnVisibility?.h2 && (tabIndex == 1 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['15']) > parseFloat(row?.newObj?.['15']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['15'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['15'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['15'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h3 && (tabIndex == 1 || tabIndex == 0) && (
+                      {columnVisibility?.h3 && (tabIndex == 1 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['16']) > parseFloat(row?.newObj?.['16']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['16'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['16'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['16'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h4 && (tabIndex == 1 || tabIndex == 0) && (
+                      {columnVisibility?.h4 && (tabIndex == 1 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['17']) > parseFloat(row?.newObj?.['17']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['17'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['17'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['17'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h5 && (tabIndex == 1 || tabIndex == 0) && (
+                      {columnVisibility?.h5 && (tabIndex == 1 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['18']) > parseFloat(row?.newObj?.['18']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['18'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['18'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['18'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h6 && (tabIndex == 1 || tabIndex == 0) && (
+                      {columnVisibility?.h6 && (tabIndex == 1 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['19']) > parseFloat(row?.newObj?.['19']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['19'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['19'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['19'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h7 && (tabIndex == 2 || tabIndex == 0) && (
+                      {columnVisibility?.h7 && (tabIndex == 2 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['20']) > parseFloat(row?.newObj?.['20']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['20'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['20'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['20'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h8 && (tabIndex == 2 || tabIndex == 0) && (
+                      {columnVisibility?.h8 && (tabIndex == 2 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['21']) > parseFloat(row?.newObj?.['21']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['21'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['21'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['21'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h9 && (tabIndex == 2 || tabIndex == 0) && (
+                      {columnVisibility?.h9 && (tabIndex == 2 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['22']) > parseFloat(row?.newObj?.['22']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['22'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['22'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['22'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h10 && (tabIndex == 2 || tabIndex == 0) && (
+                      {columnVisibility?.h10 && (tabIndex == 2 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['23']) > parseFloat(row?.newObj?.['23']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['23'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['23'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['23'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h11 && (tabIndex == 2 || tabIndex == 0) && (
+                      {columnVisibility?.h11 && (tabIndex == 2 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['24']) > parseFloat(row?.newObj?.['24']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['24'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['24'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['24'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h12 && (tabIndex == 2 || tabIndex == 0) && (
+                      {columnVisibility?.h12 && (tabIndex == 2 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['25']) > parseFloat(row?.newObj?.['25']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['25'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['25'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['25'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h13 && (tabIndex == 3 || tabIndex == 0) && (
+                      {columnVisibility?.h13 && (tabIndex == 3 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['26']) > parseFloat(row?.newObj?.['26']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['26'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['26'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['26'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h14 && (tabIndex == 3 || tabIndex == 0) && (
+                      {columnVisibility?.h14 && (tabIndex == 3 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['27']) > parseFloat(row?.newObj?.['27']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['27'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['27'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['27'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h15 && (tabIndex == 3 || tabIndex == 0) && (
+                      {columnVisibility?.h15 && (tabIndex == 3 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['28']) > parseFloat(row?.newObj?.['28']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['28'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['28'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['28'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h16 && (tabIndex == 3 || tabIndex == 0) && (
+                      {columnVisibility?.h16 && (tabIndex == 3 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['29']) > parseFloat(row?.newObj?.['29']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['29'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['29'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['29'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h17 && (tabIndex == 3 || tabIndex == 0) && (
+                      {columnVisibility?.h17 && (tabIndex == 3 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['30']) > parseFloat(row?.newObj?.['30']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['30'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['30'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['30'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h18 && (tabIndex == 3 || tabIndex == 0) && (
+                      {columnVisibility?.h18 && (tabIndex == 3 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['31']) > parseFloat(row?.newObj?.['31']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['31'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['31'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['31'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h19 && (tabIndex == 4 || tabIndex == 0) && (
+                      {columnVisibility?.h19 && (tabIndex == 4 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['32']) > parseFloat(row?.newObj?.['32']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['32'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['32'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['32'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h20 && (tabIndex == 4 || tabIndex == 0) && (
+                      {columnVisibility?.h20 && (tabIndex == 4 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['33']) > parseFloat(row?.newObj?.['33']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['33'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['33'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['33'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h21 && (tabIndex == 4 || tabIndex == 0) && (
+                      {columnVisibility?.h21 && (tabIndex == 4 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['34']) > parseFloat(row?.newObj?.['34']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['34'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['34'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['34'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h22 && (tabIndex == 4 || tabIndex == 0) && (
+                      {columnVisibility?.h22 && (tabIndex == 4 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['35']) > parseFloat(row?.newObj?.['35']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['35'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['35'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['35'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h23 && (tabIndex == 4 || tabIndex == 0) && (
+                      {columnVisibility?.h23 && (tabIndex == 4 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['36']) > parseFloat(row?.newObj?.['36']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['36'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['36'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['36'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {columnVisibility.h24 && (tabIndex == 4 || tabIndex == 0) && (
+                      {columnVisibility?.h24 && (tabIndex == 4 || tabIndex == 0) && (
                         <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp['37']) > parseFloat(row?.newObj?.['37']?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
-                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_) : formatNumberThreeDecimal(row?.data_temp['37'])) || ''}
+                          {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['37'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['37'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) ) || ''}
                         </td>
                       )}
 
-                      {/* {columnVisibility.total && tabMainIndex !== 2 && <td className="px-2 py-1 text-[#464255] text-right font-semibold">{(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(value_ * 24) : formatNumberThreeDecimal(row?.data_temp['38'])) || ''}</td>} */}
-                      {columnVisibility.total && tabMainIndex !== 2 && <td className="px-2 py-1 text-[#464255] text-right font-semibold">{(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? formatNumberThreeDecimal(valueAll_) : formatNumberThreeDecimal(row?.data_temp['38'])) || ''}</td>}
+                      {/* {columnVisibility.total && tabMainIndex !== 2 && <td className="px-2 py-1 text-[#464255] text-right font-semibold">{(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? roundTo3(value_ * 24) : roundTo3(row?.data_temp['38'])) || ''}</td>} */}
+                      {/* {columnVisibility.total && tabMainIndex !== 2 && <td className="px-2 py-1 text-[#464255] text-right font-semibold">{(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? roundTo3(valueAll_) : roundTo3(row?.data_temp['38'])) || ''}</td>} */}
+                      {columnVisibility?.total && tabMainIndex !== 2 && <td className="px-2 py-1 text-[#464255] text-right font-semibold">
+                        {/* {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(valueAll_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(valueAll_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['38'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['38'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))) || ''} */}
+                        {(tabMainIndex !== 2 && row?.nom?.nomination_type_id === 2 ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(valueAll_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(valueAll_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')) : ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['38'])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(row?.data_temp['38'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))) || ''}
+                        </td>}
 
-                      {columnVisibility.week_day && tabMainIndex == 2 && (
+                      {columnVisibility?.week_day && tabMainIndex == 2 && (
                         <td className="px-4 py-1 text-[#464255] text-right font-semibold">
                           {/* แสดงผล data_temp ตั้งแต่คีย์ 14 - 20 ขึ้นอยู่กับว่ากดดูวันไหน */}
                           {/* key 14 = sunday, 15 = monday, 16 = tuesday, 17 = wednesday, 18 = thursday, 19 = friday, 20 = saturday */}
@@ -1056,30 +1072,30 @@ const TableEachZone: React.FC<any> = ({tableData, userPermission, zoneText, temp
                           {/* ตาม excel ไม่รู้ถูกไหม */}
                           {selectedDay == 'Sunday'
                             ? row?.data_temp['14']
-                              ? formatNumberThreeDecimal(row?.data_temp['14'])
+                              ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['14'])?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : roundTo3(row?.data_temp['14'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
                               : ''
                             : selectedDay == 'Monday'
                               ? row?.data_temp['15']
-                                ? formatNumberThreeDecimal(row?.data_temp['15'])
+                                ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['15'])?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : roundTo3(row?.data_temp['15'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
                                 : ''
                               : selectedDay == 'Tuesday'
                                 ? row?.data_temp['16']
-                                  ? formatNumberThreeDecimal(row?.data_temp['16'])
+                                  ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['16'])?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : roundTo3(row?.data_temp['16'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
                                   : ''
                                 : selectedDay == 'Wednesday'
                                   ? row?.data_temp['17']
-                                    ? formatNumberThreeDecimal(row?.data_temp['17'])
+                                    ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['17'])?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : roundTo3(row?.data_temp['17'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
                                     : ''
                                   : selectedDay == 'Thursday'
                                     ? row?.data_temp['18']
-                                      ? formatNumberThreeDecimal(row?.data_temp['18'])
+                                      ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['18'])?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : roundTo3(row?.data_temp['18'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
                                       : ''
                                     : selectedDay == 'Friday'
                                       ? row?.data_temp['19']
-                                        ? formatNumberThreeDecimal(row?.data_temp['19'])
+                                        ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['19'])?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : roundTo3(row?.data_temp['19'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
                                         : ''
                                       : selectedDay == 'Saturday' && row?.data_temp['20']
-                                        ? formatNumberThreeDecimal(row?.data_temp['20'])
+                                        ? ((row?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(row?.data_temp['20'])?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : roundTo3(row?.data_temp['20'])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
                                         : ''}
                         </td>
                       )}

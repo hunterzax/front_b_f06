@@ -48,7 +48,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const getPermission = () => {
     if (user_permission) {
       try {
-        user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
+        user_permission = JSON.parse(user_permission); // Convert JSON string to object
         const updatedUserPermission = generateUserPermission(user_permission);
         setUserPermission(updatedUserPermission);
       } catch (error) {
@@ -118,35 +118,35 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   // ############### LIKE SEARCH ###############
   const handleSearch = (query: string) => {
-    const filtered = dataTable.filter((item: any) => {
+    const filtered = (dataTable || [])?.filter((item: any) => {
       const queryLower = query.toLowerCase().replace(/\s+/g, '')?.trim();
 
       return (
-        item?.term_type?.name?.replace(/\s+/g, '').trim().toLowerCase().includes(queryLower) ||
-        item?.group?.name?.replace(/\s+/g, '').trim().toLowerCase().includes(queryLower) ||
+        item?.term_type?.name?.replace(/\s+/g, '')?.trim()?.toLowerCase()?.includes(queryLower) ||
+        item?.group?.name?.replace(/\s+/g, '')?.trim()?.toLowerCase()?.includes(queryLower) ||
 
-        item?.create_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
-        item?.create_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) || // เผื่อ search นามสกุล
-        item?.create_by_account?.first_name && item?.create_by_account?.last_name && (item?.create_by_account?.first_name + item?.create_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+        item?.create_by_account?.first_name?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(query.replace(/\s+/g, '')?.toLowerCase()?.trim()) ||
+        item?.create_by_account?.last_name?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(query.replace(/\s+/g, '')?.toLowerCase()?.trim()) || // เผื่อ search นามสกุล
+        item?.create_by_account?.first_name && item?.create_by_account?.last_name && (item?.create_by_account?.first_name + item?.create_by_account?.last_name)?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(query.replace(/\s+/g, '')?.toLowerCase()?.trim()) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-        item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
-        item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) || // เผื่อ search นามสกุล
-        item?.update_by_account?.first_name && item?.update_by_account?.last_name && (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+        item?.update_by_account?.first_name?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(query.replace(/\s+/g, '')?.toLowerCase()?.trim()) ||
+        item?.update_by_account?.last_name?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(query.replace(/\s+/g, '')?.toLowerCase()?.trim()) || // เผื่อ search นามสกุล
+        item?.update_by_account?.first_name && item?.update_by_account?.last_name && (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(query.replace(/\s+/g, '')?.toLowerCase()?.trim()) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-        formatTime(item?.create_date)?.toLowerCase().includes(queryLower) ||
-        formatDate(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-        formatDateTimeSec(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-        formatTime(item?.update_date)?.toLowerCase().includes(queryLower) ||
-        formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-        formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
+        formatTime(item?.create_date)?.toLowerCase()?.includes(queryLower) ||
+        formatDate(item?.create_date)?.replace(/\s+/g, '')?.toLowerCase()?.includes(queryLower) ||
+        formatDateTimeSec(item?.create_date)?.replace(/\s+/g, '')?.toLowerCase()?.includes(queryLower) ||
+        formatTime(item?.update_date)?.toLowerCase()?.includes(queryLower) ||
+        formatDate(item?.update_date)?.replace(/\s+/g, '')?.toLowerCase()?.includes(queryLower) ||
+        formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '')?.toLowerCase()?.includes(queryLower) ||
 
-        formatDateNoTime(item?.start_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-        formatTime(item?.start_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-        formatDate(item?.start_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
+        formatDateNoTime(item?.start_date)?.toLowerCase()?.includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
+        formatTime(item?.start_date)?.toLowerCase()?.includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
+        formatDate(item?.start_date)?.toLowerCase()?.includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
 
-        formatDateNoTime(item?.end_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-        formatTime(item?.end_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-        formatDate(item?.end_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase())
+        formatDateNoTime(item?.end_date)?.toLowerCase()?.includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
+        formatTime(item?.end_date)?.toLowerCase()?.includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
+        formatDate(item?.end_date)?.toLowerCase()?.includes(query.replace(/\s+/g, '')?.toLowerCase())
       )
     });
     setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
@@ -165,14 +165,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
       // ถ้า user เป็น shipper
       // https://app.clickup.com/t/86ert2k28 ตามที่คุยกัน หากเป็น shipper user ถ้ามี filter ชื่อ shipper ให้ค้างชื่อ shipper ตัวเองไว้เลย ไม่ต้องขึ้นเป็น dropdown ให้เลือก - ปรับทั้ง system
       if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-
-        setSrchShipper(userDT?.account_manage?.[0]?.group?.id)
+        setSrchShipper([userDT?.account_manage?.[0]?.group?.id])
       }
 
       const response: any = await getService(`/master/planning-file-submission-template`);
       // shipper เห็นแค่ของตัวเอง
       if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-        let filter_response_only_own_shipper = response?.filter((item: any) => item?.group?.id === userDT?.account_manage?.[0]?.group?.id)
+        let filter_response_only_own_shipper = (response || [])?.filter((item: any) => item?.group?.id === userDT?.account_manage?.[0]?.group?.id)
         setData(filter_response_only_own_shipper);
         setFilteredDataTable(filter_response_only_own_shipper);
       } else {
@@ -225,7 +224,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         // nomination_point_entry
         const res_create = await postService('/master/planning-file-submission-template', {
           ...data,
-          nomination_point: [...data?.nomination_point_entry, ...data?.nomination_point_exit]
+          nomination_point: [...(data?.nomination_point_entry || []), ...(data?.nomination_point_exit || [])]
         });
         const statusCode = res_create?.response?.data?.statusCode ?? res_create?.response?.data?.status ?? res_create?.status ?? res_create?.statusCode ?? res_create?.code ?? res_create?.response?.status;
         const errorMsg = res_create?.response?.data?.error ?? res_create?.data?.error ?? res_create?.response?.error ?? res_create?.error;
@@ -241,11 +240,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         }
         break;
       case "edit":
-        delete data.planning_file_submission_template_nom
-        delete data.id
+        delete data?.planning_file_submission_template_nom;
+        delete data?.id;
         const res_edit = await putService(`/master/planning-file-submission-template/edit/${selectedId}`, {
           ...data,
-          nomination_point: [...data?.nomination_point_entry, ...data?.nomination_point_exit]
+          nomination_point: [...(data?.nomination_point_entry || []), ...(data?.nomination_point_exit || [])]
         });
         const statusCodePut = res_edit?.response?.data?.statusCode ?? res_edit?.response?.data?.status ?? res_edit?.status ?? res_edit?.statusCode ?? res_edit?.code ?? res_edit?.response?.status;
         const errorMsgPut = res_edit?.response?.data?.error ?? res_edit?.data?.error ?? res_edit?.response?.error ?? res_edit?.error;
@@ -274,14 +273,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const openEditForm = (id: any) => {
     //  fetchDataDiv(id);
     setSelectedId(id);
-    const filteredData = dataTable.find((item: any) => item.id === id);
+    const filteredData = (dataTable || [])?.find((item: any) => item?.id === id);
     if (filteredData) {
-      fdInterface.id = filteredData.id;
-      fdInterface.term_type_id = filteredData.term_type_id;
-      fdInterface.group_id = filteredData.group_id;
-      fdInterface.planning_file_submission_template_nom = filteredData.planning_file_submission_template_nom;
-      fdInterface.start_date = new Date(filteredData.start_date);
-      fdInterface.end_date = filteredData.end_date ? new Date(filteredData.end_date) : null;
+      fdInterface.id = filteredData?.id;
+      fdInterface.term_type_id = filteredData?.term_type_id;
+      fdInterface.group_id = filteredData?.group_id;
+      fdInterface.planning_file_submission_template_nom = filteredData?.planning_file_submission_template_nom;
+      fdInterface.start_date = filteredData?.start_date ? new Date(filteredData.start_date) : undefined;
+      fdInterface.end_date = filteredData?.end_date ? new Date(filteredData.end_date) : null;
     }
     setFormMode('edit');
     setFormData(fdInterface);
@@ -289,14 +288,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   };
 
   const openViewForm = (id: any) => {
-    const filteredData = dataTable.find((item: any) => item.id === id);
+    const filteredData = (dataTable || [])?.find((item: any) => item?.id === id);
     if (filteredData) {
-      fdInterface.id = filteredData.id;
-      fdInterface.term_type_id = filteredData.term_type_id;
-      fdInterface.group_id = filteredData.group_id;
-      fdInterface.planning_file_submission_template_nom = filteredData.planning_file_submission_template_nom;
-      fdInterface.start_date = new Date(filteredData.start_date);
-      fdInterface.end_date = filteredData.end_date ? new Date(filteredData.end_date) : null;
+      fdInterface.id = filteredData?.id;
+      fdInterface.term_type_id = filteredData?.term_type_id;
+      fdInterface.group_id = filteredData?.group_id;
+      fdInterface.planning_file_submission_template_nom = filteredData?.planning_file_submission_template_nom;
+      fdInterface.start_date = filteredData?.start_date ? new Date(filteredData.start_date) : undefined;
+      fdInterface.end_date = filteredData?.end_date ? new Date(filteredData.end_date) : null;
     }
     setFormMode('view');
     setFormData(fdInterface);
@@ -318,15 +317,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const openHistoryForm = async (id: any) => {
     try {
       const response: any = await getService(`/master/account-manage/history?type=planning-file-submission-template&method=all&id_value=${id}`);
-      const valuesArray = response.map((item: any) => item.value);
-      let mappings = [
+      const valuesArray = (response || [])?.map((item: any) => item?.value);
+      const mappings = [
         // { key: "entry_exit.name", title: "Entry/Exit" },
         { key: "group.name", title: "Shipper Name" },
         { key: "term_type.name", title: "Term" },
         // { key: "description", title: "Description" },
       ];
-      let result = mappings.map(({ key, title }) => {
-        const value = key.split('.').reduce((acc, part) => acc && acc[part], valuesArray[0]);
+      const result = mappings.map(({ key, title }) => {
+        const value = key.split('.').reduce((acc: any, part: string) => (acc ? acc[part] : undefined), valuesArray?.[0]);
         return {
           title,
           value: value || "",
@@ -351,7 +350,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [dataFile, setDataFile] = useState<any>([]);
 
   const openAllFileModal = (id?: any, data?: any) => {
-    const filtered = dataTable?.find((item: any) => item.id === id);
+    const filtered = (dataTable || [])?.find((item: any) => item?.id === id);
     setDataFile(filtered)
     setMdFileView(true)
   };
@@ -360,8 +359,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [mdViewPoint, setMdViewPoint] = useState<any>(false);
 
   const openViewPointModal = (id?: any, data?: any) => {
-    const filtered = dataTable?.find((item: any) => item.id === id);
-    setDataFile(filtered)
+    // const filtered = (dataTable || [])?.find((item: any) => item?.id === id);
+    setDataFile(data)
     setMdViewPoint(true)
   };
 
@@ -389,6 +388,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const initialColumns: any = [
     { key: 'term', label: 'Term', visible: true },
     { key: 'shipper_name', label: 'Shipper Name', visible: true },
+    { key: 'nomination_point', label: 'Nomination Point', visible: true },
     { key: 'start_date', label: 'Start Date', visible: true },
     { key: 'end_date', label: 'End Date', visible: true },
     { key: 'created_by', label: 'Created by', visible: true },
@@ -407,7 +407,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const open = Boolean(anchorEl);
 
   const [columnVisibility, setColumnVisibility] = useState<any>(
-    Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+    Object.fromEntries(initialColumns.map((column: any) => [column?.key, column?.visible]))
   );
 
   const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
@@ -434,9 +434,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             value={srchShipper}
             isDisabled={userDT?.account_manage?.[0]?.user_type_id == 3 ? true : false}
             onChange={(e) => setSrchShipper(e.target.value)}
-            options={shipperGroupData?.data?.map((item: any) => ({
-              value: item.id,
-              label: item.name
+            options={(shipperGroupData?.data || [])?.map((item: any) => ({
+              value: item?.id,
+              label: item?.name
             }))}
           />
 
@@ -448,9 +448,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             placeholder="Select Term"
             value={srchTermType}
             onChange={(e) => setSrchTermType(e.target.value)}
-            options={termTypeMaster?.data?.filter((item: any) => item.id !== 4).map((item: any) => ({
+            options={(termTypeMaster?.data || [])?.filter((item: any) => item?.id !== 4)?.map((item: any) => ({
               value: item?.id?.toString(),
-              label: item.name
+              label: item?.name
             }))}
           />
 
@@ -514,8 +514,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         mode={formMode}
         data={formData}
         open={formOpen}
-        // nominationPointData={nominationPointData?.data}
-        nominationPointData={filterStartEndDateInRange(nominationPointData?.data)}
+        nominationPointData={filterStartEndDateInRange(nominationPointData?.data || [], (formData?.planning_file_submission_template_nom || []).map((item: any) => item.nomination_point_id))}
         entryExitMasterData={entryExitMaster?.data}
         termTypeMasterData={termTypeMaster?.data}
         shipperGroupData={shipperGroupData?.data}
@@ -581,10 +580,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
       <ModalViewPoint
         data={dataFile}
-        // dataGroup={dataGroup}
-        // setModalMsg={setModalMsg}
-        setModalSuccessOpen={setModalSuccessOpen}
-        // setModalSuccessMsg={setModalSuccessMsg}
         open={mdViewPoint}
         onClose={() => {
           setMdViewPoint(false);

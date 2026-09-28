@@ -146,7 +146,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue('entry_exit_id', e.target.value);
+                                                    setValue('entry_exit_id', e?.target?.value ?? "");
                                                 }}
                                                 displayEmpty
                                                 renderValue={(value: any) => {
@@ -207,7 +207,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                         {
                                             mode !== 'view' && (
                                                 <button type="submit" className="w-[167px] font-light bg-[#00ADEF] text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600">
-                                                    {mode === 'create' ? 'Save' : 'Save'}
+                                                    Save
                                                 </button>
                                             )
                                         }

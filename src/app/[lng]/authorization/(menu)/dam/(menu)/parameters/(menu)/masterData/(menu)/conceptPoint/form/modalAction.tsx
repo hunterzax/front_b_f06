@@ -260,7 +260,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             disabled={isReadOnly}
                                                             valueWatch={watch("type_concept_point_id") || ""}
                                                             handleChange={(e) => {
-                                                                setValue("type_concept_point_id", e.target.value);
+                                                                setValue("type_concept_point_id", e?.target?.value ?? "");
                                                                 if (errors?.type_concept_point_id) { clearErrors('type_concept_point_id') }
                                                             }}
                                                             errors={errors?.type_concept_point_id}
@@ -324,7 +324,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 type="select"
                                                                 value={srchShipperName}
                                                                 onChange={(e) => setSrchShipperName(e.target.value)}
-                                                                options={shipperGroupData?.length > 0 && shipperGroupData?.map((item: any) => ({
+                                                                options={(shipperGroupData || [])?.map((item: any) => ({
                                                                     value: item?.id,
                                                                     label: item?.name
                                                                 }))}
@@ -370,10 +370,10 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                     value={watch("shipper_name") || ""}
                                                                     // value={srchShipperName}
                                                                     onChange={(e) => {
-                                                                        setValue("shipper_name", e.target.value);
+                                                                        setValue("shipper_name", e?.target?.value ?? "");
                                                                         // fetchData(e?.target);
                                                                     }}
-                                                                    options={shipperGroupData?.length > 0 && shipperGroupData?.map((item: any) => ({
+                                                                    options={(shipperGroupData || [])?.map((item: any) => ({
                                                                         value: item?.id.toString(),
                                                                         label: item?.name
                                                                     }))}
@@ -389,7 +389,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                     value={watch("concept_pointx") || ""}
                                                                     // onChange={(e) => setSrchConceptPoint(e.target.value)}
                                                                     onChange={(e) => {
-                                                                        setValue("concept_pointx", e.target.value);
+                                                                        setValue("concept_pointx", e?.target?.value ?? "");
                                                                     }}
                                                                     options={dataTable?.map((item: any) => ({
                                                                         value: item?.id.toString(),

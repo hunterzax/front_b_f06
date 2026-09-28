@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect, useState } from "react";
 import {RemoveRedEye, VisibilityOff, Check, FiberManualRecord} from '@mui/icons-material';
 
@@ -32,20 +31,20 @@ const PasswordStrong: React.FC<componentsTK> = ({
   const textErrorClass = "text-red-500 text-sm"
 
   function containsNumbers(input: any) {
-    return /[0-9]/.test(input);
+    return /[0-9]/.test(String(input ?? ""));
   }
 
   function containsLowercase(input: any) {
-    return /[a-z]/.test(input);
+    return /[a-z]/.test(String(input ?? ""));
   }
 
   function containsUppercase(input: any) {
-    return /[A-Z]/.test(input);
+    return /[A-Z]/.test(String(input ?? ""));
   }
 
   function containsSpecialCharacters(input: any) {
     // return /[!@#$%^&*()]/.test(input);
-    return /[^a-zA-Z0-9]/.test(input);
+    return /[^a-zA-Z0-9]/.test(String(input ?? ""));
   }
 
   useEffect(() => {
@@ -56,7 +55,7 @@ const PasswordStrong: React.FC<componentsTK> = ({
       containsSpecialCharacters(password),
     ]);
 
-    if(countLeast[0] == true && countLeast[1] == true && countLeast[2] == true && countLeast[3] == true && password?.length >= 10){
+    if(countLeast?.[0] == true && countLeast?.[1] == true && countLeast?.[2] == true && countLeast?.[3] == true && (password?.length ?? 0) >= 10){
       setflag(true);
     }else{
       setflag(false);
@@ -76,8 +75,8 @@ const PasswordStrong: React.FC<componentsTK> = ({
           className={`${inputClass} ${ errors && 'border-red-500'}`}
           placeholder={placeholder}
           onChange={(e) =>{
-            setPassword(e.target.value);
-            onChange(e.target.value)
+            setPassword(e?.target?.value ?? "");
+            onChange?.(e?.target?.value)
             if(errors?.type == "alert"){
               if(e?.target?.value?.length >= 10 &&
                 errors && 
@@ -108,7 +107,7 @@ const PasswordStrong: React.FC<componentsTK> = ({
           {isPasswordVisible ? <RemoveRedEye sx={{fontSize: 20}}/> : <VisibilityOff sx={{fontSize: 20}}/>}
       </button>
       {required == true && errors && <p className={`${textErrorClass}`}>{errors_message}</p>}
-      {password.length > 0 && !!infoShow && (
+      {(password?.length ?? 0) > 0 && !!infoShow && (
         <div className="absolute bottom-[60px] right-0">
           <div className=" relative">
             <div
@@ -116,10 +115,10 @@ const PasswordStrong: React.FC<componentsTK> = ({
             >
               <div
                 className={`flex gap-2 items-center ${
-                  password.length >= 10 && "text-green-500"
+                  (password?.length ?? 0) >= 10 && "text-green-500"
                 }`}
               >
-                  {password.length >= 10 ?
+                  {(password?.length ?? 0) >= 10 ?
                   <Check style={{ fontSize: "13px" }}/>
                   :
                   <FiberManualRecord style={{ fontSize: "10px" }}/>
@@ -128,10 +127,10 @@ const PasswordStrong: React.FC<componentsTK> = ({
               </div>
               <div
                 className={`flex gap-2 items-center ${
-                  !!countLeast[1] && !!countLeast[2] && "text-green-500"
+                  !!countLeast?.[1] && !!countLeast?.[2] && "text-green-500"
                 }`}
               >
-                {!!countLeast[1] && !!countLeast[2] ?
+                {!!countLeast?.[1] && !!countLeast?.[2] ?
                   <Check style={{ fontSize: "13px" }}/>
                   :
                   <FiberManualRecord style={{ fontSize: "10px" }}/>
@@ -140,10 +139,10 @@ const PasswordStrong: React.FC<componentsTK> = ({
               </div>
               <div
                 className={`flex gap-2 items-center ${
-                  !!countLeast[0] && "text-green-500"
+                  !!countLeast?.[0] && "text-green-500"
                 }`}
               >
-                {!!countLeast[0] ?
+                {!!countLeast?.[0] ?
                   <Check style={{ fontSize: "13px" }}/>
                   :
                   <FiberManualRecord style={{ fontSize: "10px" }}/>
@@ -152,10 +151,10 @@ const PasswordStrong: React.FC<componentsTK> = ({
               </div>
               <div
                 className={`flex gap-2 items-center ${
-                  !!countLeast[3] && "text-green-500"
+                  !!countLeast?.[3] && "text-green-500"
                 }`}
               >
-                {!!countLeast[3] ?
+                {!!countLeast?.[3] ?
                   <Check style={{ fontSize: "13px" }}/>
                   :
                   <FiberManualRecord style={{ fontSize: "10px" }}/>

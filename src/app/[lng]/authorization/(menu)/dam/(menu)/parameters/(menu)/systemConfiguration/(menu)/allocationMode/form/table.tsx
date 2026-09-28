@@ -41,21 +41,21 @@ const TableAllocationMode: React.FC<TableProps> = ({ tableData, isLoading, colum
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.mode && (
+                                {columnVisibility?.mode && (
                                     <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSort("allocation_mode_type.mode", sortState, setSortState, setSortedData, tableData)}>
                                         {`Mode`}
                                         {getArrowIcon("allocation_mode_type.mode")}
                                     </th>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <th scope="col" className={`${table_sort_header_style} w-[170px]`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`Start Date`}
                                         {getArrowIcon("start_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.created_by && (
+                                {columnVisibility?.created_by && (
                                     <th scope="col" className={`${table_sort_header_style}  w-[170px]`} onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Created by`}
                                         {getArrowIcon("create_by_account.first_name")}
@@ -72,15 +72,15 @@ const TableAllocationMode: React.FC<TableProps> = ({ tableData, isLoading, colum
                                         key={row?.id}
                                         className={`${table_row_style}`}
                                     >
-                                        {columnVisibility.mode && (
+                                        {columnVisibility?.mode && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.allocation_mode_type && row?.allocation_mode_type?.mode}</td>
                                         )}
 
-                                        {columnVisibility.start_date && (
+                                        {columnVisibility?.start_date && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.created_by && (
+                                        {columnVisibility?.created_by && (
                                             <td className="px-2 py-1 text-[#464255]">
                                                 <div>
                                                     <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>

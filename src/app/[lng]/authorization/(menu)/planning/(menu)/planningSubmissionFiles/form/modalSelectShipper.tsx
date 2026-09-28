@@ -201,7 +201,7 @@ const ModalSelShipper: React.FC<FormExampleProps> = ({
                                                 disabled={disFlag}
                                                 valueWatch={watch("group_id") || ""}
                                                 handleChange={(e) => {
-                                                    updateValue("group_id", e.target.value);
+                                                    updateValue("group_id", e?.target?.value ?? "");
                                                     if (errors?.group_id) { clearErrors('group_id') }
                                                 }}
                                                 errors={errors?.group_id}
@@ -246,9 +246,9 @@ const ModalSelShipper: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setSelectedTermMaster(termMaster[e.target.value])
-                                                    setSelTerm(e.target.value)
-                                                    setValue("term", e.target.value);
+                                                    setSelectedTermMaster(termMaster[e?.target?.value ?? ""])
+                                                    setSelTerm(e?.target?.value ?? "")
+                                                    setValue("term", e?.target?.value ?? "");
                                                 }}
                                                 displayEmpty
                                                 renderValue={(value: any) => {
@@ -285,8 +285,8 @@ const ModalSelShipper: React.FC<FormExampleProps> = ({
                                                                 disabled={false}
                                                                 valueWatch={watch("year") || ""}
                                                                 handleChange={(e) => {
-                                                                    setValue("year", e.target.value);
-                                                                    setSelYear(e.target.value)
+                                                                    setValue("year", e?.target?.value ?? "");
+                                                                    setSelYear(e?.target?.value ?? "")
                                                                     if (errors?.year) { clearErrors('year') }
                                                                 }}
                                                                 errors={errors?.month}
@@ -318,8 +318,8 @@ const ModalSelShipper: React.FC<FormExampleProps> = ({
                                                                         disabled={false}
                                                                         valueWatch={watch("month") || ""}
                                                                         handleChange={(e) => {
-                                                                            setValue("month", e.target.value);
-                                                                            setSelMonth(e.target.value)
+                                                                            setValue("month", e?.target?.value ?? "");
+                                                                            setSelMonth(e?.target?.value ?? "")
                                                                             if (errors?.month) { clearErrors('month') }
                                                                         }}
                                                                         errors={errors?.month}

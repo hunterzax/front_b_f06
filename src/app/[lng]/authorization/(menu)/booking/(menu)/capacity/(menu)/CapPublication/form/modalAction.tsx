@@ -139,7 +139,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("entry_exit_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("entry_exit_id", e.target.value);
+                                                    setValue("entry_exit_id", e?.target?.value ?? "");
                                                     setValue('zone_id', '')
                                                     setValue('area_id', '')
                                                     setAreaMaster([]);
@@ -180,7 +180,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     setareaMasterOptions(filteredArea);
 
                                                     setValue('area_id', '')
-                                                    setValue("zone_id", e.target.value);
+                                                    setValue("zone_id", e?.target?.value ?? "");
                                                     if (errors?.zone_id) { clearErrors('zone_id') }
                                                 }}
                                                 errors={errors?.zone_id}
@@ -210,7 +210,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("area_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("area_id", e.target.value);
+                                                    setValue("area_id", e?.target?.value ?? "");
                                                     if (errors?.area_id) { clearErrors('area_id') }
                                                 }}
                                                 errors={errors?.area_id}

@@ -110,7 +110,7 @@ const TableReport: React.FC<TableProps> = ({ openViewForm, tableData, isLoading,
                                     {``}
                                 </th>
 
-                                {columnVisibility.point && (
+                                {columnVisibility?.point && (
                                     <th scope="col"
                                         className={`${table_sort_header_style} min-w-[120px] max-w-[200px] text-center`}
                                         onClick={() => handleSort("data.point", sortState, setSortState, setSortedData, tableData)}
@@ -120,7 +120,7 @@ const TableReport: React.FC<TableProps> = ({ openViewForm, tableData, isLoading,
                                     </th>
                                 )}
 
-                                {columnVisibility.type && (
+                                {columnVisibility?.type && (
                                     <th scope="col"
                                         className={`${table_sort_header_style} min-w-[120px] max-w-[200px] text-center`}
                                         onClick={() => handleSort("data.type", sortState, setSortState, setSortedData, tableData)}
@@ -130,7 +130,7 @@ const TableReport: React.FC<TableProps> = ({ openViewForm, tableData, isLoading,
                                     </th>
                                 )}
 
-                                {columnVisibility.area && (
+                                {columnVisibility?.area && (
                                     <th scope="col"
                                         className={`${table_sort_header_style} min-w-[120px] max-w-[200px] text-center`}
                                         onClick={() => handleSort("data.area", sortState, setSortState, setSortedData, tableData)}
@@ -295,8 +295,8 @@ const TableReport: React.FC<TableProps> = ({ openViewForm, tableData, isLoading,
                                                 {isExpanded ? <ExpandLessIcon sx={{ fontSize: '25px', color: '#06522E' }} /> : <ExpandMoreIcon sx={{ fontSize: '25px', color: '#06522E' }} />} Total
                                             </td>
 
-                                            {columnVisibility.point && <td className="px-2 py-1 text-[#06522E]" />}
-                                            {columnVisibility.type && <td className="px-2 py-1 text-[#06522E]" />}
+                                            {columnVisibility?.point && <td className="px-2 py-1 text-[#06522E]" />}
+                                            {columnVisibility?.type && <td className="px-2 py-1 text-[#06522E]" />}
 
                                             {columnVisibility?.area && (
                                                 <td className="px-10 py-1 text-[#06522E]">
@@ -346,17 +346,17 @@ const TableReport: React.FC<TableProps> = ({ openViewForm, tableData, isLoading,
                                                 <tr key={`${areaGroup.area}_${point.point}_${i}`} className={`${table_row_style} bg-white`}>
                                                     <td className="px-2 py-1 text-[#464255]" />
 
-                                                    {columnVisibility.point && (
+                                                    {columnVisibility?.point && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">{point.point}</td>
                                                     )}
 
-                                                    {columnVisibility.type && (
+                                                    {columnVisibility?.type && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">
                                                             {point.customer_type}
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.area && i === 0 && (
+                                                    {columnVisibility?.area && i === 0 && (
                                                         <td
                                                             rowSpan={areaGroup.data.length}
                                                             className="px-10 py-1 text-[#464255] text-center align-middle border-l-[1px] border-r-[1px]"

@@ -137,7 +137,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("menus_id", e.target.value);
+                                                    setValue("menus_id", e?.target?.value ?? "");
                                                     handleFindSubSysParam(e.target.value);
                                                 }}
                                                 displayEmpty
@@ -176,54 +176,6 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 {`Activity`}
                                             </label>
 
-                                            {/* <Select
-                                                id="activity_id"
-                                                IconComponent={(props) => <ExpandMoreIcon {...props} fontSize="medium" />}
-                                                {...register("activity_id", {
-                                                    required: "Select Activity",
-                                                })}
-                                                disabled={isReadOnly}
-                                                value={watch("activity_id") || ""}
-                                                className={`${selectboxClass} ${isReadOnly && '!bg-[#EFECEC]'} ${errors.activity_id && "border-red-500"}`}
-                                                sx={{
-                                                    '.MuiOutlinedInput-notchedOutline': {
-                                                        // borderColor: '#DFE4EA', // Change the border color here
-                                                        borderColor: errors.activity_id && !watch('activity_id') ? '#FF0000' : '#DFE4EA',
-                                                    },
-                                                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                        borderColor: errors.activity_id && !watch("activity_id") ? "#FF0000" : "#d2d4d8",
-                                                    },
-                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                        borderColor: '#d2d4d8',
-                                                    },
-                                                }}
-                                                onChange={(e) => {
-                                                    setValue("activity_id", e.target.value);
-                                                }}
-                                                displayEmpty
-                                                renderValue={(value: any) => {
-                                                    if (!value) {
-                                                        return <Typography color="#9CA3AF" fontSize={14}>Select Activity</Typography>;
-                                                    }
-                                                    return subSystem?.sub_email_notification_management.find((item: any) => item.id === value)?.name || '';
-                                                }}
-                                                MenuProps={{
-                                                    PaperProps: {
-                                                        style: {
-                                                            maxHeight: 48 * 4.5 + 8, // Item height * 4.5 + padding
-                                                            // width: 250, // Adjust width as needed
-                                                        },
-                                                    },
-                                                }}
-                                            >
-                                                {subSystem?.sub_email_notification_management?.map((item: any) => (
-                                                    <MenuItem key={item.id} value={item.id}>
-                                                        {item.name}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                            {errors.activity_id && (<p className="text-red-500 text-sm">{`Select Activity`}</p>)} */}
-
 
                                             <SelectFormProps
                                                 id={'activity_id'}
@@ -231,7 +183,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("activity_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("activity_id", e.target.value);
+                                                    setValue("activity_id", e?.target?.value ?? "");
                                                     if (errors?.activity_id) { clearErrors('activity_id') }
                                                 }}
                                                 errors={errors?.activity_id}
@@ -278,7 +230,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 value={watch('detail') || ''}
                                                 onChange={(e) => {
                                                     if (e.target.value.length <= 255) {
-                                                        setValue('detail', e.target.value);
+                                                        setValue('detail', e?.target?.value ?? "");
                                                     }
                                                 }}
                                                 label=""

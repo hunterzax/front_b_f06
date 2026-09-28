@@ -113,15 +113,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
-
-            // if (user_permission?.role_config) {
-            //     const updatedUserPermission = generateUserPermission(user_permission);
-            //     setUserPermission(updatedUserPermission);
-            // } else {
-            //     const permission = findRoleConfigByMenuName('Capacity Contract Management', userDT)
-            //     setUserPermission(permission);
-            // }
+            if (user_permission) {
+                user_permission = JSON.parse(user_permission); // Convert JSON string to object
+            }
 
             const permission = findRoleConfigByMenuName('Capacity Contract Management', userDT)
             if (permission) {
@@ -228,12 +222,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // (srchStatus ? item?.status_capacity_request_management_process_id == srchStatus : true)
 
                 // ปรับ Filter ทุกเมนูให้เป็นแบบ Multi https://app.clickup.com/t/86eub6d11
-                (srchShipper?.length > 0 ? srchShipper.includes(item?.group?.id_name) : true) &&
-                (srchTermType?.length > 0 ? srchTermType.includes(item?.term_type_id.toString()) : true) &&
-                (srchType?.length > 0 ? srchType.includes(item?.type_account_id?.toString()) : true) &&
-                (srchContractCode?.length > 0 ? srchContractCode.includes(item?.id?.toString()) : true) &&
-                (srchContractStatus?.length > 0 ? srchContractStatus.includes(item?.status_capacity_request_management?.id?.toString()) : true) &&
-                (srchStatus?.length > 0 ? srchStatus.includes(item?.status_capacity_request_management_process_id?.toString()) : true)
+                (srchShipper?.length > 0 ? srchShipper?.includes(item?.group?.id_name) : true) &&
+                (srchTermType?.length > 0 ? srchTermType?.includes(item?.term_type_id?.toString()) : true) &&
+                (srchType?.length > 0 ? srchType?.includes(item?.type_account_id?.toString()) : true) &&
+                (srchContractCode?.length > 0 ? srchContractCode?.includes(item?.id?.toString()) : true) &&
+                (srchContractStatus?.length > 0 ? srchContractStatus?.includes(item?.status_capacity_request_management?.id?.toString()) : true) &&
+                (srchStatus?.length > 0 ? srchStatus?.includes(item?.status_capacity_request_management_process_id?.toString()) : true)
             );
         });
 
@@ -243,7 +237,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // #region handleFieldSearchOnRoute
     const handleFieldSearchOnRoute = (contract_code: any, data_table: any) => {
-        const result_2 = data_table?.filter((item: any) => {
+        const result_2 = (data_table || [])?.filter((item: any) => {
             return (
                 (contract_code ? item?.id?.toString() == contract_code : true)
             );
@@ -260,7 +254,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         // if (!!srchPeriod && srchPeriod === "0" && srchPeriod !== "undefined" && srchPeriod !== "") {
         if (!!srchPeriod && srchPeriod !== "undefined" && srchPeriod !== "") {
 
-            const response_path_filter = dataPathDetail?.filter((item: any) => {
+            const response_path_filter = (dataPathDetail || [])?.filter((item: any) => {
                 return (
                     (srchPeriod ? String(item?.period) == String(srchPeriod) : true)
                 );
@@ -298,7 +292,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     //     const parts = dateStr.split('/'); // Split by '/' to extract MM, DD, YYYY
     //     if (parts.length === 3) {
-    //         const [month, day, year] = parts.map(Number); // Convert parts to numbers
+    //         const [month, day, year] = (parts || [])?.map(Number); // Convert parts to numbers
     //         return new Date(year, month - 1, day); // Months are 0-based in JavaScript
     //     }
 
@@ -315,13 +309,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         // Store original data if it hasn't been stored yet
         if (!originalMomDataTable.current) {
-            originalMomDataTable.current = { booking_full_json: [...data?.booking_full_json] }; // Store the original data with the booking_full_json
+            originalMomDataTable.current = { booking_full_json: [...(data?.booking_full_json || [])] }; // Store the original data with the booking_full_json
         }
 
         if (modeSearch === 'reset') {
             setIsReset(true)
             // Restore the original data to data.booking_full_json
-            if (originalMomDataTable.current?.booking_full_json) {
+            if (originalMomDataTable.current?.booking_full_json && data) {
                 data.booking_full_json = [...originalMomDataTable.current.booking_full_json]; // Ensure deep copy if necessary
             }
             setFilteredDataTable(originalMomDataTable.current); // Reset the filtered data
@@ -335,33 +329,42 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             setKey((prevKey) => prevKey + 1);
         } else {
             // ล่อ ลวง พราง
-            setTestData(data?.booking_full_json.map((booking: any) => {
-                const dataTemp = JSON.parse(booking.data_temp);
-                const filteredEntryValue = dataTemp.entryValue?.filter((value: any) => {
-                    let getOriginal: any = getData(value["0"]);
+            setTestData((data?.booking_full_json || [])?.map((booking: any) => {
+                let dataTemp: any = {};
+                try {
+                    dataTemp = booking?.data_temp ? JSON.parse(booking.data_temp) : {};
+                } catch (e) {
+                    dataTemp = {};
+                }
+                const filteredEntryValue = (dataTemp?.entryValue || [])?.filter((value: any) => {
+                    let getOriginal: any = getData(value?.["0"]);
                     let dateFrom: any = srchStartDate;
                     let dateTo: any = srchEndDate;
 
                     const condition1 = srchZone ? getOriginal?.zone?.name == srchZone : true;
                     const condition2 = srchArea ? getOriginal?.area?.name === srchArea : true;
                     const condition3 = srchContractCode ? getOriginal?.contract_point === srchContractCode : true;
-                    const condition4 = (srchStartDate && !srchEndDate) ? dayjs(value["5"], "DD/MM/YYYY").format('ddd MMM DD YYYY') == dateFrom?.toDateString() : true;
-                    const condition5 = (!srchStartDate && srchEndDate) ? dayjs(value["6"], "DD/MM/YYYY").format('ddd MMM DD YYYY') == dateTo?.toDateString() : true;
-                    const condition6 = (srchStartDate && srchEndDate) ? dayjs(value["5"], "DD/MM/YYYY").format('ddd MMM D YYYY') >= dateFrom?.toDateString() && dayjs(value["6"], "DD/MM/YYYY").format('ddd MMM D YYYY') <= dateTo?.toDateString() : true;
+                    const d5 = value?.["5"] ? dayjs(value["5"], "DD/MM/YYYY") : null;
+                    const d6 = value?.["6"] ? dayjs(value["6"], "DD/MM/YYYY") : null;
+                    const condition4 = (srchStartDate && !srchEndDate) ? (d5 && d5.isValid() && dateFrom ? d5.format('ddd MMM DD YYYY') == dateFrom?.toDateString() : true) : true;
+                    const condition5 = (!srchStartDate && srchEndDate) ? (d6 && d6.isValid() && dateTo ? d6.format('ddd MMM DD YYYY') == dateTo?.toDateString() : true) : true;
+                    const condition6 = (srchStartDate && srchEndDate) ? (d5 && d5.isValid() && d6 && d6.isValid() && dateFrom && dateTo ? d5.format('ddd MMM D YYYY') >= dateFrom?.toDateString() && d6.format('ddd MMM D YYYY') <= dateTo?.toDateString() : true) : true;
                     return (condition1 && condition2 && condition3 && (condition4 || condition5 || condition6))
                 }) || [];
 
-                const filteredExitValue = dataTemp.exitValue?.filter((value: any) => {
-                    let getOriginal: any = getData(value["0"]);
+                const filteredExitValue = (dataTemp?.exitValue || [])?.filter((value: any) => {
+                    let getOriginal: any = getData(value?.["0"]);
                     let dateFrom: any = srchStartDate;
                     let dateTo: any = srchEndDate;
 
                     const condition1 = srchZone ? getOriginal?.zone?.name == srchZone : true;
                     const condition2 = srchArea ? getOriginal?.area?.name === srchArea : true;
                     const condition3 = srchContractCode ? getOriginal?.contract_point === srchContractCode : true;
-                    const condition4 = (srchStartDate && !srchEndDate) ? dayjs(value["5"], "DD/MM/YYYY").format('ddd MMM DD YYYY') == dateFrom?.toDateString() : true;
-                    const condition5 = (!srchStartDate && srchEndDate) ? dayjs(value["6"], "DD/MM/YYYY").format('ddd MMM DD YYYY') == dateTo?.toDateString() : true;
-                    const condition6 = (srchStartDate && srchEndDate) ? dayjs(value["5"], "DD/MM/YYYY").format('ddd MMM D YYYY') >= dateFrom?.toDateString() && dayjs(value["6"], "DD/MM/YYYY").format('ddd MMM D YYYY') <= dateTo?.toDateString() : true;
+                    const d5 = value?.["5"] ? dayjs(value["5"], "DD/MM/YYYY") : null;
+                    const d6 = value?.["6"] ? dayjs(value["6"], "DD/MM/YYYY") : null;
+                    const condition4 = (srchStartDate && !srchEndDate) ? (d5 && d5.isValid() && dateFrom ? d5.format('ddd MMM DD YYYY') == dateFrom?.toDateString() : true) : true;
+                    const condition5 = (!srchStartDate && srchEndDate) ? (d6 && d6.isValid() && dateTo ? d6.format('ddd MMM DD YYYY') == dateTo?.toDateString() : true) : true;
+                    const condition6 = (srchStartDate && srchEndDate) ? (d5 && d5.isValid() && d6 && d6.isValid() && dateFrom && dateTo ? d5.format('ddd MMM D YYYY') >= dateFrom?.toDateString() && d6.format('ddd MMM D YYYY') <= dateTo?.toDateString() : true) : true;
                     return (condition1 && condition2 && condition3 && (condition4 || condition5 || condition6))
                 }) || [];
                 return {
@@ -375,50 +378,55 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             }))
 
             // >>>>>>>>>>>> TEST FILTER
-            const filtered_data_booking_version = data?.booking_full_json?.map((booking: any) => {
-                const dataTemp = JSON.parse(booking.data_temp);
+            const filtered_data_booking_version = (data?.booking_full_json || [])?.map((booking: any) => {
+                let dataTemp: any = {};
+                try {
+                    dataTemp = booking?.data_temp ? JSON.parse(booking.data_temp) : {};
+                } catch (e) {
+                    dataTemp = {};
+                }
 
-                const filteredEntryValue = dataTemp.entryValue?.filter((value: any) => {
-                    let getOriginal: any = getData(value["0"]);
+                const filteredEntryValue = (dataTemp?.entryValue || [])?.filter((value: any) => {
+                    let getOriginal: any = getData(value?.["0"]);
 
                     const startFilter = srchStartDate ? dayjs(srchStartDate).startOf('day') : null;
                     const endFilter = srchEndDate ? dayjs(srchEndDate).endOf('day') : null;
-                    const rowStart = dayjs(value["5"], "DD/MM/YYYY").startOf('day');
-                    const rowEnd = dayjs(value["6"], "DD/MM/YYYY").startOf('day');
+                    const rowStart = value?.["5"] ? dayjs(value["5"], "DD/MM/YYYY").startOf('day') : null;
+                    const rowEnd = value?.["6"] ? dayjs(value["6"], "DD/MM/YYYY").startOf('day') : null;
 
                     const condition1 = srchZone ? getOriginal?.zone?.name == srchZone : true;
                     const condition2 = srchArea ? getOriginal?.area?.name === srchArea : true;
                     const condition3 = srchContractCode ? getOriginal?.contract_point === srchContractCode : true;
 
                     let dateOk = true;
-                    if (startFilter && !endFilter) {
+                    if (startFilter && !endFilter && rowStart && rowStart.isValid()) {
                         dateOk = rowStart.isSameOrAfter(startFilter, 'day');
-                    } else if (!startFilter && endFilter) {
+                    } else if (!startFilter && endFilter && rowEnd && rowEnd.isValid()) {
                         dateOk = rowEnd.isSameOrBefore(endFilter, 'day');
-                    } else if (startFilter && endFilter) {
+                    } else if (startFilter && endFilter && rowStart && rowStart.isValid() && rowEnd && rowEnd.isValid()) {
                         dateOk = rowStart.isSameOrAfter(startFilter) && rowEnd.isSameOrBefore(endFilter); // range
                     }
 
                     return (condition1 && condition2 && condition3 && dateOk)
                 }) || [];
 
-                const filteredExitValue = dataTemp.exitValue?.filter((value: any) => {
-                    let getOriginal: any = getData(value["0"]);
+                const filteredExitValue = (dataTemp?.exitValue || [])?.filter((value: any) => {
+                    let getOriginal: any = getData(value?.["0"]);
                     const startFilter = srchStartDate ? dayjs(srchStartDate).startOf('day') : null;
                     const endFilter = srchEndDate ? dayjs(srchEndDate).endOf('day') : null;
-                    const rowStart = dayjs(value["5"], "DD/MM/YYYY").startOf('day');
-                    const rowEnd = dayjs(value["6"], "DD/MM/YYYY").startOf('day');
+                    const rowStart = value?.["5"] ? dayjs(value["5"], "DD/MM/YYYY").startOf('day') : null;
+                    const rowEnd = value?.["6"] ? dayjs(value["6"], "DD/MM/YYYY").startOf('day') : null;
 
                     const condition1 = srchZone ? getOriginal?.zone?.name == srchZone : true;
                     const condition2 = srchArea ? getOriginal?.area?.name === srchArea : true;
                     const condition3 = srchContractCode ? getOriginal?.contract_point === srchContractCode : true;
 
                     let dateOk = true;
-                    if (startFilter && !endFilter) {
+                    if (startFilter && !endFilter && rowStart && rowStart.isValid()) {
                         dateOk = rowStart.isSameOrAfter(startFilter, 'day');
-                    } else if (!startFilter && endFilter) {
+                    } else if (!startFilter && endFilter && rowEnd && rowEnd.isValid()) {
                         dateOk = rowEnd.isSameOrBefore(endFilter, 'day');
-                    } else if (startFilter && endFilter) {
+                    } else if (startFilter && endFilter && rowStart && rowStart.isValid() && rowEnd && rowEnd.isValid()) {
                         dateOk = rowStart.isSameOrAfter(startFilter) && rowEnd.isSameOrBefore(endFilter); // range
                     }
 
@@ -436,12 +444,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 };
             })
 
-            data.booking_full_json = filtered_data_booking_version
+            if (data) {
+                data.booking_full_json = filtered_data_booking_version
+            }
         }
     }
 
     const getData = (data: any) => {
-        const filter_contract_point = contractPointData?.data?.find((item: any) => item.contract_point === data?.trim());
+        const filter_contract_point = (contractPointData?.data || [])?.find((item: any) => item?.contract_point === data?.trim());
         return filter_contract_point
     }
 
@@ -505,7 +515,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         if (status_from_somewhere_else === "Waiting Approval" || status_from_somewhere_else === "Waiting For Approval") {
                             const status: any = status_from_somewhere_else;
                             const transferstatus: any = status == 'Waiting Approval' ? "Waiting For Approval" : status_from_somewhere_else;
-                            const findStatusMaster: any = res_stat?.find((item: any) => item?.name == transferstatus)?.id;
+                            const findStatusMaster: any = (res_stat || [])?.find((item: any) => item?.name == transferstatus)?.id;
 
                             const resultFilter = data?.filter((item: any) => {
                                 return (
@@ -539,7 +549,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // กรองข้อมูล shipper ที่ตรงกับตัว login
                 let filter_contract_only_shipper: any = []
                 if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-                    filter_contract_only_shipper = response?.filter((item: any) => {
+                    filter_contract_only_shipper = (response || [])?.filter((item: any) => {
                         return item?.group_id === userDT?.account_manage?.[0]?.group_id
                     })
 
@@ -558,9 +568,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     if (status_from_somewhere_else === "Waiting Approval" || status_from_somewhere_else === "Waiting For Approval") {
                         const status: any = status_from_somewhere_else;
                         const transferstatus: any = status == 'Waiting Approval' ? "Waiting For Approval" : status_from_somewhere_else;
-                        const findStatusMaster: any = res_stat?.find((item: any) => item?.name == transferstatus)?.id;
+                        const findStatusMaster: any = (res_stat || [])?.find((item: any) => item?.name == transferstatus)?.id;
 
-                        setSrchStatus(findStatusMaster?.toString());
+                        setSrchStatus(findStatusMaster ? [findStatusMaster.toString()] : []);
                         setuseParams(true);
 
                     } else {
@@ -601,7 +611,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         const response: any = await getService(`/master/capacity/capacity-request-management`);
         let id: any = localStorage.getItem("h593stk2fjcb82pa")
 
-        let res_filtered = response?.find((item: any) => item?.id == id)
+        let res_filtered = (response || [])?.find((item: any) => item?.id == id)
         // localStorage.setItem("h593stk2f0asc9c", JSON.stringify(res_filtered));
 
         // ใช้ lib lz-string บีบ เพราะบาง contract ขนาดเกิน
@@ -770,7 +780,7 @@ useEffect(() => {
     // ############### CHANGE CONTRACT STATUS ###############
     const openStatForm = (mode: any, id: any) => {
         setSelectedId(id);
-        const filteredData = dataTable.find((item: any) => item.id === id);
+        const filteredData = (dataTable || [])?.find((item: any) => item?.id === id);
         setModeShow(mode)
         setFormData(filteredData);
         setMdStatOpen(true)
@@ -781,7 +791,7 @@ useEffect(() => {
     const [dataSubmission, setDataSubmission] = useState<any>([]);
 
     const openSubmissionModal = (id?: any, data?: any) => {
-        const filtered = dataTable?.find((item: any) => item.id === id);
+        const filtered = (dataTable || [])?.find((item: any) => item?.id === id);
         setDataSubmission(filtered ?? data)
         setMdSubmissionView(true)
     };
@@ -842,7 +852,7 @@ useEffect(() => {
 
         try {
             const res_sync = await getService(`/master/capacity/sync-data-with-tpa-website`);
-            if (res_sync.isSuccess) {
+            if (res_sync?.isSuccess) {
 
             }
             else {
@@ -936,18 +946,33 @@ useEffect(() => {
 
         {/* "file_period_mode": 2,  // 1 = วัน, 2 = เดือน, 3 = ปี */ }
         let shadowDate: any;
-        if (dataFile?.file_period_mode === 1) shadowDate = addDays(present_date, dataFile?.shadow_time);
-        if (dataFile?.file_period_mode === 2) shadowDate = addMonths(present_date, dataFile?.shadow_time);
-        if (dataFile?.file_period_mode === 3) shadowDate = addYears(present_date, dataFile?.shadow_time);
+        // if (dataFile?.file_period_mode === 1) shadowDate = addDays(present_date, dataFile?.shadow_time);
+        // if (dataFile?.file_period_mode === 2) shadowDate = addMonths(present_date, dataFile?.shadow_time);
+        // if (dataFile?.file_period_mode === 3) shadowDate = addYears(present_date, dataFile?.shadow_time);
 
         // ถ้ามี extend_deadline ใช้ซะ, ถ้าไม่มีก็ใช้ contract_end_date
         // const extendDeadlineDate = dataFile?.extend_deadline ? parseISO(dataFile?.extend_deadline) : parseISO(dataFile?.contract_end_date);
         const extendDeadlineDate = dataFile?.extend_deadline ? parseISO(dataFile?.extend_deadline) : dataFile?.terminate_date ? parseISO(dataFile?.terminate_date) : parseISO(dataFile?.contract_end_date);
+        // const isBeforeDeadline = isBefore(shadowDate, extendDeadlineDate);
+        switch (dataFile?.file_period_mode) {
+            case 1:
+                shadowDate = addDays(extendDeadlineDate, -(dataFile?.shadow_time || 0));
+                break;
+            case 2:
+                shadowDate = addMonths(extendDeadlineDate, -(dataFile?.shadow_time || 0));
+                break;
+            case 3:
+                shadowDate = addYears(extendDeadlineDate, -(dataFile?.shadow_time || 0));
+                break;
+            default:
+                shadowDate = extendDeadlineDate
+                break;
+        }
 
         // Enable button if shadowDate < extendDeadlineDate
+        const isBeforeDeadline = isBefore(present_date, shadowDate)
         // // 2 == waiting for start date // 1 == Active
         const isStatusWaitForStartDate = dataFile?.status_capacity_request_management_process?.id == 2 || dataFile?.status_capacity_request_management_process?.id == 1;
-        const isBeforeDeadline = isBefore(shadowDate, extendDeadlineDate);
         const isStatusApproved = dataFile?.status_capacity_request_management?.id === 2; // 2 == approve
 
         // V.2.0.109 ปุ่ม Extend จะต้อง Active ใน 2 กรณีคือ 
@@ -1069,9 +1094,9 @@ useEffect(() => {
                     return isActive
                 })
                 setBookingTemplateList(activeTemplate);
-                setSelectedBookingTemplate(activeTemplate?.find(item => item.term_type_id == dataFile?.term_type_id))
+                setSelectedBookingTemplate(activeTemplate?.find((item: any) => item?.term_type_id == dataFile?.term_type_id))
 
-                return activeTemplate?.find(item => item.term_type_id == dataFile?.term_type_id)
+                return activeTemplate?.find((item: any) => item?.term_type_id == dataFile?.term_type_id)
             }
         } catch (err) {
             // setError(err.message);
@@ -1227,6 +1252,7 @@ useEffect(() => {
     useEffect(() => {
         if (shouldUpdateMotherTable) {
             let id: any = undefined
+            let data: any = undefined
             try {
                 // id = Number(localStorage.getItem("t9j5u3k2f0w7p1m4r6a"))
                 id = localStorage.getItem("t9j5u3k2f0w7p1m4r6a")
@@ -1236,13 +1262,14 @@ useEffect(() => {
                 if (Number.isNaN(id)) {
                     id = undefined
                 }
+                data = dataTable.find((item: any) => item.id == id)
             } catch (error) {
                 id = undefined
             }
 
             // test ขอปิดไว้ก่อน
             // handleContractClick(id || dataFile?.id)
-            handleContractClick(id)
+            handleContractClick(id, data)
             setShouldUpdateMotherTable(false)
         }
     }, [dataTable])
@@ -1616,7 +1643,7 @@ useEffect(() => {
                         Math.abs(entryValue - exitValue) < 0.001,
                 };
             })
-            .filter((item) => !item.equal);
+            .filter((item: any) => !item?.equal);
 
         const isEqual =
             commonCompareKeys.length > 0 &&
@@ -1753,7 +1780,7 @@ useEffect(() => {
             await fetchData();
             const response: any = await getService(`/master/capacity/capacity-request-management`);
 
-            const filteredData = response?.find((item: any) => item.id === dataFile?.id);
+            const filteredData = (response || [])?.find((item: any) => item?.id === dataFile?.id);
 
             setFormOpen(false);
             setModalSuccessMsg('Successfully duplicated.')
@@ -1790,14 +1817,13 @@ useEffect(() => {
     const open = Boolean(anchorEl);
 
     // List ---> เฉพาะ Shipper จะไม่เห็น Column Submission Comment และ Path Detail https://app.clickup.com/t/86eqy9nt5
-    const adjustedColumns = userData?.user_type_id == 3 ? initialColumns.filter((column: any) => !['submission_comment', 'path_detail'].includes(column.key)) : initialColumns;
+    const adjustedColumns = userData?.user_type_id == 3 ? (initialColumns || []).filter((column: any) => !['submission_comment', 'path_detail'].includes(column?.key)) : initialColumns;
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        // Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
-        Object.fromEntries(adjustedColumns.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries((adjustedColumns || [])?.map((column: any) => [column?.key, column?.visible]))
     );
 
     useEffect(() => {
-        setColumnVisibility(Object.fromEntries(adjustedColumns.map((column: any) => [column.key, column.visible])))
+        setColumnVisibility(Object.fromEntries((adjustedColumns || [])?.map((column: any) => [column?.key, column?.visible])))
     }, [userData])
 
     const handleColumnToggle = (columnKey: string) => {
@@ -1808,7 +1834,7 @@ useEffect(() => {
     };
 
     // ############### COLUMN SHOW/HIDE ###############
-    const generateColumnVisibility = (columns: any) => Object.fromEntries(columns.map(({ key, visible }: any) => [key, visible]));
+    const generateColumnVisibility = (columns: any) => Object.fromEntries((columns || [])?.map(({ key, visible }: any) => [key, visible]));
 
     const [initialColumnsDynamicEntry_New, setinitialColumnsDynamicEntry_New] = useState([
         { key: 'zone', label: 'Zone', visible: true },
@@ -1996,8 +2022,8 @@ useEffect(() => {
 
             setDataZoneMaster(filteredZoneMasterData)
 
-            const contractPointTextsInUse = new Set(dataFile?.booking_version?.flatMap((version: any) => version.booking_row_json)?.map((row: any) => row.contract_point));
-            const filteredContractPointMasterData = contractPointData?.data?.filter((item: any) => contractPointTextsInUse.has(item.contract_point));
+            const contractPointTextsInUse = new Set((dataFile?.booking_version || [])?.flatMap((version: any) => version?.booking_row_json || [])?.map((row: any) => row?.contract_point));
+            const filteredContractPointMasterData = contractPointData?.data?.filter((item: any) => contractPointTextsInUse.has(item?.contract_point));
             setDataContractMaster(filteredContractPointMasterData)
         }
     }, [dataFile])
@@ -2215,7 +2241,7 @@ useEffect(() => {
                 accessorFn: (row: any) => row?.group?.name || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
-                    return (<div>{row?.group && row?.group?.name}</div>)
+                    return (<div>{row?.group?.name}</div>)
                 }
             },
             {
@@ -2257,6 +2283,7 @@ useEffect(() => {
                 accessorFn: (row: any) => '',
                 cell: (info) => {
                     const row: any = info?.row?.original;
+                    if (!row) return null;
                     // const getPermission: any = renderPermission();
                     return (
                         <div className="flex justify-center items-center">
@@ -2264,7 +2291,7 @@ useEffect(() => {
                                 <BtnSelectTable
                                     togglePopover={togglePopover}
                                     row_id={row?.id}
-                                    isDisable={row?.status_capacity_request_management.id == 3 || row?.status_capacity_request_management.id == 5 ? true : false}
+                                    isDisable={row?.status_capacity_request_management?.id == 3 || row?.status_capacity_request_management?.id == 5}
                                 />
                             </div>
                         </div>
@@ -2280,6 +2307,7 @@ useEffect(() => {
                 accessorFn: (row: any) => '',
                 cell: (info) => {
                     const row: any = info?.row?.original;
+                    if (!row) return null;
                     const getPermission: any = renderPermission();
                     return (
                         <div className="flex justify-center items-center">
@@ -2287,7 +2315,7 @@ useEffect(() => {
                                 <BtnDetailTable
                                     openSubmissionModal={(id: any) => openSubmissionModal(id, row)}
                                     row_id={row?.id}
-                                    disable={getPermission?.f_view == true ? false : true}
+                                    disable={!getPermission?.f_view}
                                 />
                             </div>
                         </div>
@@ -2298,33 +2326,21 @@ useEffect(() => {
                 accessorKey: "file",
                 header: "File",
                 align: 'center',
-                accessorFn: (row) => row?.file_capacity_request_management?.length || '',
+                accessorFn: (row: any) => row?.file_capacity_request_management?.length || '',
                 enableSorting: false,
                 cell: (info) => {
                     const row: any = info?.row?.original;
+                    if (!row) return null;
                     const getPermission: any = renderPermission();
                     return (
                         <div
                             className="inline-flex items-center justify-center relative"
-                        // onClick={() => {
-                        //     if (getPermission?.f_view == true) {
-                        //         openAllFileModal(row?.id, row)
-                        //     }
-                        // }}
                         >
-                            {/* <button
-                                type="button"
-                                className="flex items-center justify-center px-[2px] py-[2px] rounded-md hover:bg-blue-600 border border-[#DFE4EA] relative"
-                                disabled={getPermission?.f_view == true ? false : true}
-                            >
-                                <AttachFileRoundedIcon sx={{ fontSize: 18, color: '#1473A1', '&:hover': { color: '#ffffff' } }} />
-                            </button> */}
-
                             <button
                                 type="button"
                                 aria-label="Open files"
                                 onClick={() => openAllFileModal(row?.id, row)}
-                                disabled={getPermission?.f_view == true ? false : true}
+                                disabled={!getPermission?.f_view}
                                 className={iconButtonClass}
                             >
                                 <AttachFileRoundedIcon
@@ -2334,7 +2350,7 @@ useEffect(() => {
                                 />
                             </button>
                             <span className="px-2 text-[#464255]">
-                                {row?.file_capacity_request_management?.length}
+                                {row?.file_capacity_request_management?.length ?? 0}
                             </span>
                         </div>
                     )
@@ -2348,6 +2364,7 @@ useEffect(() => {
                 accessorFn: (row: any) => '',
                 cell: (info) => {
                     const row: any = info?.row?.original;
+                    if (!row) return null;
                     const getPermission: any = renderPermission();
                     return (
                         <div
@@ -2356,7 +2373,7 @@ useEffect(() => {
                             <button
                                 type="button"
                                 className="flex items-center justify-center px-[2px] py-[2px] rounded-md hover:bg-blue-600 border border-[#809F2C66] relative"
-                                disabled={getPermission?.f_view == true ? false : true}
+                                disabled={!getPermission?.f_view}
                                 onClick={() => handlePathDetail(row?.id, row)}
                             >
                                 <TimelineRoundedIcon sx={{ fontSize: 18, color: '#809F2C', '&:hover': { color: '#ffffff' } }} />
@@ -2557,7 +2574,7 @@ useEffect(() => {
         const renderKey = (datamap: any, columns: any) => {
             // columns == dateTableColumns
             let keygen: any = [];
-            datamap?.length > 0 && datamap?.map((item: any) => {
+            (datamap || [])?.map((item: any) => {
                 let bypassColumns = [
                     'Capacity Daily Booking (MMBTU/d)',
                     'Capacity Daily Booking (MMscfd)',
@@ -2566,7 +2583,7 @@ useEffect(() => {
                 ]
 
                 if (bypassColumns?.find((f: any) => f == item?.columns)) {
-                    columns?.length > 0 && columns?.map((date: any) => {
+                    (columns || [])?.map((date: any) => {
                         keygen.push(item?.subcolumns[date]?.key)
                     })
                 }
@@ -2655,8 +2672,8 @@ useEffect(() => {
         function convertHeaderArrayToObject(headerArray: any[]) {
             const result: Record<string, any> = {};
 
-            headerArray.forEach(item => {
-                if (item.columns && item.subcolumns) {
+            (headerArray || []).forEach(item => {
+                if (item?.columns && item?.subcolumns) {
                     result[item.columns] = item.subcolumns;
                 }
             });
@@ -2666,8 +2683,8 @@ useEffect(() => {
 
         //หาวันจาก filter from กับ to
         function filterHeaderByDates(headerArray: any[], dateTableColumns: string[]) {
-            return headerArray.map((item: any) => {
-                const subcolumnsKeys = Object.keys(item.subcolumns);
+            return (headerArray || [])?.map((item: any) => {
+                const subcolumnsKeys = Object.keys(item?.subcolumns || {});
 
                 // ตรวจสอบว่าอย่างน้อย 1 key ใน subcolumns เป็นวันที่ที่อยู่ใน dateTableColumns
                 const hasDateKeys = subcolumnsKeys.some(key => dateTableColumns.includes(key));
@@ -2678,7 +2695,7 @@ useEffect(() => {
 
                     for (const dateKey of subcolumnsKeys) {
                         if (dateTableColumns.includes(dateKey)) {
-                            filteredSubcolumns[dateKey] = item.subcolumns[dateKey];
+                            filteredSubcolumns[dateKey] = item?.subcolumns?.[dateKey];
                         }
                     }
 
@@ -2706,7 +2723,7 @@ useEffect(() => {
         if (selectedButton == 'original') {
             originalBooking = originalData?.booking_full_json;
         } else if (selectedButton == 'summary') {
-            originalBooking = originalData?.booking_full_json_release[0]?.data_temp ? originalData?.booking_full_json_release : originalData?.booking_full_json;
+            originalBooking = originalData?.booking_full_json_release?.[0]?.data_temp ? originalData?.booking_full_json_release : originalData?.booking_full_json;
         }
 
         if (modeSearch == 'reset') {
@@ -3337,6 +3354,10 @@ useEffect(() => {
     useEffect(() => {
       console.log('dataFile : ', dataFile);
     }, [dataFile])
+
+    useEffect(() => {
+        console.log('isExtendEnabled : ', isExtendEnabled);
+    }, [isExtendEnabled])
     
 
     return (
@@ -3526,7 +3547,7 @@ useEffect(() => {
                                 can_export={userPermission ? userPermission?.f_export : false} columnVisibility={columnVisibility} initialColumns={initialColumns}
                             />
                         }
-                        initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
+                        initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
                         onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                     />
                 </>
@@ -3634,6 +3655,7 @@ useEffect(() => {
                                     setAmendNewContractStartDate(undefined)
                                     setSrchStartDate(null)
                                     setSrchEndDate(null)
+                                    setIsExtendEnabled(false)
 
                                     // setModeEditing(undefined)
                                     setModeEditing('')
@@ -3751,7 +3773,7 @@ useEffect(() => {
                                     };
 
                                     const addMissingKeysToValues = (values: any[], headerKeys: any[]): any[] => {
-                                        return values.map((item: any) => {
+                                        return (values || [])?.map((item: any) => {
                                             const itemKeys = Object.keys(item);
                                             const missingKeys = headerKeys.filter((key: any) => !itemKeys.includes(key));
                                             missingKeys.forEach((key: any) => {
@@ -3805,7 +3827,7 @@ useEffect(() => {
                                     }
 
                                     // Process booking_full_json_release
-                                    const booking_full_json_release: any[] = item?.booking_full_json_release?.filter((item: any) => item?.flag_use == true) || [];
+                                    const booking_full_json_release: any[] = item?.booking_full_json_release?.filter((item: any) => item?.flag_use != false) || [];
                                     if (booking_full_json_release.length > 0 && booking_full_json_release[0]?.data_temp) {
                                         let releaseJsonString = item?.booking_full_json_release[0]?.data_temp;
                                         if (releaseJsonString) {
@@ -5126,7 +5148,7 @@ useEffect(() => {
             >
                 <div ref={popoverRef} className="w-36 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
                     <ul className="py-2">
-                        {actions.map(({ label, action }: any, idx: number) => {
+                        {(actions || [])?.map(({ label, action }: any, idx: number) => {
                             return (
                                 <li
                                     key={idx}

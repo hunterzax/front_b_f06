@@ -492,13 +492,61 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                     {/* {showPicker && !isReadOnly2 && ( */}
                                                                     {showPicker && (
                                                                         <div ref={pickerRef} className="absolute z-10 mt-0 -ml-20" >
-                                                                            <SketchPicker
+                                                                            {/* <SketchPicker
                                                                                 color={watch("color")}
                                                                                 presetColors={["#189bcc", "#2c6fc3", "#fbec5d", "#ea213a", "#eeeeee", "#ff7373", "#267de3", "#4ea27a", "#854442", "#3d4761", "#becc41", "#6b3fa0", "#324033", "#2bbcbb", "#1f2431", "#ff6600", "#ccffcc", "#ff99ff", "#00ffcc", "#663300", "#189bcc", "#2c6fc3", "#fbec5d", "#ea213a"]}
                                                                                 {...register("color")}
                                                                                 onChange={(color) => {
                                                                                     setValue("color", color.hex)
                                                                                     setBlockPickerColor(color.hex);
+                                                                                }}
+                                                                            /> */}
+                                                                            <input
+                                                                                type="hidden"
+                                                                                {...register("color")}
+                                                                            />
+
+                                                                            <SketchPicker
+                                                                                color={watch("color")}
+                                                                                presetColors={[
+                                                                                    "#189bcc",
+                                                                                    "#2c6fc3",
+                                                                                    "#fbec5d",
+                                                                                    "#ea213a",
+                                                                                    "#eeeeee",
+                                                                                    "#ff7373",
+                                                                                    "#267de3",
+                                                                                    "#4ea27a",
+                                                                                    "#854442",
+                                                                                    "#3d4761",
+                                                                                    "#becc41",
+                                                                                    "#6b3fa0",
+                                                                                    "#324033",
+                                                                                    "#2bbcbb",
+                                                                                    "#1f2431",
+                                                                                    "#ff6600",
+                                                                                    "#ccffcc",
+                                                                                    "#ff99ff",
+                                                                                    "#00ffcc",
+                                                                                    "#663300",
+                                                                                ]}
+                                                                                onChange={(color) => {
+                                                                                    const {
+                                                                                        r,
+                                                                                        g,
+                                                                                        b,
+                                                                                        a = 1,
+                                                                                    } = color.rgb;
+
+                                                                                    const rgbaColor =
+                                                                                        `rgba(${r}, ${g}, ${b}, ${a})`;
+
+                                                                                    setValue("color", rgbaColor, {
+                                                                                        shouldDirty: true,
+                                                                                        shouldValidate: true,
+                                                                                    });
+
+                                                                                    setBlockPickerColor(rgbaColor);
                                                                                 }}
                                                                             />
 
@@ -536,7 +584,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         disabled={isReadOnly2}
                                                         valueWatch={watch("entry_exit_id") || ""}
                                                         handleChange={(e) => {
-                                                            setValue("entry_exit_id", e.target.value);
+                                                            setValue("entry_exit_id", e?.target?.value ?? "");
                                                             setValue("supply_reference_quality_area", null);
                                                             if (errors?.entry_exit_id) { clearErrors('entry_exit_id') }
                                                         }}
@@ -619,40 +667,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             {item.name}
                                                         </div>
                                                         <div key={"quality_min_" + index} >
-                                                            {/* {
-                                                                item?.name !== "" && <NumericFormat
-                                                                    id={`${item.id}_min`}
-                                                                    placeholder="0.000"
-                                                                    value={watch(`${item.id}_min`)}
-                                                                    readOnly={isReadOnly}
-                                                                    {...register(`${item.id}_min`)}
-                                                                    onValueChange={({ value }) => {
-                                                                        const max = parseFloat(watch(`${item.id}_max`) || Number.MAX_SAFE_INTEGER);
-                                                                        setValue(`${item.id}_min`, value);
-
-                                                                        setTimeout(() => {
-                                                                            onChangeInput(item?.id, value == '-' ? -1 : value, 'min', { max });
-                                                                        }, 0);
-                                                                    }}
-                                                                    isAllowed={({ floatValue }) => {
-                                                                        const max = parseFloat(watch(`${item.id}_max`) || Number.MAX_SAFE_INTEGER);
-
-                                                                        if (floatValue === undefined) return true;
-                                                                        if (isNaN(max)) return true;
-                                                                        return floatValue <= max;
-                                                                    }}
-                                                                    className={`"text-sm block md:w-full !w-full p-2 pe-10 h-[44px] rounded-lg border-[1px] bg-white border-[#DFE4EA] outline-none bg-opacity-100 focus:border-[#00ADEF]" ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
-                                                                    thousandSeparator={true}
-                                                                    decimalScale={3}
-                                                                    fixedDecimalScale={true}
-                                                                    allowNegative={true}
-                                                                    displayType="input"
-                                                                    max={watch(`${item.id}_max`) ?? Number.MAX_VALUE}
-                                                                    disabled={isReadOnly}
-                                                                />
-                                                            } */}
                                                             {
-                                                                item?.name !== "" && <NumericFormat
+                                                                item.name !== "" && <NumericFormat
                                                                     id={`${item.id}_min`}
                                                                     placeholder="0.000"
                                                                     value={watch(`${item.id}_min`)}
@@ -678,46 +694,14 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                             setValue(`${item.id}_max`, String(min), { shouldValidate: true });
                                                                         }
 
-                                                                        onChangeInput(item?.id, min, "min", { max });
+                                                                        onChangeInput(item.id, min, "min", { max });
                                                                     }}
                                                                 />
                                                             }
                                                         </div>
                                                         <div key={"quality_max_" + index}>
-                                                            {/* {
-                                                                item?.name !== "" && <NumericFormat
-                                                                    id={`${item.id}_max`}
-                                                                    placeholder="0.000"
-                                                                    value={watch(`${item.id}_max`)}
-                                                                    // readOnly={isReadOnly}
-                                                                    {...register(`${item.id}_max`)}
-                                                                    onValueChange={({ value }) => {
-                                                                        const min = parseFloat(watch(`${item.id}_min`) || Number.MIN_SAFE_INTEGER);
-                                                                        setTimeout(() => {
-                                                                            onChangeInput(item?.id, value == '-' ? -1 : value, 'max', { min });
-                                                                        }, 0);
-                                                                    }}
-                                                                    isAllowed={({ floatValue }) => {
-                                                                        const min = parseFloat(watch(`${item.id}_min`) || Number.MIN_SAFE_INTEGER);
-
-                                                                        if (floatValue === undefined) return true; // อนุญาตให้ลบหมด
-
-                                                                        return floatValue >= min;
-                                                                    }}
-                                                                    className={`"text-sm block md:w-full !w-full p-2 pe-10 h-[44px] rounded-lg border-[1px] bg-white border-[#DFE4EA] outline-none bg-opacity-100 focus:border-[#00ADEF]" ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
-                                                                    thousandSeparator={true}
-                                                                    decimalScale={3}
-                                                                    fixedDecimalScale={true}
-                                                                    allowNegative={true}
-                                                                    displayType="input"
-                                                                    disabled={isReadOnly}
-                                                                    readOnly={isReadOnly}
-
-                                                                    min={watch(`${item.id}_min`) ?? Number.MIN_VALUE}
-                                                                />
-                                                            } */}
                                                             {
-                                                                item?.name !== "" && <NumericFormat
+                                                                item.name !== "" && <NumericFormat
                                                                     id={`${item.id}_max`}
                                                                     placeholder="0.000"
                                                                     value={watch(`${item.id}_max`)}
@@ -744,7 +728,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                             setValue(`${item.id}_max`, String(min), { shouldValidate: true });
                                                                         }
 
-                                                                        onChangeInput(item?.id, max, "max", { min });
+                                                                        onChangeInput(item.id, max, "max", { min });
                                                                     }}
                                                                 />
                                                             }

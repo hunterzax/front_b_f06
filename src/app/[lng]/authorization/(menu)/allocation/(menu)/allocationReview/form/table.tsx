@@ -229,7 +229,7 @@ const handleSelectAll = () => {
                   />
                 </th>
 
-                {columnVisibility.status && (
+                {columnVisibility?.status && (
                   <th scope="col" className={`${table_sort_header_style} text-center`}
                     // onClick={() => handleSort("allocation_status.name", sortState, setSortState, setSortedData, allNewData)}
                     onClick={() => handleSortWithPaginate("allocation_status.name", sortState, setSortState, setSortedData, allData, itemsPerPage, currentPage)}
@@ -239,7 +239,7 @@ const handleSelectAll = () => {
                   </th>
                 )}
 
-                {columnVisibility.gas_day && (
+                {columnVisibility?.gas_day && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[160px]`} 
                     // onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, allNewData)}
                     onClick={() => handleSortWithPaginate("gas_day", sortState, setSortState, setSortedData, allData, itemsPerPage, currentPage)}
@@ -249,7 +249,7 @@ const handleSelectAll = () => {
                   </th>
                 )}
 
-                {columnVisibility.shipper_name && (
+                {columnVisibility?.shipper_name && (
                   <th scope="col" className={`${table_sort_header_style}`} 
                     // onClick={() => handleSort("shipper.name", sortState, setSortState, setSortedData, allNewData)}
                     onClick={() => handleSortWithPaginate("shipper.name", sortState, setSortState, setSortedData, allData, itemsPerPage, currentPage)}
@@ -259,7 +259,7 @@ const handleSelectAll = () => {
                   </th>
                 )}
 
-                {columnVisibility.contract_code && (
+                {columnVisibility?.contract_code && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[160px]`} 
                     // onClick={() => handleSort("contract", sortState, setSortState, setSortedData, allNewData)}
                     onClick={() => handleSortWithPaginate("contract", sortState, setSortState, setSortedData, allData, itemsPerPage, currentPage)}
@@ -269,7 +269,7 @@ const handleSelectAll = () => {
                   </th>
                 )}
 
-                {columnVisibility.nom_point_concept_point && (
+                {columnVisibility?.nom_point_concept_point && (
                   <th scope="col" className={`${table_sort_header_style}`} 
                     // onClick={() => handleSort("point", sortState, setSortState, setSortedData, allNewData)}
                     onClick={() => handleSortWithPaginate("point", sortState, setSortState, setSortedData, allData, itemsPerPage, currentPage)}
@@ -279,7 +279,7 @@ const handleSelectAll = () => {
                   </th>
                 )}
 
-                {columnVisibility.entry_exit && (
+                {/* {columnVisibility?.entry_exit && (
                   <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} 
                     // onClick={() => handleSort("entry_exit_obj.name", sortState, setSortState, setSortedData, sortedData)}
                     onClick={() => handleSortWithPaginate("entry_exit_obj.name", sortState, setSortState, setSortedData, allData, itemsPerPage, currentPage)}
@@ -287,9 +287,10 @@ const handleSelectAll = () => {
                     {`Entry / Exit`}
                     {getArrowIcon("entry_exit_obj.name")}
                   </th>
-                )}
+                )} */}
+                {/* https://app.clickup.com/t/9018502823/86eub6d0j */}
 
-                {columnVisibility.zone && (
+                {columnVisibility?.zone && (
                   // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zone", sortState, setSortState, setSortedData, allNewData)}>
                   <th scope="col" className={`${table_sort_header_style} text-center`} 
                     // onClick={() => handleSort("zone_obj.name", sortState, setSortState, setSortedData, allNewData)}
@@ -300,7 +301,7 @@ const handleSelectAll = () => {
                   </th>
                 )}
 
-                {columnVisibility.area && (
+                {columnVisibility?.area && (
                   <th scope="col" className={`${table_sort_header_style} text-center`} 
                     // onClick={() => handleSort("area", sortState, setSortState, setSortedData, allNewData)}
                     onClick={() => handleSortWithPaginate("area", sortState, setSortState, setSortedData, allData, itemsPerPage, currentPage)}
@@ -310,7 +311,7 @@ const handleSelectAll = () => {
                   </th>
                 )}
 
-                {columnVisibility.nominated_value && (
+                {columnVisibility?.nominated_value && (
                   <th scope="col" className={`${table_sort_header_style}`}
                     // onClick={() => handleSort("nominationValue", sortState, setSortState, setSortedData, allNewData)}
                     onClick={() => handleSortWithPaginate("nominationValue", sortState, setSortState, setSortedData, allData, itemsPerPage, currentPage)}
@@ -320,7 +321,7 @@ const handleSelectAll = () => {
                   </th>
                 )}
 
-                {columnVisibility.system_allocation && (
+                {columnVisibility?.system_allocation && (
                   <th scope="col" className={`${table_sort_header_style}`} 
                     // onClick={() => handleSort("systemAllocation", sortState, setSortState, setSortedData, allNewData)}
                     onClick={() => handleSortWithPaginate("systemAllocation", sortState, setSortState, setSortedData, allData, itemsPerPage, currentPage)}
@@ -330,7 +331,7 @@ const handleSelectAll = () => {
                   </th>
                 )}
 
-                {columnVisibility.previous_allocation_tpa_for_review && (
+                {columnVisibility?.previous_allocation_tpa_for_review && (
                   <th scope="col" className={`${table_sort_header_style}  !text-[#1473A1] !bg-[#B8E6FE]`} 
                     // onClick={() => handleSort("previousAllocationTPAforReview", sortState, setSortState, setSortedData, allNewData)}
                     onClick={() => handleSortWithPaginate("previousAllocationTPAforReview", sortState, setSortState, setSortedData, allData, itemsPerPage, currentPage)}
@@ -341,7 +342,7 @@ const handleSelectAll = () => {
                   </th>
                 )}
 
-                {columnVisibility.shipper_review_allocation && (
+                {columnVisibility?.shipper_review_allocation && (
                   <th scope="col" className={`${table_sort_header_style} !text-[#1473A1] !bg-[#B8E6FE]`} 
                     // onClick={() => handleSort("shipper_allocation_review", sortState, setSortState, setSortedData, allNewData)}
                     onClick={() => handleSortWithPaginate("shipper_allocation_review", sortState, setSortState, setSortedData, allData, itemsPerPage, currentPage)}
@@ -351,7 +352,7 @@ const handleSelectAll = () => {
                   </th>
                 )}
 
-                {columnVisibility.review_code && (
+                {columnVisibility?.review_code && (
                   <th scope="col" className={`${table_sort_header_style} !min-w-[150px] !text-[#1473A1] !bg-[#B8E6FE]`} 
                     // onClick={() => handleSort("review_code", sortState, setSortState, setSortedData, allNewData)}
                     onClick={() => handleSortWithPaginate("review_code", sortState, setSortState, setSortedData, allData, itemsPerPage, currentPage)}
@@ -361,13 +362,13 @@ const handleSelectAll = () => {
                   </th>
                 )}
 
-                {columnVisibility.comment && (
+                {columnVisibility?.comment && (
                   <th rowSpan={2} scope="col" className={`${table_header_style} !min-w-[150px] text-center  !text-[#1473A1] !bg-[#B8E6FE]`}>
                     {`Comment`}
                   </th>
                 )}
 
-                {columnVisibility.action && (
+                {columnVisibility?.action && (
                   <th scope="col" className={`${table_header_style} !min-w-[100px] text-center`}>
                     {`Action`}
                   </th>
@@ -377,7 +378,7 @@ const handleSelectAll = () => {
 
             <tbody>
               {
-                sortedData && sortedData?.map((row: any, index: any) => {
+                (sortedData || [])?.map((row: any, index: any) => {
                   // กรณีที่ Shipper จะเข้ามา Edit เพื่อใส่ค่า review allocation จะต้องเช็คกับ parameter ใน DAM ด้วย ถ้าเกินวันที่กำหนด ให้ hide ปุ่ม edit ไป (เฉพาะ user type shipper) https://app.clickup.com/t/86eu4dmey
                   const isDisableBtn = calculateIsDisableBtn(toDayjs(), row?.gas_day, dataSystemParam?.value);
                   // const isDisableBtn = calculateIsDisableBtn(toDayjs(), row?.gas_day, "100");
@@ -398,7 +399,7 @@ const handleSelectAll = () => {
                         />
                       </td>
 
-                      {columnVisibility.status && (
+                      {columnVisibility?.status && (
                         <td className="px-4 py-1 justify-center">
                           {
                             <div className="flex min-w-[140px] max-w-[250px] w-auto text-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: String(row?.allocation_status?.color) }}>{row?.allocation_status?.name}</div>
@@ -406,38 +407,39 @@ const handleSelectAll = () => {
                         </td>
                       )}
 
-                      {columnVisibility.gas_day && (
+                      {columnVisibility?.gas_day && (
                         <td className="px-2 py-1 text-[#464255]">{row?.gas_day ? formatDateNoTime(row?.gas_day) : ''}</td>
                       )}
 
-                      {columnVisibility.shipper_name && (
+                      {columnVisibility?.shipper_name && (
                         // <td className="px-2 py-1 text-[#464255]">{row?.checkDb ? row?.checkDb?.shipper_name_text : ''}</td>
                         <td className="px-2 py-1 text-[#464255]">{row?.group ? row?.group?.name : row?.shipper ? row?.shipper?.name : null}</td>
                       )}
 
-                      {columnVisibility.contract_code && (
+                      {columnVisibility?.contract_code && (
                         // <td className="px-2 py-1 text-[#464255]">{row?.contract_code ? row?.contract_code?.contract_code : ''}</td>
                         // <td className="px-2 py-1 text-[#464255]">{row?.checkDb ? row?.checkDb?.contract_code_text : ''}</td>
                         <td className="px-2 py-1 text-[#464255]">{row?.contract ? row?.contract : ''}</td>
                       )}
 
-                      {columnVisibility.nom_point_concept_point && (
+                      {columnVisibility?.nom_point_concept_point && (
                         // <td className="px-2 py-1 text-[#464255]">{row?.nomination_point ? row?.nomination_point?.nomination_point : ''}</td>
                         // <td className="px-2 py-1 text-[#464255]">{row?.checkDb ? row?.checkDb?.point_text : ''}</td>
                         <td className="px-2 py-1 text-[#464255]">{row?.point ? row?.point : ''}</td>
                       )}
 
-                      {columnVisibility.entry_exit && (
+                      {/* {columnVisibility?.entry_exit && (
                         // <td className="px-2 py-1  justify-center ">{row?.entry_exit && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color }}>{`${row?.entry_exit?.name}`}</div>}</td>
                         <td className="px-2 py-1  justify-center ">{row?.entry_exit_obj && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit_obj?.color }}>{`${row?.entry_exit_obj?.name}`}</div>}</td>
-                      )}
+                      )} */}
+                      {/* https://app.clickup.com/t/9018502823/86eub6d0j */}
 
-                      {/* {columnVisibility.zone && (
+                      {/* {columnVisibility?.zone && (
                         // <td className="px-2 py-1  justify-center ">{row?.zone && <div className="flex w-[140px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone?.color }}>{`${row?.zone?.name}`}</div>}</td>
                         <td className="px-2 py-1  justify-center ">{row?.zone_obj && <div className="flex w-[140px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone_obj?.color }}>{`${row?.zone_obj?.name}`}</div>}</td>
                       )} */}
 
-                      {columnVisibility.zone && (
+                      {columnVisibility?.zone && (
                         <td className="px-2 py-1 text-center align-middle">
                           {(row?.zone_obj || row?.zone) && (
                             <div className="inline-flex w-[100px] items-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone_obj?.color, color: getContrastTextColor(row?.zone_obj?.color) }}>
@@ -447,7 +449,7 @@ const handleSelectAll = () => {
                         </td>
                       )}
 
-                      {columnVisibility.area && (
+                      {columnVisibility?.area && (
                         <td className="px-2 py-1 justify-center flex min-w-[120px] text-center">
                           {
                             (row?.area_obj || row?.area) ?
@@ -470,29 +472,29 @@ const handleSelectAll = () => {
                         </td>
                       )}
 
-                      {columnVisibility.nominated_value && (
+                      {columnVisibility?.nominated_value && (
                         // <td className="px-4 py-1 text-[#464255] text-right">{row?.nominationValue !== null && row?.nominationValue !== undefined ? formatNumberFourDecimal(row?.nominationValue)) : ''}</td>
                         // <td className="px-4 py-1 text-[#464255] text-right">{row?.nominationValue !== null && row?.nominationValue !== undefined ? formatNumberFourDecimal(Number(String(row?.nominationValue ?? "").replace(/[^\d.-]/g, ""))) : ''}</td>
                         <td className="px-4 py-1 text-[#464255] text-right">{formatNumberThreeDecimal(Number(String(row?.nominationValue ?? 0).replace(/[^\d.-]/g, "")))}</td>
                       )}
 
-                      {columnVisibility.system_allocation && (
+                      {columnVisibility?.system_allocation && (
                         <td className="px-4 py-1 text-[#464255] text-right">{row?.systemAllocation !== null && row?.systemAllocation !== undefined ? formatNumberFourDecimal(row?.systemAllocation) : ''}</td>
                       )}
 
-                      {columnVisibility.previous_allocation_tpa_for_review && (
+                      {columnVisibility?.previous_allocation_tpa_for_review && (
                         <td className="px-4 py-1 text-[#464255] text-right">{row?.previousAllocationTPAforReview !== null && row?.previousAllocationTPAforReview !== undefined ? formatNumberFourDecimal(row?.previousAllocationTPAforReview) : ''}</td>
                       )}
 
-                      {columnVisibility.shipper_review_allocation && (
+                      {columnVisibility?.shipper_review_allocation && (
                         <td className="px-4 py-1 text-[#464255] text-right">{row?.allocation_management_shipper_review?.length > 0 ? formatNumberFourDecimal(row?.allocation_management_shipper_review?.[0]?.shipper_allocation_review) : ''}</td>
                       )}
 
-                      {columnVisibility.review_code && (
+                      {columnVisibility?.review_code && (
                         <td className="px-2 py-1 text-[#464255]">{row?.review_code ? row?.review_code : ''}</td>
                       )}
 
-                      {columnVisibility.comment && (
+                      {columnVisibility?.comment && (
                         <td className="px-2 py-1 text-center">
                           <div className="inline-flex items-center justify-center relative">
                             {/* <button
@@ -525,7 +527,7 @@ const handleSelectAll = () => {
                         </td>
                       )}
 
-                      {columnVisibility.action && (
+                      {columnVisibility?.action && (
                         <td className="px-2 py-1">
                           <div className="relative inline-flex justify-center items-center w-full">
 

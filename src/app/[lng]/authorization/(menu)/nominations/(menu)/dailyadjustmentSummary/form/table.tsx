@@ -67,28 +67,28 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-20">
 
-                                {columnVisibility.gas_day && (
+                                {columnVisibility?.gas_day && (
                                     <th scope="col" className={`${table_sort_header_style} text-center max-w-[200px]`} onClick={() => handleSort("gasDayUse", sortState, setSortState, setSortedData, tableData)}>
                                         {`Gas Day`}
                                         {getArrowIcon("gasDayUse")}
                                     </th>
                                 )}
 
-                                {columnVisibility.nominations_code && (
+                                {columnVisibility?.nominations_code && (
                                     <th scope="col" className={`${table_sort_header_style} text-center !min-w-[120px] !max-w-[200px]`} onClick={() => handleSortNomCode("nomination_code", sortState, setSortState, setSortedData, tableData)}>
                                         {`Nominations Code`}
                                         {getArrowIcon("nomination_code")}
                                     </th>
                                 )}
 
-                                {columnVisibility.entry_exit && (
+                                {columnVisibility?.entry_exit && (
                                     <th scope="col" className={`${table_sort_header_style} text-center !min-w-[120px] !max-w-[200px]`} onClick={() => handleSort("entryExitObj.name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Entry/Exit`}
                                         {getArrowIcon("entryExitObj.name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.adjustment && (
+                                {columnVisibility?.adjustment && (
                                     <th scope="col" className={`${table_sort_header_style} text-center !min-w-[120px] !max-w-[200px]`}
                                         onClick={() => handleSort("adjustment", sortState, setSortState, setSortedData, tableData)}
                                     >
@@ -97,7 +97,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                     </th>
                                 )}
 
-                                {columnVisibility.contract_code && (
+                                {columnVisibility?.contract_code && (
                                     <th scope="col" className={`${table_sort_header_style} text-center !min-w-[120px] !max-w-[200px]`}
                                         onClick={() => handleSort("contract", sortState, setSortState, setSortedData, tableData)}
                                     >
@@ -106,7 +106,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                     </th>
                                 )}
 
-                                {columnVisibility.shipper_name && (
+                                {columnVisibility?.shipper_name && (
                                     <th scope="col" className={`${table_sort_header_style} text-center !min-w-[120px] !max-w-[200px]`}
                                         onClick={() => handleSort("shipper_name", sortState, setSortState, setSortedData, tableData)}
                                     >
@@ -115,7 +115,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                     </th>
                                 )}
 
-                                {columnVisibility.nomination_point && (
+                                {columnVisibility?.nomination_point && (
                                     <th scope="col" className={`${table_sort_header_style} text-center !min-w-[120px] !max-w-[200px]`}
                                         onClick={() => handleSort("point", sortState, setSortState, setSortedData, tableData)}
                                     >
@@ -125,7 +125,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                 )}
 
                                 {getVisibleHours().map(({ key, label, timeRange }: any) =>
-                                    columnVisibility[key] && (
+                                    columnVisibility?.[key] && (
                                         <th
                                             key={key}
                                             scope="col"
@@ -139,7 +139,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                     )
                                 )}
 
-                                {columnVisibility.total && (
+                                {columnVisibility?.total && (
                                     <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalH1ToH24Adjust", sortState, setSortState, setSortedData, tableData)}>
                                         {`Total`}
                                         {getArrowIcon("totalH1ToH24Adjust")}
@@ -150,36 +150,35 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
 
                         <tbody>
                             {
-                                sortedData?.length > 0 && sortedData?.map((row: any, index: any) => {
+                                (sortedData || [])?.map((row: any, index: any) => {
 
-                                    // const minHour = getHighlightStartIndex(row); // Call this at top of each row loop
                                     const minHour: any = (() => {
-                                        const hourMap = row?.dailyAdjustFindPoint?.map((item: any) => parseInt(item.hourTime?.replace('H', ''))) || [];
-                                        const min = Math.min(...hourMap);
+                                        const hourMap = (row?.dailyAdjustFindPoint || [])?.map((item: any) => parseInt(item?.hourTime?.replace('H', '') || '0')) || [];
+                                        const min = (hourMap?.length ?? 0) > 0 ? Math.min(...hourMap) : 25;
                                         return isFinite(min) ? min : 25;
                                     })();
 
 
                                     return (
                                         <tr
-                                            key={row?.id}
+                                            key={row?.id ?? index}
                                             className={`${table_row_style}`}
                                         >
 
-                                            {columnVisibility.gas_day && (
+                                            {columnVisibility?.gas_day && (
                                                 // <td className="px-2 py-1 text-[#464255] max-w-[60px]">{row?.gasday ? formatDateNoTime(row?.gasday) : ''}</td>
                                                 <td className="px-2 py-1 text-[#464255] max-w-[60px]">{row?.gasDayUse ? row?.gasDayUse : ''}</td>
                                             )}
 
-                                            {columnVisibility.nominations_code && (
+                                            {columnVisibility?.nominations_code && (
                                                 <td className="px-2 py-1 text-[#464255]  justify-center">{row?.nomination_code ? row?.nomination_code : ''}</td>
                                             )}
 
-                                            {columnVisibility.entry_exit && (
+                                            {columnVisibility?.entry_exit && (
                                                 <td className="px-2 py-1  justify-center">{row?.entryExitObj && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entryExitObj?.color }}>{`${row?.entryExitObj?.name}`}</div>}</td>
                                             )}
 
-                                            {columnVisibility.adjustment && (
+                                            {columnVisibility?.adjustment && (
                                                 <td className="px-2 py-1  justify-center">{
                                                     row?.adjustment == 'YES' ?
                                                         <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: '#B5FFCE' }}>{`${row?.adjustment}`}</div>
@@ -188,20 +187,20 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.contract_code && (
+                                            {columnVisibility?.contract_code && (
                                                 <td className="px-2 py-1 text-[#464255]">{row?.contract ? row?.contract : ''}</td>
                                             )}
 
-                                            {columnVisibility.shipper_name && (
+                                            {columnVisibility?.shipper_name && (
                                                 <td className="px-2 py-1 text-[#464255]">{row?.shipper_name ? row?.shipper_name : ''}</td>
                                             )}
 
-                                            {columnVisibility.nomination_point && (
+                                            {columnVisibility?.nomination_point && (
                                                 <td className="px-2 py-1 text-[#464255]">{row?.point ? row?.point : ''}</td>
                                             )}
 
                                             {/* #1B1464 ค่าที่โดน Adjust สีแดงให้ปรับเป็นสีน้ำเงินเข้ม ตามธีม PTT https://app.clickup.com/t/86etzchad */}
-                                            {columnVisibility.h1 && (subTabIndex == 0 || subTabIndex == 4) && (
+                                            {columnVisibility?.h1 && (subTabIndex == 0 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${1 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H1"] || row["H1"] == 0) ? formatNumberThreeDecimal(row["H1"]) : ''
@@ -209,7 +208,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h2 && (subTabIndex == 0 || subTabIndex == 4) && (
+                                            {columnVisibility?.h2 && (subTabIndex == 0 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${2 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H2"] || row["H2"] == 0) ? formatNumberThreeDecimal(row["H2"]) : ''
@@ -217,7 +216,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h3 && (subTabIndex == 0 || subTabIndex == 4) && (
+                                            {columnVisibility?.h3 && (subTabIndex == 0 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${3 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H3"] || row["H3"] == 0) ? formatNumberThreeDecimal(row["H3"]) : ''
@@ -225,7 +224,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h4 && (subTabIndex == 0 || subTabIndex == 4) && (
+                                            {columnVisibility?.h4 && (subTabIndex == 0 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${4 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H4"] || row["H4"] == 0) ? formatNumberThreeDecimal(row["H4"]) : ''
@@ -233,7 +232,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h5 && (subTabIndex == 0 || subTabIndex == 4) && (
+                                            {columnVisibility?.h5 && (subTabIndex == 0 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${5 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H5"] || row["H5"] == 0) ? formatNumberThreeDecimal(row["H5"]) : ''
@@ -241,7 +240,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h6 && (subTabIndex == 0 || subTabIndex == 4) && (
+                                            {columnVisibility?.h6 && (subTabIndex == 0 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${6 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H6"] || row["H6"] == 0) ? formatNumberThreeDecimal(row["H6"]) : ''
@@ -249,7 +248,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h7 && (subTabIndex == 1 || subTabIndex == 4) && (
+                                            {columnVisibility?.h7 && (subTabIndex == 1 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${7 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H7"] || row["H7"] == 0) ? formatNumberThreeDecimal(row["H7"]) : ''
@@ -257,7 +256,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h8 && (subTabIndex == 1 || subTabIndex == 4) && (
+                                            {columnVisibility?.h8 && (subTabIndex == 1 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${8 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H8"] || row["H8"] == 0) ? formatNumberThreeDecimal(row["H8"]) : ''
@@ -265,7 +264,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h9 && (subTabIndex == 1 || subTabIndex == 4) && (
+                                            {columnVisibility?.h9 && (subTabIndex == 1 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${9 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H9"] || row["H9"] == 0) ? formatNumberThreeDecimal(row["H9"]) : ''
@@ -273,7 +272,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h10 && (subTabIndex == 1 || subTabIndex == 4) && (
+                                            {columnVisibility?.h10 && (subTabIndex == 1 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${10 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H10"] || row["H10"] == 0) ? formatNumberThreeDecimal(row["H10"]) : ''
@@ -281,7 +280,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h11 && (subTabIndex == 1 || subTabIndex == 4) && (
+                                            {columnVisibility?.h11 && (subTabIndex == 1 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${11 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H11"] || row["H11"] == 0) ? formatNumberThreeDecimal(row["H11"]) : ''
@@ -289,7 +288,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h12 && (subTabIndex == 1 || subTabIndex == 4) && (
+                                            {columnVisibility?.h12 && (subTabIndex == 1 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${12 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H12"] || row["H12"] == 0) ? formatNumberThreeDecimal(row["H12"]) : ''
@@ -297,7 +296,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h13 && (subTabIndex == 2 || subTabIndex == 4) && (
+                                            {columnVisibility?.h13 && (subTabIndex == 2 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${13 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H13"] || row["H13"] == 0) ? formatNumberThreeDecimal(row["H13"]) : ''
@@ -305,7 +304,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h14 && (subTabIndex == 2 || subTabIndex == 4) && (
+                                            {columnVisibility?.h14 && (subTabIndex == 2 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${14 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H14"] || row["H14"] == 0) ? formatNumberThreeDecimal(row["H14"]) : ''
@@ -313,7 +312,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h15 && (subTabIndex == 2 || subTabIndex == 4) && (
+                                            {columnVisibility?.h15 && (subTabIndex == 2 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${15 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H15"] || row["H15"] == 0) ? formatNumberThreeDecimal(row["H15"]) : ''
@@ -321,7 +320,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h16 && (subTabIndex == 2 || subTabIndex == 4) && (
+                                            {columnVisibility?.h16 && (subTabIndex == 2 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${16 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H16"] || row["H16"] == 0) ? formatNumberThreeDecimal(row["H16"]) : ''
@@ -329,7 +328,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h17 && (subTabIndex == 2 || subTabIndex == 4) && (
+                                            {columnVisibility?.h17 && (subTabIndex == 2 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${17 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H17"] || row["H17"] == 0) ? formatNumberThreeDecimal(row["H17"]) : ''
@@ -337,7 +336,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h18 && (subTabIndex == 2 || subTabIndex == 4) && (
+                                            {columnVisibility?.h18 && (subTabIndex == 2 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${18 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H18"] || row["H18"] == 0) ? formatNumberThreeDecimal(row["H18"]) : ''
@@ -345,7 +344,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h19 && (subTabIndex == 3 || subTabIndex == 4) && (
+                                            {columnVisibility?.h19 && (subTabIndex == 3 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${19 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H19"] || row["H19"] == 0) ? formatNumberThreeDecimal(row["H19"]) : ''
@@ -353,7 +352,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h20 && (subTabIndex == 3 || subTabIndex == 4) && (
+                                            {columnVisibility?.h20 && (subTabIndex == 3 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${20 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H20"] || row["H20"] == 0) ? formatNumberThreeDecimal(row["H20"]) : ''
@@ -361,7 +360,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h21 && (subTabIndex == 3 || subTabIndex == 4) && (
+                                            {columnVisibility?.h21 && (subTabIndex == 3 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${21 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H21"] || row["H21"] == 0) ? formatNumberThreeDecimal(row["H21"]) : ''
@@ -369,7 +368,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h22 && (subTabIndex == 3 || subTabIndex == 4) && (
+                                            {columnVisibility?.h22 && (subTabIndex == 3 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${22 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H22"] || row["H22"] == 0) ? formatNumberThreeDecimal(row["H22"]) : ''
@@ -377,7 +376,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h23 && (subTabIndex == 3 || subTabIndex == 4) && (
+                                            {columnVisibility?.h23 && (subTabIndex == 3 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${23 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H23"] || row["H23"] == 0) ? formatNumberThreeDecimal(row["H23"]) : ''
@@ -385,7 +384,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.h24 && (subTabIndex == 3 || subTabIndex == 4) && (
+                                            {columnVisibility?.h24 && (subTabIndex == 3 || subTabIndex == 4) && (
                                                 <td className={`px-2 py-1  text-right ${24 >= minHour ? 'text-[#1473a1]' : 'text-[#464255]'}`}>
                                                     {
                                                         (row["H24"] || row["H24"] == 0) ? formatNumberThreeDecimal(row["H24"]) : ''
@@ -393,7 +392,7 @@ const TableDailyAdjustmentSummary: React.FC<any> = ({ tableData, columnVisibilit
                                                 </td>
                                             )}
 
-                                            {columnVisibility.total && (
+                                            {columnVisibility?.total && (
                                                 <td className="px-2 py-1 text-[#464255] text-right font-semibold">{row?.totalH1ToH24Adjust ? formatNumberThreeDecimal(row?.totalH1ToH24Adjust) : '0.000'}</td>
                                             )}
 

@@ -59,41 +59,41 @@ const TableUserGuideHistory: React.FC<TableProps> = ({ tableData, isLoading, col
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-9">
 
-                        {columnVisibility.document_name && (
+                        {columnVisibility?.document_name && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("document_name", sortState, setSortState, setSortedData, normalizeHistoryData(tableData))}>
                                 {`Document Name`}
                                 {getArrowIcon("document_name")}
                             </th>
                         )}
 
-                        {columnVisibility.file && (
+                        {columnVisibility?.file && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("file_name", sortState, setSortState, setSortedData, normalizeHistoryData(tableData))}>
                                 {`File`}
                                 {getArrowIcon("file_name")}
                             </th>
                         )}
 
-                        {columnVisibility.desc && (
+                        {columnVisibility?.desc && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("description", sortState, setSortState, setSortedData, normalizeHistoryData(tableData))}>
                                 {`Description`}
                                 {getArrowIcon("description")}
                             </th>
                         )}
 
-                        {columnVisibility.download && (
+                        {columnVisibility?.download && (
                             <th scope="col" className={`${table_header_style}`} >
                                 {`Download`}
                             </th>
                         )}
 
-                        {columnVisibility.create_by && (
+                        {columnVisibility?.create_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, normalizeHistoryData(tableData))}>
                                 {`Created by`}
                                 {getArrowIcon("create_by_account.first_name")}
                             </th>
                         )}
 
-                        {columnVisibility.update_by && (
+                        {columnVisibility?.update_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, normalizeHistoryData(tableData))}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -118,11 +118,11 @@ const TableUserGuideHistory: React.FC<TableProps> = ({ tableData, isLoading, col
                                 key={row?.id}
                                 className={`${table_row_style}`}
                             >
-                                {columnVisibility.document_name && (
-                                    <td className="px-2 py-1 text-[#464255]">{row?.document_name && row?.document_name}</td>
+                                {columnVisibility?.document_name && (
+                                    <td className="px-2 py-1 text-[#464255]">{row?.document_name}</td>
                                 )}
 
-                                {columnVisibility.file && (
+                                {columnVisibility?.file && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div className="flex items-center">
                                             <img className="w-[20px] h-[20px] mr-2" src="/assets/image/pdf_icon.png" alt="pdf icon" />
@@ -132,11 +132,11 @@ const TableUserGuideHistory: React.FC<TableProps> = ({ tableData, isLoading, col
                                     </td>
                                 )}
 
-                                {columnVisibility.desc && (
-                                    <td className="px-2 py-1 text-[#464255]">{row?.description && row?.description}</td>
+                                {columnVisibility?.desc && (
+                                    <td className="px-2 py-1 text-[#464255]">{row?.description}</td>
                                 )}
 
-                                {columnVisibility.download && (
+                                {columnVisibility?.download && (
                                     <td className="px-2 py-1 text-center justify-center">
                                         <div className="inline-flex items-center justify-center relative">
                                             {/* <button
@@ -158,7 +158,7 @@ const TableUserGuideHistory: React.FC<TableProps> = ({ tableData, isLoading, col
                                     </td>
                                 )}
 
-                                {columnVisibility.create_by && (
+                                {columnVisibility?.create_by && (
                                     <td className="px-2 py-1 ">
                                         <div>
                                             <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -167,7 +167,7 @@ const TableUserGuideHistory: React.FC<TableProps> = ({ tableData, isLoading, col
                                     </td>
                                 )}
 
-                                {columnVisibility.update_by && (
+                                {columnVisibility?.update_by && (
                                     <td className="px-2 py-1">
                                         <div>
                                             <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

@@ -67,14 +67,14 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
         if (dataTable) {
             let jsonString: any
             if (originOrSum == "ORIGIN") {
-                jsonString = dataTable?.booking_full_json[0]?.data_temp;
+                jsonString = dataTable?.booking_full_json?.[0]?.data_temp;
             } else if (originOrSum == "SUMMARY") {
                 // ถ้ายังไม่ได้กด release ให้เอา dataTable?.booking_full_json ไปแสดงก่อน
-                const booking_full_json_release: any[] = dataTable?.booking_full_json_release?.filter((item: any) => item?.flag_use == true) || []
-                jsonString = booking_full_json_release?.length > 0 && booking_full_json_release[0]?.data_temp ? booking_full_json_release[0]?.data_temp : dataTable?.booking_full_json[0]?.data_temp;
+                const booking_full_json_release: any[] = dataTable?.booking_full_json_release?.filter((item: any) => item?.flag_use != false) || []
+                jsonString = (booking_full_json_release?.length > 0 && booking_full_json_release?.[0]?.data_temp) ? booking_full_json_release[0]?.data_temp : dataTable?.booking_full_json?.[0]?.data_temp;
             }
 
-            const dataJSON = JSON.parse(jsonString)
+            const dataJSON = jsonString ? JSON.parse(jsonString) : {}
 
             setMainData(dataTable)
             setHeaderEntryOriginal(dataJSON?.headerEntry)
@@ -112,8 +112,8 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
 
     // #region processingData
     const processingData = async (data_val: any) => {
-        const changeArr = Object.entries(data_val['headerEntry'])?.map(([txt, data]: any) => {
-            let dataArr: any = Object.entries(data)?.map(([date, values]: any) => {
+        const changeArr = Object.entries(data_val?.['headerEntry'] || {})?.map(([txt, data]: any) => {
+            let dataArr: any = Object.entries(data || {})?.map(([date, values]: any) => {
                 if (dataContractTermType?.id === 4) {
                     return { key: formatDateToDayMonthYear(date) }
                 }
@@ -136,7 +136,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
             let parentData: any = [];
 
             newData = masterColumnsDynamicEntry?.map((item: any) => {
-                return { ...item, visible: columnVisibility[item?.key] }
+                return { ...item, visible: columnVisibility?.[item?.key] }
             })
 
             // Iterate over the array once
@@ -240,7 +240,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
                 data_temp = JSON.parse(mainData?.booking_full_json[0]?.data_temp);
             } else if (originOrSum == "SUMMARY") {
                 // ถ้ายังไม่ได้กด release ให้เอา dataTable?.booking_full_json ไปแสดงก่อน
-                const booking_full_json_release: any[] = mainData?.booking_full_json_release?.filter((item: any) => item?.flag_use == true) || []
+                const booking_full_json_release: any[] = mainData?.booking_full_json_release?.filter((item: any) => item?.flag_use != false) || []
                 data_temp = booking_full_json_release?.length > 0 && booking_full_json_release[0]?.data_temp ? JSON.parse(booking_full_json_release[0]?.data_temp) : JSON.parse(mainData?.booking_full_json[0]?.data_temp);
             }
 
@@ -533,7 +533,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
             return dataTable?.booking_full_json?.[0]?.data_temp ?? null;
         }
         if (originOrSum === "SUMMARY") {
-            const release = dataTable?.booking_full_json_release?.find((i: any) => i?.flag_use);
+            const release = dataTable?.booking_full_json_release?.find((i: any) => i?.flag_use != false);
             return release?.data_temp ?? dataTable?.booking_full_json?.[0]?.data_temp ?? null;
         }
         return null;
@@ -578,7 +578,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
     const { key, ["Sub Area"]: subAreaEntry, ...rest_res } = res_entry; // เอา column key ออก
 
     // const { entryValue } = data_table_val; // original try catch
-    const { entryValue } = dataTableVal;
+    const { entryValue } = dataTableVal || {};
 
     const [entryVal, setEntryVal] = useState<any>(entryValue);
     const [entryValOriginal, setEntryValOriginal] = useState<any>(entryValue);
@@ -726,7 +726,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
         if (dataSub?.length > 0) {
             let colCount: any = 0;
             for (let index = 0; index < dataSub?.length; index++) {
-                const getcolumnVisibility = columnVisibility[dataSub[index]?.key]
+                const getcolumnVisibility = columnVisibility?.[dataSub[index]?.key]
 
                 if (getcolumnVisibility == true) {
                     colCount = colCount + 1
@@ -1056,7 +1056,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
 
                                 const getDetailKey = headerEntryOriginal['Capacity Daily Booking (MMBTU/d)'][keyItem]?.key;
 
-                                if (!columnVisibility[pathKey?.key]) {
+                                if (!columnVisibility?.[pathKey?.key]) {
                                     return null
                                 }
 
@@ -1101,7 +1101,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
 
                                 const getDetailKey = headerEntryOriginal['Maximum Hour Booking (MMBTU/h)'][keyItem]?.key;
 
-                                if (!columnVisibility[pathKey?.key]) {
+                                if (!columnVisibility?.[pathKey?.key]) {
                                     return null
                                 }
 
@@ -1145,7 +1145,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
 
                                 const getDetailKey = headerEntryOriginal['Capacity Daily Booking (MMscfd)'][keyItem]?.key;
 
-                                if (!columnVisibility[pathKey?.key]) {
+                                if (!columnVisibility?.[pathKey?.key]) {
                                     return null
                                 }
 
@@ -1189,7 +1189,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
 
                                 const getDetailKey = headerEntryOriginal['Maximum Hour Booking (MMscfh)'][keyItem]?.key;
 
-                                if (!columnVisibility[pathKey?.key]) {
+                                if (!columnVisibility?.[pathKey?.key]) {
                                     return null
                                 }
                                 return (
@@ -1214,13 +1214,13 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
                     <tbody>
                         {/* ############### BODY ENTRY ############### */}
                         {
-                            mode == "entry" && sortedData && sortedData?.map((row: any, rowIndex: any) => {
+                            mode == "entry" && (sortedData || [])?.map((row: any, rowIndex: any) => {
 
                                 return (
                                     <tr key={rowIndex} className="hover:bg-gray-50">
 
                                         {/* ZONE */}
-                                        {columnVisibility.zone && (
+                                        {columnVisibility?.zone && (
                                             <td
                                                 key={`10000`}
                                                 className="px-4 py-2 border-b border-gray-300 text-center text-[#464255]"
@@ -1241,7 +1241,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
                                         )}
 
                                         {/* AREA */}
-                                        {columnVisibility.area && (
+                                        {columnVisibility?.area && (
                                             <td
                                                 key={`10001`}
                                                 className="px-4 py-2 border-b border-gray-300 text-center text-[#464255]"
@@ -1262,7 +1262,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
                                         )}
 
                                         {/* CONTRACT POINT */}
-                                        {columnVisibility.contract_point && (
+                                        {columnVisibility?.contract_point && (
                                             <td
                                                 key={`10002`}
                                                 className="px-4 py-2 border-b border-gray-300 text-center text-[#464255]"
@@ -1306,7 +1306,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
 
 
                                         {/* UNDER ---> FROM */}
-                                        {columnVisibility['From'] && (
+                                        {columnVisibility?.['From'] && (
                                             <td
                                                 key={`period_from`}
                                                 className="px-4 py-2 border-b border-gray-300 text-center text-[#464255]"
@@ -1316,7 +1316,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
                                         )}
 
                                         {/* UNDER ---> To */}
-                                        {columnVisibility['To'] && (
+                                        {columnVisibility?.['To'] && (
                                             <td
                                                 key={`period_to`}
                                                 className="px-4 py-2 border-b border-gray-300 text-center text-[#464255]"
@@ -1412,7 +1412,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
 
                                                 const pathKey = getParent?.find((f: any) => f?.label == transItem);
 
-                                                if (!columnVisibility[pathKey?.key]) {
+                                                if (!columnVisibility?.[pathKey?.key]) {
                                                     return null
                                                 }
 
@@ -1436,7 +1436,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
 
                         {/* ############### SUMMARY ENTRY ############### */}
                         {
-                            mode == "entry" && summaryData?.length > 0 && summaryData?.map((item: any, rowIndex: any) => {
+                            mode == "entry" && (summaryData || [])?.map((item: any, rowIndex: any) => {
 
                                 return (
                                     <tr key={rowIndex} className='h-[50px]' style={{ backgroundColor: item[0]?.zoneObj?.zone_color ? item[0]?.zoneObj?.zone_color : '#ffffff' }}>
@@ -1462,12 +1462,12 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
                                         {/* {
                                             columnVisibility?.pressure_range && <>
                                                 {
-                                                    columnVisibility['Pressure Range.Min'] && (
+                                                    columnVisibility?.['Pressure Range.Min'] && (
                                                         <td className="px-4 py-2 text-left font-bold text-[#464255]">{``}</td>
                                                     )
                                                 }
 
-                                                {columnVisibility['Pressure Range.Max'] && (
+                                                {columnVisibility?.['Pressure Range.Max'] && (
                                                     <td className="px-4 py-2 text-left font-bold text-[#464255]">{``}</td>
                                                 )}
                                             </>
@@ -1475,11 +1475,11 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
 
                                         {
                                             columnVisibility?.temperature_range && <>
-                                                {columnVisibility['Temperature Range.Min'] && (
+                                                {columnVisibility?.['Temperature Range.Min'] && (
                                                     <td className="px-4 py-2 text-left font-bold text-[#464255]">{``}</td>
                                                 )}
 
-                                                {columnVisibility['Temperature Range.Max'] && (
+                                                {columnVisibility?.['Temperature Range.Max'] && (
                                                     <td className="px-4 py-2 text-left font-bold text-[#464255]">{``}</td>
                                                 )}
                                             </>
@@ -1579,7 +1579,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
                                                 // หา parent ที่ตรงกับ key นี้เลย
                                                 const pathKey = getParent?.find((f: any) => f?.label == transItem);
 
-                                                if (!columnVisibility[pathKey?.key]) {
+                                                if (!columnVisibility?.[pathKey?.key]) {
                                                     return null
                                                 }
 
@@ -1632,12 +1632,12 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
                             {
                                 columnVisibility?.pressure_range && <>
                                     {
-                                        columnVisibility['Pressure Range.Min'] && (
+                                        columnVisibility?.['Pressure Range.Min'] && (
                                             <td className="px-4 py-2 text-left font-bold text-[#ffffff]">{``}</td>
                                         )
                                     }
 
-                                    {columnVisibility['Pressure Range.Max'] && (
+                                    {columnVisibility?.['Pressure Range.Max'] && (
                                         <td className="px-4 py-2 text-left font-bold text-[#ffffff]">{``}</td>
                                     )}
                                 </>
@@ -1645,11 +1645,11 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
 
                             {
                                 columnVisibility?.temperature_range && <>
-                                    {columnVisibility['Temperature Range.Min'] && (
+                                    {columnVisibility?.['Temperature Range.Min'] && (
                                         <td className="px-4 py-2 text-left font-bold text-[#ffffff]">{``}</td>
                                     )}
 
-                                    {columnVisibility['Temperature Range.Max'] && (
+                                    {columnVisibility?.['Temperature Range.Max'] && (
                                         <td className="px-4 py-2 text-left font-bold text-[#ffffff]">{``}</td>
                                     )}
                                 </>
@@ -1750,7 +1750,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
                                         // หา parent ที่ตรงกับ key นี้เลย
                                         const pathKey = getParent?.find((f: any) => f?.label == transItem);
 
-                                        if (!columnVisibility[pathKey?.key]) {
+                                        if (!columnVisibility?.[pathKey?.key]) {
                                             return null
                                         }
 
@@ -2195,7 +2195,8 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
 
                                                 <DatePickaForm
                                                     key={"start" + key}
-                                                    readOnly={false} // amend ก็เปิดให้แก้ไขได้
+                                                    // readOnly={false} // amend ก็เปิดให้แก้ไขได้
+                                                    readOnly={isAmendMode}
                                                     placeHolder="Select Date"
                                                     mode={'edit-table'}
                                                     valueShow={
@@ -2295,12 +2296,12 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
                                                     min={row?.[5] !== undefined ? dayjs(row?.[5], 'DD/MM/YYYY').add(1, 'day').toDate() : tomorrowDay} // ไม่ให้ start_date เกิน end_date
                                                     // termMaxDate={isAmendMode ? maxDateAmend : null} // ถ้าเป็น amend ใช้ maxDateAmend หามาจาก booking template // 2. Period To ฝั่ง Entry limit วันในปฎิทินไว้ แต่ Exit ไม่ได้ limit ซึ่งที่ถูกต้องคือไม่ต้อง limit https://sharing.clickup.com/9018502823/t/h/86euytxnf/HYMBBTB3UYB9F2Y
                                                     // termMaxDate={isAmendMode ? calMaxAmendDate(row[5]) : null} // dynamic period_to ตามเงื่อนไข amend และจับจาก period_from
-                                                    termMaxDate={isAmendMode ? calMaxAmendDate(row[5]) : calMaxNormalDate(row[5])} // dynamic period_to ตามเงื่อนไข amend และจับจาก period_from
+                                                    termMaxDate={isAmendMode ? calMaxAmendDate(row?.[5]) : calMaxNormalDate(row?.[5])} // dynamic period_to ตามเงื่อนไข amend และจับจาก period_from
                                                     isEndDate={true}
                                                     allowClear
                                                     onChange={(e: any) => {
                                                         const formattedNewDate = e ? dayjs(e).format("DD/MM/YYYY") : undefined;
-                                                        const currentDate = row[6];
+                                                        const currentDate = row?.[6];
                                                         const hasDateChanged = formattedNewDate !== currentDate;
 
                                                         if (hasDateChanged) {
@@ -2483,7 +2484,7 @@ const TableEntry: React.FC<any> = ({ columnVisibility, setcolumnVisibility, init
 
                         {/* ############### SUMMARY ENTRY ############### */}
                         {
-                            mode == "entry" && summaryData?.length > 0 && summaryData?.map((item: any, rowIndex: any) => {
+                            mode == "entry" && (summaryData || [])?.map((item: any, rowIndex: any) => {
                                 return (
                                     <tr key={rowIndex} className='h-[50px]' style={{ backgroundColor: item[0]?.zoneObj?.zone_color ? item[0]?.zoneObj?.zone_color : '#ffffff' }}>
                                         <td

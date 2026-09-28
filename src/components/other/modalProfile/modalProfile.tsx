@@ -1,4 +1,3 @@
-"use client";
 // import * as React from 'react';
 import React from "react";
 import {
@@ -6,7 +5,6 @@ import {
     DialogPanel,
 } from "@headlessui/react";
 import getUserValue from "@/utils/getuserValue";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { patchService, postService } from '@/utils/postService';
 import ModalComponent from '../ResponseModal';
@@ -14,6 +12,7 @@ import TemplateMail from '@/components/other/rendermailTemplate';
 import UploadProps from "../uploadProps";
 import Spinloading from "../spinLoading";
 import { decryptData, encryptData } from "@/utils/encryptionData";
+import DefaultProfileAvatar from "../DefaultProfileAvatar";
 
 interface ModalProps {
     open: boolean;
@@ -182,13 +181,9 @@ const ModalProfile: React.FC<ModalProps> = ({ open, setopen, handleClose }) => {
                             <div className="flex items-center w-full mt-2">
                                 <div className="w-full">
                                     <div className="flex justify-center items-center">
-                                        <Image
-                                            // src={`/assets/icon/ptt-logo-2.svg`}
-                                            src={`/assets/icon/account_icon_3.jpg`}
-                                            // src={`https://flowbite.com/docs/images/people/profile-picture-5.jpg`}
+                                        <DefaultProfileAvatar
                                             width={80}
                                             height={80}
-                                            alt={`Profile Picture`}
                                             className="w-[80px] h-[80px] bg-cover rounded-full"
                                         />
                                     </div>

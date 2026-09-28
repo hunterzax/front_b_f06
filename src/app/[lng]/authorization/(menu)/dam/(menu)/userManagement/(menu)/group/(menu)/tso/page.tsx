@@ -69,11 +69,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [srchName, setSrchName] = useState('');
     const [srchStartDate, setSrchStartDate] = useState<Date | null>(null);
     const [srchEndDate, setSrchEndDate] = useState<Date | null>(null);
-    const [srchStatus, setSrchStatus] = useState('');
+    const [srchStatus, setSrchStatus] = useState<any>([]);
     const [key, setKey] = useState(0);
 
     const handleFieldSearch = () => {
-        let stat = srchStatus === "1" ? true : false
+        // let stat = srchStatus === "1" ? true : false
+        const statusFilter = srchStatus.map((s: any) => s === "1");
 
         // filter start - end แบบสับ
         // จาก issues Filter start date - end date เป็น period ไม่ได้ ระบบแสดงเฉพาะวัน start date ที่ตรงกันเท่านั้น https://app.clickup.com/t/86er07k7r
@@ -84,13 +85,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         const res_filtered_date: any = filterStartEndDateNewLogic(dataTable, srchStartDate, srchEndDate); // v1.0.90 ปรับ logic filter start date และ end date https://app.clickup.com/t/86erqt8ed
 
+        console.log(">>> res_filtered_date", res_filtered_date)
         const result_2 = res_filtered_date?.filter((item: any) => {
             return (
                 (srchId ? item?.id_name.toLowerCase().includes(srchId.toLowerCase()) : true) &&
                 (srchName ? item?.name.toLowerCase().includes(srchName.toLowerCase()) : true) &&
                 // (srchStartDate ? formatSearchDate(item?.start_date) === formatSearchDate(srchStartDate) : true) &&
                 // (srchEndDate ? formatSearchDate(item?.end_date) === formatSearchDate(srchEndDate) : true) &&
-                (srchStatus ? item?.status === stat : true)
+                // (srchStatus ? item?.status === stat : true)
+                (statusFilter.length ? statusFilter.includes(item?.status) : true)
             );
         });
         setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
@@ -102,7 +105,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setSrchName('');
         setSrchStartDate(null);
         setSrchEndDate(null);
-        setSrchStatus('');
+        setSrchStatus([]);
         setFilteredDataTable(dataTable);
         setKey((prevKey) => prevKey + 1);
     };
@@ -789,7 +792,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     <InputSearch
                         id="searchStat"
                         label="Status"
-                        type="select"
+                        type="select-multi-checkbox"
                         value={srchStatus}
                         onChange={(e) => setSrchStatus(e.target.value)}
                         options={[

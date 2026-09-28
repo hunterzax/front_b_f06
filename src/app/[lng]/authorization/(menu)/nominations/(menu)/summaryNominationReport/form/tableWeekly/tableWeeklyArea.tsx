@@ -330,7 +330,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                 <div className="overflow-y-auto overflow-x-auto w-full h-[54dvh]">
                     {/******************* TABLE TAB MMBTU *******************/}
                     {
-                        isLoading && tabIndex2ndTab == 0 ? <>
+                        !isLoading && tabIndex2ndTab == 0 ? <>
                             <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
                                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                     <tr className="h-20">
@@ -338,7 +338,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                         {/* ที่ handleSort ส่ง paginatedData แทน dataTable เพราะข้อนี้ */}
                                         {/* All > Weekly > Nomination > MMSCF > Smart Sear แล้ว Sort Column ทำให้ Smart Search หลุด https://app.clickup.com/t/86euy05du */}
 
-                                        {/* {columnVisibility.gas_day && (
+                                        {/* {columnVisibility?.gas_day && (
                                             // แถบ Weekly > Area > MMBTU : เปลี่ยน column gas day เป็น gas week https://app.clickup.com/t/86et681fh
                                             <th scope="col" className={`${table_sort_header_style} min-w-[160px] text-center`} onClick={() => handleSort("gas_day_text", sortState, setSortState, setSortedData, tableData)}>
                                                 {`Gas Week`}
@@ -346,7 +346,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )} */}
 
-                                        {columnVisibility.area && (
+                                        {columnVisibility?.area && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] w-[130px] text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] w-[130px] text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] w-[130px] text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, dataTable)}>
@@ -355,21 +355,21 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {/* {columnVisibility.total_cap && (
+                                        {/* {columnVisibility?.total_cap && (
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalCap", sortState, setSortState, setSortedData, sortedData)}>
                                                 {`Total`}
                                                 {getArrowIcon("totalCap")}
                                             </th>
                                         )} */}
 
-                                        {/* {columnVisibility.nomination_point && (
+                                        {/* {columnVisibility?.nomination_point && (
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] `} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, sortedData)}>
                                                 {`Nomination Point`}
                                                 {getArrowIcon("nomination_point")}
                                             </th>
                                         )} */}
 
-                                        {columnVisibility.sunday && (
+                                        {columnVisibility?.sunday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("sunday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("sunday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("sunday", sortState, setSortState, setSortedData, dataTable)}>
@@ -379,7 +379,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                                 {getArrowIcon("sunday")}
                                             </th>
                                         )}
-                                        {columnVisibility.utilization_sunday && (
+                                        {columnVisibility?.utilization_sunday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("sunday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("sunday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("sunday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -388,7 +388,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.monday && (
+                                        {columnVisibility?.monday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("monday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("monday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("monday", sortState, setSortState, setSortedData, dataTable)}>
@@ -400,7 +400,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization_monday && (
+                                        {columnVisibility?.utilization_monday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("monday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("monday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("monday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -409,7 +409,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.tuesday && (
+                                        {columnVisibility?.tuesday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("tuesday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("tuesday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("tuesday", sortState, setSortState, setSortedData, dataTable)}>
@@ -421,7 +421,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization_tuesday && (
+                                        {columnVisibility?.utilization_tuesday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("tuesday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("tuesday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("tuesday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -430,7 +430,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.wednesday && (
+                                        {columnVisibility?.wednesday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("wednesday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("wednesday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("wednesday", sortState, setSortState, setSortedData, dataTable)}>
@@ -442,7 +442,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization_wednesday && (
+                                        {columnVisibility?.utilization_wednesday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("wednesday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("wednesday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("wednesday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -451,7 +451,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.thursday && (
+                                        {columnVisibility?.thursday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("thursday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("thursday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("thursday", sortState, setSortState, setSortedData, dataTable)}>
@@ -463,7 +463,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization_thursday && (
+                                        {columnVisibility?.utilization_thursday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("thursday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("thursday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("thursday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -472,7 +472,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.friday && (
+                                        {columnVisibility?.friday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("friday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("friday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("friday", sortState, setSortState, setSortedData, dataTable)}>
@@ -484,7 +484,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization_friday && (
+                                        {columnVisibility?.utilization_friday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("friday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("friday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("friday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -493,7 +493,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.saturday && (
+                                        {columnVisibility?.saturday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("saturday", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("saturday", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("saturday", sortState, setSortState, setSortedData, dataTable)}>
@@ -505,7 +505,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization_saturday && (
+                                        {columnVisibility?.utilization_saturday && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] `} onClick={() => handleSort("saturday_utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] `} onClick={() => handleSort("saturday_utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] `} onClick={() => handleSort("saturday_utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -519,8 +519,8 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
 
                                 <tbody>
                                     {
-                                        // sortedData?.length > 0 && sortedData?.map((row: any, index: any) => {
-                                        paginatedData?.length > 0 && paginatedData?.map((row: any, index: any) => {
+                                        // (sortedData || [])?.map((row: any, index: any) => {
+                                        (paginatedData || [])?.map((row: any, index: any) => {
 
                                             let find_validate = areaMaster?.data?.find((item: any) => item?.name === row?.area_text)
                                             let sunday_validate = find_validate?.area_nominal_capacity > parseFloat(row?.sunday)
@@ -537,7 +537,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                                     className={`${table_row_style}`}
                                                 >
 
-                                                    {/* {columnVisibility.gas_day && (
+                                                    {/* {columnVisibility?.gas_day && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">{row?.gas_day_text ? row?.gas_day_text : ''}</td>
                                                     )} */}
 
@@ -567,80 +567,80 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                                                         </td>
                                                     )}
 
-                                                    {/* {columnVisibility.total_cap && (
+                                                    {/* {columnVisibility?.total_cap && (
                                                         <td className="px-2 py-1 text-[#464255] font-bold text-right">{row?.totalCap ? formatNumberThreeDecimal(row?.totalCap) : ''}</td>
                                                     )} */}
 
-                                                    {/* {columnVisibility.nomination_point && (
+                                                    {/* {columnVisibility?.nomination_point && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">{row?.nomination_point ? row?.nomination_point : ''}</td>
                                                     )} */}
 
-                                                    {columnVisibility.sunday && (
+                                                    {columnVisibility?.sunday && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{row?.sunday ? formatNumberThreeDecimalNom(row?.sunday) : ''}</td>
                                                         <td className={`px-2 py-1 ${sunday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.sunday ? formatNumberThreeDecimalNom(row?.sunday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_sunday && (
+                                                    {columnVisibility?.utilization_sunday && (
                                                         // <td className={`px-2 py-1 text-[#464255] ${row?.sunday_utilization > 100 && 'text-red-600'} text-right`}>{typeof row?.sunday_utilization === 'number' ? formatNumberTwoDecimalNom(row?.sunday_utilization) : ''}</td>
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.sunday_utilization > 100 && 'text-red-600'} text-right`}>{row?.sunday_utilization !== null && row?.sunday_utilization !== undefined && row?.sunday_utilization !== '' ? formatNumberTwoDecimalNom(row?.sunday_utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.monday && (
+                                                    {columnVisibility?.monday && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{typeof row?.monday === 'number' ? formatNumberThreeDecimalNom(row?.monday) : ''}</td>
                                                         <td className={`px-2 py-1 ${monday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.monday ? formatNumberThreeDecimalNom(row?.monday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_monday && (
+                                                    {columnVisibility?.utilization_monday && (
                                                         // <td className={`px-2 py-1 text-[#464255] ${row?.monday_utilization > 100 && 'text-red-600'} text-right`}>{typeof row?.monday_utilization === 'number' ? formatNumberTwoDecimalNom(row?.monday_utilization) : ''}</td>
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.monday_utilization > 100 && 'text-red-600'} text-right`}>{row?.monday_utilization !== null && row?.monday_utilization !== undefined && row?.monday_utilization !== '' ? formatNumberTwoDecimalNom(row?.monday_utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.tuesday && (
+                                                    {columnVisibility?.tuesday && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{typeof row?.tuesday === 'number' ? formatNumberThreeDecimalNom(row?.tuesday) : ''}</td>
                                                         <td className={`px-2 py-1 ${tuesday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.tuesday ? formatNumberThreeDecimalNom(row?.tuesday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_tuesday && (
+                                                    {columnVisibility?.utilization_tuesday && (
                                                         // <td className={`px-2 py-1 text-[#464255] ${row?.tuesday_utilization > 100 && 'text-red-600'} text-right`}>{typeof row?.tuesday_utilization === 'number' ? formatNumberTwoDecimalNom(row?.tuesday_utilization) : ''}</td>
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.tuesday_utilization > 100 && 'text-red-600'} text-right`}>{row?.tuesday_utilization !== null && row?.tuesday_utilization !== undefined && row?.tuesday_utilization !== '' ? formatNumberTwoDecimalNom(row?.tuesday_utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.wednesday && (
+                                                    {columnVisibility?.wednesday && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{typeof row?.wednesday === 'number' ? formatNumberThreeDecimalNom(row?.wednesday) : ''}</td>
                                                         <td className={`px-2 py-1 ${wednesday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.wednesday ? formatNumberThreeDecimalNom(row?.wednesday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_wednesday && (
+                                                    {columnVisibility?.utilization_wednesday && (
                                                         // <td className={`px-2 py-1 text-[#464255] ${row?.wednesday_utilization > 100 && 'text-red-600'} text-right`}>{typeof row?.wednesday_utilization === 'number' ? formatNumberTwoDecimalNom(row?.wednesday_utilization) : ''}</td>
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.wednesday_utilization > 100 && 'text-red-600'} text-right`}>{row?.wednesday_utilization !== null && row?.wednesday_utilization !== undefined && row?.wednesday_utilization !== '' ? formatNumberTwoDecimalNom(row?.wednesday_utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.thursday && (
+                                                    {columnVisibility?.thursday && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{typeof row?.thursday === 'number' ? formatNumberThreeDecimalNom(row?.thursday) : ''}</td>
                                                         <td className={`px-2 py-1 ${thursday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.thursday ? formatNumberThreeDecimalNom(row?.thursday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_thursday && (
+                                                    {columnVisibility?.utilization_thursday && (
                                                         // <td className={`px-2 py-1 text-[#464255] ${row?.thursday_utilization > 100 && 'text-red-600'} text-right`}>{typeof row?.thursday_utilization === 'number' ? formatNumberTwoDecimalNom(row?.thursday_utilization) : ''}</td>
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.thursday_utilization > 100 && 'text-red-600'} text-right`}>{row?.thursday_utilization !== null && row?.thursday_utilization !== undefined && row?.thursday_utilization !== '' ? formatNumberTwoDecimalNom(row?.thursday_utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.friday && (
+                                                    {columnVisibility?.friday && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{typeof row?.friday === 'number' ? formatNumberThreeDecimalNom(row?.friday) : ''}</td>
                                                         <td className={`px-2 py-1 ${friday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.friday ? formatNumberThreeDecimalNom(row?.friday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_friday && (
+                                                    {columnVisibility?.utilization_friday && (
                                                         // <td className={`px-2 py-1 text-[#464255] ${row?.friday_utilization > 100 && 'text-red-600'} text-right`}>{typeof row?.friday_utilization === 'number' ? formatNumberTwoDecimalNom(row?.friday_utilization) : ''}</td>
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.friday_utilization > 100 && 'text-red-600'} text-right`}>{row?.friday_utilization !== null && row?.friday_utilization !== undefined && row?.friday_utilization !== '' ? formatNumberTwoDecimalNom(row?.friday_utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.saturday && (
+                                                    {columnVisibility?.saturday && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{typeof row?.saturday === 'number' ? formatNumberThreeDecimalNom(row?.saturday) : ''}</td>
                                                         <td className={`px-2 py-1 ${saturday_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>{row?.saturday ? formatNumberThreeDecimalNom(row?.saturday) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization_saturday && (
+                                                    {columnVisibility?.utilization_saturday && (
                                                         // <td className={`px-2 py-1 text-[#464255]  ${row?.saturday_utilization > 100 && 'text-red-600'} text-right`}>{typeof row?.saturday_utilization === 'number' ? formatNumberTwoDecimalNom(row?.saturday_utilization) : ''}</td>
                                                         <td className={`px-2 py-1 text-[#464255]  ${row?.saturday_utilization > 100 && 'text-red-600'} text-right`}>{row?.saturday_utilization !== null && row?.saturday_utilization !== undefined && row?.saturday_utilization !== '' ? formatNumberTwoDecimalNom(row?.saturday_utilization) : ''}</td>
                                                     )}
@@ -657,59 +657,59 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
 
                     {/******************* TABLE TAB IMBALANCE *******************/}
                     {
-                        isLoading && tabIndex2ndTab == 1 ? <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
+                        !isLoading && tabIndex2ndTab == 1 ? <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
                             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                 <tr className="h-20">
-                                    {columnVisibility.gas_day && (
+                                    {columnVisibility?.gas_day && (
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("gas_day_text", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Gas Day`}
                                             {getArrowIcon("gas_day_text")}
                                         </th>
                                     )}
 
-                                    {/* {columnVisibility.area && (
+                                    {/* {columnVisibility?.area && (
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("area", sortState, setSortState, setSortedData, sortedData)}>
                                             {`Area`}
                                             {getArrowIcon("area")}
                                         </th>
                                     )} */}
 
-                                    {columnVisibility.imbalance && (
+                                    {columnVisibility?.imbalance && (
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("imbalance", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Imbalance`}
                                             {getArrowIcon("imbalance")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.imbalance_percent && (
+                                    {columnVisibility?.imbalance_percent && (
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("imbalance_percent", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Imbalance (%)`}
                                             {getArrowIcon("imbalance_percent")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.park && (
+                                    {columnVisibility?.park && (
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("park", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Park`}
                                             {getArrowIcon("park")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.unpark && (
+                                    {columnVisibility?.unpark && (
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("unpark", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Unpark`}
                                             {getArrowIcon("unpark")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.change_min_invent && (
+                                    {columnVisibility?.change_min_invent && (
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("change_min_invent", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Change Min Invent`}
                                             {getArrowIcon("change_min_invent")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.shrinkage && (
+                                    {columnVisibility?.shrinkage && (
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("shrinkage", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Shrinkage`}
                                             {getArrowIcon("shrinkage")}
@@ -721,39 +721,39 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
 
                             <tbody>
                                 {
-                                    sortedData.length > 0 && sortedData?.map((row: any, index: any) => {
-                                        // paginatedData.length > 0 && paginatedData?.map((row: any, index: any) => { //old
+                                    (sortedData || [])?.map((row: any, index: any) => {
+                                        // (paginatedData || [])?.map((row: any, index: any) => { //old
                                         return (
                                             <tr
                                                 key={row?.id}
                                                 className={`${table_row_style}`}
                                             >
 
-                                                {columnVisibility.gas_day && (
+                                                {columnVisibility?.gas_day && (
                                                     <td className="px-2 py-1 text-[#464255] ">{row?.gas_day_text ? row?.gas_day_text : ''}</td>
                                                 )}
 
-                                                {columnVisibility.imbalance && (
+                                                {columnVisibility?.imbalance && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.imbalance !== null && row?.imbalance !== undefined ? formatNumberThreeDecimalNom(row?.imbalance) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.imbalance_percent && (
+                                                {columnVisibility?.imbalance_percent && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.imbalance_percent !== null && row?.imbalance_percent !== undefined ? formatNumberThreeDecimalNom(row?.imbalance_percent) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.park && (
+                                                {columnVisibility?.park && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.park !== null && row?.park !== undefined ? formatNumberThreeDecimalNom(row?.park) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.unpark && (
+                                                {columnVisibility?.unpark && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.unpark !== null && row?.unpark !== undefined ? formatNumberThreeDecimalNom(row?.unpark) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.change_min_invent && (
+                                                {columnVisibility?.change_min_invent && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.change_min_invent !== null && row?.change_min_invent !== undefined ? formatNumberThreeDecimalNom(row?.change_min_invent) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.shrinkage && (
+                                                {columnVisibility?.shrinkage && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.shrinkage !== null && row?.shrinkage !== undefined ? formatNumberThreeDecimalNom(row?.shrinkage) : ''}</td>
                                                 )}
 
@@ -767,7 +767,7 @@ const TableWeeklyArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, 
                     }
 
                     {
-                        isLoading && sortedData?.length == 0 && <NodataTable />
+                        !isLoading && sortedData?.length == 0 && <NodataTable />
                     }
                 </div>
 

@@ -36,14 +36,14 @@ const ModalComment: React.FC<FormExampleProps> = ({
     useEffect(() => {
         if (data) {
 
-            const find_shipper = dataShipperGroup?.find((itemx: any) => itemx?.id_name == dataRow?.shipperName)
+            const find_shipper = (dataShipperGroup || [])?.find((itemx: any) => itemx?.id_name == dataRow?.shipperName)
             setShipperData(find_shipper)
 
             // const filtered_comment_tso = data?.filter((item: any) => item?.create_by_account?.userType?.id !== 3);
             // const filtered_comment_shipper = data?.filter((item: any) => item?.create_by_account?.userType?.id == 3);
 
-            const filtered_comment_tso = data?.filter((item: any) => item?.comment_tap_user_type !== 3);  // 2 tab tso, 3 tab shipper
-            const filtered_comment_shipper = data?.filter((item: any) => item?.comment_tap_user_type == 3);  // 2 tab tso, 3 tab shipper
+            const filtered_comment_tso = (data || [])?.filter((item: any) => item?.comment_tap_user_type !== 3);  // 2 tab tso, 3 tab shipper
+            const filtered_comment_shipper = (data || [])?.filter((item: any) => item?.comment_tap_user_type == 3);  // 2 tab tso, 3 tab shipper
 
             setCommentsShipper(filtered_comment_shipper)
             setCommentsTso(filtered_comment_tso)
@@ -182,10 +182,10 @@ const ModalComment: React.FC<FormExampleProps> = ({
                         </div>
 
                         <div className={`mb-1 w-[100%] ${comments?.length >= 2 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
-                            {comments?.length > 0 && comments?.map((item: any) =>
+                            {(comments || [])?.map((item: any, idx: number) =>
 
                             (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                                <div key={item?.id ?? idx} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
                                         <div className="mb-2 flex justify-between items-center">
                                             <div className="flex items-baseline gap-2">

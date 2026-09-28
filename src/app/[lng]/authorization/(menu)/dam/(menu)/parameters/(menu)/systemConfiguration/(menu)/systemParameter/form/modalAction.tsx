@@ -99,18 +99,18 @@ const ModalAction: React.FC<FormExampleProps> = ({
         });
 
         // ตัด name ซ้ำ
-        const uniqueByNameKeepLatestId = Object.values(
+        const uniqueByNameKeepOldestId = Object.values(
             filtered.reduce((acc: Record<string, any>, cur: any) => {
                 const key = cur.name;
-                // ถ้ามีชื่อซ้ำแล้ว ให้เก็บตัวที่ id เยอะกว่า (ล่าสุด)
-                if (!acc[key] || cur.id > acc[key].id) {
+                // ถ้ามีชื่อซ้ำแล้ว ให้เก็บตัวที่ id น้อยกว่า (เก่าที่สุด)
+                if (!acc[key] || cur.id < acc[key].id) {
                     acc[key] = cur;
                 }
                 return acc;
             }, {})
         );
 
-        setSubSystem(uniqueByNameKeepLatestId)
+        setSubSystem(uniqueByNameKeepOldestId)
     }
 
     useEffect(() => {
@@ -199,7 +199,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("menus_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("menus_id", e.target.value);
+                                                    setValue("menus_id", e?.target?.value ?? "");
                                                     handleFindSubSysParam(e.target.value);
                                                     if (errors?.menus_id) { clearErrors('menus_id') }
                                                 }}
@@ -231,7 +231,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("system_parameter_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("system_parameter_id", e.target.value);
+                                                    setValue("system_parameter_id", e?.target?.value ?? "");
                                                     if (errors?.system_parameter_id) { clearErrors('system_parameter_id') }
                                                 }}
                                                 errors={errors?.system_parameter_id}
@@ -301,11 +301,18 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                                 <li>
                                                                                     <strong>MM (นาทีที่ execute):</strong> กำหนดว่าระบบจะเริ่มทำงานที่ <strong>นาทีที่เท่าไรของชั่วโมงนั้นๆ</strong> (เช่น <code>0</code> สำหรับนาทีที่ 00, <code>15</code> สำหรับนาทีที่ 15)
                                                                                 </li>
-                                                                                <li>
+                                                                                {/* <li>
                                                                                     <strong>LP (ระยะเวลาดึงย้อนหลัง):</strong> กำหนดว่าระบบจะดึงข้อมูลย้อนหลังไป <strong>เป็นระยะเวลากี่วัน</strong> นับจากวันที่ที่ระบุในส่วน ND (เช่น <code>3</code> สำหรับย้อนหลัง 3 วัน, <code>6</code> สำหรับย้อนหลัง 6 วัน)
                                                                                 </li>
                                                                                 <li>
                                                                                     <strong>ND (ดึงข้อมูลถึงวันที่):</strong> กำหนดว่าข้อมูลจะถูกดึงไป <strong>ถึงวันที่ย้อนหลังนับจากวันนี้ไปกี่วัน</strong> (เช่น <code>01</code> สำหรับ 1 วันที่แล้ว, <code>07</code> สำหรับ 7 วันที่แล้ว)
+                                                                                </li> */}
+                                                                                {/* https://app.clickup.com/t/9018502823/86eub6d17 */}
+                                                                                <li>
+                                                                                    <strong>LP (ดึงข้อมูลถึงวันที่):</strong> กำหนดว่าข้อมูลจะถูกดึงไป <strong>ถึงวันที่ย้อนหลังนับจากวันนี้ไปกี่วัน</strong> (เช่น <code>01</code> สำหรับ 1 วันที่แล้ว, <code>07</code> สำหรับ 7 วันที่แล้ว)
+                                                                                </li>
+                                                                                <li>
+                                                                                    <strong>ND (ระยะเวลาดึงย้อนหลัง):</strong> กำหนดว่าระบบจะดึงข้อมูลย้อนหลังไป <strong>เป็นระยะเวลากี่วัน</strong> นับจากวันที่ที่ระบุในส่วน ND (เช่น <code>3</code> สำหรับย้อนหลัง 3 วัน, <code>6</code> สำหรับย้อนหลัง 6 วัน)
                                                                                 </li>
                                                                             </ul>
                                                                             <p>
@@ -316,7 +323,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                                 <li>โดยทำงานที่ <strong>นาทีที่ 15</strong> ของทุกรอบ</li>
                                                                                 <li>ข้อมูลจะถูกดึงไป <strong>จนถึง 2 วันที่แล้ว</strong></li>
                                                                                 <li>และจะดึงข้อมูลย้อนหลังไปอีก <strong>3 วัน</strong> จากวันนั้น</li>
-                                                                                <li>เช่นวันนี้คือวันที่ 10 มิถุนายน 2566 จะการเป็นเริ่มดึงข้อมูลตั้งแต่วันที่ 5 มิถุนายน 2566 ถึงวันที่ 8 มิถุนายน 2566</li>
+                                                                                <li>เช่นวันนี้คือวันที่ 10 มิถุนายน 2566 จะการเป็นเริ่มดึงข้อมูลตั้งแต่วันที่ 5 มิถุนายน 2566 (ND) ถึงวันที่ 8 มิถุนายน 2566 (LP)</li>
                                                                             </ul>
                                                                         </div>
                                                                 }

@@ -282,11 +282,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                 setValue("green_url", data?.green_url || "");
                 setValue("gray_url", data?.gray_url || "");
 
-                setValue("start_date", formattedStartDate);
-                setValue("end_date", formattedEndDate);
-
-                // setValue("thershold", data?.thershold);
-                setValue("thershold_float", (data?.thershold_float || data?.thershold_float === 0) ? data?.thershold_float : data.thershold);
+                const rawData: Record<string, any> = data || {};
+                setValue("thershold_float", rawData["thershold_float"] ?? data?.threshold ?? "");
 
                 setOrangeMode(data?.orange_mode?.toString());
                 setYellowMode(data?.yellow_mode?.toString());

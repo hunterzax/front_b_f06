@@ -98,6 +98,13 @@ const ModalAmend: React.FC<FormExampleProps> = ({
 
     }, [data])
 
+    useEffect(() => {
+        if(open) {
+            resetField('terminate_date')
+            resetField('new_contract_start_date')
+        }
+    }, [open])
+
     const labelClass = "block mb-2 text-sm font-light"
     const textErrorClass = "text-red-500 text-sm";
     const startDate = new Date();
@@ -124,6 +131,7 @@ const ModalAmend: React.FC<FormExampleProps> = ({
 
             setIsEditing(true)
             setModeEditing('entry')
+            resetField('terminate_date')
             resetField('new_contract_start_date')
             onClose();
         }
@@ -135,6 +143,7 @@ const ModalAmend: React.FC<FormExampleProps> = ({
     }
 
     const handleClose = () => {
+        resetField('terminate_date')
         resetField('new_contract_start_date')
         onClose();
         reset();

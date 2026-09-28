@@ -152,8 +152,8 @@ const ModalUpdateStat: React.FC<FormExampleProps> = ({
                                         label=""
                                         multiline
                                         onChange={(e) => {
-                                            if (e.target.value.length <= 255) {
-                                                setValue('reason', e.target.value);
+                                            if ((e?.target?.value ?? "").length <= 255) {
+                                                setValue('reason', e?.target?.value ?? "");
                                             }
                                         }}
                                         placeholder='Enter Reason'

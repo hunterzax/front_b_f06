@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useRef, useEffect, Dispatch, SetStateAction, useMemo } from "react";
 import {
     ColumnDef,
@@ -225,7 +223,7 @@ export default function UserTable(
 
     // Function to get filtered data for export
     const getFilteredData = () => {
-        return table.getFilteredRowModel().rows.map(row => row.original);
+        return table?.getFilteredRowModel?.()?.rows?.map(row => row?.original) || [];
     };
 
     // Update filtered data when filters change
@@ -237,7 +235,7 @@ export default function UserTable(
             // อธิบาย onSortDataChange จะส่ง data ออกไป ก็ต่อเมื่อทำการ sort ที่ useEffect ด้านล่าง
             // BANGJU
             if (onSortDataChange) {
-                const sortedRows = table.getSortedRowModel().rows.map(row => row.original);
+                const sortedRows = table?.getSortedRowModel?.()?.rows?.map(row => row?.original) || [];
                 onFilteredDataChange(sortedRows);
             } else {
                 onFilteredDataChange(filteredData);
@@ -275,13 +273,13 @@ export default function UserTable(
 
     useEffect(() => {
         if (onSortDataChange) {
-            const sortedRows = table.getSortedRowModel().rows.map(row => row.original);
+            const sortedRows = table?.getSortedRowModel?.()?.rows?.map(row => row?.original) || [];
             onSortDataChange(sortedRows);
         }
-    }, [table.getState().sorting, data]);
+    }, [table?.getState?.()?.sorting, data]);
 
     return (
-        <div className={`py-4 ${fixHeight == true ? 'h-[60dvh] overflow-y-auto' : 'h-full'}  block w-full rounded-t-md z-1`}>
+        <div className={`py-4 h-full block w-full rounded-t-md z-1`}>
             <div className="w-full h-[100%]">
                 <div className={`border-[#DFE4EA] ${border == true ? 'border-[1px] p-4' : fullWidth == true ? 'border-none px-0 py-0' : 'border-none px-4 py-0'} rounded-xl shadow-sm`}>
                     <div className="mb-2 flex gap-4 items-center relative ">
@@ -319,14 +317,12 @@ export default function UserTable(
                                     }
 
 
-                                    {filterProps &&
-                                        filterProps
-                                    }
+                                    {filterProps}
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 justify-end">
                                     <SearchInput2 value={globalFilter ?? ""} setGlobalFilter={setGlobalFilter} />
-                                    {exportBtn && exportBtn}
+                                    {exportBtn}
                                 </div>
                             </div>
                         )}
@@ -339,7 +335,7 @@ export default function UserTable(
                                 {table?.getAllLeafColumns()?.map((column) => {
 
                                     return (
-                                        <div key={column.id} className="text-sm mt-2">
+                                        <div key={column?.id} className="text-sm mt-2">
                                             <label className="flex items-center gap-2">
                                                 <input
                                                     type="checkbox"
@@ -361,7 +357,7 @@ export default function UserTable(
                             </div>
                         )}
                     </div>
-                    <div className="w-full overflow-auto relative h-full">
+                    <div className="w-full overflow-auto relative max-h-[59dvh] h-auto overflow-y-auto">
                         <Spinloading spin={isTableLoading} rounded={0} />
                         {
                             isLoading ?
@@ -374,19 +370,19 @@ export default function UserTable(
                                                 <tr key={headerGroup?.id} className="h-9 relative z-50">
                                                     {headerGroup?.headers?.map((header, index) => {
                                                         const getStyle: any = columns?.find((item: any) => item?.accessorKey == (header?.column?.columnDef as any)?.accessorKey);
-                                                        const canSort = header.column.getCanSort()
+                                                        const canSort = header?.column?.getCanSort?.()
                                                         const enableSorting = canSort || header?.column?.columnDef?.enableSorting == true;
-                                                        const size = header.getSize() == 150 ? undefined : header.getSize() // 150 is default size of column
-                                                        const meta = header.column.columnDef.meta as any
+                                                        const size = header?.getSize?.() == 150 ? undefined : header?.getSize?.() // 150 is default size of column
+                                                        const meta = header?.column?.columnDef?.meta as any
                                                         const width = getStyle?.width ? getStyle?.width : size ? size : meta?.width ? meta?.width : '100%'
                                                         const align = getStyle?.align ? getStyle?.align : meta?.align ? meta?.align : 'left'
                                                         return (
                                                             <th
-                                                                key={header.id}
+                                                                key={header?.id}
                                                                 scope="col"
-                                                                colSpan={header.colSpan}
+                                                                colSpan={header?.colSpan}
                                                                 className={`${enableSorting ? table_sort_header_style : table_header_style} ${index == 0 ? 'rounded-tl-md' : (headerGroup?.headers?.length - 1 == index) && 'rounded-tr-md'} text-center relative z-50`}
-                                                                onClick={enableSorting ? header.column.getToggleSortingHandler() : undefined}
+                                                                onClick={enableSorting ? header?.column?.getToggleSortingHandler?.() : undefined}
                                                                 style={{
                                                                     textAlign: align,
                                                                     backgroundColor: getStyle?.headerColor ? getStyle?.headerColor : meta?.headerColor ? meta?.headerColor : '#1473A1',
@@ -400,8 +396,8 @@ export default function UserTable(
                                                                     )}
                                                                     {enableSorting && (
                                                                         <div className={`absolute right-0 top-1/2 transform -translate-y-1/2 flex flex-col items-center -space-y-3`}>
-                                                                            <ArrowDropUpIcon sx={{ fontSize: 18, opacity: header.column.getIsSorted() === "asc" ? 1 : 0.4, }} />
-                                                                            <ArrowDropDownIcon sx={{ fontSize: 18, opacity: header.column.getIsSorted() === "desc" ? 1 : 0.4, }} />
+                                                                            <ArrowDropUpIcon sx={{ fontSize: 18, opacity: header?.column?.getIsSorted?.() === "asc" ? 1 : 0.4, }} />
+                                                                            <ArrowDropDownIcon sx={{ fontSize: 18, opacity: header?.column?.getIsSorted?.() === "desc" ? 1 : 0.4, }} />
                                                                         </div>
                                                                     )}
                                                                 </div>
@@ -416,11 +412,11 @@ export default function UserTable(
                                         <tbody className="h-2 overflow-y-auto">
                                             {table?.getRowModel()?.rows?.map((row: any) => (
                                                 <tr key={row?.id} className="border-b-[1px] ">
-                                                    {row?.getVisibleCells().map((cell: any, index: any) => {
+                                                    {row?.getVisibleCells()?.map((cell: any, index: any) => {
                                                         const getStyle: any = columns?.find((item: any) => item?.accessorKey == cell?.column?.columnDef?.accessorKey);
-                                                        const meta = cell.column.columnDef.meta as any
+                                                        const meta = cell?.column?.columnDef?.meta as any
                                                         return (
-                                                            <td key={cell.id} className="border px-4 py-2 text-[#464255] bg-white border-none h-[53px]"
+                                                            <td key={cell?.id} className="border px-4 py-2 text-[#464255] bg-white border-none h-[53px]"
                                                                 style={{
                                                                     color: getStyle?.textColor ? getStyle?.textColor : meta?.textColor ? meta?.textColor : '#464255',
                                                                     textAlign: getStyle?.align ? getStyle?.align : meta?.align ? meta?.align : 'left',

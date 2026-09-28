@@ -90,6 +90,7 @@ const ContractDetail: React.FC<Props> = ({
 
     //#region RESET FORM
     const handleGetback = () => {
+        if (typeof window !== "undefined")
         setExpandedRow(null);
         setTimeout(() => {
             getBack() //back to list
@@ -188,16 +189,16 @@ const ContractDetail: React.FC<Props> = ({
             originalBooking = originalData?.booking_full_json;
         } else if (selectedType == 'summary') {
             // originalBooking = originalData?.booking_full_json_release[0]?.data_temp ? originalData?.booking_full_json_release : data?.booking_full_json; // เดิมโรงงาน
-            const find_release = originalData?.booking_full_json_release?.find((item: any) => item.flag_use == true)
+            const find_release = originalData?.booking_full_json_release?.find((item: any) => item?.flag_use != false)
             originalBooking = find_release ? find_release : data?.booking_full_json;
         }
 
         //render option
         // let originalData: any;
-        originalBooking?.length > 0 && originalBooking?.map((item: any) => {
-            const tempData = JSON?.parse(item?.data_temp);
+        (originalBooking || [])?.map((item: any) => {
+            const tempData = item?.data_temp ? JSON?.parse(item.data_temp) : {};
 
-            tempData[typeValue] && tempData[typeValue]?.map((value: any) => {
+            tempData?.[typeValue] && (tempData[typeValue] || [])?.map((value: any) => {
                 let getOriginal: any = getData(value["0"]);
 
                 let filterZoneOption = zoneMaster?.filter((item: any) => item?.name == getOriginal?.zone?.name)
@@ -380,7 +381,7 @@ const ContractDetail: React.FC<Props> = ({
             originalBooking = originalData?.booking_full_json;
         } else if (selectedType == 'summary') {
             // originalBooking = originalData?.booking_full_json_release[0]?.data_temp ? originalData?.booking_full_json_release : originalData?.booking_full_json;// เดิมโรงงาน
-            const find_release = originalData?.booking_full_json_release?.find((item: any) => item.flag_use == true)
+            const find_release = originalData?.booking_full_json_release?.find((item: any) => item.flag_use != false)
             originalBooking = find_release ? find_release : originalData?.booking_full_json;
         }
 
@@ -451,7 +452,7 @@ const ContractDetail: React.FC<Props> = ({
                                 ]
 
                                 if (bypassColumns?.find((f: any) => f == item?.columns)) {
-                                    dateTableColumns?.length > 0 && dateTableColumns?.map((date: any) => {
+                                    (dateTableColumns || [])?.map((date: any) => {
                                         getKeydateColumn.push(item?.subcolumns[date]?.key)
                                     })
                                 }
@@ -523,7 +524,7 @@ const ContractDetail: React.FC<Props> = ({
                                 ]
 
                                 if (bypassColumns?.find((f: any) => f == item?.columns)) {
-                                    dateTableColumns?.length > 0 && dateTableColumns?.map((date: any) => {
+                                    (dateTableColumns || [])?.map((date: any) => {
                                         getKeydateColumn.push(item?.subcolumns[date]?.key)
                                     })
                                 }
@@ -654,7 +655,7 @@ const ContractDetail: React.FC<Props> = ({
                         ]
 
                         if (bypassColumns?.find((f: any) => f == item?.columns)) {
-                            dateTableColumns?.length > 0 && dateTableColumns?.map((date: any) => {
+                            (dateTableColumns || [])?.map((date: any) => {
                                 getKeydateColumn.push(item?.subcolumns[date]?.key)
                             })
                         }
@@ -730,7 +731,7 @@ const ContractDetail: React.FC<Props> = ({
                         ]
 
                         if (bypassColumns?.find((f: any) => f == item?.columns)) {
-                            dateTableColumns?.length > 0 && dateTableColumns?.map((date: any) => {
+                            (dateTableColumns || [])?.map((date: any) => {
                                 getKeydateColumn.push(item?.subcolumns[date]?.key)
                             })
                         }
@@ -821,7 +822,7 @@ const ContractDetail: React.FC<Props> = ({
 
                 const renderKey = (datamap: any) => {
                     let keygen: any = [];
-                    datamap?.length > 0 && datamap?.map((item: any) => {
+                    (datamap || [])?.map((item: any) => {
                         let bypassColumns = [
                             'Capacity Daily Booking (MMBTU/d)',
                             'Capacity Daily Booking (MMscfd)',
@@ -830,7 +831,7 @@ const ContractDetail: React.FC<Props> = ({
                         ]
 
                         if (bypassColumns?.find((f: any) => f == item?.columns)) {
-                            dateTableColumns?.length > 0 && dateTableColumns?.map((date: any) => {
+                            (dateTableColumns || [])?.map((date: any) => {
                                 keygen.push(item?.subcolumns[date]?.key)
                             })
                         }
@@ -920,7 +921,7 @@ const ContractDetail: React.FC<Props> = ({
     }
 
     const setLogOption = (path: any, mode: 'entry' | 'exit', value: any, type: 'original' | 'summary') => {
-        let logOption: any = logSearch[type]?.[mode];
+        let logOption: any = { ...(logSearch?.[type]?.[mode] || {}) };
 
         logOption[path] = value || "";
 
@@ -928,16 +929,18 @@ const ContractDetail: React.FC<Props> = ({
             setlogSearch((pre: any) => ({
                 ...pre,
                 [type]: {
+                    ...pre?.[type],
                     entry: logOption,
-                    exit: pre[type]?.exit
+                    exit: pre?.[type]?.exit
                 }
             }))
         } else if (mode == 'exit') {
             setlogSearch((pre: any) => ({
                 ...pre,
                 [type]: {
+                    ...pre?.[type],
                     exit: logOption,
-                    entry: pre[type]?.entry,
+                    entry: pre?.[type]?.entry,
                 }
             }))
         }
@@ -961,7 +964,7 @@ const ContractDetail: React.FC<Props> = ({
         setMdCommentOpen(true);
     };
 
-    const generateColumnVisibility = (columns: any) => Object.fromEntries(columns.map(({ key, visible }: any) => [key, visible]));
+    const generateColumnVisibility = (columns: any) => Object.fromEntries((columns || [])?.map(({ key, visible }: any) => [key, visible]));
 
     let masterColumnsDynamicEntry = [
         { key: 'zone', label: 'Zone', visible: true },
@@ -1014,7 +1017,7 @@ const ContractDetail: React.FC<Props> = ({
         let checkAboutParant: any = dataFilter?.find((f: any) => f?.key == columnKey);
         if (filterCheckedparent?.length > 0) {
             for (let index = 0; index < filterCheckedparent?.length; index++) {
-                let findIDX: any = dataFilter?.find((fx: any) => fx?.key == filterCheckedparent[index]?.key);
+                let findIDX: any = dataFilter?.find((fx: any) => fx?.key == filterCheckedparent?.[index]?.key);
                 if (findIDX) {
                     setColumnVisibilityEntry((prev: any) => ({
                         ...prev,
@@ -1026,14 +1029,14 @@ const ContractDetail: React.FC<Props> = ({
 
         if (checkAboutParant?.parent_id) {
             let getParent: any = checkAboutParant?.parent_id;
-            let findAboutParent: any = columnVisibilityEntry[getParent];
-            let findAboutThis: any = columnVisibilityEntry[columnKey];
+            let findAboutParent: any = columnVisibilityEntry?.[getParent];
+            let findAboutThis: any = columnVisibilityEntry?.[columnKey];
             let filterAboutParent: any = dataFilter?.filter((f: any) => f?.parent_id == getParent);
             if (findAboutParent == true) {
                 let checkedParentFalse: any = 0;
                 for (let index = 0; index < filterAboutParent?.length; index++) {
-                    let checkedItem: any = columnVisibilityEntry[filterAboutParent[index]?.key];
-                    if (filterAboutParent[index]?.key == columnKey) {
+                    let checkedItem: any = columnVisibilityEntry?.[filterAboutParent?.[index]?.key];
+                    if (filterAboutParent?.[index]?.key == columnKey) {
                         checkedParentFalse = findAboutThis == true ? checkedParentFalse + 1 : checkedParentFalse;
                     } else {
                         checkedParentFalse = checkedItem == false ? checkedParentFalse + 1 : checkedParentFalse;
@@ -1067,7 +1070,7 @@ const ContractDetail: React.FC<Props> = ({
         let checkAboutParant: any = dataFilter?.find((f: any) => f?.key == columnKey);
         if (filterCheckedparent?.length > 0) {
             for (let index = 0; index < filterCheckedparent?.length; index++) {
-                let findIDX: any = dataFilter?.find((fx: any) => fx?.key == filterCheckedparent[index]?.key);
+                let findIDX: any = dataFilter?.find((fx: any) => fx?.key == filterCheckedparent?.[index]?.key);
                 if (findIDX) {
                     setColumnVisibilityExit((prev: any) => ({
                         ...prev,
@@ -1079,14 +1082,14 @@ const ContractDetail: React.FC<Props> = ({
 
         if (checkAboutParant?.parent_id) {
             let getParent: any = checkAboutParant?.parent_id;
-            let findAboutParent: any = columnVisibilityExit[getParent];
-            let findAboutThis: any = columnVisibilityExit[columnKey];
+            let findAboutParent: any = columnVisibilityExit?.[getParent];
+            let findAboutThis: any = columnVisibilityExit?.[columnKey];
             let filterAboutParent: any = dataFilter?.filter((f: any) => f?.parent_id == getParent);
             if (findAboutParent == true) {
                 let checkedParentFalse: any = 0;
                 for (let index = 0; index < filterAboutParent?.length; index++) {
-                    let checkedItem: any = columnVisibilityExit[filterAboutParent[index]?.key];
-                    if (filterAboutParent[index]?.key == columnKey) {
+                    let checkedItem: any = columnVisibilityExit?.[filterAboutParent?.[index]?.key];
+                    if (filterAboutParent?.[index]?.key == columnKey) {
                         checkedParentFalse = findAboutThis == true ? checkedParentFalse + 1 : checkedParentFalse;
                     } else {
                         checkedParentFalse = checkedItem == false ? checkedParentFalse + 1 : checkedParentFalse;
@@ -1455,7 +1458,7 @@ const ContractDetail: React.FC<Props> = ({
                                             {/* EXIT แถบเหลือง ๆ */}
                                             <div
                                                 className={`w-full h-[58px] mt-2 border border-[#DFE4EA] rounded-[8px] cursor-pointer flex items-center justify-between gap-2 px-2 bg-[#FFF3C8] `}
-                                                onClick={() => handleExpandEntryExit(item?.id, "exit" + item.id, 'exit', selectedType)}
+                                                onClick={() => handleExpandEntryExit(item?.id, "exit" + item?.id, 'exit', selectedType)}
                                             >
                                                 <div className="flex items-center p-2 gap-5">
                                                     <span className="text-[#58585A] font-semibold">Exit</span>
@@ -1463,7 +1466,7 @@ const ContractDetail: React.FC<Props> = ({
 
                                                 {/* Expand Icon on the right side */}
                                                 <div className="flex items-center pr-2">
-                                                    {expandedEntryExit === "exit" + item.id ? (
+                                                    {expandedEntryExit === "exit" + item?.id ? (
                                                         <ExpandLessRoundedIcon sx={{ fontSize: 30 }} />
                                                     ) : (
                                                         <ExpandMoreRoundedIcon sx={{ fontSize: 30 }} />
@@ -1683,7 +1686,7 @@ const ContractDetail: React.FC<Props> = ({
                                             {/* EXIT แถบเหลือง ๆ */}
                                             <div
                                                 className={`w-full h-[58px] mt-2 border border-[#DFE4EA] rounded-[8px] cursor-pointer flex items-center justify-between gap-2 px-2 bg-[#FFF3C8] `}
-                                                onClick={() => handleExpandEntryExit(item?.id, "exit" + item.id, 'exit', selectedType)}
+                                                onClick={() => handleExpandEntryExit(item?.id, "exit" + item?.id, 'exit', selectedType)}
                                             >
                                                 <div className="flex items-center p-2 gap-5">
                                                     <span className="text-[#58585A] font-semibold">Exit</span>
@@ -1691,7 +1694,7 @@ const ContractDetail: React.FC<Props> = ({
 
                                                 {/* Expand Icon on the right side */}
                                                 <div className="flex items-center pr-2">
-                                                    {expandedEntryExit === "exit" + item.id ? (
+                                                    {expandedEntryExit === "exit" + item?.id ? (
                                                         <ExpandLessRoundedIcon sx={{ fontSize: 30 }} />
                                                     ) : (
                                                         <ExpandMoreRoundedIcon sx={{ fontSize: 30 }} />

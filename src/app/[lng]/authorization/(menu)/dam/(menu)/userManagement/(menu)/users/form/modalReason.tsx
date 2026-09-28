@@ -50,18 +50,15 @@ const ModalReason: React.FC<FormExampleProps> = ({
                         </div> */}
 
                         <div className="max-h-[500px] w-[100%] overflow-y-auto">
-                            {data?.length > 0 &&
-                                data.map((item: any) => (
-                                    <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                            {(data?.length ?? 0) > 0 &&
+                                (data || [])?.map((item: any) => (
+                                    <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                         <div className="flex flex-col p-2">
                                             <div className="mb-2 flex justify-between items-center">
                                                 <div className="flex items-center">
                                                     <span className="font-light">
                                                         By <span className="font-bold">
-                                                            {item?.create_by_account &&
-                                                                item?.create_by_account?.first_name +
-                                                                " " +
-                                                                item?.create_by_account?.last_name}
+                                                            {item?.create_by_account ? `${item?.create_by_account?.first_name || ''} ${item?.create_by_account?.last_name || ''}` : ''}
                                                         </span>
                                                     </span>
                                                     <div

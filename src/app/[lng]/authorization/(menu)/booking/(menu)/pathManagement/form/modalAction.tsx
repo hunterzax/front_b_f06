@@ -186,7 +186,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
             // for (let index = 0; index < filtered?.length; index++) {
             //     let res_item = dataInfo?.path_management_config?.find((config: any) => config?.exit_id_temp === filtered[index]?.id);
 
-            //     let temps = res_item?.temps ? JSON.parse(res_item.temps)?.revised_capacity_path : null;
+            //     let temps = res_item?.temps ? JSON.parse(res_item?.temps)?.revised_capacity_path : null;
 
             //     let check = temps?.find((item: any) => item?.area?.name?.replace(/\s+/g, '').toLowerCase().includes(normalizedQuery))
             //     if (check) {
@@ -245,12 +245,12 @@ const ModalAction: React.FC<FormExampleProps> = ({
         const idOrder = data_node?.nodes?.map((node: any) => node.id);
 
         const areaMap = pathItem?.revised_capacity_path.reduce((acc: any, pathItem: any) => {
-            acc[pathItem.area_id] = pathItem;
+            acc[pathItem?.area_id] = pathItem;
             return acc;
         }, {});
 
         const sortedRevisedCapacityPath = pathItem?.revised_capacity_path
-            ?.sort((a: any, b: any) => b.area.id - a.area.id) // Sort by area_id in ascending order
+            ?.sort((a: any, b: any) => (b?.area?.id ?? 0) - (a?.area?.id ?? 0)) // Sort by area_id in ascending order
             .map((pathItem: any) => {
                 const areaName = areaMap?.[pathItem?.area?.id] || '';
 
@@ -515,18 +515,18 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                     ) : ''}
 
                                                                     {/* Expanded content inside the same <td> */}
-                                                                    {expandedRow === item.id && (
+                                                                    {expandedRow === item?.id && (
                                                                         <div className="ml-2 mt-2 bg-[#ffffff] border border-[#DFE4EA] rounded-[8px] p-2">
 
-                                                                            {item?.pathConfigs?.map((configItem: any, configIndex: any) => {
+                                                                            {(item?.pathConfigs || [])?.map((configItem: any, configIndex: any) => {
 
-                                                                                const areaMap = configItem?.revised_capacity_path.reduce((acc: any, pathItem: any) => {
-                                                                                    acc[pathItem.area_id] = pathItem;
+                                                                                const areaMap = (configItem?.revised_capacity_path || []).reduce((acc: any, pathItem: any) => {
+                                                                                    acc[pathItem?.area_id] = pathItem;
                                                                                     return acc;
                                                                                 }, {});
 
                                                                                 const sortedRevisedCapacityPath = configItem?.revised_capacity_path
-                                                                                    ?.sort((a: any, b: any) => b.area.id - a.area.id) // Sort by area_id in ascending order
+                                                                                    ?.sort((a: any, b: any) => (b?.area?.id ?? 0) - (a?.area?.id ?? 0)) // Sort by area_id in ascending order
                                                                                     .map((pathItem: any) => {
                                                                                         // const areaName = areaMap[pathItem.area.id];
                                                                                         const areaName = areaMap?.[pathItem?.area?.id]
@@ -649,15 +649,15 @@ const CbankUi = ({ item, mode, data, dataInfo, findByKey, selectedPathsShowOnExp
 
         // โหมด create แสดง default ตัวแรก คืออันข้างล่างนี่
         if (mode == 'create') { // original
-            const pathDataShow = !!selectedPathsShowOnExpand[item?.id] ? selectedPathsShowOnExpand[item?.id]?.path_render : item?.pathConfigs[0]?.revised_capacity_path
+            const pathDataShow = (!!selectedPathsShowOnExpand?.[item?.id] ? selectedPathsShowOnExpand?.[item?.id]?.path_render : item?.pathConfigs?.[0]?.revised_capacity_path) || [];
             const areaMap = pathDataShow.reduce((acc: any, pathItem: any) => {
-                acc[pathItem.area_id] = pathItem;
+                acc[pathItem?.area_id] = pathItem;
                 return acc;
             }, {});
 
             // const sortedRevisedCapacityPath = item?.pathConfigs[0]?.revised_capacity_path_edges?.map((edge: any) => areaMap[edge.source_id]).filter((pathItem: any) => pathItem !== undefined);
             const sortedRevisedCapacityPath = pathDataShow
-                ?.sort((a: any, b: any) => b.area.id - a.area.id) // Sort by area_id in ascending order
+                .sort((a: any, b: any) => (b?.area?.id ?? 0) - (a?.area?.id ?? 0)) // Sort by area_id in ascending order
                 .map((pathItem: any) => {
                     // const areaName = areaMap[pathItem.area.id];
                     const areaName = areaMap?.[pathItem?.area?.id]
@@ -672,7 +672,7 @@ const CbankUi = ({ item, mode, data, dataInfo, findByKey, selectedPathsShowOnExp
             // ============ ORIGINAL KOM =============
             // โหมด edit แสดงอันที่เลือกไว้
             let res_item = dataInfo?.path_management_config?.find((config: any) => config?.exit_id_temp === item?.id)
-            let temps = res_item?.temps ? JSON.parse(res_item.temps)?.revised_capacity_path : null;
+            let temps = res_item?.temps ? JSON.parse(res_item?.temps)?.revised_capacity_path : null;
 
             // ถ้า isRadioChange == true ให้ใช้ selectedPathsShowOnExpand[item?.id]?.path_render
             // ถ้าไม่ ให้ใช้ temps
@@ -689,7 +689,7 @@ const CbankUi = ({ item, mode, data, dataInfo, findByKey, selectedPathsShowOnExp
             // let res_item = dataInfo?.path_management_config?.find((config: any) => config?.exit_id_temp === item?.id)
             // // let res_item = dataInfo?.path_management_config?.find((config: any) => config?.config_master_path_id === item?.id)
             // // let temps = JSON.parse(res_item?.temps)?.revised_capacity_path
-            // let temps = res_item?.temps ? JSON.parse(res_item.temps) : null;
+            // let temps = res_item?.temps ? JSON.parse(res_item?.temps) : null;
             // sortedRevisedCapacityPathByEntryExit = temps // new
 
         } else if (mode == 'view') {
@@ -699,14 +699,14 @@ const CbankUi = ({ item, mode, data, dataInfo, findByKey, selectedPathsShowOnExp
             // let res_item = dataInfo?.path_management_config?.find((config: any) => config?.config_master_path_id === item?.id)
 
             // let temps = JSON.parse(res_item?.temps)?.revised_capacity_path
-            let temps = res_item?.temps ? JSON.parse(res_item.temps)?.revised_capacity_path : null;
+            let temps = res_item?.temps ? JSON.parse(res_item?.temps)?.revised_capacity_path : null;
             sortedRevisedCapacityPathByEntryExit = temps
 
 
             // ============ NEW BANK =============
             // โหมด view แสดงอันที่เลือกไว้
             // let res_item = dataInfo?.path_management_config?.find((config: any) => config?.exit_id_temp === item?.id)
-            // let temps = res_item?.temps ? JSON.parse(res_item.temps) : null;
+            // let temps = res_item?.temps ? JSON.parse(res_item?.temps) : null;
             // sortedRevisedCapacityPathByEntryExit = temps
         }
 
@@ -735,7 +735,7 @@ const RevisedCapacityPathRenderNew = ({ sortedRevisedCapacityPath }: any) => {
         <div className="flex items-center gap-2">
 
             {sortedRevisedCapacityPath?.length > 0 ? (
-                sortedRevisedCapacityPath.map((pathItem: any, index: number) => (
+                (sortedRevisedCapacityPath || [])?.map((pathItem: any, index: number) => (
                     <div key={index} className="flex items-center gap-2 pt-2 pb-2">
                         <div
                             className="flex justify-center items-center"

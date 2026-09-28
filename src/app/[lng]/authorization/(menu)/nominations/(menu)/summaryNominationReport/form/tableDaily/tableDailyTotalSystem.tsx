@@ -428,7 +428,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
 
                 <div className="overflow-y-auto overflow-x-auto w-full h-[54dvh]">
                     {
-                        isLoading ?
+                        !isLoading ?
                             <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
                                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                     <tr className="h-20">
@@ -436,7 +436,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                         {/* ที่ handleSort ส่ง paginatedData แทน dataTable เพราะข้อนี้ */}
                                         {/* All > Weekly > Nomination > MMSCF > Smart Sear แล้ว Sort Column ทำให้ Smart Search หลุด https://app.clickup.com/t/86euy05du */}
 
-                                        {columnVisibility.zone && (
+                                        {columnVisibility?.zone && (
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zone_text", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zone_text", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zone_text", sortState, setSortState, setSortedData, dataTable)}>
@@ -445,7 +445,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.entry_exit && (
+                                        {columnVisibility?.entry_exit && (
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, dataTable)}>
@@ -454,7 +454,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.area && (
+                                        {columnVisibility?.area && (
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, dataTable)}>
@@ -463,7 +463,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.total_cap && (
+                                        {columnVisibility?.total_cap && (
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalCap", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalCap", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalCap", sortState, setSortState, setSortedData, dataTable)}>
@@ -472,7 +472,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.nomination_point && (
+                                        {columnVisibility?.nomination_point && (
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, dataTable)}>
@@ -481,7 +481,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.park_unpark_instructed_flows && (
+                                        {columnVisibility?.park_unpark_instructed_flows && (
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("parkUnparkInstructedFlows", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("parkUnparkInstructedFlows", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("parkUnparkInstructedFlows", sortState, setSortState, setSortedData, dataTable)}>
@@ -490,7 +490,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.customer_type && (
+                                        {columnVisibility?.customer_type && (
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("customerType", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("customerType", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("customerType", sortState, setSortState, setSortedData, dataTable)}>
@@ -499,7 +499,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.unit && (
+                                        {columnVisibility?.unit && (
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("units", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("units", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("units", sortState, setSortState, setSortedData, dataTable)}>
@@ -508,7 +508,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization && (
+                                        {columnVisibility?.utilization && (
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("utilization", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("utilization", sortState, setSortState, setSortedData, dataTable)}>
@@ -517,7 +517,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.wi && (
+                                        {columnVisibility?.wi && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("wi", sortState, setSortState, setSortedData, dataTable)}>
@@ -526,7 +526,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.hv && (
+                                        {columnVisibility?.hv && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hv", sortState, setSortState, setSortedData, dataTable)}>
@@ -535,7 +535,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                             </th>
                                         )}
 
-                                        {columnVisibility.sg && (
+                                        {columnVisibility?.sg && (
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, dataTable)}>
                                             // <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, paginatedData)}>
                                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("sg", sortState, setSortState, setSortedData, dataTable)}>
@@ -548,7 +548,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
 
                                             return (
 
-                                                columnVisibility[key] && (
+                                                columnVisibility?.[key] && (
                                                     <th
                                                         key={key}
                                                         scope="col"
@@ -572,8 +572,8 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
 
                                 <tbody>
                                     {
-                                        // sortedData?.length > 0 && sortedData?.map((row: any, index: any) => {
-                                        paginatedData?.length > 0 && paginatedData?.map((row: any, index: any) => {
+                                        // (sortedData || [])?.map((row: any, index: any) => {
+                                        (paginatedData || [])?.map((row: any, index: any) => {
 
                                             let find_validate = nomData?.find((item: any) => item?.nomination_point === row?.nomination_point)
 
@@ -638,7 +638,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                     className={`${table_row_style}`}
                                                 >
 
-                                                    {columnVisibility.zone && (
+                                                    {columnVisibility?.zone && (
                                                         <td className="px-2 py-1 justify-center">
                                                             {(() => {
                                                                 const filter_zone = zoneMaster?.data?.find((item: any) => item.name === row?.zone_text?.trim());
@@ -647,7 +647,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {/* {columnVisibility.entry_exit && (
+                                                    {/* {columnVisibility?.entry_exit && (
                                                         <td className="px-2 py-1  justify-center ">{
                                                             row?.entry_exit_id == 1 ?
                                                                 <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: '#C8FFD7' }}>{`Entry`}</div>
@@ -657,7 +657,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )} */}
 
-                                                    {columnVisibility.entry_exit && (
+                                                    {columnVisibility?.entry_exit && (
                                                         <td className="px-2 py-1  justify-center ">{
                                                             row?.entry_exit_id == 1 ?
                                                                 <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: '#C8FFD7' }}>{`Entry`}</div>
@@ -694,50 +694,50 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.total_cap && (
+                                                    {columnVisibility?.total_cap && (
                                                         // <td className="px-2 py-1 text-[#464255] font-bold text-right">{row?.totalCap ? row?.totalCap : ''}</td>
                                                         // <td className="px-2 py-1 text-[#464255] font-bold text-right">{row?.totalCap ? formatNumberThreeDecimalNom(row?.totalCap) : ''}</td>
                                                         <td className={`px-2 py-1 ${!total_cap_validate && !isNaN(validate_total) ? 'text-red-600' : 'text-[#464255]'} text-right font-bold`}>{row?.totalCap !== null && row?.totalCap !== undefined ? `${row?.units}`.trim().toUpperCase() == 'MMSCFD' ? formatNumberSixDecimalNom(row?.totalCap) : formatNumberThreeDecimalNom(row?.totalCap) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.nomination_point && (
+                                                    {columnVisibility?.nomination_point && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">{row?.nomination_point ? row?.nomination_point : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.park_unpark_instructed_flows && (
+                                                    {columnVisibility?.park_unpark_instructed_flows && (
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.parkUnparkInstructedFlows ? row?.parkUnparkInstructedFlows : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.customer_type && (
+                                                    {columnVisibility?.customer_type && (
                                                         <td className="px-2 py-1 text-[#464255]">{row?.nomination_row_json?.data_temp?.["6"] ? row?.nomination_row_json?.data_temp?.["6"] : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.unit && (
+                                                    {columnVisibility?.unit && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">{row?.units ? row?.units : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization && (
+                                                    {columnVisibility?.utilization && (
                                                         // <td className={`px-2 py-1 text-[#464255] ${row?.utilization > 100 && 'text-red-600'} text-right`}>{typeof row?.utilization === 'number' ? formatNumberTwoDecimalNom(row?.utilization) : ''}</td>
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.utilization > 100 && 'text-red-600'} text-right`}>{row?.utilization !== null && row?.utilization !== undefined && row?.utilization !== '' ? formatNumberTwoDecimalNom(row?.utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.wi && (
+                                                    {columnVisibility?.wi && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{row?.wi ? row?.wi : ''}</td>
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.wi !== null && row?.wi !== undefined ? formatNumberThreeDecimalNom(row?.wi) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.hv && (
+                                                    {columnVisibility?.hv && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{row?.hv ? row?.hv : ''}</td>
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.hv !== null && row?.hv !== undefined ? formatNumberThreeDecimalNom(row?.hv) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.sg && (
+                                                    {columnVisibility?.sg && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right">{row?.sg ? row?.sg : ''}</td>
                                                         <td className="px-2 py-1 text-[#464255] text-right">{row?.sg !== null && row?.sg !== undefined ? formatNumberFourDecimalNom(row?.sg) : ''}</td>
                                                     )}
 
 
-                                                    {columnVisibility.h1 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h1 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h1_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H1 === 'number' || !isNaN(Number(row?.H1)) ? formatNumberThreeDecimalNom(Number(row?.H1)) : ''
@@ -746,7 +746,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h2 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h2 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h2_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H2 === 'number' || !isNaN(Number(row?.H2)) ? formatNumberThreeDecimalNom(row?.H2) : ''
@@ -755,7 +755,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h3 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h3 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h3_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H3 === 'number' || !isNaN(Number(row?.H3)) ? formatNumberThreeDecimalNom(row?.H3) : ''
@@ -764,7 +764,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h4 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h4 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h4_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H4 === 'number' || !isNaN(Number(row?.H4)) ? formatNumberThreeDecimalNom(row?.H4) : ''
@@ -773,7 +773,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h5 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h5 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h5_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H5 === 'number' || !isNaN(Number(row?.H5)) ? formatNumberThreeDecimalNom(row?.H5) : ''
@@ -782,7 +782,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h6 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h6 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h6_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H6 === 'number' || !isNaN(Number(row?.H6)) ? formatNumberThreeDecimalNom(row?.H6) : ''
@@ -791,7 +791,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h7 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h7 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h7_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H7 === 'number' || !isNaN(Number(row?.H7)) ? formatNumberThreeDecimalNom(row?.H7) : ''
@@ -800,7 +800,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h8 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h8 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h8_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H8 === 'number' || !isNaN(Number(row?.H8)) ? formatNumberThreeDecimalNom(row?.H8) : ''
@@ -809,7 +809,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h9 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h9 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h9_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H9 === 'number' || !isNaN(Number(row?.H9)) ? formatNumberThreeDecimalNom(row?.H9) : ''
@@ -818,7 +818,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h10 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h10 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h10_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H10 === 'number' || !isNaN(Number(row?.H10)) ? formatNumberThreeDecimalNom(row?.H10) : ''
@@ -827,7 +827,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h11 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h11 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h11_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H11 === 'number' || !isNaN(Number(row?.H11)) ? formatNumberThreeDecimalNom(row?.H11) : ''
@@ -836,7 +836,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h12 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h12 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h12_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H12 === 'number' || !isNaN(Number(row?.H12)) ? formatNumberThreeDecimalNom(row?.H12) : ''
@@ -845,7 +845,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h13 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h13 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h13_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H13 === 'number' || !isNaN(Number(row?.H13)) ? formatNumberThreeDecimalNom(row?.H13) : ''
@@ -854,7 +854,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h14 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h14 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h14_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H14 === 'number' || !isNaN(Number(row?.H14)) ? formatNumberThreeDecimalNom(row?.H14) : ''
@@ -863,7 +863,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h15 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h15 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h15_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H15 === 'number' || !isNaN(Number(row?.H15)) ? formatNumberThreeDecimalNom(row?.H15) : ''
@@ -872,7 +872,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h16 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h16 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h16_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H16 === 'number' || !isNaN(Number(row?.H16)) ? formatNumberThreeDecimalNom(row?.H16) : ''
@@ -881,7 +881,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h17 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h17 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h17_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H17 === 'number' || !isNaN(Number(row?.H17)) ? formatNumberThreeDecimalNom(row?.H17) : ''
@@ -890,7 +890,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h18 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h18 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h18_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H18 === 'number' || !isNaN(Number(row?.H18)) ? formatNumberThreeDecimalNom(row?.H18) : ''
@@ -899,7 +899,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h19 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h19 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h19_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H19 === 'number' || !isNaN(Number(row?.H19)) ? formatNumberThreeDecimalNom(row?.H19) : ''
@@ -908,7 +908,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h20 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h20 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h20_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H20 === 'number' || !isNaN(Number(row?.H20)) ? formatNumberThreeDecimalNom(row?.H20) : ''
@@ -917,7 +917,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h21 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h21 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h21_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H21 === 'number' || !isNaN(Number(row?.H21)) ? formatNumberThreeDecimalNom(row?.H21) : ''
@@ -926,7 +926,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h22 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h22 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h22_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H22 === 'number' || !isNaN(Number(row?.H22)) ? formatNumberThreeDecimalNom(row?.H22) : ''
@@ -935,7 +935,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h23 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h23 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h23_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H23 === 'number' || !isNaN(Number(row?.H23)) ? formatNumberThreeDecimalNom(row?.H23) : ''
@@ -944,7 +944,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h24 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h24 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h24_is_over ? 'text-red-600' : 'text-[#464255]'} text-right `}>
                                                             {
                                                                 // typeof row?.H24 === 'number' || !isNaN(Number(row?.H24)) ? formatNumberThreeDecimalNom(row?.H24) : ''
@@ -962,7 +962,7 @@ const TableDailyTotalSystem: React.FC<any> = ({ openWarning, nomData, dataEva, t
                     }
 
                     {
-                        isLoading && sortedData?.length <= 0 && <NodataTable />
+                        !isLoading && sortedData?.length <= 0 && <NodataTable />
                     }
                 </div>
             </div>

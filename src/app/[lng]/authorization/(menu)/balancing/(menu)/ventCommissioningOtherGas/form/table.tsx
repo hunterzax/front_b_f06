@@ -173,56 +173,56 @@ const TableVentCommissioningOtherGas: React.FC<TableProps> = ({ openEditForm, op
                   </th>
                 }
 
-                {columnVisibility.gas_day && (
+                {columnVisibility?.gas_day && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, tableData)}>
                     {`Gas Day`}
                     {getArrowIcon("gas_day")}
                   </th>
                 )}
 
-                {columnVisibility.shipper_name && (
+                {columnVisibility?.shipper_name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("group.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Shipper Name`}
                     {getArrowIcon("group.name")}
                   </th>
                 )}
 
-                {columnVisibility.zone && (
+                {columnVisibility?.zone && (
                   <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zone.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Zone`}
                     {getArrowIcon("zone.name")}
                   </th>
                 )}
 
-                {columnVisibility.vent_gas && (
+                {columnVisibility?.vent_gas && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("vent_gas_value_mmbtud", sortState, setSortState, setSortedData, tableData)}>
                     {`Vent Gas (MMBTU)`}
                     {getArrowIcon("vent_gas_value_mmbtud")}
                   </th>
                 )}
 
-                {columnVisibility.commissioning_gas && (
+                {columnVisibility?.commissioning_gas && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("commissioning_gas_value_mmbtud", sortState, setSortState, setSortedData, tableData)}>
                     {`Commissioning Gas (MMBTU)`}
                     {getArrowIcon("commissioning_gas_value_mmbtud")}
                   </th>
                 )}
 
-                {columnVisibility.other_gas && (
+                {columnVisibility?.other_gas && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("other_gas_value_mmbtud", sortState, setSortState, setSortedData, tableData)}>
                     {`Other Gas (MMBTU)`}
                     {getArrowIcon("other_gas_value_mmbtud")}
                   </th>
                 )}
 
-                {columnVisibility.comment && (
+                {columnVisibility?.comment && (
                   <th scope="col" className={`${table_header_style}`}>
                     {`Comment`} 
                     {/* จาก Remarks เป็น Comment SHEET Sprint 4 NO.128 */}
                   </th>
                 )}
 
-                {columnVisibility.action && (
+                {columnVisibility?.action && (
                   <th scope="col" className={`${table_header_style} text-center`}>
                     {`Action`}
                   </th>
@@ -231,7 +231,7 @@ const TableVentCommissioningOtherGas: React.FC<TableProps> = ({ openEditForm, op
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => {
+              {(sortedData || [])?.map((row: any, index: any) => {
                 let isDisable = false
 
                 if (closeBalanceData) {
@@ -264,15 +264,15 @@ const TableVentCommissioningOtherGas: React.FC<TableProps> = ({ openEditForm, op
                       </td>
                     }
 
-                    {columnVisibility.gas_day && (
+                    {columnVisibility?.gas_day && (
                       <td className="px-2 py-1 text-[#464255]">{row?.gas_day_text ? formatDateNoTime(row?.gas_day_text) : ''}</td>
                     )}
 
-                    {columnVisibility.shipper_name && (
+                    {columnVisibility?.shipper_name && (
                       <td className="px-2 py-1 text-[#464255]">{row?.group ? row?.group?.name : ''}</td>
                     )}
 
-                    {columnVisibility.zone && (
+                    {columnVisibility?.zone && (
                       <td className="px-2 py-1 text-center align-middle">
                         {row?.zone && (
                           // <div className="inline-flex w-[100px] items-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone?.color, color: getContrastTextColor(row?.zone?.color) }}>
@@ -283,20 +283,20 @@ const TableVentCommissioningOtherGas: React.FC<TableProps> = ({ openEditForm, op
                       </td>
                     )}
 
-                    {columnVisibility.vent_gas && (
+                    {columnVisibility?.vent_gas && (
                       // <td className="px-4 py-1 text-[#464255] text-right">{row?.vent_gas_value_mmbtud ? formatNumberFourDecimal(row?.vent_gas_value_mmbtud) : ''}</td>
                       <td className="px-4 py-1 text-[#464255] text-right">{row?.vent_gas_value_mmbtud !== null && row?.vent_gas_value_mmbtud !== undefined ? formatNumberFourDecimal(row?.vent_gas_value_mmbtud) : ''}</td>
                     )}
 
-                    {columnVisibility.commissioning_gas && (
+                    {columnVisibility?.commissioning_gas && (
                       <td className="px-4 py-1 text-[#464255] text-right">{row?.commissioning_gas_value_mmbtud !== null && row?.commissioning_gas_value_mmbtud !== undefined ? formatNumberFourDecimal(row?.commissioning_gas_value_mmbtud) : ''}</td>
                     )}
 
-                    {columnVisibility.other_gas && (
+                    {columnVisibility?.other_gas && (
                       <td className="px-4 py-1 text-[#464255] text-right">{row?.other_gas_value_mmbtud !== null && row?.other_gas_value_mmbtud !== undefined ? formatNumberFourDecimal(row?.other_gas_value_mmbtud) : ''}</td>
                     )}
 
-                    {columnVisibility.comment && (
+                    {columnVisibility?.comment && (
                       <td className="px-2 py-1 text-center">
                         <div className="inline-flex items-center justify-center relative">
                           {/* <button
@@ -330,7 +330,7 @@ const TableVentCommissioningOtherGas: React.FC<TableProps> = ({ openEditForm, op
                       </td>
                     )}
 
-                    {columnVisibility.action && (
+                    {columnVisibility?.action && (
                       <td className="px-2 py-1">
                         <div className="relative inline-flex justify-center items-center w-full">
                           {/* <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view && !userPermission?.f_edit ? true : false} /> */}
@@ -343,7 +343,7 @@ const TableVentCommissioningOtherGas: React.FC<TableProps> = ({ openEditForm, op
                                   userPermission?.f_view && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("view", row?.id) }}><RemoveRedEyeOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`View`}</li>
                                 }
                                 {
-                                  isDisable && userPermission?.f_edit && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("edit", row?.id) }}><EditOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`Edit`}</li>
+                                  !isDisable && userPermission?.f_edit && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("edit", row?.id) }}><EditOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`Edit`}</li>
                                 }
                                 {
                                   userPermission?.f_view && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("history", row?.id) }}><RestoreOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`History`}</li>

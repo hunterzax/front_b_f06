@@ -71,7 +71,7 @@ export const ContractRowWhiteBase = ({
       className={table_row_style}
     >
 
-      {columnVisibility.publicate && userDT?.account_manage?.[0]?.user_type_id !== 3 && (
+      {columnVisibility?.publicate && userDT?.account_manage?.[0]?.user_type_id !== 3 && (
         <td className=" border-r-[#c0c0c0] border-r-[1px] px-2 py-1 text-[#5A4600] text-center" colSpan={1}>
 
           <input
@@ -97,20 +97,20 @@ export const ContractRowWhiteBase = ({
         </td>
       )}
 
-      {columnVisibility.gas_day && (
+      {columnVisibility?.gas_day && (
         <td className=" border-r-[#c0c0c0] border-r-[1px] px-2 py-1 text-[#5A4600] text-center" colSpan={1}>
           {contract?.gas_day ? contract?.gas_day : ""}
         </td>
       )}
 
-      {columnVisibility.gas_hour && (
+      {columnVisibility?.gas_hour && (
         <td className=" border-r-[#c0c0c0] border-r-[1px] px-2 py-1 text-[#5A4600] text-center" colSpan={1}>
           {/* {contract?.gas_hour ? contract?.gas_hour : ""} */}
           {contract?.gas_hour ? formatGasHour(contract?.gas_hour) : ""}
         </td>
       )}
 
-      {columnVisibility.timestamp && (
+      {columnVisibility?.timestamp && (
         <td className=" border-r-[#c0c0c0] border-r-[1px] px-2 py-1 text-[#5A4600] text-center" colSpan={1}>
           {contract?.timestamp ? contract?.timestamp : ""}
           {/* {contract?.timestamp ? contract?.gas_day + ' ' + contract?.gas_hour : ""} */}
@@ -118,16 +118,16 @@ export const ContractRowWhiteBase = ({
       )}
 
       {/* UNDER Summary Pane */}
-      {columnVisibility.summary_pane && (<>
+      {columnVisibility?.summary_pane && (<>
 
-        {columnVisibility.shipper_name && (
+        {columnVisibility?.shipper_name && (
           <td className=" border-r-[#c0c0c0] border-r-[1px] px-2 py-1 text-[#5A4600] " colSpan={1}>
             {/* {contract?.shipper ? contract?.shipper : ''} */}
             {find_shipper ? find_shipper?.name : contract?.shipper}
           </td>
         )}
 
-        {columnVisibility.plan_actual && (
+        {columnVisibility?.plan_actual && (
           <td className=" border-r-[#c0c0c0] border-r-[1px] px-2 py-1 text-[#5A4600] " colSpan={1}>
             {/* {type == 'planning' ? 'Planning (Nomination)' : 'Actual (Metering)'} */}
             {/* เอาวงเล็บหลังชื่อ Planning / Actual ออก https://app.clickup.com/t/86eujrg4m */}
@@ -135,30 +135,30 @@ export const ContractRowWhiteBase = ({
           </td>
         )}
 
-        {columnVisibility.contract_code && (
+        {columnVisibility?.contract_code && (
           <td className=" border-r-[#c0c0c0] border-r-[1px] px-2 py-1 text-[#5A4600] text-center" colSpan={1}>
             {contract?.contract || ""}
           </td>
         )}
 
         {/* "total_entry_east" */}
-        {columnVisibility.east_total_entry_mmbtud && (
-          <td className={`${!columnVisibility.west_total_entry_mmbtud && !columnVisibility.east_west_total_entry_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_total_entry_mmbtud && (
+          <td className={`${!columnVisibility?.west_total_entry_mmbtud && !columnVisibility?.east_west_total_entry_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract?.total_entry_east) : ''} */}
             {contract?.total_entry_east !== null && contract?.total_entry_east !== undefined ? formatNumberFourDecimalNom(contract?.total_entry_east) : ''}
           </td>
         )}
 
         {/* "total_entry_west" */}
-        {columnVisibility.west_total_entry_mmbtud && (
-          <td className={`${!columnVisibility.east_west_total_entry_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.west_total_entry_mmbtud && (
+          <td className={`${!columnVisibility?.east_west_total_entry_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract?.total_entry_west) : ''} */}
             {contract?.total_entry_west !== null && contract?.total_entry_west !== undefined ? formatNumberFourDecimalNom(contract?.total_entry_west) : ''}
           </td>
         )}
 
         {/* "total_entry_east-west" */}
-        {columnVisibility.east_west_total_entry_mmbtud && (
+        {columnVisibility?.east_west_total_entry_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["total_entry_east-west"]) : ''} */}
             {contract["total_entry_east-west"] !== null && contract["total_entry_east-west"] !== undefined ? formatNumberFourDecimalNom(contract["total_entry_east-west"]) : ''}
@@ -167,8 +167,8 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "total_exit_east" */}
-        {columnVisibility.east_total_exit_mmbtud && (
-          <td className={`${!columnVisibility.east_west_total_exit_mmbtud && !columnVisibility.west_total_exit_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_total_exit_mmbtud && (
+          <td className={`${!columnVisibility?.east_west_total_exit_mmbtud && !columnVisibility?.west_total_exit_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["total_exit_east"]) : ''} */}
             {contract["total_exit_east"] !== null && contract["total_exit_east"] !== undefined ? formatNumberFourDecimalNom(contract["total_exit_east"]) : ''}
 
@@ -176,15 +176,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "total_exit_west" */}
-        {columnVisibility.west_total_exit_mmbtud && (
-          <td className={`${!columnVisibility.east_west_total_exit_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.west_total_exit_mmbtud && (
+          <td className={`${!columnVisibility?.east_west_total_exit_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["total_exit_west"]) : ''} */}
             {contract["total_exit_west"] !== null && contract["total_exit_west"] !== undefined ? formatNumberFourDecimalNom(contract["total_exit_west"]) : ''}
           </td>
         )}
 
         {/* "total_exit_east-west" */}
-        {columnVisibility.east_west_total_exit_mmbtud && (
+        {columnVisibility?.east_west_total_exit_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["total_exit_east-west"]) : ''} */}
             {contract["total_exit_east-west"] !== null && contract["total_exit_east-west"] !== undefined ? formatNumberFourDecimalNom(contract["total_exit_east-west"]) : ''}
@@ -192,23 +192,23 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "imbZone_east" */}
-        {columnVisibility.east_imbalance_zone_mmbtud && (
-          <td className={`${!columnVisibility.total_imbalance_zone_mmbtud && !columnVisibility.west_imbalance_zone_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_imbalance_zone_mmbtud && (
+          <td className={`${!columnVisibility?.total_imbalance_zone_mmbtud && !columnVisibility?.west_imbalance_zone_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["imbZone_east"]) : ''} */}
             {contract["imbZone_east"] !== null && contract["imbZone_east"] !== undefined ? formatNumberFourDecimalNom(contract["imbZone_east"]) : ''}
           </td>
         )}
 
         {/* "imbZone_west" */}
-        {columnVisibility.west_imbalance_zone_mmbtud && (
-          <td className={`${!columnVisibility.total_imbalance_zone_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.west_imbalance_zone_mmbtud && (
+          <td className={`${!columnVisibility?.total_imbalance_zone_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["imbZone_west"]) : ''} */}
             {contract["imbZone_west"] !== null && contract["imbZone_west"] !== undefined ? formatNumberFourDecimalNom(contract["imbZone_west"]) : ''}
           </td>
         )}
 
         {/* "imbZone_total" */}
-        {columnVisibility.total_imbalance_zone_mmbtud && (
+        {columnVisibility?.total_imbalance_zone_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["imbZone_total"]) : ''} */}
             {contract["imbZone_total"] !== null && contract["imbZone_total"] !== undefined ? formatNumberFourDecimalNom(contract["imbZone_total"]) : ''}
@@ -216,8 +216,8 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "InstructedFlow_east" */}
-        {columnVisibility.east_instructed_flow_mmbtud && (
-          <td className={`${!columnVisibility.east_west_instructed_flow_mmbtud && !columnVisibility.west_instructed_flow_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_instructed_flow_mmbtud && (
+          <td className={`${!columnVisibility?.east_west_instructed_flow_mmbtud && !columnVisibility?.west_instructed_flow_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["InstructedFlow_east"]) : ''} */}
             {/* {contract["InstructedFlow_east"] !== null && contract["InstructedFlow_east"] !== undefined ? formatNumberFourDecimalNom(contract["InstructedFlow_east"]) : ''} */}
             {formatNumberFourDecimalNom(contract["instructedFlow_east"])}
@@ -225,8 +225,8 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "InstructedFlow_west" */}
-        {columnVisibility.west_instructed_flow_mmbtud && (
-          <td className={`${!columnVisibility.east_west_instructed_flow_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.west_instructed_flow_mmbtud && (
+          <td className={`${!columnVisibility?.east_west_instructed_flow_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["InstructedFlow_west"]) : ''} */}
             {/* {contract["InstructedFlow_west"] !== null && contract["InstructedFlow_west"] !== undefined ? formatNumberFourDecimalNom(contract["InstructedFlow_west"]) : ''} */}
             {formatNumberFourDecimalNom(contract["instructedFlow_west"])}
@@ -234,22 +234,22 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* ******************** "Instructed Flow EAST-WEST" ******************** */}
-        {columnVisibility.east_west_instructed_flow_mmbtud && (
+        {columnVisibility?.east_west_instructed_flow_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {formatNumberFourDecimalNom(contract["instructedFlow_east-west"])}
           </td>
         )}
 
         {/* "shrinkage_east" */}
-        {columnVisibility.east_shrinkage_volume_mmbtud && (
-          <td className={`${!columnVisibility.west_shrinkage_volume_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_shrinkage_volume_mmbtud && (
+          <td className={`${!columnVisibility?.west_shrinkage_volume_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["shrinkage_east"]) : ''} */}
             {contract["shrinkage_east"] !== null && contract["shrinkage_east"] !== undefined ? formatNumberFourDecimalNom(contract["shrinkage_east"]) : ''}
           </td>
         )}
 
         {/* "shrinkage_west" */}
-        {columnVisibility.west_shrinkage_volume_mmbtud && (
+        {columnVisibility?.west_shrinkage_volume_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["shrinkage_west"]) : ''} */}
             {contract["shrinkage_west"] !== null && contract["shrinkage_west"] !== undefined ? formatNumberFourDecimalNom(contract["shrinkage_west"]) : ''}
@@ -257,15 +257,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "park_east" */}
-        {columnVisibility.east_park_mmbtud && (
-          <td className={`${!columnVisibility.west_park_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_park_mmbtud && (
+          <td className={`${!columnVisibility?.west_park_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["park_east"]) : ''} */}
             {contract["park_east"] !== null && contract["park_east"] !== undefined ? formatNumberFourDecimalNom(contract["park_east"]) : ''}
           </td>
         )}
 
         {/* "park_west" */}
-        {columnVisibility.west_park_mmbtud && (
+        {columnVisibility?.west_park_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["park_west"]) : ''} */}
             {contract["park_west"] !== null && contract["park_west"] !== undefined ? formatNumberFourDecimalNom(contract["park_west"]) : ''}
@@ -273,15 +273,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "Unpark_east" */}
-        {columnVisibility.east_unpark_mmbtud && (
-          <td className={`${!columnVisibility.west_unpark_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_unpark_mmbtud && (
+          <td className={`${!columnVisibility?.west_unpark_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["Unpark_east"]) : ''} */}
             {contract["Unpark_east"] !== null && contract["Unpark_east"] !== undefined ? formatNumberFourDecimalNom(contract["Unpark_east"]) : ''}
           </td>
         )}
 
         {/* "Unpark_west" */}
-        {columnVisibility.west_unpark_mmbtud && (
+        {columnVisibility?.west_unpark_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["Unpark_west"]) : ''} */}
             {contract["Unpark_west"] !== null && contract["Unpark_west"] !== undefined ? formatNumberFourDecimalNom(contract["Unpark_west"]) : ''}
@@ -289,15 +289,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "SodPark_east" */}
-        {columnVisibility.east_sod_park_mmbtud && (
-          <td className={`${!columnVisibility.west_sod_park_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_sod_park_mmbtud && (
+          <td className={`${!columnVisibility?.west_sod_park_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["SodPark_east"]) : ''} */}
             {contract["SodPark_east"] !== null && contract["SodPark_east"] !== undefined ? formatNumberFourDecimalNom(contract["SodPark_east"]) : ''}
           </td>
         )}
 
         {/* "SodPark_west" */}
-        {columnVisibility.west_sod_park_mmbtud && (
+        {columnVisibility?.west_sod_park_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["SodPark_west"]) : ''} */}
             {contract["SodPark_west"] !== null && contract["SodPark_west"] !== undefined ? formatNumberFourDecimalNom(contract["SodPark_west"]) : ''}
@@ -305,15 +305,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "EodPark_east" */}
-        {columnVisibility.east_eod_park_mmbtud && (
-          <td className={`${!columnVisibility.west_eod_park_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_eod_park_mmbtud && (
+          <td className={`${!columnVisibility?.west_eod_park_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["EodPark_east"]) : ''} */}
             {contract["EodPark_east"] !== null && contract["EodPark_east"] !== undefined ? formatNumberFourDecimalNom(contract["EodPark_east"]) : ''}
           </td>
         )}
 
         {/* "EodPark_west" */}
-        {columnVisibility.west_eod_park_mmbtud && (
+        {columnVisibility?.west_eod_park_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["EodPark_west"]) : ''} */}
             {contract["EodPark_west"] !== null && contract["EodPark_west"] !== undefined ? formatNumberFourDecimalNom(contract["EodPark_west"]) : ''}
@@ -321,15 +321,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "minInventoryChange_east" */}
-        {columnVisibility.east_min_inventory_change_mmbtud && (
-          <td className={`${!columnVisibility.west_min_inventory_change_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_min_inventory_change_mmbtud && (
+          <td className={`${!columnVisibility?.west_min_inventory_change_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["minInventoryChange_east"]) : ''} */}
             {contract["minInventoryChange_east"] !== null && contract["minInventoryChange_east"] !== undefined ? formatNumberFourDecimalNom(contract["minInventoryChange_east"]) : ''}
           </td>
         )}
 
         {/* "minInventoryChange_west" */}
-        {columnVisibility.west_min_inventory_change_mmbtud && (
+        {columnVisibility?.west_min_inventory_change_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["minInventoryChange_west"]) : ''} */}
             {contract["minInventoryChange_west"] !== null && contract["minInventoryChange_west"] !== undefined ? formatNumberFourDecimalNom(contract["minInventoryChange_west"]) : ''}
@@ -337,15 +337,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "reserveBal_east" */}
-        {columnVisibility.east_reserve_bal_mmbtud && (
-          <td className={`${!columnVisibility.west_reserve_bal_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_reserve_bal_mmbtud && (
+          <td className={`${!columnVisibility?.west_reserve_bal_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["reserveBal_east"]) : ''} */}
             {contract["reserveBal_east"] !== null && contract["reserveBal_east"] !== undefined ? formatNumberFourDecimalNom(contract["reserveBal_east"]) : ''}
           </td>
         )}
 
         {/* "reserveBal_west" */}
-        {columnVisibility.west_reserve_bal_mmbtud && (
+        {columnVisibility?.west_reserve_bal_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["reserveBal_west"]) : ''} */}
             {contract["reserveBal_west"] !== null && contract["reserveBal_west"] !== undefined ? formatNumberFourDecimalNom(contract["reserveBal_west"]) : ''}
@@ -353,15 +353,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "adjustDailyImb_east" */}
-        {columnVisibility.east_adjust_imbalance_mmbtud && (
-          <td className={`${!columnVisibility.west_adjust_imbalance_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_adjust_imbalance_mmbtud && (
+          <td className={`${!columnVisibility?.west_adjust_imbalance_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["adjustDailyImb_east"]) : ''} */}
             {contract["adjustDailyImb_east"] !== null && contract["adjustDailyImb_east"] !== undefined ? formatNumberFourDecimalNom(contract["adjustDailyImb_east"]) : ''}
           </td>
         )}
 
         {/* "adjustDailyImb_west" */}
-        {columnVisibility.west_adjust_imbalance_mmbtud && (
+        {columnVisibility?.west_adjust_imbalance_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["adjustDailyImb_west"]) : ''} */}
             {contract["adjustDailyImb_west"] !== null && contract["adjustDailyImb_west"] !== undefined ? formatNumberFourDecimalNom(contract["adjustDailyImb_west"]) : ''}
@@ -369,15 +369,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "ventGas_east" */}
-        {columnVisibility.east_vent_gas && (
-          <td className={`${!columnVisibility.west_vent_gas && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_vent_gas && (
+          <td className={`${!columnVisibility?.west_vent_gas && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["ventGas_east"]) : ''} */}
             {contract["ventGas_east"] !== null && contract["ventGas_east"] !== undefined ? formatNumberFourDecimalNom(contract["ventGas_east"]) : ''}
           </td>
         )}
 
         {/* "ventGas_west" */}
-        {columnVisibility.west_vent_gas && (
+        {columnVisibility?.west_vent_gas && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["ventGas_west"]) : ''} */}
             {contract["ventGas_west"] !== null && contract["ventGas_west"] !== undefined ? formatNumberFourDecimalNom(contract["ventGas_west"]) : ''}
@@ -385,15 +385,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "commissioningGas_east" */}
-        {columnVisibility.east_commissioning_gas && (
-          <td className={`${!columnVisibility.west_commissioning_gas && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_commissioning_gas && (
+          <td className={`${!columnVisibility?.west_commissioning_gas && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["commissioningGas_east"]) : ''} */}
             {contract["commissioningGas_east"] !== null && contract["commissioningGas_east"] !== undefined ? formatNumberFourDecimalNom(contract["commissioningGas_east"]) : ''}
           </td>
         )}
 
         {/* "commissioningGas_west" */}
-        {columnVisibility.west_commissioning_gas && (
+        {columnVisibility?.west_commissioning_gas && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["commissioningGas_west"]) : ''} */}
             {contract["commissioningGas_west"] !== null && contract["commissioningGas_west"] !== undefined ? formatNumberFourDecimalNom(contract["commissioningGas_west"]) : ''}
@@ -401,15 +401,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "otherGas_east" */}
-        {columnVisibility.east_other_gas && (
-          <td className={`${!columnVisibility.west_other_gas && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_other_gas && (
+          <td className={`${!columnVisibility?.west_other_gas && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["otherGas_east"]) : ''} */}
             {contract["otherGas_east"] !== null && contract["otherGas_east"] !== undefined ? formatNumberFourDecimalNom(contract["otherGas_east"]) : ''}
           </td>
         )}
 
         {/* "otherGas_west" */}
-        {columnVisibility.west_other_gas && (
+        {columnVisibility?.west_other_gas && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["otherGas_west"]) : ''} */}
             {contract["otherGas_west"] !== null && contract["otherGas_west"] !== undefined ? formatNumberFourDecimalNom(contract["otherGas_west"]) : ''}
@@ -417,15 +417,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "dailyImb_east" */}
-        {columnVisibility.east_daily_imb_mmbtud && (
-          <td className={`${!columnVisibility.west_daily_imb_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_daily_imb_mmbtud && (
+          <td className={`${!columnVisibility?.west_daily_imb_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["dailyImb_east"]) : ''} */}
             {contract["dailyImb_east"] !== null && contract["dailyImb_east"] !== undefined ? formatNumberFourDecimalNom(contract["dailyImb_east"]) : ''}
           </td>
         )}
 
         {/* "dailyImb_west" */}
-        {columnVisibility.west_daily_imb_mmbtud && (
+        {columnVisibility?.west_daily_imb_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["dailyImb_west"]) : ''} */}
             {contract["dailyImb_west"] !== null && contract["dailyImb_west"] !== undefined ? formatNumberFourDecimalNom(contract["dailyImb_west"]) : ''}
@@ -433,7 +433,7 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "aip" */}
-        {columnVisibility.total_aip_mmbtud && (
+        {columnVisibility?.total_aip_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["aip"]) : ''} */}
             {contract["aip"] !== null && contract["aip"] !== undefined ? formatNumberFourDecimalNom(contract["aip"]) : ''}
@@ -441,7 +441,7 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "AIN (MMBTU/D)" */}
-        {columnVisibility.total_ain_mmbtud && (
+        {columnVisibility?.total_ain_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {'no_data'} */}
             {/* {``} */}
@@ -451,7 +451,7 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "% IMB" */}
-        {columnVisibility.total_percentage_imb && (
+        {columnVisibility?.total_percentage_imb && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {'no_data'} */}
             {/* {``} */}
@@ -461,7 +461,7 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "absimb" */}
-        {columnVisibility.total_percentage_abslmb && (
+        {columnVisibility?.total_percentage_abslmb && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {``} */}
             {/* {contract ? formatNumberFourDecimal(contract["absimb"]) : ''} */}
@@ -472,15 +472,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "accImbMonth_east" */}
-        {columnVisibility.east_acc_imb_month_mmbtud && (
-          <td className={`${!columnVisibility.west_acc_imb_month_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_acc_imb_month_mmbtud && (
+          <td className={`${!columnVisibility?.west_acc_imb_month_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["accImbMonth_east"]) : ''} */}
             {contract["accImbMonth_east"] !== null && contract["accImbMonth_east"] !== undefined ? formatNumberFourDecimalNom(contract["accImbMonth_east"]) : ''}
           </td>
         )}
 
         {/* "accImbMonth_west" */}
-        {columnVisibility.west_acc_imb_month_mmbtud && (
+        {columnVisibility?.west_acc_imb_month_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["accImbMonth_west"]) : ''} */}
             {contract["accImbMonth_west"] !== null && contract["accImbMonth_west"] !== undefined ? formatNumberFourDecimalNom(contract["accImbMonth_west"]) : ''}
@@ -488,15 +488,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "accImb_east" */}
-        {columnVisibility.east_acc_imb_mmbtud && (
-          <td className={`${!columnVisibility.west_acc_imb_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_acc_imb_mmbtud && (
+          <td className={`${!columnVisibility?.west_acc_imb_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["accImb_east"]) : ''} */}
             {contract["accImb_east"] !== null && contract["accImb_east"] !== undefined ? formatNumberFourDecimalNom(contract["accImb_east"]) : ''}
           </td>
         )}
 
         {/* "accImb_west" */}
-        {columnVisibility.west_acc_imb_mmbtud && (
+        {columnVisibility?.west_acc_imb_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["accImb_west"]) : ''} */}
             {contract["accImb_west"] !== null && contract["accImb_west"] !== undefined ? formatNumberFourDecimalNom(contract["accImb_west"]) : ''}
@@ -504,15 +504,15 @@ export const ContractRowWhiteBase = ({
         )}
 
         {/* "minInventory_east" */}
-        {columnVisibility.east_min_inventory_mmbtud && (
-          <td className={`${!columnVisibility.west_min_inventory_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
+        {columnVisibility?.east_min_inventory_mmbtud && (
+          <td className={`${!columnVisibility?.west_min_inventory_mmbtud && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["minInventory_east"]) : ''} */}
             {contract["minInventory_east"] !== null && contract["minInventory_east"] !== undefined ? formatNumberFourDecimalNom(contract["minInventory_east"]) : ''}
           </td>
         )}
 
         {/* "minInventory_west" */}
-        {columnVisibility.west_min_inventory_mmbtud && (
+        {columnVisibility?.west_min_inventory_mmbtud && (
           <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right `} scope="col">
             {/* {contract ? formatNumberFourDecimal(contract["minInventory_west"]) : ''} */}
             {contract["minInventory_west"] !== null && contract["minInventory_west"] !== undefined ? formatNumberFourDecimalNom(contract["minInventory_west"]) : ''}
@@ -525,35 +525,35 @@ export const ContractRowWhiteBase = ({
 
 
       {/* UNDER Detail Pane */}
-      {columnVisibility.detail_pane && (
+      {columnVisibility?.detail_pane && (
         <>
 
           {/* "detail_entry_east_gsp" */}
-          {columnVisibility.gsp && (
-            <td className={`${!columnVisibility.others_east && !columnVisibility.lng && !columnVisibility.bypass_gas && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.gsp && (
+            <td className={`${!columnVisibility?.others_east && !columnVisibility?.lng && !columnVisibility?.bypass_gas && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_entry_east_gsp"]) : ''} */}
               {contract["detail_entry_east_gsp"] !== null && contract["detail_entry_east_gsp"] !== undefined ? formatNumberFourDecimalNom(contract["detail_entry_east_gsp"]) : ''}
             </td>
           )}
 
           {/* "detail_entry_east_bypassGas" */}
-          {columnVisibility.bypass_gas && (
-            <td className={`${!columnVisibility.others_east && !columnVisibility.lng && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.bypass_gas && (
+            <td className={`${!columnVisibility?.others_east && !columnVisibility?.lng && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_entry_east_bypassGas"]) : ''} */}
               {contract["detail_entry_east_bypassGas"] !== null && contract["detail_entry_east_bypassGas"] !== undefined ? formatNumberFourDecimalNom(contract["detail_entry_east_bypassGas"]) : ''}
             </td>
           )}
 
           {/* "detail_entry_east_lng" */}
-          {columnVisibility.lng && (
-            <td className={`${!columnVisibility.others_east && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.lng && (
+            <td className={`${!columnVisibility?.others_east && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_entry_east_lng"]) : ''} */}
               {contract["detail_entry_east_lng"] !== null && contract["detail_entry_east_lng"] !== undefined ? formatNumberFourDecimalNom(contract["detail_entry_east_lng"]) : ''}
             </td>
           )}
 
           {/* "detail_entry_east_others" */}
-          {columnVisibility.others_east && (
+          {columnVisibility?.others_east && (
             <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {`no_data`} */}
               {formatNumberFourDecimal(sumDetail(contract, 'detail_entry_east_', ['gsp', 'bypassGas', 'lng', 'F2andG']))}
@@ -561,31 +561,31 @@ export const ContractRowWhiteBase = ({
           )}
 
           {/* "detail_entry_west_yadana" */}
-          {columnVisibility.ydn && (
-            <td className={`${!columnVisibility.others_west && !columnVisibility.ztk &&  !columnVisibility.ytg && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.ydn && (
+            <td className={`${!columnVisibility?.others_west && !columnVisibility?.ztk &&  !columnVisibility?.ytg && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_entry_west_yadana"]) : ''} */}
               {contract["detail_entry_west_yadana"] !== null && contract["detail_entry_west_yadana"] !== undefined ? formatNumberFourDecimalNom(contract["detail_entry_west_yadana"]) : ''}
             </td>
           )}
 
           {/* "detail_entry_west_yetagun" */}
-          {columnVisibility.ytg && (
-            <td className={`${!columnVisibility.others_west && !columnVisibility.ztk && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.ytg && (
+            <td className={`${!columnVisibility?.others_west && !columnVisibility?.ztk && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_entry_west_yetagun"]) : ''} */}
               {contract["detail_entry_west_yetagun"] !== null && contract["detail_entry_west_yetagun"] !== undefined ? formatNumberFourDecimalNom(contract["detail_entry_west_yetagun"]) : ''}
             </td>
           )}
 
           {/* "detail_entry_west_zawtika" */}
-          {columnVisibility.ztk && (
-            <td className={`${!columnVisibility.others_west && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.ztk && (
+            <td className={`${!columnVisibility?.others_west && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_entry_west_zawtika"]) : ''} */}
               {contract["detail_entry_west_zawtika"] !== null && contract["detail_entry_west_zawtika"] !== undefined ? formatNumberFourDecimalNom(contract["detail_entry_west_zawtika"]) : ''}
             </td>
           )}
 
           {/* "detail_entry_west_others" */}
-          {columnVisibility.others_west && (
+          {columnVisibility?.others_west && (
             <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {`no_data`} */}
               {formatNumberFourDecimal(sumDetail(contract, 'detail_entry_west_', ['yadana', 'yetagun', 'zawtika', 'F2andG']))}
@@ -593,31 +593,31 @@ export const ContractRowWhiteBase = ({
           )}
 
           {/* "detail_entry_east-west_ra6East" */}
-          {columnVisibility.ra6_east && (
-            <td className={`${!columnVisibility.bvw10_West && !columnVisibility.bvw10_east && !columnVisibility.ra6_west && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.ra6_east && (
+            <td className={`${!columnVisibility?.bvw10_West && !columnVisibility?.bvw10_east && !columnVisibility?.ra6_west && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_entry_east-west_ra6East"]) : ''} */}
               {contract["detail_entry_east-west_ra6East"] !== null && contract["detail_entry_east-west_ra6East"] !== undefined ? formatNumberFourDecimalNom(contract["detail_entry_east-west_ra6East"]) : ''}
             </td>
           )}
 
           {/* "detail_entry_east-west_ra6West" */}
-          {columnVisibility.ra6_west && (
-            <td className={`${!columnVisibility.bvw10_West && !columnVisibility.bvw10_east && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.ra6_west && (
+            <td className={`${!columnVisibility?.bvw10_West && !columnVisibility?.bvw10_east && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_entry_east-west_ra6West"]) : ''} */}
               {contract["detail_entry_east-west_ra6West"] !== null && contract["detail_entry_east-west_ra6West"] !== undefined ? formatNumberFourDecimalNom(contract["detail_entry_east-west_ra6West"]) : ''}
             </td>
           )}
 
           {/* "detail_entry_east-west_bvw10East" */}
-          {columnVisibility.bvw10_east && (
-            <td className={`${!columnVisibility.bvw10_West && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.bvw10_east && (
+            <td className={`${!columnVisibility?.bvw10_West && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_entry_east-west_bvw10East"]) : ''} */}
               {contract["detail_entry_east-west_bvw10East"] !== null && contract["detail_entry_east-west_bvw10East"] !== undefined ? formatNumberFourDecimalNom(contract["detail_entry_east-west_bvw10East"]) : ''}
             </td>
           )}
 
           {/* "detail_entry_east-west_bvw10West" */}
-          {columnVisibility.bvw10_West && (
+          {columnVisibility?.bvw10_West && (
             <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_entry_east-west_bvw10West"]) : ''} */}
               {contract["detail_entry_east-west_bvw10West"] !== null && contract["detail_entry_east-west_bvw10West"] !== undefined ? formatNumberFourDecimalNom(contract["detail_entry_east-west_bvw10West"]) : ''}
@@ -625,23 +625,23 @@ export const ContractRowWhiteBase = ({
           )}
 
           {/* "detail_exit_east_egat" */}
-          {columnVisibility.egat && (
-            <td className={`${!columnVisibility.others_east_exit && !columnVisibility.ipp && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.egat && (
+            <td className={`${!columnVisibility?.others_east_exit && !columnVisibility?.ipp && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_exit_east_egat"]) : ''} */}
               {contract["detail_exit_east_egat"] !== null && contract["detail_exit_east_egat"] !== undefined ? formatNumberFourDecimalNom(contract["detail_exit_east_egat"]) : ''}
             </td>
           )}
 
           {/* "detail_exit_east_ipp" */}
-          {columnVisibility.ipp && (
-            <td className={`${!columnVisibility.others_east_exit && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.ipp && (
+            <td className={`${!columnVisibility?.others_east_exit && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_exit_east_ipp"]) : ''} */}
               {contract["detail_exit_east_ipp"] !== null && contract["detail_exit_east_ipp"] !== undefined ? formatNumberFourDecimalNom(contract["detail_exit_east_ipp"]) : ''}
             </td>
           )}
 
           {/* "detail_exit_east_others" */}
-          {columnVisibility.others_east_exit && (
+          {columnVisibility?.others_east_exit && (
             <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {`no_data`} */}
               {formatNumberFourDecimal(sumDetail(contract, 'detail_exit_east_', ['egat', 'ipp', 'F2andG']))}
@@ -649,23 +649,23 @@ export const ContractRowWhiteBase = ({
           )}
 
           {/* "detail_exit_west_egat" */}
-          {columnVisibility.egat_west && (
-            <td className={`${!columnVisibility.others_west_exit && !columnVisibility.ipp_west && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.egat_west && (
+            <td className={`${!columnVisibility?.others_west_exit && !columnVisibility?.ipp_west && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_exit_west_egat"]) : ''} */}
               {contract["detail_exit_west_egat"] !== null && contract["detail_exit_west_egat"] !== undefined ? formatNumberFourDecimalNom(contract["detail_exit_west_egat"]) : ''}
             </td>
           )}
 
           {/* "detail_exit_west_ipp" */}
-          {columnVisibility.ipp_west && (
-            <td className={`${!columnVisibility.others_west_exit && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.ipp_west && (
+            <td className={`${!columnVisibility?.others_west_exit && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_exit_west_ipp"]) : ''} */}
               {contract["detail_exit_west_ipp"] !== null && contract["detail_exit_west_ipp"] !== undefined ? formatNumberFourDecimalNom(contract["detail_exit_west_ipp"]) : ''}
             </td>
           )}
 
           {/* "detail_exit_west_others" */}
-          {columnVisibility.others_west_exit && (
+          {columnVisibility?.others_west_exit && (
             <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {`no_data`} */}
               {formatNumberFourDecimal(sumDetail(contract, 'detail_exit_west_', ['egat', 'ipp', 'F2andG']))}
@@ -673,23 +673,23 @@ export const ContractRowWhiteBase = ({
           )}
 
           {/* "detail_exit_east-west_egat" */}
-          {columnVisibility.egat_east_west && (
-            <td className={`${!columnVisibility.others_east_west_exit && !columnVisibility.ipp_east_west && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.egat_east_west && (
+            <td className={`${!columnVisibility?.others_east_west_exit && !columnVisibility?.ipp_east_west && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_exit_east-west_egat"]) : ''} */}
               {contract["detail_exit_east-west_egat"] !== null && contract["detail_exit_east-west_egat"] !== undefined ? formatNumberFourDecimalNom(contract["detail_exit_east-west_egat"]) : ''}
             </td>
           )}
 
           {/* "detail_exit_east-west_ipp" */}
-          {columnVisibility.ipp_east_west && (
-            <td className={`${!columnVisibility.others_east_west_exit && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.ipp_east_west && (
+            <td className={`${!columnVisibility?.others_east_west_exit && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_exit_east-west_ipp"]) : ''} */}
               {contract["detail_exit_east-west_ipp"] !== null && contract["detail_exit_east-west_ipp"] !== undefined ? formatNumberFourDecimalNom(contract["detail_exit_east-west_ipp"]) : ''}
             </td>
           )}
 
           {/* "detail_exit_east-west_others" */}
-          {columnVisibility.others_east_west_exit && (
+          {columnVisibility?.others_east_west_exit && (
             <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {`no_data`} */}
               {formatNumberFourDecimal(sumDetail(contract, 'detail_exit_east-west_', ['egat', 'ipp', 'F2andG']))}
@@ -697,15 +697,15 @@ export const ContractRowWhiteBase = ({
           )}
 
           {/* "detail_exit_east_F2andG" */}
-          {columnVisibility.east_f2andg && (
-            <td className={`${!columnVisibility.west_f2andg && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.east_f2andg && (
+            <td className={`${!columnVisibility?.west_f2andg && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_exit_east_F2andG"]) : ''} */}
               {contract["detail_exit_east_F2andG"] !== null && contract["detail_exit_east_F2andG"] !== undefined ? formatNumberFourDecimalNom(contract["detail_exit_east_F2andG"]) : ''}
             </td>
           )}
 
           {/* "detail_exit_west_F2andG" */}
-          {columnVisibility.west_f2andg && (
+          {columnVisibility?.west_f2andg && (
             <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_exit_west_F2andG"]) : ''} */}
               {contract["detail_exit_west_F2andG"] !== null && contract["detail_exit_west_F2andG"] !== undefined ? formatNumberFourDecimalNom(contract["detail_exit_west_F2andG"]) : ''}
@@ -713,15 +713,15 @@ export const ContractRowWhiteBase = ({
           )}
 
           {/* "detail_exit_E_east" */}
-          {columnVisibility.east_e && (
-            <td className={`${!columnVisibility.west_e && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
+          {columnVisibility?.east_e && (
+            <td className={`${!columnVisibility?.west_e && " border-r-[#c0c0c0] border-r-[1px] "} px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {contract ? formatNumberFourDecimal(contract["detail_exit_E_east"]) : ''} */}
               {contract["detail_exit_E_east"] !== null && contract["detail_exit_E_east"] !== undefined ? formatNumberFourDecimalNom(contract["detail_exit_E_east"]) : ''}
             </td>
           )}
 
           {/* "detail_exit_E_west" */}
-          {columnVisibility.west_e && (
+          {columnVisibility?.west_e && (
             <td className={` border-r-[#c0c0c0] border-r-[1px] px-2 py-1  text-[#5A4600] text-right`} scope="col">
               {/* {row?.values ? formatNumberFourDecimal(row?.values?.[62]?.value) : ''} */}
               {/* {contract ? formatNumberFourDecimal(contract["detail_exit_E_west"]) : ''} */}

@@ -107,48 +107,48 @@ const TableTariffCreditDebitNote: React.FC<TableProps> = ({ openEditForm, openVi
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                {columnVisibility.shipper_name && (
+                {columnVisibility?.shipper_name && (
                   <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSort("shipper.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Shipper Name`}
                     {getArrowIcon("shipper.name")}
                   </th>
                 )}
 
-                {columnVisibility.month_year && (
+                {columnVisibility?.month_year && (
                   <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSort("month_year_charge_format", sortState, setSortState, setSortedData, tableData)}>
                     {`Month/Year`}
                     {getArrowIcon("month_year_charge_format")}
                   </th>
                 )}
 
-                {columnVisibility.cndn_id && (
+                {columnVisibility?.cndn_id && (
                   <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSort("cndn_id", sortState, setSortState, setSortedData, tableData)}>
                     {`CNDN ID`}
                     {getArrowIcon("cndn_id")}
                   </th>
                 )}
 
-                {columnVisibility.type_charge && (
+                {columnVisibility?.type_charge && (
                   <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSort("tariff_type_charge.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Type Charge`}
                     {getArrowIcon("tariff_type_charge.name")}
                   </th>
                 )}
 
-                {columnVisibility.cndn_type && (
+                {columnVisibility?.cndn_type && (
                   <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSort("tariff_credit_debit_note_type.name", sortState, setSortState, setSortedData, tableData)}>
                     {`CNDN Type`}
                     {getArrowIcon("tariff_credit_debit_note_type.name")}
                   </th>
                 )}
 
-                {columnVisibility.comment && (
+                {columnVisibility?.comment && (
                   <th scope="col" className={`${table_header_style} text-center`} >
                     {`Comment`}
                   </th>
                 )}
 
-                {columnVisibility.action && (
+                {columnVisibility?.action && (
                   <th scope="col" className={`${table_header_style} text-center`}>
                     {`Action`}
                   </th>
@@ -157,33 +157,33 @@ const TableTariffCreditDebitNote: React.FC<TableProps> = ({ openEditForm, openVi
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => (
+              {(sortedData || [])?.map((row: any, index: any) => (
                 <tr
                   key={row?.id}
                   className={`${table_row_style}`}
                 >
 
-                  {columnVisibility.shipper_name && (
+                  {columnVisibility?.shipper_name && (
                     <td className="px-2 py-1 text-[#464255]">{row?.shipper ? row?.shipper?.name : ''}</td>
                   )}
 
-                  {columnVisibility.month_year && (
+                  {columnVisibility?.month_year && (
                     <td className={`px-2 py-1 text-[#464255] min-w-[120px] `}>{row?.month_year_charge ? dayjs(row?.month_year_charge).format("MMMM YYYY") : '-'}</td>
                   )}
 
-                  {columnVisibility.cndn_id && (
+                  {columnVisibility?.cndn_id && (
                     <td className="px-2 py-1 text-[#464255]">{row?.cndn_id ? row?.cndn_id : ''}</td>
                   )}
 
-                  {columnVisibility.type_charge && (
+                  {columnVisibility?.type_charge && (
                     <td className="px-2 py-1 text-[#464255]">{row?.tariff_type_charge ? row?.tariff_type_charge?.name : ''}</td>
                   )}
 
-                  {columnVisibility.cndn_type && (
+                  {columnVisibility?.cndn_type && (
                     <td className="px-2 py-1 text-[#464255]">{row?.tariff_credit_debit_note_type ? row?.tariff_credit_debit_note_type?.name : ''}</td>
                   )}
 
-                  {columnVisibility.comment && (
+                  {columnVisibility?.comment && (
                     <td className="px-2 py-1 text-center">
                       <div className="inline-flex items-center justify-center relative">
                         {/* <button
@@ -216,7 +216,7 @@ const TableTariffCreditDebitNote: React.FC<TableProps> = ({ openEditForm, openVi
                     </td>
                   )}
 
-                  {columnVisibility.action && (
+                  {columnVisibility?.action && (
                     <td className="px-2 py-1">
                       <div className="relative inline-flex justify-center items-center">
                         {/* <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view && !userPermission?.f_edit ? true : false} /> */}

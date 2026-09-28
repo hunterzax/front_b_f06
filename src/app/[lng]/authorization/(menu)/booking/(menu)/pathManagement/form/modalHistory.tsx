@@ -236,7 +236,7 @@ const ModalPathMgnHistory: React.FC<FormExampleProps> = ({
                                         {/* TABLE HEADER */}
                                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-2">
                                             <tr className="h-9">
-                                                {columnVisibility.exit && (
+                                                {columnVisibility?.exit && (
                                                     <th
                                                         className={`${table_sort_header_style}`}
                                                         onClick={() => handleSort("key", sortState, setSortState, setSortedData, filteredDataTable)}
@@ -246,7 +246,7 @@ const ModalPathMgnHistory: React.FC<FormExampleProps> = ({
                                                     </th>
                                                 )}
 
-                                                {columnVisibility.default_capacity_path && (
+                                                {columnVisibility?.default_capacity_path && (
                                                     <th
                                                         className={`${table_sort_header_style}`}
                                                         onClick={() => handleSort("path_name", sortState, setSortState, setSortedData, filteredDataTable)}
@@ -256,7 +256,7 @@ const ModalPathMgnHistory: React.FC<FormExampleProps> = ({
                                                     </th>
                                                 )}
 
-                                                {columnVisibility.activate_date && (
+                                                {columnVisibility?.activate_date && (
                                                     <th
                                                         className={`${table_sort_header_style}`}
                                                         onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, filteredDataTable)}
@@ -266,7 +266,7 @@ const ModalPathMgnHistory: React.FC<FormExampleProps> = ({
                                                     </th>
                                                 )}
 
-                                                {columnVisibility.update_by && (
+                                                {columnVisibility?.update_by && (
                                                     <th
                                                         className={`${table_sort_header_style}`}
                                                         onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, filteredDataTable)}
@@ -281,19 +281,19 @@ const ModalPathMgnHistory: React.FC<FormExampleProps> = ({
                                         {/* TABLE BODY */}
                                         <tbody>
                                             {
-                                                sortedData && sortedData?.map((item: any) => {
+                                                (sortedData || [])?.map((item: any) => {
 
                                                     return (
                                                         <tr
                                                             className={`${table_row_style}`}
                                                         >
-                                                            {columnVisibility.exit && (
+                                                            {columnVisibility?.exit && (
                                                                 <td className="px-2 py-1 text-[#464255] ">
                                                                     {item.exit_name_temp ? item.exit_name_temp : ''}
                                                                 </td>
                                                             )}
 
-                                                            {columnVisibility.default_capacity_path && (
+                                                            {columnVisibility?.default_capacity_path && (
                                                                 <td className="px-2 py-1 text-[#464255] ">
                                                                     {(() => {
                                                                         // render path แรกใน array
@@ -332,11 +332,11 @@ const ModalPathMgnHistory: React.FC<FormExampleProps> = ({
                                                                 </td>
                                                             )}
 
-                                                            {columnVisibility.activate_date && (
+                                                            {columnVisibility?.activate_date && (
                                                                 <td className="px-2 py-1 text-[#464255]">{item?.start_date ? formatDateNoTime(item?.start_date) : ''}</td>
                                                             )}
 
-                                                            {columnVisibility.update_by && (
+                                                            {columnVisibility?.update_by && (
                                                                 <td className="px-2 py-1">
                                                                     <div>
                                                                         <span className="text-[#464255]">{item?.create_by_account?.first_name} {item?.create_by_account?.last_name}</span>

@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import {
     ColumnDef,
@@ -13,6 +11,7 @@ import {
     TableOptions,
     SortingFn,
     SortingState,
+    ColumnPinningState,
 } from "@tanstack/react-table";
 import { Tune } from "@mui/icons-material"
 import { table_header_style, table_sort_header_style } from "@/utils/styles";
@@ -42,6 +41,7 @@ type AppTableProps = {
     onFilteredDataChange?: (filteredData: any[]) => void;  // callback to get filtered data
     border?: boolean
     fixHeight?: boolean
+    maxTableHeight?: string
     fullWidth?: boolean
     pagination?: {
         pageIndex: number;
@@ -67,7 +67,8 @@ type AppTableProps = {
     defaultSorting?: any,
     onSortDataChange?: (filteredData: any[]) => void, // callback to get filtered data
     resetInitial?: boolean, // ใช้สำหรับ กรณีมีหลาย tab และต้องการ reset hide/unhide
-    setresetInitial?: any
+    setresetInitial?: any,
+    columnPinning? : ColumnPinningState | undefined
 };
 
 
@@ -123,6 +124,7 @@ export default function AppTable(
         onFilteredDataChange,
         border = true,
         fixHeight = true,
+        maxTableHeight = 'max-h-[59dvh]',
         filter = true,
         filterProps = undefined,
         pagination,
@@ -144,7 +146,8 @@ export default function AppTable(
         defaultSorting = undefined,
         onSortDataChange,
         resetInitial = false,
-        setresetInitial
+        setresetInitial,
+        columnPinning,
     }: AppTableProps) {
 
     const [globalFilter, setGlobalFilter] = useState("");
@@ -163,7 +166,6 @@ export default function AppTable(
             }, 100);
         }
     }, [resetInitial])
-
 
 
     // Build table configuration object
@@ -198,7 +200,8 @@ export default function AppTable(
                         desc: false
                     }
                 ]
-            )
+            ),
+            ...(columnPinning && {columnPinning: columnPinning})
         }
     };
 
@@ -235,7 +238,7 @@ export default function AppTable(
 
     // Function to get filtered data for export
     const getFilteredData = () => {
-        return table.getFilteredRowModel().rows.map(row => row.original);
+        return table?.getFilteredRowModel?.()?.rows?.map(row => row?.original) || [];
     };
 
     // Update filtered data when filters change
@@ -247,7 +250,7 @@ export default function AppTable(
             // อธิบาย onSortDataChange จะส่ง data ออกไป ก็ต่อเมื่อทำการ sort ที่ useEffect ด้านล่าง
             // BANGJU
             if (onSortDataChange) {
-                const sortedRows = table.getSortedRowModel().rows.map(row => row.original);
+                const sortedRows = table?.getSortedRowModel?.()?.rows?.map(row => row?.original) || [];
                 onFilteredDataChange(sortedRows);
             } else {
                 onFilteredDataChange(filteredData);
@@ -298,11 +301,11 @@ export default function AppTable(
 
     useEffect(() => {
         if (onSortDataChange) {
-            const sortedRows = table.getSortedRowModel().rows.map(row => row.original);
+            const sortedRows = table?.getSortedRowModel?.()?.rows?.map(row => row?.original) || [];
 
             onSortDataChange(sortedRows);
         }
-    }, [table.getState().sorting, data]);
+    }, [table?.getState?.()?.sorting, data]);
 
     return (
         <div className={`py-4 ${fixHeight == true ? 'h-[calc(100vh-380px)]' : 'h-full'}  block w-full rounded-t-md z-1`}>
@@ -343,9 +346,7 @@ export default function AppTable(
                                     }
 
 
-                                    {filterProps &&
-                                        filterProps
-                                    }
+                                    {filterProps}
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 justify-end">
@@ -355,7 +356,7 @@ export default function AppTable(
                                         onKeyDown={handleQueryKeyPress}
                                         onBlur={handleQueryBlur}
                                     />
-                                    {exportBtn && exportBtn}
+                                    {exportBtn}
                                 </div>
                             </div>
                         )}
@@ -368,7 +369,7 @@ export default function AppTable(
                                 {table?.getAllLeafColumns()?.map((column) => {
 
                                     return (
-                                        <div key={column.id} className="text-sm mt-2">
+                                        <div key={column?.id} className="text-sm mt-2">
                                             <label className="flex items-center gap-2">
                                                 <input
                                                     type="checkbox"
@@ -390,7 +391,7 @@ export default function AppTable(
                             </div>
                         )}
                     </div>
-                    <div className="w-full overflow-auto relative h-full">
+                    <div className={`w-full overflow-auto relative ${maxTableHeight} h-auto overflow-y-auto`}>
                         <Spinloading spin={isTableLoading} rounded={0} />
                         {
                             isLoading ?
@@ -403,34 +404,58 @@ export default function AppTable(
                                                 <tr key={headerGroup?.id} className="h-9 relative z-50">
                                                     {headerGroup?.headers?.map((header, index) => {
                                                         const getStyle: any = columns?.find((item: any) => item?.accessorKey == (header?.column?.columnDef as any)?.accessorKey);
-                                                        const canSort = header.column.getCanSort()
+                                                        const canSort = header?.column?.getCanSort?.()
                                                         const enableSorting = canSort || header?.column?.columnDef?.enableSorting == true;
-                                                        const size = header.getSize() == 150 ? undefined : header.getSize() // 150 is default size of column
-                                                        const meta = header.column.columnDef.meta as any
+                                                        const size = header?.getSize?.() == 150 ? undefined : header?.getSize?.() // 150 is default size of column
+                                                        const meta = header?.column?.columnDef?.meta as any
                                                         const width = getStyle?.width ? getStyle?.width : size ? size : meta?.width ? meta?.width : '100%'
                                                         const align = getStyle?.align ? getStyle?.align : meta?.align ? meta?.align : 'left'
+
+                                                        const isPinned = header?.column?.getIsPinned?.()
+                                                        const isLastLeftPinnedColumn =
+                                                            isPinned === 'left' && header?.column?.getIsLastColumn?.('left')
+                                                        const isFirstRightPinnedColumn =
+                                                            isPinned === 'right' && header?.column?.getIsFirstColumn?.('right')
+
+                                                        let leftPositionValue = header?.column?.getStart?.('left') ?? 0
+                                                        if(leftPositionValue > 0 ){
+                                                            leftPositionValue = leftPositionValue + 22 // 22 is width of sort icon
+                                                        }
+
+
                                                         return (
                                                             <th
-                                                                key={header.id}
+                                                                key={header?.id}
                                                                 scope="col"
-                                                                colSpan={header.colSpan}
-                                                                className={`${enableSorting ? table_sort_header_style : table_header_style} ${index == 0 ? 'rounded-tl-md' : (headerGroup?.headers?.length - 1 == index) && 'rounded-tr-md'} text-center relative z-50`}
-                                                                onClick={enableSorting ? header.column.getToggleSortingHandler() : undefined}
+                                                                colSpan={header?.colSpan}
+                                                                className={`${enableSorting ? table_sort_header_style : table_header_style} ${index == 0 ? 'rounded-tl-md' : (headerGroup?.headers?.length - 1 == index) && 'rounded-tr-md'} text-center`}
+                                                                onClick={enableSorting ? header?.column?.getToggleSortingHandler?.() : undefined}
                                                                 style={{
                                                                     textAlign: align,
                                                                     backgroundColor: getStyle?.headerColor ? getStyle?.headerColor : meta?.headerColor ? meta?.headerColor : '#1473A1',
-                                                                    justifyItems: (enableSorting || !['center', 'right', 'left', 'start', 'end'].includes(align)) ? undefined : align
+                                                                    justifyItems: (enableSorting || !['center', 'right', 'left', 'start', 'end'].includes(align)) ? undefined : align,
+                                                                    boxShadow: isLastLeftPinnedColumn
+                                                                    ? '-4px 0 4px -4px gray inset'
+                                                                    : isFirstRightPinnedColumn
+                                                                        ? '4px 0 4px -4px gray inset'
+                                                                        : undefined,
+                                                                    left: isPinned === 'left' ? `${leftPositionValue}px` : undefined,
+                                                                    right: isPinned === 'right' ? `${(header?.column?.getAfter?.('right') ?? 0) + 22}px` : undefined, // 22 is width of sort icon
+                                                                    // opacity: isPinned ? 0.95 : 1,
+                                                                    position: isPinned ? 'sticky' : 'relative',
+                                                                    // width: header?.column?.getSize?.() + 22, // 22 is width of sort icon
+                                                                    zIndex: isPinned ? 9 : 8,
                                                                 }}
                                                             >
                                                                 <div style={{ width: width }}>
                                                                     {flexRender(
                                                                         header?.column?.columnDef?.header,
-                                                                        header?.getContext()
+                                                                        header?.getContext?.()
                                                                     )}
                                                                     {enableSorting && (
                                                                         <div className={`absolute right-0 top-1/2 transform -translate-y-1/2 flex flex-col items-center -space-y-3`}>
-                                                                            <ArrowDropUpIcon sx={{ fontSize: 18, opacity: header.column.getIsSorted() === "asc" ? 1 : 0.4, }} />
-                                                                            <ArrowDropDownIcon sx={{ fontSize: 18, opacity: header.column.getIsSorted() === "desc" ? 1 : 0.4, }} />
+                                                                            <ArrowDropUpIcon sx={{ fontSize: 18, opacity: header?.column?.getIsSorted?.() === "asc" ? 1 : 0.4, }} />
+                                                                            <ArrowDropDownIcon sx={{ fontSize: 18, opacity: header?.column?.getIsSorted?.() === "desc" ? 1 : 0.4, }} />
                                                                         </div>
                                                                     )}
                                                                 </div>
@@ -445,19 +470,31 @@ export default function AppTable(
                                         <tbody>
                                             {table?.getRowModel()?.rows?.map((row: any) => (
                                                 <tr key={row?.id} className="border-b-[1px] ">
-                                                    {row?.getVisibleCells().map((cell: any, index: any) => {
+                                                    {row?.getVisibleCells()?.map((cell: any, index: any) => {
                                                         const getStyle: any = columns?.find((item: any) => item?.accessorKey == cell?.column?.columnDef?.accessorKey);
-                                                        const meta = cell.column.columnDef.meta as any
+                                                        const meta = cell?.column?.columnDef?.meta as any
+
+                                                        const isPinned = cell?.column?.getIsPinned?.()
+
+                                                        let leftPositionValue = cell?.column?.getStart?.('left') ?? 0
+                                                        if(leftPositionValue > 0 ){
+                                                            leftPositionValue = leftPositionValue + 22 // 22 is width of sort icon
+                                                        }
+
                                                         return (
-                                                            <td key={cell.id} className="border px-4 py-2 text-[#464255] bg-white border-none h-[53px]"
+                                                            <td key={cell?.id} className="border px-4 py-2 text-[#464255] bg-white border-none h-[53px]"
                                                                 style={{
                                                                     color: getStyle?.textColor ? getStyle?.textColor : meta?.textColor ? meta?.textColor : '#464255',
                                                                     textAlign: getStyle?.align ? getStyle?.align : meta?.align ? meta?.align : 'left',
                                                                     backgroundColor: getStyle?.cellColor ? getStyle?.cellColor : meta?.cellColor ? meta?.cellColor : '#fff',
-                                                                    fontWeight: getStyle?.textStyle ? getStyle?.textStyle : meta?.textStyle ? meta?.textStyle : 'normal'
+                                                                    fontWeight: getStyle?.textStyle ? getStyle?.textStyle : meta?.textStyle ? meta?.textStyle : 'normal',
+                                                                    left: isPinned === 'left' ? `${leftPositionValue}px` : undefined,
+                                                                    right: isPinned === 'right' ? `${(cell?.column?.getAfter?.('right') ?? 0) + 22}px` : undefined, // 22 is width of sort icon
+                                                                    position: isPinned ? 'sticky' : undefined,
+                                                                    zIndex: isPinned ? 8 : undefined,
                                                                 }}
                                                             >
-                                                                {flexRender(cell?.column?.columnDef?.cell, cell?.getContext())}
+                                                                {flexRender(cell?.column?.columnDef?.cell, cell?.getContext?.())}
                                                             </td>
                                                         )
                                                     })}
@@ -481,7 +518,7 @@ export default function AppTable(
                             <div className="flex items-center gap-3 text-sm" style={{ visibility: showPagesize == true ? 'visible' : 'hidden' }}>
                                 {`Show`}
                                 <select
-                                    value={table.getState().pagination.pageSize}
+                                    value={table?.getState?.()?.pagination?.pageSize ?? 10}
                                     onChange={e => {
                                         table.setPageSize(Number(e.target.value));
                                     }}

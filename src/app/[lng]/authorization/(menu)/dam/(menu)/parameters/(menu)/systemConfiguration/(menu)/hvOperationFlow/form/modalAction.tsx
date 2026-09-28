@@ -31,6 +31,7 @@ type FormExampleProps = {
     setResetForm: (reset: () => void) => void;
     dataHvConcept?: any
     dataTypeMC?: any
+    dataZone?: any[]
 };
 
 const ModalAction: React.FC<FormExampleProps> = ({
@@ -45,12 +46,15 @@ const ModalAction: React.FC<FormExampleProps> = ({
     setResetForm,
     dataHvConcept,
     dataTypeMC,
+    dataZone,
 }) => {
     const { control, register, handleSubmit, setValue, reset, resetField, formState: { errors }, watch, setError, clearErrors } = useForm<any>({ defaultValues: data });
 
     const labelClass = "block mb-2 text-sm font-light";
     const textErrorClass = "text-red-500 text-sm";
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [filteredDataHvMeter, setFilteredDataHvMeter] = useState<any[]>([]);
+    const [filteredDataHvConcept, setFilteredDataHvConcept] = useState<any[]>([]);
 
     // const isReadOnly = mode === "view";
     // const isReadOnly = mode === "view" || (data?.start_date && new Date(data?.start_date) < new Date());
@@ -91,6 +95,28 @@ const ModalAction: React.FC<FormExampleProps> = ({
             }, 300);
         }
     }, [data, mode]);
+
+    useEffect(() => {
+        if (dataHvMeter) {
+            if(watch('zone')) {
+                setFilteredDataHvMeter(dataHvMeter.filter((item: any) => item.zone?.name?.toLowerCase() === watch('zone').toLowerCase()))
+            }
+            else{
+                setFilteredDataHvMeter(dataHvMeter)
+            }
+        }
+    }, [dataHvMeter, watch('zone')]);
+
+    useEffect(() => {
+        if (dataHvConcept) {
+            if(watch('zone')) {
+                setFilteredDataHvConcept(dataHvConcept.filter((item: any) => item.concept_point?.toLowerCase()?.includes(watch('zone').toLowerCase())))
+            }
+            else{
+                setFilteredDataHvConcept(dataHvConcept)
+            }
+        }
+    }, [dataHvConcept, watch('zone')]);
 
     useEffect(() => {
         setResetForm(() => reset);
@@ -153,9 +179,12 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     disabled={isReadOnly}
                                                     valueWatch={watch('hv_type_id') || ''}
                                                     handleChange={(e) => {
-                                                        setValue('hv_type_id', e.target.value)
+                                                        setValue('hv_type_id', e?.target?.value ?? "")
                                                         if (errors?.hv_type_id) {
                                                             clearErrors('hv_type_id')
+                                                        }
+                                                        if(e.target.value != 2){
+                                                            resetField('group_id')
                                                         }
                                                     }}
                                                     errors={errors?.hv_type_id}
@@ -171,10 +200,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 />
                                             </div>
 
-                                            <div></div>
-
                                             {
-                                                watch('hv_type_id') == 2 && <div>
+                                                watch('hv_type_id') == 2 ? <div>
                                                     <label
                                                         htmlFor="name"
                                                         className="block mb-2 text-sm font-light"
@@ -189,7 +216,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         disabled={isReadOnly}
                                                         valueWatch={watch('group_id') || ''}
                                                         handleChange={(e) => {
-                                                            setValue('group_id', e.target.value)
+                                                            setValue('group_id', e?.target?.value ?? "")
                                                             if (errors?.group_id) {
                                                                 clearErrors('group_id')
                                                             }
@@ -205,8 +232,39 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         pathFilter={'name'}
                                                     />
                                                 </div>
+                                                : <div></div>
                                             }
 
+                                
+                                            <div>
+                                                <label
+                                                    htmlFor="zone"
+                                                    className="block mb-2 text-sm font-light"
+                                                >
+                                                    {`Zone`}
+                                                </label>
+
+                                                <SelectFormProps
+                                                    id={'zone'}
+                                                    register={register('zone', { required: true })}
+                                                    disabled={isReadOnly}
+                                                    valueWatch={watch('zone') || ''}
+                                                    handleChange={(e) => {
+                                                        setValue('zone', e?.target?.value ?? "")
+                                                        resetField('meter_point')
+                                                        resetField('concept_point')
+                                                    }}
+                                                    errors={errors?.zone}
+                                                    errorsText={'Select Zone'}
+                                                    options={dataZone}
+                                                    optionsKey={'id'}
+                                                    optionsValue={'name'}
+                                                    optionsText={'name'}
+                                                    optionsResult={'name'}
+                                                    placeholder={'Select Zone'}
+                                                    pathFilter={'name'}
+                                                />
+                                            </div>
                                           
                                             <div>
                                                 <label
@@ -223,9 +281,15 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     disabled={isReadOnly}
                                                     valueWatch={watch('meter_concept_type') || ''}
                                                     handleChange={(e) => {
-                                                        setValue('meter_concept_type', e.target.value)
+                                                        setValue('meter_concept_type', e?.target?.value ?? "")
                                                         if (errors?.meter_concept_type) {
                                                             clearErrors('meter_concept_type')
+                                                        }
+                                                        if(e.target.value == 1){
+                                                            resetField('concept_point')
+                                                        }
+                                                        if(e.target.value == 2){
+                                                            resetField('meter_point')
                                                         }
                                                     }}
                                                     errors={errors?.meter_concept_type}
@@ -256,14 +320,14 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         disabled={isReadOnly}
                                                         valueWatch={watch('meter_point') || ''}
                                                         handleChange={(e) => {
-                                                            setValue('meter_point', e.target.value)
+                                                            setValue('meter_point', e?.target?.value ?? "")
                                                             if (errors?.meter_point) {
                                                                 clearErrors('meter_point')
                                                             }
                                                         }}
                                                         errors={errors?.meter_point}
                                                         errorsText={'Select Meter Point (Entry)'}
-                                                        options={dataHvMeter}
+                                                        options={filteredDataHvMeter}
                                                         optionsKey={'id'}
                                                         optionsValue={'id'}
                                                         optionsText={'metered_point_name'}
@@ -288,14 +352,14 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         disabled={isReadOnly}
                                                         valueWatch={watch('concept_point') || ''}
                                                         handleChange={(e) => {
-                                                            setValue('concept_point', e.target.value)
+                                                            setValue('concept_point', e?.target?.value ?? "")
                                                             if (errors?.concept_point) {
                                                                 clearErrors('concept_point')
                                                             }
                                                         }}
                                                         errors={errors?.concept_point}
                                                         errorsText={'Select Concept Point (Type Meter)'}
-                                                        options={dataHvConcept}
+                                                        options={filteredDataHvConcept}
                                                         optionsKey={'id'}
                                                         optionsValue={'id'}
                                                         optionsText={'concept_point'}

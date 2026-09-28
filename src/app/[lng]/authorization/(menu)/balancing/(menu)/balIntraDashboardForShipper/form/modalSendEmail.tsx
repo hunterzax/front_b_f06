@@ -139,7 +139,7 @@ const ModalSendEmail: React.FC<FormExampleProps> = ({
                                         maxLength={75}
                                         onChange={(e) => {
                                             if (e.target.value.length <= 75) {
-                                                setValue('subject', e.target.value);
+                                                setValue('subject', e?.target?.value ?? "");
                                             }
                                         }}
                                         // className={`${inputClass} ${errors.subject && "border-red-500"} ${isReadOnly && '!bg-[#EFECEC]'}`}
@@ -165,7 +165,7 @@ const ModalSendEmail: React.FC<FormExampleProps> = ({
                                         onChange={(e) => {
                                             clearErrors('detail');
                                             if (e.target.value.length <= 2000) {
-                                                setValue("detail", e.target.value);
+                                                setValue("detail", e?.target?.value ?? "");
                                             }
                                         }}
                                         rows={4}
@@ -226,7 +226,7 @@ const ModalSendEmail: React.FC<FormExampleProps> = ({
                                                 handleChange={(e) => {
                                                     setValue('group', undefined);
                                                     setValue('user_mail', undefined);
-                                                    setValue("user_type", e.target.value);
+                                                    setValue("user_type", e?.target?.value ?? "");
                                                     filterGetGroup(e.target.value);
                                                     if (errors?.user_type) { clearErrors('user_type') }
                                                 }}
@@ -258,7 +258,7 @@ const ModalSendEmail: React.FC<FormExampleProps> = ({
                                                 valueWatch={watch("group") || ""}
                                                 handleChange={(e) => {
                                                     setValue('user_mail', undefined);
-                                                    setValue("group", e.target.value);
+                                                    setValue("group", e?.target?.value ?? "");
                                                     filterGetUser(e.target.value);
                                                     if (errors?.group) { clearErrors('group') }
                                                 }}

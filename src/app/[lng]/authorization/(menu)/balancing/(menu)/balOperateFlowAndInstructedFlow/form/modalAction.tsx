@@ -34,6 +34,11 @@ type FormExampleProps = {
     setResetForm: (reset: () => void) => void;
 };
 
+const roundDecimal = (value: number, decimal = 6) => {
+    const factor = Math.pow(10, decimal);
+    return Math.round((value + Number.EPSILON) * factor) / factor;
+};
+
 const ModalAction: React.FC<FormExampleProps> = ({
     mode = 'create',
     data = {},
@@ -271,7 +276,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     disabled={isReadOnly}
                                                     valueWatch={watch("flow_type")}
                                                     handleChange={(e) => {
-                                                        setValue("flow_type", e?.target?.value)
+                                                        setValue("flow_type", e?.target?.value ?? "")
                                                         clearErrors('flow_type');
                                                     }}
                                                     errors={errors?.flow_type}
@@ -316,7 +321,10 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         const heatingValue = watch("heatingValue") !== "" ? Number(watch("heatingValue")) : null
 
                                                         if(heatingValue !== null && energyAdjust !== null){
-                                                            setValue("volumeAdjust", heatingValue * energyAdjust);
+                                                            // setValue("volumeAdjust", energyAdjust / heatingValue); // https://app.clickup.com/t/9018502823/86eujrgtn
+                                                            setValue("volumeAdjust", roundDecimal((energyAdjust / heatingValue), 6));
+
+                                                            // setValue("volumeAdjust", heatingValue * energyAdjust);
                                                         }else{
                                                             setValue("volumeAdjust", "");
                                                         }
@@ -356,7 +364,10 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         const heatingValue = watch("heatingValue") !== "" ? Number(watch("heatingValue")) : null
 
                                                         if(heatingValue !== null && energyAdjustRate_mmbtuh !== null){
-                                                            setValue("volumeAdjustRate_mmscfh", heatingValue * energyAdjustRate_mmbtuh);
+                                                            // setValue("volumeAdjustRate_mmscfh", energyAdjustRate_mmbtuh / heatingValue); // https://app.clickup.com/t/9018502823/86eujrgtn
+                                                            setValue("volumeAdjustRate_mmscfh", roundDecimal((energyAdjustRate_mmbtuh / heatingValue), 6));
+                                                            
+                                                            // setValue("volumeAdjustRate_mmscfh", heatingValue * energyAdjustRate_mmbtuh);
                                                         }else{
                                                             setValue("volumeAdjustRate_mmscfh", "");
                                                         }
@@ -396,7 +407,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         const heatingValue = watch("heatingValue") !== "" ? Number(watch("heatingValue")) : null
 
                                                         if(heatingValue !== null && energyAdjustRate_mmbtud !== null){
-                                                            setValue("volumeAdjustRate_mmscfd", heatingValue * energyAdjustRate_mmbtud);
+                                                            // setValue("volumeAdjustRate_mmscfd", energyAdjustRate_mmbtud / heatingValue); // https://app.clickup.com/t/9018502823/86eujrgtn
+                                                            setValue("volumeAdjustRate_mmscfd", roundDecimal((energyAdjustRate_mmbtud / heatingValue), 6));
                                                         }else{
                                                             setValue("volumeAdjustRate_mmscfd", "");
                                                         }
@@ -556,21 +568,28 @@ const ModalAction: React.FC<FormExampleProps> = ({
 
                                                         const energyAdjust = watch("energyAdjust") !== "" ? Number(watch("energyAdjust")) : null
                                                         if(heatingValue !== null && energyAdjust !== null){
-                                                            setValue("volumeAdjust", heatingValue * energyAdjust);
+                                                            // setValue("volumeAdjust", energyAdjust / heatingValue); // https://app.clickup.com/t/9018502823/86eujrgtn
+                                                            setValue("volumeAdjust", roundDecimal((energyAdjust / heatingValue), 6));
+                                                            
+                                                            // setValue("volumeAdjust", heatingValue * energyAdjust);
                                                         }else{
                                                             setValue("volumeAdjust", "");
                                                         }
 
                                                         const energyAdjustRate_mmbtuh = watch("energyAdjustRate_mmbtuh") !== "" ? Number(watch("energyAdjustRate_mmbtuh")) : null
                                                         if(heatingValue !== null && energyAdjustRate_mmbtuh !== null){
-                                                            setValue("volumeAdjustRate_mmscfh", heatingValue * energyAdjustRate_mmbtuh);
+                                                            // setValue("volumeAdjustRate_mmscfh", energyAdjustRate_mmbtuh / heatingValue); // https://app.clickup.com/t/9018502823/86eujrgtn
+                                                            setValue("volumeAdjustRate_mmscfh", roundDecimal((energyAdjustRate_mmbtuh / heatingValue), 6));
+                                                            // setValue("volumeAdjustRate_mmscfh", heatingValue * energyAdjustRate_mmbtuh);
                                                         }else{
                                                             setValue("volumeAdjustRate_mmscfh", "");
                                                         }
                                                         
                                                         const energyAdjustRate_mmbtud = watch("energyAdjustRate_mmbtud") !== "" ? Number(watch("energyAdjustRate_mmbtud")) : null
                                                         if(heatingValue !== null && energyAdjustRate_mmbtud !== null){
-                                                            setValue("volumeAdjustRate_mmscfd", heatingValue * energyAdjustRate_mmbtud);
+                                                            // setValue("volumeAdjustRate_mmscfd", energyAdjustRate_mmbtud / heatingValue); // https://app.clickup.com/t/9018502823/86eujrgtn
+                                                            setValue("volumeAdjustRate_mmscfd", roundDecimal((energyAdjustRate_mmbtud / heatingValue), 6));
+                                                            // setValue("volumeAdjustRate_mmscfd", heatingValue * energyAdjustRate_mmbtud);
                                                         }else{
                                                             setValue("volumeAdjustRate_mmscfd", "");
                                                         }

@@ -43,7 +43,7 @@ const ModalUserView: React.FC<FormExampleProps> = ({
 
                                 return (
                                     <div
-                                        key={item.id}
+                                        key={item?.id}
                                         className="w-full h-[64px] rounded-xl border border-slate-200 bg-white/70 backdrop-blur flex items-center gap-3 px-3 mb-2 hover:shadow-md transition-all"
                                     >
                                         {/* โคตรเท่ โคตรอันตราย */}

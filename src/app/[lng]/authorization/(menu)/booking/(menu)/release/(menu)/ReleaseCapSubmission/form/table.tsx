@@ -73,7 +73,7 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
 
     useEffect(() => {
         const newTotalValues: any = {};
-        sortedData.forEach((row: any, index: any) => {
+        (Array.isArray(sortedData) ? sortedData : []).forEach((row: any, index: any) => {
             const valueOne = watch(`entry_release_mmbtud.${index}`);
             const valueTwo = watch(`exit_release_mmbtud.${index}`);
             newTotalValues[index] = {
@@ -83,19 +83,20 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
         setTotalValues(newTotalValues);
 
         // ยัด total_release_mmbtu_d เข้า data หลัก เอาไว้ใช้ตอนส่ง submission !!
-        const updatedDataMaster = [...dataMaster];
+        const updatedDataMaster = Array.isArray(dataMaster) ? [...dataMaster] : [];
         updatedDataMaster.forEach((row, index) => {
+            if (!row) return;
             const entryValueMMSCFD: any = watch(`entry_release_mmscfd.${index}`);
             const exitValueMMSCFD: any = watch(`exit_release_mmscfd.${index}`);
             const entryValue: any = watch(`entry_release_mmbtud.${index}`);
             const exitValue: any = watch(`exit_release_mmbtud.${index}`);
 
             // Update the respective fields in the array
-            if (entryValue !== undefined) {
+            if (entryValue !== undefined && row?.entryData) {
                 row.entryData.total_release_mmbtu_d = parseFloat(entryValue) || 0;
                 row.entryData.total_release_mmscfd = parseFloat(entryValueMMSCFD) || 0;
             }
-            if (exitValue !== undefined) {
+            if (exitValue !== undefined && row?.exitData) {
                 row.exitData.total_release_mmbtu_d = parseFloat(exitValue) || 0;
                 row.exitData.total_release_mmscfd = parseFloat(exitValueMMSCFD) || 0;
             }
@@ -128,7 +129,7 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
                             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                 <tr className="h-9">
 
-                                    {columnVisibility.contract_point && (
+                                    {columnVisibility?.contract_point && (
                                         <th scope="col" className={`${table_header_style}`} 
                                             // onClick={() => handleSort("contract_point", sortState, setSortState, setSortedData, tableData)}
                                         >
@@ -137,7 +138,7 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
                                         </th>
                                     )}
 
-                                    {columnVisibility.entry_exit && (
+                                    {columnVisibility?.entry_exit && (
                                         <th scope="col" className={`${table_header_style}`} 
                                             // onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, tableData)}
                                         >
@@ -146,7 +147,7 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
                                         </th>
                                     )}
 
-                                    {columnVisibility.start_date && (
+                                    {columnVisibility?.start_date && (
                                         <th scope="col" className={`${table_header_style}`} 
                                             // onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}
                                         >
@@ -155,7 +156,7 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
                                         </th>
                                     )}
 
-                                    {columnVisibility.end_date && (
+                                    {columnVisibility?.end_date && (
                                         <th scope="col" className={`${table_header_style}`} 
                                             // onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}
                                         >
@@ -164,7 +165,7 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
                                         </th>
                                     )}
 
-                                    {columnVisibility.contracted_mmbtu_d && (
+                                    {columnVisibility?.contracted_mmbtu_d && (
                                         <th scope="col" className={`${table_header_style}`} 
                                             // onClick={() => handleSort("contracted_mmbtu_d", sortState, setSortState, setSortedData, tableData)}
                                         >
@@ -173,7 +174,7 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
                                         </th>
                                     )}
 
-                                    {columnVisibility.contracted_mmscfd && (
+                                    {columnVisibility?.contracted_mmscfd && (
                                         <th scope="col" className={`${table_header_style}`} 
                                             // onClick={() => handleSort("contracted_mmscfd", sortState, setSortState, setSortedData, tableData)}
                                         >
@@ -182,13 +183,13 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
                                         </th>
                                     )}
 
-                                    {columnVisibility.release_mmscfd && (
+                                    {columnVisibility?.release_mmscfd && (
                                         <th scope="col" className={`${table_header_style}`} >
                                             {`Release (MMSCFD)`}
                                         </th>
                                     )}
 
-                                    {columnVisibility.release_mmbtud && (
+                                    {columnVisibility?.release_mmbtud && (
                                         <th scope="col" className={`${table_header_style}`} >
                                             {`Release (MMBTU/D)`}
                                         </th>
@@ -198,7 +199,7 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
                             </thead>
 
                             <tbody>
-                                {sortedData?.length > 0 && sortedData?.map((row: any, index: any) => {
+                                {(sortedData || [])?.map((row: any, index: any) => {
                                     const total = totalValues[index]; // Get the total for the current row
 
                                     return (<>
@@ -207,33 +208,33 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
                                             key={index}
                                             className={`${table_row_style}`}
                                         >
-                                            {columnVisibility.contract_point && (
+                                            {columnVisibility?.contract_point && (
                                                 <td className="px-2 py-1 text-[#464255]">{row?.entryData ? row?.entryData?.contract_point : ''}</td>
                                             )}
 
-                                            {columnVisibility.entry_exit && (
+                                            {columnVisibility?.entry_exit && (
                                                 <td className="px-2 py-1  justify-center ">{row?.entryData?.entry_exit && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entryData?.entry_exit?.color }}>{`${row?.entryData?.entry_exit?.name}`}</div>}</td>
                                             )}
 
-                                            {columnVisibility.start_date && (
+                                            {columnVisibility?.start_date && (
                                                 // <td className={`px-2 py-1 ${row?.entryData ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.entryData?.start_date ? formatDateNoTime(dayjs(row?.entryData?.start_date).format("DD/MM/YYYY")) : ''}</td>
                                                 <td className={`px-2 py-1 ${row?.entryData ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.entryData?.start_date ? row?.entryData?.start_date : ''}</td>
                                             )}
 
-                                            {columnVisibility.end_date && (
+                                            {columnVisibility?.end_date && (
                                                 // <td className={`px-2 py-1 ${row?.entryData ? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{row?.entryData?.end_date ? formatDateNoTime(dayjs(row?.entryData?.end_date).format("DD/MM/YYYY")) : ''}</td>
                                                 <td className={`px-2 py-1 ${row?.entryData ? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{row?.entryData?.end_date ? row?.entryData?.end_date : ''}</td>
                                             )}
 
-                                            {columnVisibility.contracted_mmbtu_d && (
+                                            {columnVisibility?.contracted_mmbtu_d && (
                                                 <td className="px-2 py-1 text-[#464255] text-right">{row?.entryData?.contracted_mmbtu_d && formatNumberThreeDecimal(row?.entryData?.contracted_mmbtu_d)}</td>
                                             )}
 
-                                            {columnVisibility.contracted_mmscfd && (
+                                            {columnVisibility?.contracted_mmscfd && (
                                                 <td className="px-2 py-1 text-[#464255] text-right">{row?.entryData?.contracted_mmscfd && formatNumberThreeDecimal(row?.entryData?.contracted_mmscfd)}</td>
                                             )}
 
-                                            {columnVisibility.release_mmscfd && (
+                                            {columnVisibility?.release_mmscfd && (
                                                 <td className="px-2 py-1 text-[#464255]">
                                                     <NumericFormat
                                                         id="entry_release_mmscfd"
@@ -259,7 +260,7 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
                                                 </td>
                                             )}
 
-                                            {columnVisibility.release_mmbtud && (
+                                            {columnVisibility?.release_mmbtud && (
                                                 <td className="px-2 py-1 text-[#464255]">
                                                     <NumericFormat
                                                         id={`entry_release_mmbtud.${index}`}
@@ -291,32 +292,32 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
                                             key={index}
                                             className={`${table_row_style}`}
                                         >
-                                            {columnVisibility.contract_point && (
+                                            {columnVisibility?.contract_point && (
                                                 <td className="px-2 py-1 text-[#464255]">{row?.exitData ? row?.exitData?.contract_point : ''}</td>
                                             )}
 
-                                            {columnVisibility.entry_exit && (
+                                            {columnVisibility?.entry_exit && (
                                                 <td className="px-2 py-1  justify-center ">{row?.exitData?.entry_exit && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.exitData?.entry_exit?.color }}>{`${row?.exitData?.entry_exit?.name}`}</div>}</td>
                                             )}
 
-                                            {columnVisibility.start_date && (
+                                            {columnVisibility?.start_date && (
                                                 <td className={`px-2 py-1 ${row?.exitData ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.exitData?.start_date ? formatDateNoTime(row?.exitData?.start_date) : ''}</td>
                                             )}
 
-                                            {columnVisibility.end_date && (
+                                            {columnVisibility?.end_date && (
                                                 // <td className={`px-2 py-1 ${row?.exitData ? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{row?.exitData?.end_date ? formatDateNoTime(dayjs(row?.exitData?.end_date, "DD/MM/YYYY").format("DD/MM/YYYY")) : ''}</td>
                                                 <td className={`px-2 py-1 ${row?.exitData ? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{row?.exitData?.end_date ? row?.exitData?.end_date : ''}</td>
                                             )}
 
-                                            {columnVisibility.contracted_mmbtu_d && (
+                                            {columnVisibility?.contracted_mmbtu_d && (
                                                 <td className="px-2 py-1 text-[#464255] text-right">{row?.exitData?.contracted_mmbtu_d && formatNumberThreeDecimal(row?.exitData?.contracted_mmbtu_d)}</td>
                                             )}
 
-                                            {columnVisibility.contracted_mmscfd && (
+                                            {columnVisibility?.contracted_mmscfd && (
                                                 <td className="px-2 py-1 text-[#464255] text-right">{row?.exitData?.contracted_mmscfd && formatNumberThreeDecimal(row?.exitData?.contracted_mmscfd)}</td>
                                             )}
 
-                                            {columnVisibility.release_mmscfd && (
+                                            {columnVisibility?.release_mmscfd && (
                                                 <td className="px-2 py-1 text-[#464255]">
                                                     <NumericFormat
                                                         id={`exit_release_mmscfd.${index}`}
@@ -343,7 +344,7 @@ const TableReleaseCapSub: React.FC<TableProps> = ({ tableData, isLoading, column
                                                 </td>
                                             )}
 
-                                            {columnVisibility.release_mmbtud && (
+                                            {columnVisibility?.release_mmbtud && (
                                                 <td className="px-2 py-1 text-[#464255]">
                                                     <NumericFormat
                                                         id={`exit_release_mmbtud.${index}`}

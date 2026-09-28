@@ -208,7 +208,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             ?.map((item: any) => {
                 const filteredGrouped = item?.groupedByAll?.filter((entry: any) => {
                     const findShipper = dataShipper?.filter((item: any) => srchShipperName.includes(item?.id)).map((item: any) => item.name)
-                    // const matchShipper = srchShipperName?.length > 0 ? srchShipperName.includes(entry.group) : true;
                     const matchShipper = srchShipperName?.length > 0 ? findShipper.includes(entry.group) : true;
                     const matchContract = srchContractCode?.length > 0 ? srchContractCode.includes(entry.contract_code) : true;
                     return matchShipper && matchContract;
@@ -273,34 +272,57 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             // DATA CONTRACT CODE
             // Tab All > Filter Contract code ต้องแสดงเฉพาะข้อมูลที่มีตามหน้า UI https://app.clickup.com/t/86etzcgw6
-            const contractCodesInTable = new Set(filter_gas_day_daily?.map((item: any) => item?.contract_code));
-            const filteredContractMaster = dataContractOriginal?.filter((item: any) =>
+            const contractCodesInTable = new Set((filter_gas_day_daily || [])?.map((item: any) => item?.contract_code));
+            const filteredContractMaster = (dataContractOriginal || [])?.filter((item: any) =>
                 contractCodesInTable.has(item?.contract_code)
             );
             setDataContract(filteredContractMaster);
             // setDataContractOriginal(filteredContractMaster)
+             console.log(`srchShipperName : `, srchShipperName);
+                    console.log(`srchContractCode : `, srchContractCode);
         } else if (tab == 2) { // WEEKLY
 
-            const filtered = res_
-                .filter((item: any) => srchZone?.length > 0 ? srchZone.includes(item.zone) : true)
-                .map((zoneEntry: any) => {
-                    const filteredGrouped = zoneEntry?.groupedByWeekly?.filter((weekly: any) => {
-                        const matchShipper = srchShipperName?.length > 0 ? srchShipperName.includes(weekly?.group) : true;
-                        const matchContract = srchContractCode?.length > 0 ? srchContractCode.includes(weekly?.contract_code) : true;
-                        return matchShipper && matchContract;
-                    });
 
-                    if (filteredGrouped?.length > 0) {
-                        // No zone match, but children matched: return only those
-                        return {
-                            ...zoneEntry,
-                            groupedByWeekly: filteredGrouped
-                        };
-                    }
+                const filtered = (res_ || [])
+                    .filter((item: any) => srchZone?.length > 0 ? srchZone.includes(item?.zone) : true)
+                    .map((zoneEntry: any) => {
+                        const filteredGrouped = zoneEntry?.groupedByWeekly?.filter((weekly: any) => {
+                            const findShipper = dataShipper?.filter((item: any) => srchShipperName.includes(item?.id)).map((item: any) => item.name)
+                            const matchShipper = srchShipperName?.length > 0 ? findShipper.includes(weekly?.group) : true;
+                            const matchContract = srchContractCode?.length > 0 ? srchContractCode.includes(weekly?.contract_code) : true;
+                            return matchShipper && matchContract;
+                        });
 
-                    // No match at all
-                    return null;
-                }).filter((zoneEntry: any) => zoneEntry !== null); // กรองค่า null ออก
+                        if (filteredGrouped?.length > 0) {
+                            return {
+                                ...zoneEntry,
+                                groupedByWeekly: filteredGrouped
+                            };
+                        }
+
+                        return null;
+                    }).filter((zoneEntry: any) => zoneEntry !== null);
+                   
+            // const filtered = (res_ || [])
+            //     .filter((item: any) => srchZone?.length > 0 ? srchZone.includes(item?.zone) : true)
+            //     .map((zoneEntry: any) => {
+            //         const filteredGrouped = zoneEntry?.groupedByWeekly?.filter((weekly: any) => {
+            //             const matchShipper = srchShipperName?.length > 0 ? srchShipperName.includes(weekly?.group) : true;
+            //             const matchContract = srchContractCode?.length > 0 ? srchContractCode.includes(weekly?.contract_code) : true;
+            //             return matchShipper && matchContract;
+            //         });
+
+            //         if (filteredGrouped?.length > 0) {
+            //             // No zone match, but children matched: return only those
+            //             return {
+            //                 ...zoneEntry,
+            //                 groupedByWeekly: filteredGrouped
+            //             };
+            //         }
+
+            //         // No match at all
+            //         return null;
+            //     }).filter((zoneEntry: any) => zoneEntry !== null); // กรองค่า null ออก
 
             setIsLoading(true)
 
@@ -372,10 +394,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setSrchZone([])
         setSrchContractCode([])
 
-        // fetchData(tab);
-        // handleFieldSearch(tab);
-        // setFilteredDataTable([])
-        // setFilteredDataTableWeekly([]);
+      
         setKey((prevKey) => prevKey + 1);
     };
 
@@ -437,7 +456,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const handleSearchWeekly = (query: string) => {
         const queryLower = query.replace(/\s+/g, '')?.toLowerCase().trim();
 
-
         const filtered = dataTableWeeklyOriginal
             .map((zoneEntry: any) => {
 
@@ -482,15 +500,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     })
                     .filter(result => result !== null); // กรองค่าที่ไม่ตรงออก
 
-                const zoneMatch = zoneEntry.zone?.toLowerCase().includes(queryLower);
+                const zoneMatch = zoneEntry?.zone?.toLowerCase().includes(queryLower);
 
-                const filteredGrouped = zoneEntry.groupedByWeekly.filter((weekly: any) => {
-                    const contractMatch = weekly.contract_code?.toLowerCase().includes(queryLower);
-                    const groupMatch = weekly.group?.toLowerCase().includes(queryLower);
-                    const dataMatch = weekly.data.some((d: any) =>
+                const filteredGrouped = (zoneEntry?.groupedByWeekly || [])?.filter((weekly: any) => {
+                    const contractMatch = weekly?.contract_code?.toLowerCase().includes(queryLower);
+                    const groupMatch = weekly?.group?.toLowerCase().includes(queryLower);
+                    const dataMatch = (weekly?.data || [])?.some((d: any) =>
                         formatNumberThreeDecimal(d?.value)?.toString()?.toLowerCase().includes(queryLower)
                     );
-                    const dataMatch2 = weekly.data.some((d: any) =>
+                    const dataMatch2 = (weekly?.data || [])?.some((d: any) =>
                         d?.value?.toString()?.toLowerCase().includes(queryLower)
                     );
                     return contractMatch || groupMatch || dataMatch || dataMatch2;
@@ -500,7 +518,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     // Match on zone: return all groupedByWeekly untouched
                     return {
                         ...zoneEntry,
-                        groupedByWeekly: zoneEntry.groupedByWeekly
+                        groupedByWeekly: zoneEntry?.groupedByWeekly
                     };
                 } else if (filteredGrouped?.length > 0 || totalResult?.length > 0) {
                     // No zone match, but children matched: return only those
@@ -683,14 +701,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         //         break;
 
         //     default:
-        //         setPaginatedData(filteredDataTable.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
+        //         setPaginatedData((filteredDataTable || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
         //         break;
         // }
 
         if (tabIndex !== 2) {
-            setPaginatedData(filteredDataTable.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
+            setPaginatedData((filteredDataTable || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
 
-            const flattened = filteredDataTable?.map((item: any) => ({
+            const flattened = (filteredDataTable || [])?.map((item: any) => ({
                 ...item,
                 min_inventory_change_value: item?.minInven ?? item?.data?.find((d: any) => d.type === "Min_Inventory_Change")?.value ?? null,
                 exchange_min_inventory: item?.exchangeMinInven ?? item?.data?.find((d: any) => (d.type === "Exchange_Mininventory" || d.type === "Exchange_Min_Inventory"))?.value ?? null
@@ -698,7 +716,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             const updated_total_rows = flattened?.map((obj: any) => ({
                 ...obj,
-                total_row: (obj.min_inventory_change_value || 0) + (obj.exchange_min_inventory || 0),
+                total_row: (obj?.min_inventory_change_value || 0) + (obj?.exchange_min_inventory || 0),
             }));
             setDataForSorting(updated_total_rows)
         }
@@ -707,6 +725,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     useEffect(() => {
         if (tabIndex == 2) {
+            console.log('dataTableWeekly : ', dataTableWeekly);
             // setPaginatedData(dataTableWeekly?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
             setPaginatedDataTabWeekly(dataTableWeekly?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
             setDataForSorting(dataTableWeekly)
@@ -899,10 +918,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             });
         });
         console.log('group_weekly : ', group_weekly);
-        const groupedByWeekly = group_weekly[0]?.groupedByWeekly || [];
+        const groupedByWeekly = group_weekly?.[0]?.groupedByWeekly || [];
         const output = groupedByWeekly.slice(0, 7).map((entry: any, index: any) => ({
             day: dayNames[index],
-            gas_day: entry.gas_day,
+            gas_day: entry?.gas_day,
         }));
         console.log('output : ', output);
         setColumnHeadDate(output)
@@ -925,91 +944,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 }
                 return chunks;
             };
-
-            // filteredDataTableWeekly?.length > 0 && filteredDataTableWeekly?.map((item: any) => {
-            //     const weeksRaw = chunkArray(item?.groupedByWeekly, 7);
-            //     const checkAllValuesEqual = (arr: any, obj?: any) => {
-            //         if (arr?.length === 0) return null;
-
-            //         const firstValue = arr[0]?.[obj];
-            //         // เช็คว่าแต่ละค่าทั้งหมดใน array เท่ากับ firstValue หรือไม่
-            //         return arr.every((value: any) => value?.[obj] === firstValue) ? firstValue : null;
-            //     };
-                
-            //     console.log('weeksRaw : ', weeksRaw);
-            //     weeksRaw?.map((week: any) => {
-            //         let contract: any = checkAllValuesEqual(week, 'contract_code') ?? checkAllValuesEqual(week, 'reserve_balancing_gas_contract');
-            //         let group: any = checkAllValuesEqual(week, 'group');
-            //         console.log('week : ', week);
-            //         console.log('contract : ', contract);
-            //         const dataAsObject = week?.reduce((acc: any, item: any, index: number) => {
-            //             const dayName = dayNames[index];
-
-            //             const dataArray = item?.data || [];
-
-            //             // หา object ที่ type ตรงตามต้องการ
-            //             const minItem = dataArray.find(
-            //                 (d: any) => d?.type === "Min_Inventory_Change"
-            //             );
-            //             const exchangeItem = dataArray.find(
-            //                 (d: any) => (d?.type === "Exchange_Mininventory" || d?.type === "Exchange_Min_Inventory")
-            //             );
-
-            //             // ดึง value ถ้ามี ไม่มีก็ให้ null
-            //             const min_val = minItem?.value ?? null;
-            //             const exchange_val = exchangeItem?.value ?? null;
-
-            //             // ถ้ามีค่าใดค่าหนึ่งไม่เป็น null → คำนวณ total
-            //             const total =
-            //                 min_val !== null || exchange_val !== null
-            //                     ? (min_val ?? 0) + (exchange_val ?? 0)
-            //                     : null;
-
-            //             acc[dayName] = {
-            //                 ...item,
-            //                 min_val,
-            //                 exchange_val,
-            //                 total,
-            //             };
-
-            //             return acc;
-            //         }, {});
-
-            //         function calculateWeeklyTotals(dataByDay: Record<string, any>) {
-            //             let sumMin = 0;
-            //             let sumExchange = 0;
-
-            //             Object.values(dataByDay).forEach((dayData: any) => {
-            //                 if (typeof dayData?.min_val === 'number') {
-            //                     sumMin += dayData.min_val;
-            //                 }
-
-            //                 if (typeof dayData?.exchange_val === 'number') {
-            //                     sumExchange += dayData.exchange_val;
-            //                 }
-            //             });
-
-            //             const total = sumMin + sumExchange;
-
-            //             return total || null;
-            //         }
-
-            //         const weeklyTotals = calculateWeeklyTotals(dataAsObject);
-
-            //         return (
-            //             newTableData.push({
-            //                 zone: item?.zone,
-            //                 zoneObj: item?.zoneObj,
-            //                 ...dataAsObject,
-            //                 data: dataAsObject, // data จริง
-            //                 week: week, // ใช้แค่ทำหัว columns
-            //                 contract_code: contract,
-            //                 group: group,
-            //                 totalWeek: weeklyTotals || null
-            //             })
-            //         )
-            //     })
-            // })
+          
             filteredDataTableWeekly?.forEach((item: any) => {
                 const rawData = Array.isArray(item?.groupedByWeekly)
                     ? item.groupedByWeekly

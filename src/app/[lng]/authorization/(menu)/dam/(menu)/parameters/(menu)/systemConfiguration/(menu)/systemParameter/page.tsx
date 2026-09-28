@@ -29,13 +29,7 @@ import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import BtnActionTable from "@/components/other/btnActionInTable";
 import getUserValue from "@/utils/getuserValue";
 
-interface ClientProps {
-    params: {
-        lng: string;
-    };
-}
-
-const ClientPage: React.FC<ClientProps> = (props) => {
+export default function ClientPage() {
 
     // ############### Check Authen ###############
     const userDT: any = getUserValue();
@@ -44,25 +38,27 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
-    // let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-    let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+    let user_permission: any = typeof window !== 'undefined' ? (getCookieValue("k3a9r2b6m7t0x5w1s8j") || localStorage?.getItem("k3a9r2b6m7t0x5w1s8j")) : null;
     user_permission = user_permission ? decryptData(user_permission) : null;
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+            }
 
-            const permission = findRoleConfigByMenuId(34, userDT)
+            const permission = findRoleConfigByMenuId(34, userDT);
             if (permission) {
                 setUserPermission(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermission(updatedUserPermission);
             }
         } catch (error) {
             // Failed to parse user_permission:
         }
-    }
+    };
 
     // ############### REDUX DATA ###############
     const { termTypeMaster, sysParamModule } = useFetchMasters();
@@ -77,46 +73,31 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [key, setKey] = useState(0);
 
     const handleFieldSearch = () => {
-        // const res_filtered_date: any = filterStartEndDate(dataTable, srchStartDate, srchEndDate); // เดิมโรงงาน
         const res_filtered_date: any = filterStartEndDateNewLogic(dataTable, srchStartDate, srchEndDate); // v1.0.90 ปรับ logic filter start date และ end date https://app.clickup.com/t/86erqt8ed
 
-        const result_2 = res_filtered_date?.filter((item: any) => {
-            return (
-                // (srchModule ? item?.menus?.id == srchModule : true) &&
-                // (srchSystemParam ? item?.system_parameter?.name == srchSystemParam : true)
-                
-                // ปรับ Filter ทุกเมนูให้เป็นแบบ Multi https://app.clickup.com/t/86eub6d11
-                (srchModule?.length > 0 ? srchModule.includes(item?.menus?.id?.toString()) : true) &&
-                (srchSystemParam?.length > 0 ? srchSystemParam.includes(item?.system_parameter?.name) : true)
-            );
+        const result_2 = (Array.isArray(res_filtered_date) ? res_filtered_date : [])?.filter((item: any) => {
+            if (!item) return false;
+            const matchModule = Array.isArray(srchModule) && srchModule.length > 0
+                ? srchModule.includes(String(item?.menus?.id ?? ''))
+                : true;
+            const matchSystemParam = Array.isArray(srchSystemParam) && srchSystemParam.length > 0
+                ? srchSystemParam.includes(item?.system_parameter?.name)
+                : true;
+
+            return matchModule && matchSystemParam;
         });
         setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
         setFilteredDataTable(result_2);
     };
 
     const handleReset = () => {
-        setSrchModule([])
+        setSrchModule([]);
         setSrchSystemParam([]);
         setSrchStartDate(null);
         setSrchEndDate(null);
-        setFilteredDataTable(dataTable);
+        setFilteredDataTable(dataTable || []);
         setKey((prevKey) => prevKey + 1);
     };
-
-    // ############### LIKE SEARCH ###############
-    // const handleSearch = (query: string) => {
-    //     const filtered = dataTable.filter(
-    //         (item: any) =>
-    //             item?.menus?.name.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-    //             item?.system_parameter?.name.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-    //             item?.link?.toString().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-    //             item?.value?.toString().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-    //             formatDateNoTime(item?.start_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-    //             formatDateNoTime(item?.end_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase())
-    //     );
-    //     setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
-    //     setFilteredDataTable(filtered);
-    // };
 
     // ############### DATA TABLE ###############
     const [dataTable, setData] = useState<any>([]);
@@ -177,8 +158,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [formData, setFormData] = useState(fdInterface);
 
     const handleFormSubmit = async (data: any) => {
+        if (!data) return;
         const newData = replaceEmptyStringsWithNull(data)
-        if (typeof data.end_date !== 'string' || data?.end_date == 'Invalid Date') {
+        if (typeof data?.end_date !== 'string' || data?.end_date == 'Invalid Date') {
             data.end_date = null;
         }
         // data.area_nominal_capacity = parseFloat(data.area_nominal_capacity);
@@ -239,61 +221,55 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     };
 
     const openEditForm = (id: any) => {
-        //  fetchDataDiv(id);
         setSelectedId(id);
-        const filteredData = dataTable.find((item: any) => item.id === id);
-        if (filteredData) {
-            fdInterface.id = filteredData.id;
-            fdInterface.menus_id = filteredData.menus_id;
-            fdInterface.system_parameter_id = filteredData.system_parameter_id;
-            fdInterface.value = filteredData.value;
-            fdInterface.link = filteredData.link;
-            fdInterface.start_date = new Date(filteredData.start_date);
-            fdInterface.end_date = filteredData.end_date ? new Date(filteredData.end_date) : null;
-        }
+        const filteredData = (dataTable || [])?.find((item: any) => item?.id === id);
+        const nextFormData = {
+            ...fdInterface,
+            id: filteredData?.id ?? '',
+            menus_id: filteredData?.menus_id ?? '',
+            system_parameter_id: filteredData?.system_parameter_id ?? '',
+            value: filteredData?.value ?? '',
+            link: filteredData?.link ?? '',
+            start_date: filteredData?.start_date ? new Date(filteredData.start_date) : null,
+            end_date: filteredData?.end_date ? new Date(filteredData.end_date) : null,
+        };
         setFormMode('edit');
-        setFormData(fdInterface);
+        setFormData(nextFormData);
         setFormOpen(true);
     };
 
     const openViewForm = (id: any) => {
-        const filteredData = dataTable.find((item: any) => item.id === id);
-        if (filteredData) {
-            fdInterface.id = filteredData.id;
-            fdInterface.menus_id = filteredData.menus_id;
-            fdInterface.system_parameter_id = filteredData.system_parameter_id;
-            fdInterface.value = filteredData.value;
-            fdInterface.link = filteredData.link;
-            fdInterface.start_date = new Date(filteredData.start_date);
-            fdInterface.end_date = filteredData.end_date ? new Date(filteredData.end_date) : null;
-        }
+        const filteredData = (dataTable || [])?.find((item: any) => item?.id === id);
+        const nextFormData = {
+            ...fdInterface,
+            id: filteredData?.id ?? '',
+            menus_id: filteredData?.menus_id ?? '',
+            system_parameter_id: filteredData?.system_parameter_id ?? '',
+            value: filteredData?.value ?? '',
+            link: filteredData?.link ?? '',
+            start_date: filteredData?.start_date ? new Date(filteredData.start_date) : null,
+            end_date: filteredData?.end_date ? new Date(filteredData.end_date) : null,
+        };
         setFormMode('view');
-        setFormData(fdInterface);
+        setFormData(nextFormData);
         setFormOpen(true);
     };
 
     // ############### HISTORY MODAL ###############
     const [historyOpen, setHistoryOpen] = useState(false);
-    // const handleCloseHistoryModal = () => setHistoryOpen(false);
     const handleCloseHistoryModal = () => {
         setHistoryOpen(false);
         setTimeout(() => {
             setHistoryData(undefined);
         }, 300);
-    }
+    };
     const [historyData, setHistoryData] = useState<any>();
     const [headData, setHeadData] = useState<any>();
 
     const openHistoryForm = async (id: any) => {
         try {
             const response: any = await getService(`/master/account-manage/history?type=system-parameter&method=all&id_value=${id}`);
-            const valuesArray = response.map((item: any) => item.value);
-
-            // ปั้น data ลบคีย์
-            let cleanedData: any = []
-            if (valuesArray && valuesArray.length > 0) {
-                cleanedData = valuesArray?.map(({ create_date, create_by, create_by_account, create_date_num, ...rest }: any) => rest);
-            }
+            const valuesArray = (Array.isArray(response) ? response : [])?.map((item: any) => item?.value);
 
             let mappings = [
                 { key: "menus.name", title: "Module" },
@@ -301,46 +277,25 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 { key: "end_date", title: "End Date" },
             ];
             let result = mappings.map(({ key, title }) => {
-                const value = key.split('.').reduce((acc, part) => acc && acc[part], valuesArray[0]);
+                const value = key?.split('.')?.reduce((acc: any, part: string) => (acc ? acc?.[part] : undefined), valuesArray?.[0]);
                 return {
                     title,
-                    // value: value || "",
-                    value: isISOString(value) ? formatDateNoTime(value) : value || "",
+                    value: isISOString(value) ? formatDateNoTime(value) : (value ?? ""),
                 };
             });
 
             const normalized = fillMissingUpdateByAccount(valuesArray);
 
-            setHeadData(result)
-            // setHistoryData(valuesArray);
+            setHeadData(result);
             setHistoryData(normalized);
             setHistoryOpen(true);
         } catch (err) {
-            // setError(err.message);
-        } finally {
-            // setLoading(false);
+            // Error
         }
-    }
+    };
 
     // ############### PAGINATION ###############
     const [currentPage, setCurrentPage] = useState(1);
-    // const [itemsPerPage, setItemsPerPage] = useState(10);
-
-    // const handlePageChange = (page: number) => {
-    //     setCurrentPage(page);
-    // };
-
-    // const handleItemsPerPageChange = (itemsPerPage: number) => {
-    //     setItemsPerPage(itemsPerPage);
-    //     setCurrentPage(1);
-    // };
-
-    // const paginatedData = Array.isArray(filteredDataTable)
-    //     ? filteredDataTable.slice(
-    //         (currentPage - 1) * itemsPerPage,
-    //         currentPage * itemsPerPage
-    //     )
-    //     : [];
 
     // ############### COLUMN SHOW/HIDE ###############
     const initialColumns: any = [
@@ -350,8 +305,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         { key: 'link', label: 'Link', visible: true },
         { key: 'start_date', label: 'Start Date', visible: true },
         { key: 'end_date', label: 'End Date', visible: true },
-        // { key: 'create_by', label: 'Created by', visible: true },
-        // { key: 'updated_by', label: 'Updated by', visible: true },
         { key: 'action', label: 'Action', visible: true }
     ];
 
@@ -362,15 +315,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         { key: 'link', label: 'Link', visible: true },
         { key: 'start_date', label: 'Start Date', visible: true },
         { key: 'end_date', label: 'End Date', visible: true },
-        // { key: 'create_by', label: 'Created by', visible: true },
         { key: 'updated_by', label: 'Updated by', visible: true },
-        // { key: 'action', label: 'Action', visible: true }
     ];
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries((initialColumns || [])?.map((column: any) => [column?.key, column?.visible]))
     );
 
     const handleColumnToggle = (columnKey: string | VisibilityState) => {
@@ -397,8 +348,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => row?.menus?.name || '',
                 cell: (info) => {
-                    const row: any = info?.row?.original
-                    return (<div>{row?.menus && row?.menus?.name}</div>)
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
+                    return (<div>{row?.menus?.name ?? ''}</div>);
                 }
             },
             {
@@ -407,8 +359,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => row?.system_parameter?.name || '',
                 cell: (info) => {
-                    const row: any = info?.row?.original
-                    return (<div>{row?.system_parameter && row?.system_parameter?.name}</div>)
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
+                    return (<div>{row?.system_parameter?.name ?? ''}</div>);
                 }
             },
             {
@@ -420,15 +373,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     if (!raw) return '';
 
                     const fixed = formatNumberFourDecimalNom(raw); // เช่น 10,000.0000
-                    const noComma = fixed.replace(/,/g, '');    // เช่น 10000.0000
-                    const rounded = parseFloat(raw).toString(); // เช่น 10000
+                    const noComma = fixed ? String(fixed).replace(/,/g, '') : ''; // เช่น 10000.0000
+                    const parsed = parseFloat(raw);
+                    const rounded = !isNaN(parsed) ? parsed.toString() : ''; // เช่น 10000
 
-                    return `${fixed} ${noComma} ${rounded}`;
+                    return `${fixed ?? ''} ${noComma} ${rounded}`.trim();
                 },
                 cell: (info) => {
-                    const row: any = info?.row?.original
-                    // return (<div>{row?.value && formatNumberThreeDecimal(row?.value)}</div>)
-                    return (<div>{row?.value && formatNumberFourDecimalNom(row?.value)}</div>)
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
+                    return (<div>{row?.value ? formatNumberFourDecimalNom(row?.value) : ''}</div>);
                 }
             },
             {
@@ -440,19 +394,20 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     align: 'center'
                 },
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
                         <div className="inline-flex items-center justify-center relative">
                             <button
                                 type="button"
-                                disabled={row?.link ? false : true}
-                                className={`flex items-center justify-center px-[2px] py-[2px] border  rounded-md hover:bg-[#DFE4EA] hover:border hover:border-[#DFE4EA] relative`}
-                                onClick={() => openInNewTab(row?.link)}
+                                disabled={!row?.link}
+                                className={`flex items-center justify-center px-[2px] py-[2px] border rounded-md hover:bg-[#DFE4EA] hover:border hover:border-[#DFE4EA] relative`}
+                                onClick={() => row?.link && openInNewTab(row.link)}
                             >
                                 <OpenInNewOutlinedIcon sx={{ fontSize: 18, color: row?.link ? '#A6CE39' : '#9CA3AF' }} />
                             </button>
                         </div>
-                    )
+                    );
                 }
             },
             {
@@ -461,13 +416,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => formatDateNoTime(row?.start_date) || '',
                 sortingFn: myCustomSortingByDateFn,
-                // sortingFn: 'datetime', // recommended for date columns 
-                // sortUndefined: -1,
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
-                        <div className={`text-[#464255]`}>{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</div>
-                    )
+                        <div className="text-[#464255]">{row?.start_date ? formatDateNoTime(row.start_date) : ''}</div>
+                    );
                 }
             },
             {
@@ -476,13 +430,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => formatDateNoTime(row?.end_date) || '',
                 sortingFn: myCustomSortingByDateFn,
-                // sortingFn: 'datetime', // recommended for date columns 
-                // sortUndefined: -1,
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
-                        <div className={`text-[#0DA2A2]`}>{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</div>
-                    )
+                        <div className="text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row.end_date) : ''}</div>
+                    );
                 }
             },
             {
@@ -494,19 +447,20 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 size: 100,
                 cell: (info) => {
                     const row: any = info?.row?.original;
-                    const getPermission: any = renderPermission();
+                    if (!row) return null;
+                    const perm = renderPermission();
                     return (
                         <BtnActionTable
                             togglePopover={togglePopover}
                             row_id={row?.id}
-                            disable={getPermission?.f_view == true ? false : true}
+                            disable={!perm?.f_view}
                         />
-                    )
+                    );
                 }
             },
         ],
         []
-    )
+    );
 
     const togglePopover = (id: any, anchor: any) => {
         if (openPopoverId === id) {
@@ -582,7 +536,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             const validUrl = url.startsWith('http://') || url.startsWith('https://')
                 ? url : `https://${url}`;
 
-            window.open(validUrl, '_blank');
+            window.open(validUrl, '_blank', 'noopener,noreferrer');
         } else {
             // The file URL is not valid or unavailable.
         }
@@ -591,10 +545,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     function removeDuplicatesByName(data: any[]) {
         const uniqueNames = new Set();
 
-        return data.filter(item => {
+        return (Array.isArray(data) ? data : []).filter(item => {
+            if (!item) return false;
             const name = item?.system_parameter?.name;
-            if (uniqueNames.has(name)) {
-                return false; // ถ้ามีชื่อซ้ำ ให้ไม่เอาไว้
+            if (!name || uniqueNames.has(name)) {
+                return false; // ถ้ามีชื่อซ้ำ หรือไม่มีชื่อ ให้ไม่เอาไว้
             }
             uniqueNames.add(name); // ถ้ายังไม่มีชื่อใน Set ให้เพิ่มเข้าไป
             return true;
@@ -609,44 +564,31 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     <InputSearch
                         id="searchModule"
                         label="Module"
-                        // type="select"
                         type="select-multi-checkbox"
                         value={srchModule}
                         onChange={(e) => {
-                            setSrchModule(e.target.value)
-                            setSrchSystemParam([])
+                            setSrchModule(e.target.value);
+                            setSrchSystemParam([]);
                         }}
-                        options={sysParamModule?.data?.map((item: any) => ({
-                            value: item?.id?.toString(),
-                            label: item.name
+                        options={(Array.isArray(sysParamModule?.data) ? sysParamModule.data : [])?.map((item: any) => ({
+                            value: item?.id != null ? String(item.id) : '',
+                            label: item?.name ?? ''
                         }))}
                     />
 
                     <InputSearch
                         id="searchSysParam"
                         label="System Parameter"
-                        // type="select"
                         type="select-multi-checkbox"
                         value={srchSystemParam}
                         onChange={(e) => setSrchSystemParam(e.target.value)}
-                        // options={dataTable?.map((item: any) => ({
-                        //     value: item?.system_parameter?.id.toString(),
-                        //     label: item?.system_parameter?.name
-                        // }))}
-                        // options={dataTable?.filter((item: any) => srchModule ? item?.menus?.id == srchModule : true).map((item: any) => ({
-                        //     value: item?.system_parameter?.id.toString(),
-                        //     label: item?.system_parameter?.name
-                        // }))}
-                        // options={removeDuplicatesByName(dataTable)?.filter((item: any) => srchModule ? item?.menus?.id == srchModule : true).map((item: any) => ({
-                        //     value: item?.system_parameter?.name,
-                        //     label: item?.system_parameter?.name
-                        // }))}
-                        options={removeDuplicatesByName(dataTable)?.filter((item: any) => srchModule?.length > 0 ? srchModule.includes(item?.menus?.id.toString()) : true).map((item: any) => ({
-                            value: item?.system_parameter?.name,
-                            label: item?.system_parameter?.name
-                        }))}
+                        options={removeDuplicatesByName(dataTable || [])
+                            ?.filter((item: any) => (Array.isArray(srchModule) && srchModule.length > 0 ? srchModule.includes(item?.menus?.id?.toString()) : true))
+                            .map((item: any) => ({
+                                value: item?.system_parameter?.name ?? '',
+                                label: item?.system_parameter?.name ?? ''
+                            }))}
                         customWidth={320}
-                        // customWidthPopup={650}
                     />
 
                     <DatePickaSearch
@@ -676,42 +618,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 </aside>
             </div>
 
-            {/* <div className="border-[#DFE4EA] border-[1px] p-4 rounded-xl shadow-sm">
-                <div>
-                    <div className=" text-sm flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
-                        <div onClick={handleTogglePopover}>
-                            <TuneIcon
-                                className="cursor-pointer rounded-lg"
-                                style={{ fontSize: "18px", color: '#2B2A87', borderRadius: '4px', width: '22px', height: '22px', border: '1px solid rgba(43, 42, 135, 0.4)' }}
-                            />
-                        </div>
-                        <div className="flex flex-wrap gap-2 justify-end">
-                            <SearchInput onSearch={handleSearch} />
-                            <BtnExport textRender={"Export"} data={filteredDataTable} path="dam/system-parameter" can_export={userPermission ? userPermission?.f_export : false} columnVisibility={columnVisibility} initialColumns={initialColumns} />
-                        </div>
-                    </div>
-                </div>
-
-                <TableParameter
-                    openEditForm={openEditForm}
-                    openViewForm={openViewForm}
-                    openHistoryForm={openHistoryForm}
-                    tableData={paginatedData}
-                    isLoading={isLoading}
-                    columnVisibility={columnVisibility}
-                    userPermission={userPermission}
-                />
-
-            </div>
-
-            <PaginationComponent
-                totalItems={filteredDataTable?.length}
-                itemsPerPage={itemsPerPage}
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
-                onItemsPerPageChange={handleItemsPerPageChange}
-            /> */}
-
             {/* ================== NEW TABLE ==================*/}
             <AppTable
                 data={filteredDataTable}
@@ -725,7 +631,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         can_export={userPermission ? userPermission?.f_export : false} columnVisibility={columnVisibility} initialColumns={initialColumns}
                     />
                 }
-                initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
+                initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
                 onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                 onFilteredDataChange={(filteredData: any) => {
                     const newData = filteredData || [];
@@ -758,7 +664,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 open={isModalSuccessOpen}
                 handleClose={handleCloseModal}
                 title="Success"
-                // description="System Parameter has been added."
                 description={modalSuccessMsg}
             />
 
@@ -777,25 +682,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 open={isModalErrorOpen}
                 handleClose={() => {
                     setModalErrorOpen(false);
-                    // if (resetForm) resetForm();
                 }}
                 title="Failed"
                 description={
                     <div>
                         {
-                            modalErrorMsg?.split('<br/>').length > 1 ?
+                            typeof modalErrorMsg === 'string' && modalErrorMsg.includes('<br/>') ?
                                 <ul className="text-start list-disc">
                                     {
-                                        modalErrorMsg.split('<br/>').map(item => {
-                                            return (
-                                                <li>{item}</li>
-                                            )
-                                        })
+                                        modalErrorMsg.split('<br/>').map((item, idx) => (
+                                            <li key={idx}>{item}</li>
+                                        ))
                                     }
                                 </ul>
                                 :
                                 <div className="text-center">
-                                    {`${modalErrorMsg}`}
+                                    {modalErrorMsg ?? ''}
                                 </div>
                         }
                     </div>
@@ -853,6 +755,4 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             </Popover>
         </div>
     );
-};
-
-export default ClientPage;
+}

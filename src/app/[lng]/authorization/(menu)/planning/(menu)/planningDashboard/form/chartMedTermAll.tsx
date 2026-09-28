@@ -75,6 +75,7 @@ interface TableProps {
   srchStartYearMedTerm?: any;
   setfilterList?: any;
   filterList?: any;
+  subTabComponent?: JSX.Element;
 }
 
 const ChartMediumTermAll: React.FC<TableProps> = ({
@@ -90,6 +91,7 @@ const ChartMediumTermAll: React.FC<TableProps> = ({
   srchStartYearMedTerm,
   setfilterList,
   filterList,
+  subTabComponent
 }) => {
   const userDT: any = getUserValue();
   // ############### REDUX DATA ###############
@@ -564,8 +566,8 @@ const ChartMediumTermAll: React.FC<TableProps> = ({
             minDate = d;
           }
         });
-        if(item?.value && Array.isArray(item.value) && (maxLength === null || item?.value?.length > maxLength)) {
-          maxLength = item.value.length;
+        if(item?.value && Array.isArray(item?.value) && (maxLength === null || item?.value?.length > maxLength)) {
+          maxLength = item?.value.length;
         }
       });
     });
@@ -631,7 +633,7 @@ const ChartMediumTermAll: React.FC<TableProps> = ({
 
     const nextFilterDataMedTermEach = finalFiltered.map((entry: any) => ({
       ...entry,
-      data: entry.data.map((item: any) => ({
+      data: (entry.data || [])?.map((item: any) => ({
         ...item,
         month: [...item.month],
         value: [...item.value],
@@ -645,14 +647,14 @@ const ChartMediumTermAll: React.FC<TableProps> = ({
     // =========================
     // 🔥 ใช้ normalized + filtered เท่านั้น
     // =========================
-    const flatData = filtered?.flatMap((d: any) => d?.data);
+    const flatData = filtered.flatMap((d: any) => d?.data);
 
     const { months, areas, seriesData } = processData(flatData);
 
     const chartDataX = {
       labels: months,
       datasets: areas?.map((areaId: any, index: number) => {
-        const areaData = areaMaster?.data.find(
+        const areaData = (areaMaster?.data || [])?.find(
           (d: any) => d.name === areaId?.name,
         );
 
@@ -812,10 +814,24 @@ const ChartMediumTermAll: React.FC<TableProps> = ({
               strokeStyle: dataset.borderColor,
               hidden: !chart.isDatasetVisible(index),
               pointStyle: dataset.isEntry ? "rect" : "circle",
+              datasetIndex: index,
             }));
           },
         },
-        onClick: null,
+        // onClick: null,
+        onClick: (_event: any, legendItem: any, legend: any) => {
+          console.log('object');
+          const chart = legend.chart
+          const datasetIndex = legendItem.datasetIndex
+
+          if (datasetIndex === undefined) return
+
+          const currentlyVisible = chart.isDatasetVisible(datasetIndex)
+
+          chart.setDatasetVisibility(datasetIndex, !currentlyVisible)
+
+          chart.update()
+        },
       },
       title: {
         display: false,
@@ -859,14 +875,12 @@ const ChartMediumTermAll: React.FC<TableProps> = ({
         enabled: true,
         intersect: false,
         backgroundColor: "white",
-        title: false,
-        titleColor: "#767676",
+        titleColor: "black",
         bodyColor: "#767676",
         padding: 5,
         boxPadding: 5,
         usePointStyle: true,
         callbacks: {
-          title: () => null,
           // label: function (tooltipItem: any, data: any) {
           //     return (tooltipItem?.raw === 0 ? null : tooltipItem?.dataset?.label)
           // },
@@ -874,10 +888,15 @@ const ChartMediumTermAll: React.FC<TableProps> = ({
           //     return (tooltipItem?.raw === 0 ? null : formatNumberThreeDecimal(tooltipItem?.raw))
           // },
           label: (tooltipItem: any) => {
-            const labelName = tooltipItem?.dataset?.label;
+            if (tooltipItem == null) return '';
+            const labelName = tooltipItem.dataset?.label || '';
             const value = formatNumberThreeDecimal(tooltipItem.raw);
             return `${labelName} : ${value}`;
           },
+          labelPointStyle: (context: any) => ({
+            pointStyle: context?.dataset?.isEntry ? "rect" : "circle",
+            rotation: 0,
+          }),
           labelColor: function (context: any) {
             return {
               borderColor: context?.dataset?.backgroundColor,
@@ -893,11 +912,11 @@ const ChartMediumTermAll: React.FC<TableProps> = ({
           family: "Tahoma", // Optional: Change font family
           weight: "normal", // Optional: Change font weight
         },
-        titleFont: {
-          size: 14, // Adjust title font size if you decide to enable title
-          family: "Tahoma",
-          weight: "bold",
-        },
+        // titleFont: {
+        //   size: 14, // Adjust title font size if you decide to enable title
+        //   family: "Tahoma",
+        //   weight: "bold",
+        // },
         // Optional: Adjust corner radius and shadow for tooltip appearance
         cornerRadius: 10, // Make the corners of the tooltip rounded
         boxWidth: 50, // Increase box width of the tooltip icon
@@ -956,8 +975,9 @@ const ChartMediumTermAll: React.FC<TableProps> = ({
 
   return (
     <div
-      className={`h-[520px] overflow-hidden block rounded-t-md relative z-1 p-2`}
+      className={`h-[560px] overflow-hidden block rounded-t-md relative z-1 p-2`}
     >
+      {subTabComponent}
       <div className="flex justify-between w-full">
         <div className="py-[7px] pl-[12px]">
           <h2 className="text-[16px] font-bold text-[#58585A] ">

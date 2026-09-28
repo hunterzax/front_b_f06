@@ -235,8 +235,8 @@ const ModalConfirmTerm: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setSelectedTermMaster(termMaster[e.target.value])
-                                                    setValue("term", e.target.value);
+                                                    setSelectedTermMaster(termMaster[e?.target?.value ?? ""])
+                                                    setValue("term", e?.target?.value ?? "");
                                                 }}
                                                 displayEmpty
                                                 renderValue={(value: any) => {
@@ -271,7 +271,7 @@ const ModalConfirmTerm: React.FC<FormExampleProps> = ({
                                                                 disabled={false}
                                                                 valueWatch={watch("year") || ""}
                                                                 handleChange={(e) => {
-                                                                    setValue("year", e.target.value);
+                                                                    setValue("year", e?.target?.value ?? "");
                                                                     if (errors?.year) { clearErrors('year') }
                                                                 }}
                                                                 errors={errors?.month}
@@ -303,7 +303,7 @@ const ModalConfirmTerm: React.FC<FormExampleProps> = ({
                                                                         disabled={false}
                                                                         valueWatch={watch("month") || ""}
                                                                         handleChange={(e) => {
-                                                                            setValue("month", e.target.value);
+                                                                            setValue("month", e?.target?.value ?? "");
                                                                             if (errors?.month) { clearErrors('month') }
                                                                         }}
                                                                         errors={errors?.month}

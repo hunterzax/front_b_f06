@@ -113,8 +113,7 @@ const PopupTandC: React.FC<PopupTicker> = ({
                                         ref={scrollContainerRef}
                                         onScroll={handleScroll}
                                     >
-                                        {/* <PdfViewer3 pdfUrl={tac?.url || "https://pdfobject.com/pdf/sample.pdf"} /> */}
-                                        <PdfViewer3 pdfUrl={'/assets/pdf/sample_2.pdf'} />
+                                        <PdfViewer3 pdfUrl={tac?.url || "https://pdfobject.com/pdf/sample.pdf"} />
 
                                     </div>
                                 </div>

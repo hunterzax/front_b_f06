@@ -1,4 +1,3 @@
-"use client";
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactFlow, {
     MiniMap,
@@ -145,9 +144,9 @@ const MasterPathFlow: React.FC<FlowProps> = ({ entryExitMaster, setNodeData, set
         // ปิด area ที่เป็น exit
         // 1. หา id ของ area จาก nodeEditData.type == "exitNode"
         // 2. เอา id มาใส่ setDisabledItems
-        const idExit = nodeEditData
-            .filter((node: any) => node.type === "exitNode")
-            .map((item: any) => parseInt(item.id, 10));
+        const idExit = (nodeEditData || [])
+            .filter((node: any) => node?.type === "exitNode")
+            .map((item: any) => parseInt(item?.id, 10));
 
         const combinedIds = [...idEntry, ...idExit];
         if (nodeEditData?.length > 0) {

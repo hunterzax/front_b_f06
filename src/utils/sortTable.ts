@@ -773,6 +773,10 @@ export const sortDataDefault = (
                 return direction === 'asc' ? aVal - bVal : bVal - aVal;
             }
 
+            if(typeof aVal === 'object' && typeof bVal === 'object' && Array.isArray(aValue) && Array.isArray(bValue)) {
+                return direction === 'asc' ? aValue.length - bValue.length : bValue.length - aValue.length;
+            }
+
             // Default string comparison (handling non-date strings)
             return direction === 'asc'
                 ? String(aVal).localeCompare(String(bVal), undefined, { sensitivity: 'base' })
@@ -1326,16 +1330,18 @@ export const handleSortBalReport = (
                     });
 
                     // แปลงค่าใน shipper_data เป็น id_name แทน name
-                    data.shipper_data = data.shipper_data.map((item: any) => {
-                        const id_name = nameToIdMap[item.shipper];
-                        if (id_name) {
-                            return {
-                                ...item,
-                                shipper: id_name,  // แทนที่ด้วย id_name
-                            };
-                        }
-                        return item;  // หากไม่พบ id_name ก็เก็บข้อมูลเดิม
-                    });
+                    if (data?.shipper_data) {
+                        data.shipper_data = data.shipper_data.map((item: any) => {
+                            const id_name = nameToIdMap[item?.shipper];
+                            if (id_name) {
+                                return {
+                                    ...item,
+                                    shipper: id_name,  // แทนที่ด้วย id_name
+                                };
+                            }
+                            return item;  // หากไม่พบ id_name ก็เก็บข้อมูลเดิม
+                        });
+                    }
                 });
             } else if (column == "shipper_data.contract_data.contract") {
                 transfer?.forEach((data: any) => {
@@ -2176,8 +2182,8 @@ export const handleSortIntraBalReportRowWhite = (
               }
 
               return (
-                contractA.__originalContractIndex -
-                contractB.__originalContractIndex
+                (contractA?.__originalContractIndex ?? 0) -
+                (contractB?.__originalContractIndex ?? 0)
               );
             });
 

@@ -91,15 +91,15 @@ const ModalAcceptReject: React.FC<FormExampleProps> = ({
                                 })}
                             >
                                 <div>
-                                    <label className={labelClass}>{`Reasons`}</label>
+                                    <label className={labelClass}>Reasons</label>
                                     <TextField
                                         {...register('reason')}
                                         value={watch('reason') || ''}
                                         label=""
                                         multiline
                                         onChange={(e) => {
-                                            if (e.target.value.length <= 255) {
-                                                setValue('reason', e.target.value);
+                                            if ((e?.target?.value || "").length <= 255) {
+                                                setValue('reason', e?.target?.value ?? "");
                                             }
                                         }}
                                         placeholder='Enter Reasons'

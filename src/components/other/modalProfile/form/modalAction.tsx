@@ -59,8 +59,10 @@ const ModalAction: React.FC<FormExampleProps> = ({
                 try {
                     const response: any = await uploadFileService('/files/uploadimage/', file);
 
-                    setValue("url", response?.files[0]?.url);
-                    setPreviewUrl(response?.files[0]?.url)
+                    // setValue("url", response?.files[0]?.url);
+                    // setPreviewUrl(response?.files[0]?.url)
+                    setValue("url", response?.file?.url);
+                    setPreviewUrl(response?.file?.url)
                 } catch (error) {
                     // File upload failed:
                 }

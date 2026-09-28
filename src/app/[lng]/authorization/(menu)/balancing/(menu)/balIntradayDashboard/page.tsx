@@ -35,7 +35,7 @@ interface ClientProps {
     };
 }
 
-const ClientPage: React.FC<ClientProps> = (props) => {
+const ClientPage: React.FC<ClientProps> = () => {
     const router = useRouter();
 
     const { register, setValue, reset, formState: { errors }, watch, getValues } = useForm<any>();
@@ -45,7 +45,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         gasDay: dayjs().format("DD/MM/YYYY"),
         type: "System",
         shipperName: ""
-    })
+    });
 
     // ############### Check Authen ###############
     const userDT: any = getUserValue();
@@ -54,50 +54,48 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
-    let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-    // let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+    let user_permission: any = typeof window !== 'undefined' ? (getCookieValue("k3a9r2b6m7t0x5w1s8j") || localStorage?.getItem("k3a9r2b6m7t0x5w1s8j")) : null;
     user_permission = user_permission ? decryptData(user_permission) : null;
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
-
-            // if (user_permission?.role_config) {
-            //     const updatedUserPermission = generateUserPermission(user_permission);
-            //     setUserPermission(updatedUserPermission);
-            // } else {
-            //     const permission = findRoleConfigByMenuName('Intraday Dashboard', userDT)
-            //     setUserPermission(permission);
-            // }
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+            }
 
             // const permission = findRoleConfigByMenuName('Intraday Dashboard', userDT)
-            const permission = findRoleConfigByMenuName('Intraday Dashboard (Acc.Inv.)', userDT)
+            const permission = findRoleConfigByMenuName('Intraday Dashboard (Acc.Inv.)', userDT);
             if (permission) {
                 setUserPermission(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermission(updatedUserPermission);
             }
         } catch (error) {
             // Failed to parse user_permission:
         }
-    }
+    };
     const [userPermissionDash, setUserPermissionDash] = useState<any>();
 
     const getPermissionDash = () => {
         try {
-            const permission = findRoleConfigByMenuName('Intraday Acc. Imbalance Dashboard', userDT)
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission);
+            }
+            const permission = findRoleConfigByMenuName('Intraday Acc. Imbalance Dashboard', userDT);
        
             if (permission) {
                 setUserPermissionDash(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermissionDash(updatedUserPermission);
             }
         } catch (error) {
             // Failed to parse user_permission:
         }
-    }
+    };
 
     // ############### REDUX DATA ###############
     const { shipperGroupData } = useFetchMasters();
@@ -150,122 +148,52 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [mdSendEmail, setMdSendEmail] = useState(false);
     const [mdEmailSentSuccessOpen, setMdEmailSentSuccessOpen] = useState(false);
 
-    const [fillModal, setFillModal] = useState<any>(null)
+    const [fillModal, setFillModal] = useState<any>(null);
 
     const getLastEmail = async () => {
         try {
             const res_send_email_data = await getService(`/master/balancing/balance-intraday-dashboard/send-email`);
-            setDataSendEmail(res_send_email_data)
+            setDataSendEmail(res_send_email_data);
         } catch (error) {
 
         }
-    }
+    };
 
     const openSendEmail = () => {
-        // setFillModal(uiFilter_)
-
-
-        // setFillModal({
-        //     gasDay: srchStartDate ? dayjs(srchStartDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
-        //     type: srchType,
-        //     shipperName: srchShipperName,
-        // })
         setFillModal({
-                gasDay: uiFilter_?.gasDay,
-                type: uiFilter_?.type,
-                shipperName: uiFilter_?.shipperName
-            })
+            gasDay: uiFilter_?.gasDay ?? '',
+            type: uiFilter_?.type ?? '',
+            shipperName: uiFilter_?.shipperName ?? []
+        });
 
-
-        getLastEmail()
-        setMdSendEmail(true)
+        getLastEmail();
+        setMdSendEmail(true);
     };
 
     const handleSendEmail = async (data?: any) => {
-        setIsLoading(false)
+        setIsLoading(false);
 
-        const output = initialColumns
-        ?.filter((item: any) => columnVisibilityNew[item.key] && item.key !== "action")
-        ?.map((item: any) => item.label);
-//   const body = {
-//     bodys: specificData,
-//     filter: output
-        // output
+        const output = (initialColumns || [])
+        ?.filter((item: any) => columnVisibilityNew?.[item?.key] && item?.key !== "action")
+        ?.map((item: any) => item?.label);
 
-        data.exportFile = {
-            bodys: bodyExport,
-            filter: output,
-            // filter: [
-            //     "Time",
-            //     "Plan/Actual", //fixed ต้องมี
-            //     "Entry(MMBTU)",
-            //     "Entry(MMBTU).East",
-            //     "Entry(MMBTU).West",
-            //     "Entry(MMBTU).East-West",
-            //     "Exit(MMBTU)",
-            //     "Exit(MMBTU).East",
-            //     "Exit(MMBTU).West",
-            //     "Exit(MMBTU).East-West",
-            //     "Balancing Gas",
-            //     "Balancing Gas.East",
-            //     "Balancing Gas.West",
-            //     "Balancing Gas.East-West",
-            //     "Park/Unpark",
-            //     "Park/Unpark.East",
-            //     "Park/Unpark.West",
-            //     "RA#6",
-            //     "RA#6.Ratio East",
-            //     "BVW#10",
-            //     "BVW#10.Ratio East",
-            //     "Shrinkage Gas & Others",
-            //     "Shrinkage Gas & Others.East",
-            //     "Shrinkage Gas & Others.West",
-            //     "Shrinkage Gas & Others.East-West",
-            //     "Change Min. Inventory",
-            //     "Change Min. Inventory.East",
-            //     "Change Min. Inventory.West",
-            //     "Change Min. Inventory.East-West",
-            //     "Imbalance",
-            //     "Imbalance.East",
-            //     "Imbalance.West",
-            //     "Acc Imbalance (Meter) (MMBTU)",
-            //     "Acc Imbalance (Meter) (MMBTU).East",
-            //     "Acc Imbalance (Meter) (MMBTU).West",
-            //     "Acc Imbalance (Inventory) (MMBTU)",
-            //     "Acc Imbalance (Inventory) (MMBTU).East",
-            //     "Acc Imbalance (Inventory) (MMBTU).West",
-            //     "Total Imbalance",
-            //     "% Total Imbalance",
-            //     "System Level (East)",
-            //     "System Level (East).Level",
-            //     "System Level (East).%",
-            //     "Order (East)",
-            //     "Order (East).MMBTU",
-            //     "Order (East).MMSCF",
-            //     "System Level (West)",
-            //     "System Level (West).Level",
-            //     "System Level (West).%",
-            //     "Order (West)",
-            //     "Order (West).MMBTU",
-            //     "Order (West).MMSCF",
-            //     "Condition East",
-            //     "Condition West"
-            // ]
+        if (data) {
+            data.exportFile = {
+                bodys: bodyExport,
+                filter: output,
+            };
         }
-        console.log('data : ', data);
         try {
-            const res_post_email: any = postService('/master/balancing/balance-intraday-dashboard/send-email', data)
+            const res_post_email: any = await postService('/master/balancing/balance-intraday-dashboard/send-email', data);
             setTimeout(() => {
-                setMdEmailSentSuccessOpen(true)
-                setIsLoading(true)
+                setMdEmailSentSuccessOpen(true);
+                setIsLoading(true);
                 setMdSendEmail(false);
             }, 500);
         } catch (error) {
 
         }
-    }
-
-
+    };
 
     // ############### REDUX DATA ###############
     useEffect(() => {
@@ -286,7 +214,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             gasDay: srchStartDate ? dayjs(srchStartDate).format("DD/MM/YYYY") : dayjs().format("DD/MM/YYYY"),
             type: srchType || "",
             shipperName: srchShipperName || ""
-        })
+        });
 
         setIsLoading(false);
 
@@ -296,16 +224,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             "limit": 100,
             "shipper_id": srchShipperName ? srchShipperName : null, // NGP-S01-002 str ไม่มีใส่ null
             "execute_timestamp": srchTimeStamp ? srchTimeStamp : null,  // 1740687600 int ไม่มีใส่ null
-            // "lasted_version": watch('filter_last_version') // เติมมาทีหลัง
             "lasted_version": true, // เติมมาทีหลัง
             "uiFilter": {
                 gasDay: srchStartDate ? dayjs(srchStartDate).format("DD/MM/YYYY") : dayjs().format("DD/MM/YYYY"),
                 type: srchType || "",
                 shipperName: srchShipperName || "",
             }
-        }
+        };
 
-        setBodyExport(body_main)
+        setBodyExport(body_main);
 
         // MAIN DATA 
         const res_ = await postService('/master/balancing/balance-intraday-dashboard', body_main);
@@ -313,29 +240,26 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         // DATA TIMESTAMP
         const data_timestamp = Array.from(
             new Map(
-                res_?.map((item: any) => [item.execute_timestamp, { timestamp: toDayjs(item?.execute_timestamp * 1000).format('DD/MM/YYYY HH:mm'), execute_timestamp: item?.execute_timestamp }])
+                (Array.isArray(res_) ? res_ : []).map((item: any) => [
+                    item?.execute_timestamp,
+                    {
+                        timestamp: (item?.execute_timestamp != null && toDayjs(item.execute_timestamp * 1000)?.isValid())
+                            ? toDayjs(item.execute_timestamp * 1000).format('DD/MM/YYYY HH:mm')
+                            : '',
+                        execute_timestamp: item?.execute_timestamp
+                    }
+                ])
             ).values()
         );
 
         if (data_timestamp?.length > 0) {
-            setDataTimestamp(data_timestamp)
-            // setDataTimestamp((prev: any[]) => {
-            //     const existingModes = new Set(prev.map(item => item.timestamp));
-            //     const newUniqueItems = data_timestamp.filter((item: any) => !existingModes.has(item.timestamp));
-            //     return [...prev, ...newUniqueItems]; // เติมมันเข้าไป และเช็คซ้ำด้วย
-            // });
+            setDataTimestamp(data_timestamp);
         }
 
-        // หา lasted version
-        let filtered_data: any = res_
-        // กรองเฉพาะที่มี execute_timestamp ล่าสุด
-        // if (watch('filter_last_version')) {
-        //     const maxTimestamp = Math.max(...res_?.map((item: any) => item.execute_timestamp));
-        //     filtered_data = res_?.filter((item: any) => item.execute_timestamp === maxTimestamp);
-        // }
+        let filtered_data: any = res_;
 
-        setData(filtered_data)
-        setFilteredDataTable(filtered_data)
+        setData(filtered_data);
+        setFilteredDataTable(filtered_data);
         setCurrentPage(1);
         setTimeout(() => {
             setIsLoading(true);
@@ -343,14 +267,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     };
 
     const handleReset = async () => {
-        setSrchStartDate(null)
-        setSrchShipperName('')
-        setSrchTimeStamp('')
-        setSrchType('System')
-        setValue('filter_last_version', false)
+        setSrchStartDate(null);
+        setSrchShipperName('');
+        setSrchTimeStamp('');
+        setSrchType('System');
+        setValue('filter_last_version', false);
 
-        fetchData();
-        // setFilteredDataTable(dataTable)
+        await fetchData();
         setKey((prevKey) => prevKey + 1);
     };
 
@@ -395,10 +318,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         "condition_west.value"
     ];
     const actualKeys = [...planKeys];
-    const normalize = (value: any): string => (typeof value === 'number' ? formatNumberFourDecimal(value) : value ?? "").toString().replace(/\s+/g, "").toLowerCase().trim();
-    const normalize2 = (value: any): string => (typeof value === 'number' ? value : value ?? "").toString().replace(/\s+/g, "").toLowerCase().trim();
-    const normalize3 = (value: any): string => (typeof value === 'number' ? formatNumberFourDecimalNoComma(value) : value ?? "").toString().replace(/\s+/g, "").toLowerCase().trim();
-    const getNestedValue = (obj: any, path: string) => path.split(".").reduce((acc, key) => acc?.[key], obj);
+    const normalize = (value: any): string => (typeof value === 'number' ? formatNumberFourDecimal(value) : value ?? "")?.toString()?.replace(/\s+/g, "")?.toLowerCase()?.trim() || "";
+    const normalize2 = (value: any): string => (typeof value === 'number' ? value : value ?? "")?.toString()?.replace(/\s+/g, "")?.toLowerCase()?.trim() || "";
+    const normalize3 = (value: any): string => (typeof value === 'number' ? formatNumberFourDecimalNoComma(value) : value ?? "")?.toString()?.replace(/\s+/g, "")?.toLowerCase()?.trim() || "";
+    const getNestedValue = (obj: any, path: string) => (path ? path.split(".")?.reduce((acc, key) => (acc ? acc[key] : undefined), obj) : undefined);
     const normalizePercent = (value: any): string => {
         if (typeof value === 'number') {
             return (formatNumberFourDecimalNoComma(value) + '%')
@@ -407,14 +330,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 .trim();
         }
         return (value ?? "")
-            .toString()
-            .toLowerCase()
-            .replace(/\s+/g, '')
-            .trim();
+            ?.toString()
+            ?.toLowerCase()
+            ?.replace(/\s+/g, '')
+            ?.trim() || "";
     };
 
     const handleSearch = (query: string) => {
-        const queryLower = query?.replace(/\s+/g, '')?.toLowerCase().trim();
+        const queryLower = query?.replace(/\s+/g, '')?.toLowerCase()?.trim() || '';
 
         setFilterList({
             srchStartDate: srchStartDate,
@@ -426,17 +349,17 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         let srchtxtPlan: any = 'plan';
         let srchtxtActual: any = 'actual';
 
-        const isSearchingActual = srchtxtActual.includes(queryLower);
-        const isSearchingPlan = srchtxtPlan.includes(queryLower);
+        const isSearchingActual = srchtxtActual?.includes(queryLower);
+        const isSearchingPlan = srchtxtPlan?.includes(queryLower);
 
         if (isSearchingActual && !isSearchingPlan) {
-            setFilteredDataTable(dataTable?.map((item: any) => ({
+            setFilteredDataTable((dataTable || [])?.map((item: any) => ({
                 ...item,
                 plan_: undefined
             })));
             return;
         } else if (isSearchingPlan && !isSearchingActual) {
-            setFilteredDataTable(dataTable?.map((item: any) => ({
+            setFilteredDataTable((dataTable || [])?.map((item: any) => ({
                 ...item,
                 actual_: undefined
             })));
@@ -445,31 +368,31 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         //===================================================================================================
         if (!queryLower) {
-            setFilteredDataTable(dataTable);
+            setFilteredDataTable(dataTable || []);
             return;
         }
 
-        const filtered = dataTable?.filter((item: any) => {
+        const filtered = (dataTable || [])?.filter((item: any) => {
             const normalizedQuery = queryLower;
 
             // gas_hour check
-            if (normalize(item?.gas_hour).includes(normalizedQuery)) return true;
+            if (normalize(item?.gas_hour)?.includes(normalizedQuery)) return true;
 
             // หาใน plan_
-            if (planKeys.some((key) => normalize(getNestedValue(item?.plan_, key)).includes(normalizedQuery))) {
+            if (planKeys?.some((key) => normalize(getNestedValue(item?.plan_, key))?.includes(normalizedQuery))) {
                 return true;
             }
 
-            if (planKeys.some((key) => normalize2(getNestedValue(item?.plan_, key)).includes(normalizedQuery))) {
+            if (planKeys?.some((key) => normalize2(getNestedValue(item?.plan_, key))?.includes(normalizedQuery))) {
                 return true;
             }
 
             // หาใน actual_
-            if (actualKeys.some((key) => normalize(getNestedValue(item?.actual_, key)).includes(normalizedQuery))) {
+            if (actualKeys?.some((key) => normalize(getNestedValue(item?.actual_, key))?.includes(normalizedQuery))) {
                 return true;
             }
 
-            if (actualKeys.some((key) => normalize2(getNestedValue(item?.actual_, key)).includes(normalizedQuery))) {
+            if (actualKeys?.some((key) => normalize2(getNestedValue(item?.actual_, key))?.includes(normalizedQuery))) {
                 return true;
             }
             return false;
@@ -485,22 +408,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             ?.replace(/\s+/g, '')
             ?.replace('%', '')
             ?.toLowerCase()
-            .trim();
+            ?.trim() || '';
 
         let srchtxtPlan: any = 'plan';
         let srchtxtActual: any = 'actual';
 
-        const isSearchingActual = srchtxtActual.includes(queryLower);
-        const isSearchingPlan = srchtxtPlan.includes(queryLower);
+        const isSearchingActual = srchtxtActual?.includes(queryLower);
+        const isSearchingPlan = srchtxtPlan?.includes(queryLower);
 
         if (isSearchingActual && !isSearchingPlan) {
-            setFilteredDataTable(dataTable?.map((item: any) => ({
+            setFilteredDataTable((dataTable || [])?.map((item: any) => ({
                 ...item,
                 plan_: undefined
             })));
             return;
         } else if (isSearchingPlan && !isSearchingActual) {
-            setFilteredDataTable(dataTable?.map((item: any) => ({
+            setFilteredDataTable((dataTable || [])?.map((item: any) => ({
                 ...item,
                 actual_: undefined
             })));
@@ -508,7 +431,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         }
 
         if (!queryLower) {
-            setFilteredDataTable(dataTable);
+            setFilteredDataTable(dataTable || []);
             return;
         }
 
@@ -631,9 +554,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             );
         };
 
-        console.log(">>> dataTable", dataTable)
-        const dataTable_ = dataTable?.map((d:any) => {
-
+        const dataTable_ = (Array.isArray(dataTable) ? dataTable : [])?.map((d: any) => {
+            if (!d) return {};
             return {
                 ...d,
                 actual_: {
@@ -648,15 +570,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 },
             }
         })
-        // DIFFICULT DAY
-        // formatText
-        // system_level_east
-        // : 
-        // "DD"
-        // system_level_west
-        // : 
-        // "IF"
-
 
         const result = dataTable_
             ?.map((item: any) => {
@@ -664,7 +577,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // ✅ gas_hour
                 const gasHourMatch = normalize(item?.gas_hour)
                     ?.replace(':', '')
-                    ?.includes(queryLower.replace(':', ''));
+                    ?.includes(queryLower?.replace(':', ''));
 
                 if (gasHourMatch) {
                     return item;
@@ -684,8 +597,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
                     return {
                         ...item,
-                        plan_: planMatch ? item.plan_ : undefined,
-                        actual_: actualMatch ? item.actual_ : undefined
+                        plan_: planMatch ? item?.plan_ : undefined,
+                        actual_: actualMatch ? item?.actual_ : undefined
                     };
                 }
 
@@ -721,12 +634,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
                 return {
                     ...item,
-                    plan_: planMatch ? item.plan_ : undefined,
-                    actual_: actualMatch ? item.actual_ : undefined
+                    plan_: planMatch ? item?.plan_ : undefined,
+                    actual_: actualMatch ? item?.actual_ : undefined
                 };
             })
             .filter(Boolean);
-        console.log('result : ', result);
         setCurrentPage(1);
         setFilteredDataTable(result);
     };
@@ -781,27 +693,26 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             // MAIN DATA 
             const response = await postService('/master/balancing/balance-intraday-dashboard', body_main);
-            // let response: any = data_intraday_dashboard; // ----> mock
-
 
             // DATA TIMESTAMP
             const data_timestamp = Array.from(
                 new Map(
-                    response?.map((item: any) => [item.execute_timestamp, { timestamp: toDayjs(item?.execute_timestamp * 1000).format('DD/MM/YYYY HH:mm'), execute_timestamp: item?.execute_timestamp }])
+                    (Array.isArray(response) ? response : []).map((item: any) => [
+                        item?.execute_timestamp,
+                        {
+                            timestamp: (item?.execute_timestamp != null && toDayjs(item.execute_timestamp * 1000)?.isValid())
+                                ? toDayjs(item.execute_timestamp * 1000)?.format('DD/MM/YYYY HH:mm')
+                                : '',
+                            execute_timestamp: item?.execute_timestamp
+                        }
+                    ])
                 ).values()
             );
             if (data_timestamp?.length > 0) {
                 setDataTimestamp(data_timestamp);
             }
 
-            // 250625 : ต้อง Default Check Box Lasted Version https://app.clickup.com/t/86etydk3t
-            // หา lasted version
-            let filtered_data: any = response
-            // กรองเฉพาะที่มี execute_timestamp ล่าสุด
-            // if (watch('filter_last_version')) {
-            //     const maxTimestamp = Math.max(...response?.map((item: any) => item.execute_timestamp));
-            //     filtered_data = response?.filter((item: any) => item.execute_timestamp === maxTimestamp);
-            // }
+            let filtered_data: any = response;
 
             setData(filtered_data);
             setFilteredDataTable(filtered_data);
@@ -810,7 +721,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 setIsLoading(true);
             }, 500);
         } catch (err) {
-            // setError(err.message);
             setData([]);
             setFilteredDataTable([]);
         } finally {
@@ -830,83 +740,82 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### COLUMN SHOW/HIDE ###############
     const initialColumns: any = [
-        // { key: 'gas_day', label: 'Gas Day', visible: true },
         { key: 'time', label: 'Time', visible: true },
 
         // Entry(MMBTU)
         { key: 'entry_mmbtu', label: 'Entry (MMBTU)', visible: true },
-        { key: 'east_total_entry_mmbtud', label: 'East', visible: true, parent_id: 'entry_mmbtu' },
-        { key: 'west_total_entry_mmbtud', label: 'West', visible: true, parent_id: 'entry_mmbtu' },
-        { key: 'east_west_total_entry_mmbtud', label: 'East-West', visible: true, parent_id: 'entry_mmbtu' },
+        { key: 'east_total_entry_mmbtud', label: 'East', label2: 'Entry (MMBTU).East', visible: true, parent_id: 'entry_mmbtu' },
+        { key: 'west_total_entry_mmbtud', label: 'West', label2: 'Entry (MMBTU).West', visible: true, parent_id: 'entry_mmbtu' },
+        { key: 'east_west_total_entry_mmbtud', label: 'East-West', label2: 'Entry (MMBTU).East-West', visible: true, parent_id: 'entry_mmbtu' },
 
         //  Exit (MMBTU)
         { key: 'exit_mmbtu', label: 'Exit (MMBTU)', visible: true },
-        { key: 'east_total_exit_mmbtu', label: 'East', visible: true, parent_id: 'exit_mmbtu' },
-        { key: 'west_total_exit_mmbtu', label: 'West', visible: true, parent_id: 'exit_mmbtu' },
-        { key: 'east_west_total_exit_mmbtu', label: 'East-West', visible: true, parent_id: 'exit_mmbtu' },
+        { key: 'east_total_exit_mmbtu', label: 'East', label2: 'Exit (MMBTU).East', visible: true, parent_id: 'exit_mmbtu' },
+        { key: 'west_total_exit_mmbtu', label: 'West', label2: 'Exit (MMBTU).West', visible: true, parent_id: 'exit_mmbtu' },
+        { key: 'east_west_total_exit_mmbtu', label: 'East-West', label2: 'Exit (MMBTU).East-West', visible: true, parent_id: 'exit_mmbtu' },
 
         //  Balancing Gas
         { key: 'balancing_gas', label: 'Balancing Gas', visible: true },
-        { key: 'east_total_balancing_gas', label: 'East', visible: true, parent_id: 'balancing_gas' },
-        { key: 'west_total_balancing_gas', label: 'West', visible: true, parent_id: 'balancing_gas' },
-        { key: 'east_west_total_balancing_gas', label: 'East-West', visible: true, parent_id: 'balancing_gas' },
+        { key: 'east_total_balancing_gas', label: 'East', label2: 'Balancing Gas.East', visible: true, parent_id: 'balancing_gas' },
+        { key: 'west_total_balancing_gas', label: 'West', label2: 'Balancing Gas.West', visible: true, parent_id: 'balancing_gas' },
+        { key: 'east_west_total_balancing_gas', label: 'East-West', label2: 'Balancing Gas.East-West', visible: true, parent_id: 'balancing_gas' },
 
         //  Park/Unpark
         { key: 'park_unpark', label: 'Park/Unpark', visible: true },
-        { key: 'east_total_park_unpark', label: 'East', visible: true, parent_id: 'park_unpark' },
-        { key: 'west_total_park_unpark', label: 'West', visible: true, parent_id: 'park_unpark' },
+        { key: 'east_total_park_unpark', label: 'East', label2: 'Park/Unpark.East', visible: true, parent_id: 'park_unpark' },
+        { key: 'west_total_park_unpark', label: 'West', label2: 'Park/Unpark.West', visible: true, parent_id: 'park_unpark' },
 
         { key: 'ra6', label: 'RA#6', visible: true },
-        { key: 'ra6_ratio', label: 'Ratio East', visible: true, parent_id: 'ra6' },
+        { key: 'ra6_ratio', label: 'Ratio East', label2: 'RA#6.Ratio East', visible: true, parent_id: 'ra6' },
 
         { key: 'bvw10', label: 'BVW#10', visible: true },
-        { key: 'bvw10_ratio', label: 'Ratio East ', visible: true, parent_id: 'bvw10' },
+        { key: 'bvw10_ratio', label: 'Ratio East ', label2: 'BVW#10.Ratio East', visible: true, parent_id: 'bvw10' },
 
         //  Shrinkage Gas & Others
         { key: 'shrinkage_gas_and_other', label: 'Shrinkage Gas & Others', visible: true },
-        { key: 'east_total_shrinkage_gas_and_other', label: 'East', visible: true, parent_id: 'shrinkage_gas_and_other' },
-        { key: 'west_total_shrinkage_gas_and_other', label: 'West', visible: true, parent_id: 'shrinkage_gas_and_other' },
-        { key: 'east_west_total_shrinkage_gas_and_other', label: 'East-West', visible: true, parent_id: 'shrinkage_gas_and_other' },
+        { key: 'east_total_shrinkage_gas_and_other', label: 'East', label2: 'Shrinkage Gas & Others.East', visible: true, parent_id: 'shrinkage_gas_and_other' },
+        { key: 'west_total_shrinkage_gas_and_other', label: 'West', label2: 'Shrinkage Gas & Others.West', visible: true, parent_id: 'shrinkage_gas_and_other' },
+        { key: 'east_west_total_shrinkage_gas_and_other', label: 'East-West', label2: 'Shrinkage Gas & Others.East-West', visible: true, parent_id: 'shrinkage_gas_and_other' },
 
         //  Shrinkage Gas & Others
         { key: 'change_min_inventory', label: 'Change Min. Inventory', visible: true },
-        { key: 'east_total_change_min_inventory', label: 'East', visible: true, parent_id: 'change_min_inventory' },
-        { key: 'west_total_change_min_inventory', label: 'West', visible: true, parent_id: 'change_min_inventory' },
-        { key: 'east_west_total_change_min_inventory', label: 'East-West', visible: true, parent_id: 'change_min_inventory' },
+        { key: 'east_total_change_min_inventory', label: 'East', label2: 'Change Min. Inventory.East', visible: true, parent_id: 'change_min_inventory' },
+        { key: 'west_total_change_min_inventory', label: 'West', label2: 'Change Min. Inventory.West', visible: true, parent_id: 'change_min_inventory' },
+        { key: 'east_west_total_change_min_inventory', label: 'East-West', label2: 'Change Min. Inventory.East-West', visible: true, parent_id: 'change_min_inventory' },
 
         //  Shrinkage Gas & Others
         { key: 'imbalance', label: 'Imbalance', visible: true },
-        { key: 'east_total_imbalance', label: 'East', visible: true, parent_id: 'imbalance' },
-        { key: 'west_total_imbalance', label: 'West', visible: true, parent_id: 'imbalance' },
+        { key: 'east_total_imbalance', label: 'East', label2: 'Imbalance.East', visible: true, parent_id: 'imbalance' },
+        { key: 'west_total_imbalance', label: 'West', label2: 'Imbalance.West', visible: true, parent_id: 'imbalance' },
 
         //  Acc. Imbalance (Meter) (MMBTU)
         { key: 'acc_imbalance_meter_mmbtu', label: 'Acc. Imbalance (Meter) (MMBTU)', visible: true },
-        { key: 'east_total_acc_imbalance_meter_mmbtu', label: 'East', visible: true, parent_id: 'acc_imbalance_meter_mmbtu' },
-        { key: 'west_total_acc_imbalance_meter_mmbtu', label: 'West', visible: true, parent_id: 'acc_imbalance_meter_mmbtu' },
+        { key: 'east_total_acc_imbalance_meter_mmbtu', label: 'East', label2: 'Acc. Imbalance (Meter) (MMBTU).East', visible: true, parent_id: 'acc_imbalance_meter_mmbtu' },
+        { key: 'west_total_acc_imbalance_meter_mmbtu', label: 'West', label2: 'Acc. Imbalance (Meter) (MMBTU).West', visible: true, parent_id: 'acc_imbalance_meter_mmbtu' },
 
         //  Acc. Imbalance (Inventory) (MMBTU)
         { key: 'acc_imbalance_inventory_mmbtu', label: 'Acc. Imbalance (Inventory) (MMBTU)', visible: true },
-        { key: 'east_total_acc_imbalance_inventory_mmbtu', label: 'East', visible: true, parent_id: 'acc_imbalance_inventory_mmbtu' },
-        { key: 'west_total_acc_imbalance_inventory_mmbtu', label: 'West', visible: true, parent_id: 'acc_imbalance_inventory_mmbtu' },
+        { key: 'east_total_acc_imbalance_inventory_mmbtu', label: 'East', label2: 'Acc. Imbalance (Inventory) (MMBTU).East', visible: true, parent_id: 'acc_imbalance_inventory_mmbtu' },
+        { key: 'west_total_acc_imbalance_inventory_mmbtu', label: 'West', label2: 'Acc. Imbalance (Inventory) (MMBTU).West', visible: true, parent_id: 'acc_imbalance_inventory_mmbtu' },
 
         { key: 'total_imbalance', label: 'Total Imbalance', visible: true },
         { key: 'percent_total_imbalance', label: '% Total Imbalance', visible: true },
 
         { key: 'system_level_east', label: 'System Level (East)', visible: true },
-        { key: 'level_system_level_east', label: 'Level', visible: true, parent_id: 'system_level_east' },
-        { key: 'percent_system_level_east', label: '%', visible: true, parent_id: 'system_level_east' },
+        { key: 'level_system_level_east', label: 'Level', label2: 'System Level (East).Level', visible: true, parent_id: 'system_level_east' },
+        { key: 'percent_system_level_east', label: '%', label2: 'System Level (East).%', visible: true, parent_id: 'system_level_east' },
 
         { key: 'order_east', label: 'Order (East)', visible: true },
-        { key: 'order_east_mmbtu', label: 'MMBTU', visible: true, parent_id: 'order_east' },
-        { key: 'order_east_mmscf', label: 'MMSCF', visible: true, parent_id: 'order_east' },
+        { key: 'order_east_mmbtu', label: 'MMBTU', label2: 'Order (East).MMBTU', visible: true, parent_id: 'order_east' },
+        { key: 'order_east_mmscf', label: 'MMSCF', label2: 'Order (East).MMSCF', visible: true, parent_id: 'order_east' },
 
         { key: 'system_level_west', label: 'System Level (West)', visible: true },
-        { key: 'level_system_level_west', label: 'Level', visible: true, parent_id: 'system_level_west' },
-        { key: 'percent_system_level_west', label: '%', visible: true, parent_id: 'system_level_west' },
+        { key: 'level_system_level_west', label: 'Level', label2: 'System Level (West).Level', visible: true, parent_id: 'system_level_west' },
+        { key: 'percent_system_level_west', label: '%', label2: 'System Level (West).%', visible: true, parent_id: 'system_level_west' },
 
         { key: 'order_west', label: 'Order (West)', visible: true },
-        { key: 'order_west_mmbtu', label: 'MMBTU', visible: true, parent_id: 'order_west' },
-        { key: 'order_west_mmscf', label: 'MMSCF', visible: true, parent_id: 'order_west' },
+        { key: 'order_west_mmbtu', label: 'MMBTU', label2: 'Order (West).MMBTU', visible: true, parent_id: 'order_west' },
+        { key: 'order_west_mmscf', label: 'MMSCF', label2: 'Order (West).MMSCF', visible: true, parent_id: 'order_west' },
 
         { key: 'condition_east', label: 'Condition East', visible: true },
         { key: 'condition_west', label: 'Condition West', visible: true },
@@ -915,13 +824,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const [columnVisibilityNew, setColumnVisibilityNew] = useState<any>(
-        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries(initialColumns.map((column: any) => [column?.key, column?.visible]))
     );
     const filteredColumns = initialColumns;
 
     useEffect(() => {
-        setColumnVisibilityNew(Object.fromEntries(filteredColumns?.map((column: any) => [column.key, column.visible])))
-    }, [])
+        setColumnVisibilityNew(Object.fromEntries((filteredColumns || [])?.map((column: any) => [column?.key, column?.visible])));
+    }, []);
 
     const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(anchorEl ? null : event.currentTarget);
@@ -931,14 +840,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         const dataFilter = initialColumns;
 
         const getDescendants = (key: string): string[] => {
-            const children = dataFilter.filter((col: { key: string; parent_id?: string }) => col.parent_id === key);
+            const children = (Array.isArray(dataFilter) ? dataFilter : []).filter((col: { key: string; parent_id?: string }) => col?.parent_id === key);
             return children.reduce((acc: string[], child: any) => {
-                return [...acc, child.key, ...getDescendants(child.key)];
+                return [...acc, child?.key, ...getDescendants(child?.key)];
             }, []);
         };
 
         const getAncestors = (key: string): string[] => {
-            const column = dataFilter.find((col: any) => col.key === key);
+            const column = (Array.isArray(dataFilter) ? dataFilter : [])?.find((col: any) => col?.key === key);
             if (column?.parent_id) {
                 return [column.parent_id, ...getAncestors(column.parent_id)];
             }
@@ -959,8 +868,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             });
 
             ancestors.forEach(parentKey => {
-                const siblings = dataFilter.filter((col: any) => col.parent_id === parentKey);
-                const isAnySiblingChecked = siblings.some((col: any) => newState[col.key]);
+                const siblings = (Array.isArray(dataFilter) ? dataFilter : []).filter((col: any) => col?.parent_id === parentKey);
+                const isAnySiblingChecked = siblings.some((col: any) => newState[col?.key]);
                 newState[parentKey] = isAnySiblingChecked;
             });
 
@@ -971,36 +880,55 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     };
 
     useEffect(() => {
-        setPaginatedData(filteredDataTable?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
-    }, [filteredDataTable, currentPage, itemsPerPage])
+        setPaginatedData((Array.isArray(filteredDataTable) ? filteredDataTable : [])?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
+    }, [filteredDataTable, currentPage, itemsPerPage]);
 
     useEffect(() => {
         fetchData();
     }, [resetForm]);
 
-    useEffect(() => {
-        // เช็คว่าชื่อ shipper มีคำว่า ptt อยู่หรือไม่ จะเอาไป validate สีคอลัม Order east west
-        if (srchShipperName) {
-            const find_shipper = dataShipper?.find((item: any) => item.id_name == srchShipperName)
-            // const hasPTT = (find_shipper?.name ?? '').toLowerCase().includes('ptt');
-            const hasPTT = (find_shipper?.id_name ?? '').trim().toLowerCase() === 'ngp-s16-001';
+    // useEffect(() => {
+    //     // เช็คว่าชื่อ shipper มีคำว่า ptt อยู่หรือไม่ จะเอาไป validate สีคอลัม Order east west
+    //     if (srchShipperName) {
+    //         const find_shipper = (Array.isArray(dataShipper) ? dataShipper : [])?.find((item: any) => item?.id_name == srchShipperName);
+    //         const hasPTT = (find_shipper?.id_name ?? '').trim().toLowerCase() === 'ngp-s16-001';
 
-            setIsIncludePtt(hasPTT)
+    //         setIsIncludePtt(hasPTT);
+    //     }
+    // }, [srchShipperName, dataShipper]);
+
+    useEffect(() => {
+        const appliedShipperName =
+            userDT?.account_manage?.[0]?.user_type_id === 3
+                ? userDT?.account_manage?.[0]?.group?.id_name
+                : uiFilter_?.shipperName;
+
+        if (!appliedShipperName) {
+            setIsIncludePtt(false);
+            return;
         }
-    }, [srchShipperName])
+
+        const findShipper = (Array.isArray(dataShipper) ? dataShipper : [])
+            .find((item: any) => item?.id_name === appliedShipperName);
+
+        const hasPTT =
+            (findShipper?.id_name ?? '').trim().toLowerCase() === 'ngp-s16-001';
+
+        setIsIncludePtt(hasPTT);
+    }, [
+        uiFilter_?.shipperName,
+        dataShipper,
+        userDT?.account_manage?.[0]?.user_type_id,
+        userDT?.account_manage?.[0]?.group?.id_name
+    ]);
 
     // กันส่งมา Intraday Dashboard : กรณีที่ Shipper เข้ามา จะต้องไม่เห็น System Fix ให้เห็นเฉพาะ Shipper แล้วต้องเห็นแค่เฉพาะของตัวเองเท่านั้น (ทำเป็น disable ไม่ให้เลือก)
     useEffect(() => {
         if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-            setSrchType('Shipper')
-            setSrchShipperName(userDT?.account_manage?.[0]?.group?.id_name)
+            setSrchType('Shipper');
+            setSrchShipperName(userDT?.account_manage?.[0]?.group?.id_name);
         }
-    }, [])
-
-    useEffect(() => {
-      console.log('userPermissionDash : ', userPermissionDash);
-    }, [userPermissionDash])
-    
+    }, []);
 
     return (
         <div className=" space-y-2">
@@ -1023,12 +951,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         value={srchType}
                         isDisabled={userDT?.account_manage?.[0]?.user_type_id == 3 ? true : false}
                         onChange={(e) => {
-                            setSrchShipperName('')
-                            setSrchType(e.target.value)
+                            setSrchShipperName('');
+                            setSrchType(e.target.value);
                         }}
-                        options={dataHvType?.map((item: any) => ({
-                            value: item.type,
-                            label: item.type
+                        options={(Array.isArray(dataHvType) ? dataHvType : [])?.map((item: any) => ({
+                            value: item?.type ?? '',
+                            label: item?.type ?? ''
                         }))}
                     />
 
@@ -1037,19 +965,17 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         label="Shipper Name"
                         type="select"
                         value={srchShipperName}
-                        // isDisabled={srchType == undefined || srchType == '' || srchType == 'System' ? true : false}
                         isDisabled={(srchType == undefined || srchType == '' || srchType == 'System') || userDT?.account_manage?.[0]?.user_type_id == 3 ? true : false}
                         onChange={(e) => setSrchShipperName(e.target.value)}
-                        options={dataShipper
-                            ?.filter((item: any) => // เห็นแค่ชื่อตัวเอง
+                        options={(Array.isArray(dataShipper) ? dataShipper : [])
+                            ?.filter((item: any) =>
                                 userDT?.account_manage?.[0]?.user_type_id == 3
                                     ? item?.id === userDT?.account_manage?.[0]?.group?.id
                                     : true
                             )
                             .map((item: any) => ({
-                                // value: item.id,
-                                value: item.id_name,
-                                label: item.name,
+                                value: item?.id_name ?? '',
+                                label: item?.name ?? '',
                             }))
                         }
                     />
@@ -1120,7 +1046,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             {
                                 userDT?.account_manage?.[0]?.user_type_id == 3 ?
                                     `Gas Day: ${srchStartDate ? dayjs(srchStartDate).format("DD/MM/YYYY") : dayjs().format("DD/MM/YYYY")} | Type: Shipper | Shipper Name: ${userDT?.account_manage?.[0]?.group?.name || ""}`
-                                    : `Gas Day: ${uiFilter_?.gasDay || ""} | Type: ${uiFilter_?.type || ""} | Shipper Name: ${dataShipper?.find((f: any) => f?.id_name === uiFilter_?.shipperName)?.name || ""}`
+                                    : `Gas Day: ${uiFilter_?.gasDay || ""} | Type: ${uiFilter_?.type || ""} | Shipper Name: ${(Array.isArray(dataShipper) ? dataShipper : [])?.find((f: any) => f?.id_name === uiFilter_?.shipperName)?.name || ""}`
                             }
 
                         </div>
@@ -1132,7 +1058,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             textRender={"Export"}
                             data={filteredDataTable}
                             path="balancing/balance-intraday-dashboard"
-                            can_export={userPermission ? userPermission?.f_export : false}
+                            can_export={Boolean(userPermission?.f_export)}
                             disable={filteredDataTable?.length > 0 ? false : true}
                             columnVisibility={columnVisibilityNew}
                             initialColumns={initialColumns}
@@ -1147,7 +1073,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     columnVisibility={columnVisibilityNew}
                     initialColumns={initialColumns}
                     userPermission={userPermission}
-                    shipperGroupData={shipperGroupData?.data}
+                    shipperGroupData={Array.isArray(shipperGroupData) ? shipperGroupData : shipperGroupData?.data}
                     srchType={
                         userDT?.account_manage?.[0]?.user_type_id == 3 ?
                             `Shipper`

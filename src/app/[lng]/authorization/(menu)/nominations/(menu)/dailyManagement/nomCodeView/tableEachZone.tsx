@@ -210,14 +210,14 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                     return obj;
                 }, {} as Record<number, any>);
             };
-            const originalTempx: any = tempDataOriginalConcept?.find((item: any) => item?.old_index == rowId);
-            const originalTemp: any = tempDataOriginalConcept
 
-            const transArray = objectToArray(originalTempx?.data_temp2)
-
+            const originalTemp: any[] = Array.isArray(tempDataOriginalConcept) ? tempDataOriginalConcept : [];
+            const originalTempx: any = originalTemp.find((item: any) => item?.old_index == rowId);
+            if (originalTempx != null) {
+                const transArray = objectToArray(originalTempx.data_temp2)
             let count: any = 0;
-            let lastIDX: any = transArray?.length - 1;
-            for (let index = 14; index < transArray?.length; index++) {
+                let lastIDX: any = transArray.length - 1;
+                for (let index = 14; index < transArray.length; index++) {
                 count = count + 1
                 if (index == lastIDX) {
                     transArray[index].value = originalTempx["total"];
@@ -226,7 +226,8 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                 }
             }
 
-            originalTemp.find((item: any) => item?.old_index == rowId).data_temp2 = arrayToObject(transArray)
+                originalTemp.find((item: any) => item?.old_index == rowId).data_temp2 = arrayToObject(transArray)
+            }
             setSortedData(originalTemp); // เอาไว้ใช้ตอน cancel
         }
 
@@ -641,36 +642,30 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
 
     // Nom Detail ต้องการเพิ่ม Filter or Checkbox สำหรับกรองเฉพาะรายการสีแดง https://app.clickup.com/t/86etzcgt4
     const filterSortDataOverVal = (sort_data: any) => {
-        return sort_data.filter((row: any) => {
+        return (sort_data || []).filter((row: any) => {
             const dt = row?.data_temp2;
             const no = row?.newObj;
 
             // 1. WI: เช็คว่าค่าอยู่นอกช่วง min-max
-            const wi = parseFloat(dt["11"]);
+            const wi = parseFloat(dt?.["11"]);
             const wiMin = parseFloat(no?.["11"]?.min);
             const wiMax = parseFloat(no?.["11"]?.max);
             const wiInvalid = Number.isFinite(wi) && Number.isFinite(wiMin) && Number.isFinite(wiMax) ? (wi < wiMin || wi > wiMax) : false;
 
             // 2. HV: เช็คว่าอยู่นอกช่วง min-max
-            const hv = parseFloat(dt["12"]);
+            const hv = parseFloat(dt?.["12"]);
             const hvMin = parseFloat(no?.["12"]?.min);
             const hvMax = parseFloat(no?.["12"]?.max);
             const hvInvalid = Number.isFinite(hv) && Number.isFinite(hvMin) && Number.isFinite(hvMax) ? (hv < hvMin || hv > hvMax) : false;
 
-            // 3. SG: มากกว่า valueBook
-            // const sg = parseFloat(dt["13"]);
-            // const sgBook = parseFloat(no?.["13"]?.valueBook || "0");
-            // const sgInvalid = sg > sgBook;
-            const sgInvalid = false;
-
-            // 4-27: H1 ถึง H24 (index 14 ถึง 37)
-            const hInvalid = Object.keys(dt)
+            // 3. H1 ถึง H24 (index 14 ถึง 37)
+            const hInvalid = Object.keys(dt || {})
                 .filter((key) => {
                     const index = Number(key);
                     return Number.isInteger(index) && index >= 14 && index <= 37;
                 })
                 .some((key) => {
-                    const val = Number(dt[key]);
+                    const val = Number(dt?.[key]);
                     const book = Number(no?.[key]?.valueBook);
 
                     // ถ้าอย่างใดอย่างหนึ่งไม่ใช่ตัวเลขที่ finite ให้ข้าม (ถือว่าไม่ invalid)
@@ -679,7 +674,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                     return val > book;
                 });
 
-            return wiInvalid || hvInvalid || sgInvalid || hInvalid;
+            return wiInvalid || hvInvalid || hInvalid;
         });
     };
 
@@ -701,20 +696,20 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
     // }, [])
     const [dataCTvalidate, setDataCTvalidate] = useState([])
     useEffect(() => {
-      let groupedBywarningLogHrWeeklyTemp: any = Object.values(
-            tableData.reduce((acc:any, item:any) => {
+      let groupedBywarningLogHrWeeklyTemp: any = (Object.values(
+            (tableData || []).reduce((acc:any, item:any) => {
             const key = `${item?.contract_point_list?.[0]?.contract_point}|${item?.unit_text}`
             if (!acc[key]) {
                 acc[key] = {
                 contractPoint: item?.contract_point_list?.[0]?.contract_point,
-                unit: item.unit_text,
+                unit: item?.unit_text,
                 data: []
                 }
             }
             acc[key].data.push(item)
             return acc
             }, {})
-        )?.filter((f:any) => !!f?.contractPoint)?.map((d_:any) => {
+        ) || [])?.filter((f:any) => !!f?.contractPoint)?.map((d_:any) => {
             return {
                 ...d_,
                 day:{
@@ -863,36 +858,19 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                 <tr className="h-20">
 
-                                    {/* tabs concept point */}
-                                    {columnVisibility.supply_demand && (
-                                        // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("supply_demand_text", sortState, setSortState, setSortedData, paginatedData)}>
-                                        <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("supply_demand_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
-                                            {`Supply/Demand`}
-                                            {getArrowIcon("supply_demand_text")}
-                                        </th>
-                                    )}
-
-                                    {columnVisibility.area && (
-                                        // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, paginatedData)}>
-                                        <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
-                                            {`Area`}
-                                            {getArrowIcon("area_text")}
-                                        </th>
-                                    )}
-
-                                    {columnVisibility.nomination_point && (
+                                    {columnVisibility?.nomination_point && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] `} onClick={() => handleSort("nomination_point_text", sortState, setSortState, setSortedData, paginatedData)}>
-                                        <th scope="col" className={`${table_sort_header_style} min-w-[120px] `} onClick={() => handleSort("nomination_point_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
+                                        <th scope="col" className={`sticky left-0 z-40 bg-[#1473A1] ${table_sort_header_style} min-w-[180px] `} onClick={() => handleSort("nomination_point_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
                                             {`Nomination Point`}
                                             {getArrowIcon("nomination_point_text")}
                                         </th>
                                     )}
 
-                                    {/* tabs concept point */}
-                                    {columnVisibility.concept_id && (
+                                     {/* tabs concept point */}
+                                    {columnVisibility?.concept_id && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSortConcept(["3", "4", "5"], sortState, setSortState, setSortedData, paginatedData)}>
                                         <th scope="col"
-                                            className={`${table_sort_header_style} min-w-[120px]`}
+                                            className={`sticky left-0 z-40 bg-[#1473A1] ${table_sort_header_style} min-w-[180px]`}
                                             // onClick={() => handleSortConcept(["3", "4", "5"], sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}
                                             onClick={() => handleSort("concept_point_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}
                                         >
@@ -904,15 +882,36 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                     )}
 
                                     {/* tabs concept point */}
-                                    {columnVisibility.unit && (
+                                    {columnVisibility?.unit && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("unit_text", sortState, setSortState, setSortedData, paginatedData)}>
-                                        <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("unit_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
+                                        <th scope="col" className={`sticky left-[180px] z-40 bg-[#1473A1] ${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("unit_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
                                             {`Unit`}
                                             {getArrowIcon("unit_text")}
                                         </th>
                                     )}
 
-                                    {columnVisibility.type && (
+                                    {/* tabs concept point */}
+                                    {columnVisibility?.supply_demand && (
+                                        // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("supply_demand_text", sortState, setSortState, setSortedData, paginatedData)}>
+                                        <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("supply_demand_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
+                                            {`Supply/Demand`}
+                                            {getArrowIcon("supply_demand_text")}
+                                        </th>
+                                    )}
+
+                                    {columnVisibility?.area && (
+                                        // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, paginatedData)}>
+                                        <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
+                                            {`Area`}
+                                            {getArrowIcon("area_text")}
+                                        </th>
+                                    )}
+
+                                    
+
+                                   
+
+                                    {columnVisibility?.type && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("type_text", sortState, setSortState, setSortedData, paginatedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("type_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
                                             {`Type`}
@@ -921,7 +920,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                     )}
 
                                     {/* tabs concept point */}
-                                    {columnVisibility.entry_exit && (
+                                    {columnVisibility?.entry_exit && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("entry_exit_text", sortState, setSortState, setSortedData, paginatedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("entry_exit_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
                                             {`Entry/Exit`}
@@ -929,7 +928,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                         </th>
                                     )}
 
-                                    {columnVisibility.wi && (
+                                    {columnVisibility?.wi && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("wi_text", sortState, setSortState, setSortedData, paginatedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("wi_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
                                             {`WI`}
@@ -937,7 +936,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                         </th>
                                     )}
 
-                                    {columnVisibility.hv && (
+                                    {columnVisibility?.hv && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("hv_text", sortState, setSortState, setSortedData, paginatedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("hv_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
                                             {`HV`}
@@ -945,7 +944,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                         </th>
                                     )}
 
-                                    {columnVisibility.sg && (
+                                    {columnVisibility?.sg && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("sg_text", sortState, setSortState, setSortedData, paginatedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("sg_text", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
                                             {`SG`}
@@ -955,7 +954,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
 
                                     {getVisibleHours().map(({ key, label, timeRange }, index) => {
                                         return (
-                                            columnVisibility[key] && (
+                                            columnVisibility?.[key] && (
                                                 <th
                                                     key={key}
                                                     scope="col"
@@ -972,7 +971,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                         )
                                     })}
 
-                                    {columnVisibility.total && (
+                                    {columnVisibility?.total && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("total", sortState, setSortState, setSortedData, tableData)}>
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("total", sortState, setSortState, setSortedData, paginatedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("total", sortState, setSortState, setSortedData, tabMain == 0 ? tempData : tempDataConcept)}>
@@ -981,7 +980,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                         </th>
                                     )}
 
-                                    {columnVisibility.edit && (
+                                    {columnVisibility?.edit && (
                                         <th scope="col" className={`${table_header_style} text-center`} >
                                             {`Edit`}
                                         </th>
@@ -992,8 +991,8 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                             {/* เพิ่มเงื่อนไขถ้า tabMain == 1 ให้ใช้ paginatedData ในการ map แทน sortedData */}
                             <tbody>
                                 {
-                                    // sortedData.length > 0 && sortedData?.map((row: any, index: any) => {
-                                    paginatedData.length > 0 && paginatedData?.map((row: any, index: any) => {
+                                    // (sortedData || [])?.map((row: any, index: any) => {
+                                    (paginatedData || [])?.map((row: any, index: any) => {
 
                                         // เตรียมไว้ก่อน 
                                         // Edit ระบบต้องอนุญาตให้ระบุค่าติดลบเข้ามาได้ ประกอบด้วย Min Inventory / Exchange Min Invent / Shrinkage / Park / Unpark / Instructed Entry / Instructed Exit และ Concept Point https://app.clickup.com/t/86ev29x17
@@ -1083,13 +1082,13 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 className={`${table_row_style}`}
                                             >
 
-                                                {columnVisibility.supply_demand && (
-                                                    <td className="px-2 py-1 text-[#464255] ">{row?.data_temp2?.["1"] ? row?.data_temp2?.["1"] : ''}</td>
+                                                {columnVisibility?.nomination_point && (
+                                                    <td className="sticky left-0  min-w-[180px] bg-[#ffffff] px-2 py-1 text-[#464255]">{row?.data_temp2?.["3"] ? row?.data_temp2?.["3"] : ''}</td>
                                                 )}
 
-                                                {columnVisibility.concept_id && (
+                                                {columnVisibility?.concept_id && (
                                                     // <td className="px-2 py-1 text-[#464255]">{row?.data_temp2?.["3"] ? row?.data_temp2?.["3"] : ''}</td>
-                                                    <td className="px-2 py-1 text-[#464255]">
+                                                    <td className="sticky left-0  min-w-[180px] bg-[#ffffff] px-2 py-1 text-[#464255]">
                                                         {
                                                             row?.data_temp2?.["3"]?.trim() !== "" ? row?.data_temp2?.["3"] :
                                                                 row?.data_temp2?.["4"]?.trim() !== "" ? row?.data_temp2?.["4"] :
@@ -1097,6 +1096,16 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                         }
                                                     </td>
                                                 )}
+
+                                                {columnVisibility?.unit && (
+                                                    <td className="sticky left-[180px] bg-[#ffffff]  min-w-[120px] px-2 py-1 text-[#464255]">{row?.data_temp2?.["9"] ? row?.data_temp2?.["9"] : ''}</td>
+                                                )}
+
+                                                {columnVisibility?.supply_demand && (
+                                                    <td className="px-2 py-1 text-[#464255] ">{row?.data_temp2?.["1"] ? row?.data_temp2?.["1"] : ''}</td>
+                                                )}
+
+                                                
 
                                                 {columnVisibility?.area && (
                                                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} !justify-center items-center text-center flex`}>
@@ -1124,19 +1133,11 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                     </td>
                                                 )}
 
-                                                {columnVisibility.nomination_point && (
-                                                    <td className="px-2 py-1 text-[#464255]">{row?.data_temp2?.["3"] ? row?.data_temp2?.["3"] : ''}</td>
-                                                )}
-
-                                                {columnVisibility.unit && (
-                                                    <td className="px-2 py-1 text-[#464255]">{row?.data_temp2?.["9"] ? row?.data_temp2?.["9"] : ''}</td>
-                                                )}
-
-                                                {columnVisibility.type && (
+                                                {columnVisibility?.type && (
                                                     <td className="px-2 py-1 text-[#464255]">{row?.data_temp2?.["6"] ? row?.data_temp2?.["6"] : ''}</td>
                                                 )}
 
-                                                {columnVisibility.entry_exit && (
+                                                {columnVisibility?.entry_exit && (
                                                     <td className="px-2 py-1  justify-center ">
                                                         {(() => {
                                                             const filter_entry_exit = entryExitMaster?.data?.find((item: any) => item.name === row?.data_temp2["10"]?.trim());
@@ -1147,7 +1148,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                     </td>
                                                 )}
 
-                                                {columnVisibility.wi && (
+                                                {columnVisibility?.wi && (
                                                     // <td className={`px-2 py-1 text-[#464255] text-right ${row?.data_temp2?.["11"] < row?.newObj?.["11"]?.min || row?.data_temp2?.["11"] > row?.newObj?.["11"]?.max ? 'text-[#ED1B24] ' : ''}`}>
                                                     // <td
                                                     //     className={`px-2 py-1 text-[#464255] text-right 
@@ -1190,7 +1191,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                     </td>
                                                 )}
 
-                                                {columnVisibility.hv && (
+                                                {columnVisibility?.hv && (
                                                     <td
                                                         // className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp2?.["12"]) < row?.newObj?.["12"]?.min || parseFloat(row?.data_temp2?.["12"]) > row?.newObj?.["12"]?.max ? 'text-[#ED1B24]' : ''}`}
                                                         className={`px-2 py-1 text-[#464255] text-right 
@@ -1226,7 +1227,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                     </td>
                                                 )}
 
-                                                {columnVisibility.sg && (
+                                                {columnVisibility?.sg && (
                                                     // <td className={`px-2 py-1 text-[#464255] text-right ${parseFloat(row?.data_temp2?.["13"]) > parseFloat(row?.newObj?.["13"]?.valueBook) ? 'text-[#ED1B24]' : ''}`}>
                                                     <td className={`px-2 py-1 text-[#464255] text-right`}>
                                                         {
@@ -1259,7 +1260,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                     </td>
                                                 )}
 
-                                                {columnVisibility.h1 && (tabIndex == 1 || tabIndex == 0) && (
+                                                {columnVisibility?.h1 && (tabIndex == 1 || tabIndex == 0) && (
                                                     <td
                                                         // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H1 ?? ((parseToNumber(row?.data_temp2?.['14']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['14']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                         // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (((parseToNumber(row?.data_temp2?.['14']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['14']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1289,7 +1290,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h2 && (tabIndex == 1 || tabIndex == 0) && (
+                                                    columnVisibility?.h2 && (tabIndex == 1 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H2 ?? ((parseToNumber(row?.data_temp2?.['15']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['15']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (((parseToNumber(row?.data_temp2?.['15']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['15']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1319,7 +1320,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h3 && (tabIndex == 1 || tabIndex == 0) && (
+                                                    columnVisibility?.h3 && (tabIndex == 1 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H3 ?? ((parseToNumber(row?.data_temp2?.['16']) ?? 0) > (parseToNumber(row?.newObj?.['16']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H3 ?? ((parseToNumber(row?.data_temp2?.['16']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['16']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1351,7 +1352,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h4 && (tabIndex == 1 || tabIndex == 0) && (
+                                                    columnVisibility?.h4 && (tabIndex == 1 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H4 ?? ((parseToNumber(row?.data_temp2?.['17']) ?? 0) > (parseToNumber(row?.newObj?.['17']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H4 ?? ((parseToNumber(row?.data_temp2?.['17']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['17']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1383,7 +1384,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h5 && (tabIndex == 1 || tabIndex == 0) && (
+                                                    columnVisibility?.h5 && (tabIndex == 1 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H5 ?? ((parseToNumber(row?.data_temp2?.['18']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['18']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (((parseToNumber(row?.data_temp2?.['18']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['18']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1413,7 +1414,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h6 && (tabIndex == 1 || tabIndex == 0) && (
+                                                    columnVisibility?.h6 && (tabIndex == 1 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H6 ?? ((parseToNumber(row?.data_temp2?.['19']) ?? 0) > (parseToNumber(row?.newObj?.['19']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H6 ?? ((parseToNumber(row?.data_temp2?.['19']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['19']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1444,7 +1445,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h7 && (tabIndex == 2 || tabIndex == 0) && (
+                                                    columnVisibility?.h7 && (tabIndex == 2 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H7 ?? ((parseToNumber(row?.data_temp2?.['20']) ?? 0) > (parseToNumber(row?.newObj?.['20']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H7 ?? ((parseToNumber(row?.data_temp2?.['20']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['20']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1475,7 +1476,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h8 && (tabIndex == 2 || tabIndex == 0) && (
+                                                    columnVisibility?.h8 && (tabIndex == 2 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H8 ?? ((parseToNumber(row?.data_temp2?.['21']) ?? 0) > (parseToNumber(row?.newObj?.['21']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H8 ?? ((parseToNumber(row?.data_temp2?.['21']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['21']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1506,7 +1507,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h9 && (tabIndex == 2 || tabIndex == 0) && (
+                                                    columnVisibility?.h9 && (tabIndex == 2 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H9 ?? ((parseToNumber(row?.data_temp2?.['22']) ?? 0) > (parseToNumber(row?.newObj?.['22']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H9 ?? ((parseToNumber(row?.data_temp2?.['22']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['22']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1537,7 +1538,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h10 && (tabIndex == 2 || tabIndex == 0) && (
+                                                    columnVisibility?.h10 && (tabIndex == 2 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H10 ?? ((parseToNumber(row?.data_temp2?.['23']) ?? 0) > (parseToNumber(row?.newObj?.['23']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H10 ?? ((parseToNumber(row?.data_temp2?.['23']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['23']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1568,7 +1569,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h11 && (tabIndex == 2 || tabIndex == 0) && (
+                                                    columnVisibility?.h11 && (tabIndex == 2 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H11 ?? ((parseToNumber(row?.data_temp2?.['24']) ?? 0) > (parseToNumber(row?.newObj?.['24']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H11 ?? ((parseToNumber(row?.data_temp2?.['24']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['24']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1599,7 +1600,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h12 && (tabIndex == 2 || tabIndex == 0) && (
+                                                    columnVisibility?.h12 && (tabIndex == 2 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H12 ?? ((parseToNumber(row?.data_temp2?.['25']) ?? 0) > (parseToNumber(row?.newObj?.['25']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H12 ?? ((parseToNumber(row?.data_temp2?.['25']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['25']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1630,7 +1631,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h13 && (tabIndex == 3 || tabIndex == 0) && (
+                                                    columnVisibility?.h13 && (tabIndex == 3 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H13 ?? ((parseToNumber(row?.data_temp2?.['26']) ?? 0) > (parseToNumber(row?.newObj?.['26']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H13 ?? ((parseToNumber(row?.data_temp2?.['26']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['26']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1661,7 +1662,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h14 && (tabIndex == 3 || tabIndex == 0) && (
+                                                    columnVisibility?.h14 && (tabIndex == 3 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H14 ?? ((parseToNumber(row?.data_temp2?.['27']) ?? 0) > (parseToNumber(row?.newObj?.['27']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H14 ?? ((parseToNumber(row?.data_temp2?.['27']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['27']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1692,7 +1693,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h15 && (tabIndex == 3 || tabIndex == 0) && (
+                                                    columnVisibility?.h15 && (tabIndex == 3 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H15 ?? ((parseToNumber(row?.data_temp2?.['28']) ?? 0) > (parseToNumber(row?.newObj?.['28']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H15 ?? ((parseToNumber(row?.data_temp2?.['28']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['28']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1723,7 +1724,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h16 && (tabIndex == 3 || tabIndex == 0) && (
+                                                    columnVisibility?.h16 && (tabIndex == 3 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H16 ?? ((parseToNumber(row?.data_temp2?.['29']) ?? 0) > (parseToNumber(row?.newObj?.['29']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H16 ?? ((parseToNumber(row?.data_temp2?.['29']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['29']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1754,7 +1755,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h17 && (tabIndex == 3 || tabIndex == 0) && (
+                                                    columnVisibility?.h17 && (tabIndex == 3 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H17 ?? ((parseToNumber(row?.data_temp2?.['30']) ?? 0) > (parseToNumber(row?.newObj?.['30']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H17 ?? ((parseToNumber(row?.data_temp2?.['30']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['30']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1785,7 +1786,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h18 && (tabIndex == 3 || tabIndex == 0) && (
+                                                    columnVisibility?.h18 && (tabIndex == 3 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H18 ?? ((parseToNumber(row?.data_temp2?.['31']) ?? 0) > (parseToNumber(row?.newObj?.['31']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H18 ?? ((parseToNumber(row?.data_temp2?.['31']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['31']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1816,7 +1817,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h19 && (tabIndex == 4 || tabIndex == 0) && (
+                                                    columnVisibility?.h19 && (tabIndex == 4 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H19 ?? ((parseToNumber(row?.data_temp2?.['32']) ?? 0) > (parseToNumber(row?.newObj?.['32']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H19 ?? ((parseToNumber(row?.data_temp2?.['32']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['32']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1847,7 +1848,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h20 && (tabIndex == 4 || tabIndex == 0) && (
+                                                    columnVisibility?.h20 && (tabIndex == 4 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H20 ?? ((parseToNumber(row?.data_temp2?.['33']) ?? 0) > (parseToNumber(row?.newObj?.['33']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H20 ?? ((parseToNumber(row?.data_temp2?.['33']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['33']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1878,7 +1879,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h21 && (tabIndex == 4 || tabIndex == 0) && (
+                                                    columnVisibility?.h21 && (tabIndex == 4 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H21 ?? ((parseToNumber(row?.data_temp2?.['34']) ?? 0) > (parseToNumber(row?.newObj?.['34']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H21 ?? ((parseToNumber(row?.data_temp2?.['34']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['34']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1909,7 +1910,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h22 && (tabIndex == 4 || tabIndex == 0) && (
+                                                    columnVisibility?.h22 && (tabIndex == 4 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H22 ?? ((parseToNumber(row?.data_temp2?.['35']) ?? 0) > (parseToNumber(row?.newObj?.['35']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H22 ?? ((parseToNumber(row?.data_temp2?.['35']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['35']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1940,7 +1941,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h23 && (tabIndex == 4 || tabIndex == 0) && (
+                                                    columnVisibility?.h23 && (tabIndex == 4 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H23 ?? ((parseToNumber(row?.data_temp2?.['36']) ?? 0) > (parseToNumber(row?.newObj?.['36']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H23 ?? ((parseToNumber(row?.data_temp2?.['36']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['36']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -1971,7 +1972,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.h24 && (tabIndex == 4 || tabIndex == 0) && (
+                                                    columnVisibility?.h24 && (tabIndex == 4 || tabIndex == 0) && (
                                                         <td
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H24 ?? ((parseToNumber(row?.data_temp2?.['37']) ?? 0) > (parseToNumber(row?.newObj?.['37']?.valueBook) ?? 0)))) ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
                                                             // className={`px-2 py-1 text-right ${(tabMain === 1 ? false : (row?.validate_H24 ?? ((parseToNumber(row?.data_temp2?.['37']) ?? 0) > (formatNumberThreeDecimalNoComma(row?.newObj?.['37']?.valueBook) ?? 0)))) && row?.reserve_balancing_gas_contract_id === null ? 'text-[#ED1B24]' : 'text-[#464255]'}`}
@@ -2002,7 +2003,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.total && (
+                                                    columnVisibility?.total && (
                                                         <td
                                                             // มันเอาคีย์  row?.data_temp2?.['38'] ไปเช็คกับ row?.newObj?.['37']?.valueBookDay ถูกแล้ว อย่าเปลี่ยนนะ
                                                             // className={`px-2 py-1 text-[#464255] text-right font-semibold 
@@ -2021,7 +2022,7 @@ const TableEachZone: React.FC<any> = ({ type, tableData, isLoading, userPermissi
                                                 }
 
                                                 {
-                                                    columnVisibility.edit && (
+                                                    columnVisibility?.edit && (
                                                         isEditing && rowEditing == row?.old_index ? (
                                                             <td className="px-2 py-1 min-w-[140px]">
                                                                 <div className="flex gap-2 w-full">

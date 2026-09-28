@@ -286,11 +286,13 @@ const TableTabTotal: React.FC<any> = ({
 
             {tableType === "all" && !isNodata && (
               <tbody>
-                {rows.map((data: any, ix: number) => (
+                {rows.map((data: any, ix: number) => {
+                  const isTotalRow = data.time == 'Total';
+                  return (
                   <tr key={ix} className="h-10 border-b border-gray-200 text-sm text-[#333]">
                     {/* <td className="px-4 py-2 font-semibold">{data.time}</td> */}
 
-                    <td className="px-4 py-2 font-semibold sticky left-0 z-[5] bg-white border-r border-gray-200">
+                    <td className={`px-4 py-2 font-semibold sticky left-0 z-[5] border-r border-gray-200 ${isTotalRow ? 'text-[#ffffff] bg-[#1473A1]' : 'bg-white'} `}>
                       {data.isNow ? "now" : data.time}
                     </td>
 
@@ -300,7 +302,8 @@ const TableTabTotal: React.FC<any> = ({
                       const isAdjustMap: Record<string, boolean> = {};
                       if (pointGroup) {
                         pointGroup.items.forEach((it: any) => {
-                          const lookup = Object.fromEntries(it.timeShow.map((t: any) => [t.time, (displayUnit == 'MMBTUD' ? data.time == 'Total' ? t.valuePerHour : t.value : data.time == 'Total' ? t.valueMmscfh : t.valueMmscfd)]));
+                          if (it == null) return;
+                          const lookup = Object.fromEntries((it.timeShow || []).map((t: any) => [t.time, (displayUnit == 'MMBTUD' ? data.time == 'Total' ? t.valuePerHour : t.value : data.time == 'Total' ? t.valueMmscfh : t.valueMmscfd)]));
                           if(data.time == 'Total'){
                             const totalPerHour = parseFloat(`${lookup[data.time]}`)
                             if(isNaN(totalPerHour)){
@@ -314,11 +317,11 @@ const TableTabTotal: React.FC<any> = ({
                           else{
                             shipperMap[it.shipper_name] = lookup[data.time]
                           }
-                          isAdjustMap[it.shipper_name] = (it?.isAdjust ?? false);
+                          isAdjustMap[it.shipper_name] = (it.isAdjust ?? false);
                         });
                       }
                       const cells = Array.from(shippers).map((sh) => (
-                        <td key={`${data.time}-${point}-${sh}`} className={`px-2 py-1 text-right ${isAdjustMap[sh] ? 'text-[#1473a1]' : ''}`}>
+                        <td key={`${data.time}-${point}-${sh}`} className={`px-2 py-1 text-right ${isTotalRow ? 'text-[#ffffff] bg-[#1473A1]' : isAdjustMap[sh] ? 'text-[#1473a1]' : ''}`}>
                           {(shipperMap[sh] || shipperMap[sh] == 0) ? displayUnit == 'MMBTUD' ? formatNumberThreeDecimal(shipperMap[sh] ?? 0) : formatNumberSixDecimal(shipperMap[sh] ?? 0) : displayUnit == 'MMBTUD' ? '0.000' : '0.000000'}
                         </td>
                       ));
@@ -335,13 +338,14 @@ const TableTabTotal: React.FC<any> = ({
                       }, undefined);
                       return [
                         ...cells,
-                        <td key={`${data.time}-${point}-total`} className="px-2 py-1 text-right font-semibold">
+                        <td key={`${data.time}-${point}-total`} className={`px-2 py-1 text-right font-semibold ${isTotalRow ? 'text-[#ffffff] bg-[#1473A1]' : ''}`}>
                           {(total || total == 0) ? displayUnit == 'MMBTUD' ? formatNumberThreeDecimal(total) : formatNumberSixDecimal(total) : displayUnit == 'MMBTUD' ? '0.000' : '0.000000'}
                         </td>,
                       ];
                     })}
                   </tr>
-                ))}
+                  )
+                })}
               </tbody>
             )}
 

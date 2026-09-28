@@ -88,34 +88,34 @@ const TableEmailGroupForEvent: React.FC<TableProps> = ({ openEditForm, openViewF
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-1">
                             <tr className="h-9">
 
-                                {columnVisibility.name && (
+                                {columnVisibility?.name && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Email Group Name`}
                                         {getArrowIcon("name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.person && (
+                                {columnVisibility?.person && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("edit_email_group_for_event_match", sortState, setSortState, setSortedData, tableData)}>
                                         {`Person`}
                                         {getArrowIcon("edit_email_group_for_event_match")}
                                     </th>
                                 )}
 
-                                {columnVisibility.create_by && (
+                                {columnVisibility?.create_by && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Created by`}
                                         {getArrowIcon("create_by_account.first_name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.update_by && (
+                                {columnVisibility?.update_by && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Updated by`}
                                         {getArrowIcon("update_by_account.first_name")}
                                     </th>
                                 )}
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -130,12 +130,12 @@ const TableEmailGroupForEvent: React.FC<TableProps> = ({ openEditForm, openViewF
                                         key={row?.id}
                                         className={`${table_row_style}`}
                                     >
-                                        {columnVisibility.name && (
-                                            <td className="px-2 py-1 text-[#464255] font-light">{row?.name && row?.name}</td>
+                                        {columnVisibility?.name && (
+                                            <td className="px-2 py-1 text-[#464255] font-light">{row?.name}</td>
                                         )}
                                         {/* <td className="px-2 py-1 text-[#464255] font-light">{row?.edit_email_group_for_event_match && row?.edit_email_group_for_event_match?.length}</td> */}
 
-                                        {columnVisibility.person && (
+                                        {columnVisibility?.person && (
                                             <td className="px-2 py-1 text-center">
                                                 <div className="inline-flex items-center justify-center relative">
                                                     <button
@@ -153,7 +153,7 @@ const TableEmailGroupForEvent: React.FC<TableProps> = ({ openEditForm, openViewF
                                             </td>
                                         )}
 
-                                        {columnVisibility.create_by && (
+                                        {columnVisibility?.create_by && (
                                             <td className="px-2 py-1">
                                                 <div>
                                                     <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -162,7 +162,7 @@ const TableEmailGroupForEvent: React.FC<TableProps> = ({ openEditForm, openViewF
                                             </td>
                                         )}
 
-                                        {columnVisibility.update_by && (
+                                        {columnVisibility?.update_by && (
                                             <td className="px-2 py-1">
                                                 <div>
                                                     <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
@@ -171,7 +171,7 @@ const TableEmailGroupForEvent: React.FC<TableProps> = ({ openEditForm, openViewF
                                             </td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 {/* <div className="relative inline-block text-left "> */}
                                                 <div className="relative inline-flex justify-center items-center w-full">

@@ -151,8 +151,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                 break;
         }
 
-        setFileStartDate(e.target.value)
-        setValue("file_start_date_mode", e.target.value)
+        setFileStartDate(e?.target?.value ?? "")
+        setValue("file_start_date_mode", e?.target?.value ?? "")
     };
 
     // const handleClose = () => {
@@ -280,7 +280,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         },
                                                     }}
                                                     onChange={(e) => {
-                                                        setValue("term_type_id", e.target.value);
+                                                        setValue("term_type_id", e?.target?.value ?? "");
                                                     }}
                                                     displayEmpty
                                                     renderValue={(value: any) => {
@@ -343,7 +343,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             },
                                                         }}
                                                         onChange={(e) => {
-                                                            setValue("file_period_mode", e.target.value);
+                                                            setValue("file_period_mode", e?.target?.value ?? "");
                                                             // setFilePeriodMode(e.target.value)
                                                         }}
                                                         displayEmpty
@@ -558,7 +558,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 // },
                                                             }}
                                                             onChange={(e) => {
-                                                                setValue("fixdayday", e.target.value);
+                                                                setValue("fixdayday", e?.target?.value ?? "");
                                                             }}
                                                             MenuProps={{
                                                                 PaperProps: {
@@ -620,7 +620,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 },
                                                             }}
                                                             onChange={(e) => {
-                                                                setValue("todayday", e.target.value);
+                                                                setValue("todayday", e?.target?.value ?? "");
                                                                 // setFilePeriodMode(e.target.value)
                                                             }}
                                                             MenuProps={{

@@ -1,6 +1,7 @@
+// Next.js client boundary. Coverity flags this as unused_expr (NO_EFFECT).
+// coverity[unused_expr:SUPPRESS]
 "use client";
 
-import { DefaultSkeleton } from "@/components/material_custom/DefaultSkeleton";
 import {
   KBarProvider,
   KBarPortal,

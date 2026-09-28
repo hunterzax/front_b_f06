@@ -98,7 +98,7 @@ const ModalAcceptReject: React.FC<FormExampleProps> = ({
                                         multiline
                                         onChange={(e) => {
                                             if (e.target.value.length <= 255) {
-                                                setValue('reason', e.target.value);
+                                                setValue('reason', e?.target?.value ?? "");
                                             }
                                         }}
                                         placeholder='Enter Reasons'

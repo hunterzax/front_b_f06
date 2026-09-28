@@ -99,33 +99,110 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [srchGasDayFrom, setSrchGasDayFrom] = useState<Date | null>(null);
     const [srchGasDayTo, setSrchGasDayTo] = useState<Date | null>(null);
 
+    // const handleFieldSearch = () => {
+    //     let result_gasday_from_to: any = dataTable
+    //     if (srchGasDayFrom || srchGasDayTo) {
+    //         const { start_date, end_date } = getDateRangeForApi(srchGasDayFrom, srchGasDayTo);
+    //         result_gasday_from_to = filterByDateRange(dataTable, start_date, end_date);
+    //     }
+
+    //     const result_2 = result_gasday_from_to.filter((item: any) => {
+    //         const groupId = item?.group?.id?.toString(); // Convert group ID to string
+    //         return (
+    //             // (!srchShipper.length || srchShipper.includes(groupId)) && // Check group ID if list isn't empty
+    //             (srchShipper.length ? srchShipper.includes(groupId) : true) &&
+    //             // (srchShipper ? srchShipper == groupId : true) &&
+    //             (srchTypeDocument ? item?.nomination_type?.name == srchTypeDocument : true)
+    //         );
+    //     });
+
+    //     setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
+    //     setFilteredDataTable(result_2);
+    // };
     const handleFieldSearch = () => {
-        let result_gasday_from_to: any = dataTable
+
+        let result_gasday_from_to: any = dataTable;
+
         if (srchGasDayFrom || srchGasDayTo) {
-            const { start_date, end_date } = getDateRangeForApi(srchGasDayFrom, srchGasDayTo);
-            result_gasday_from_to = filterByDateRange(dataTable, start_date, end_date);
+
+            const {
+                start_date,
+                end_date
+            } = getDateRangeForApi(
+                srchGasDayFrom,
+                srchGasDayTo
+            );
+
+            result_gasday_from_to =
+                filterByDateRange(
+                    dataTable,
+                    start_date,
+                    end_date
+                );
         }
 
-        const result_2 = result_gasday_from_to.filter((item: any) => {
-            const groupId = item?.group?.id?.toString(); // Convert group ID to string
-            return (
-                // (!srchShipper.length || srchShipper.includes(groupId)) && // Check group ID if list isn't empty
-                (srchShipper.length ? srchShipper.includes(groupId) : true) &&
-                // (srchShipper ? srchShipper == groupId : true) &&
-                (srchTypeDocument ? item?.nomination_type?.name == srchTypeDocument : true)
-            );
-        });
+        const selectedShipperIds =
+            Array.isArray(srchShipper)
+                ? srchShipper.map(String)
+                : srchShipper
+                    ? [String(srchShipper)]
+                    : [];
 
-        setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
-        setFilteredDataTable(result_2);
+        const result_2 =
+            result_gasday_from_to.filter(
+                (item: any) => {
+
+                    const groupId =
+                        item?.group?.id != null
+                            ? String(item.group.id)
+                            : '';
+
+                    return (
+                        (
+                            selectedShipperIds.length > 0
+                                ? selectedShipperIds.includes(groupId)
+                                : true
+                        ) &&
+                        (
+                            srchTypeDocument
+                                ? item?.nomination_type?.name == srchTypeDocument
+                                : true
+                        )
+                    );
+                }
+            );
+
+        setCurrentPage(1);
+
+        setFilteredDataTable(
+            result_2
+        );
     };
 
+    // const handleReset = async () => {
+    //     // setSrchShipper([]);
+    //     setSrchShipper([]);
+    //     setSrchGasDayFrom(null)
+    //     setSrchGasDayTo(null)
+    //     setFilteredDataTable(dataTable);
+    //     setKey((prevKey) => prevKey + 1);
+    // };
     const handleReset = async () => {
-        // setSrchShipper([]);
-        setSrchShipper([]);
-        setSrchGasDayFrom(null)
-        setSrchGasDayTo(null)
+
+        const resetShipper =
+            userDT?.account_manage?.[0]?.user_type_id == 3
+                ? [userDT?.account_manage?.[0]?.group?.id]
+                : [];
+
+        setSrchShipper(resetShipper);
+
+        setSrchGasDayFrom(null);
+        setSrchGasDayTo(null);
+
         setFilteredDataTable(dataTable);
+
+        setCurrentPage(1);
+
         setKey((prevKey) => prevKey + 1);
     };
 
@@ -158,10 +235,69 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [dataTable, setData] = useState<any>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [resetForm, setResetForm] = useState<() => void | null>();
+
+    // เดิม - ยังเก็บไว้ เพราะ ModalAction ใช้งานอยู่
     const [dataShipper, setDataShipper] = useState<any>([]);
+
+    // ใหม่ - ใช้เฉพาะ Filter Shipper Name
+    const [dataShipperFilter, setDataShipperFilter] = useState<any[]>([]);
+
     const [dataZone, setDataZone] = useState<any>([]);
     const [closeBalanceData, setCloseBalanceData] = useState<any>();
 
+    const fetchShipperFilter = async (
+        startDateValue?: Date | null,
+        endDateValue?: Date | null
+    ) => {
+        try {
+            const startDate = startDateValue
+                ? dayjs(startDateValue).format('YYYY-MM-DD')
+                : dayjs().format('YYYY-MM-DD');
+
+            const endDate = endDateValue
+                ? dayjs(endDateValue).format('YYYY-MM-DD')
+                : dayjs().format('YYYY-MM-DD');
+
+            const resShipper: any = await getService(
+                `/master/daily-adjustment/shipper-data?start_date=${startDate}&end_date=${endDate}`
+            );
+
+            if (!Array.isArray(resShipper)) {
+                setDataShipperFilter([]);
+                return;
+            }
+
+            let shipperList = resShipper;
+
+            // ถ้าเป็น Shipper User เห็นเฉพาะ Shipper ตัวเอง
+            if (userDT?.account_manage?.[0]?.user_type_id == 3) {
+                const userGroupId =
+                    userDT?.account_manage?.[0]?.group?.id;
+
+                shipperList = shipperList.filter(
+                    (item: any) =>
+                        String(item?.id) === String(userGroupId)
+                );
+            }
+
+            // กัน Shipper ซ้ำ
+            const uniqueShipper = Array.from(
+                new Map(
+                    shipperList
+                        .filter((item: any) => item?.id != null)
+                        .map((item: any) => [
+                            String(item.id),
+                            item
+                        ])
+                ).values()
+            );
+
+            setDataShipperFilter(uniqueShipper);
+
+        } catch (error) {
+            setDataShipperFilter([]);
+        }
+    };
 
     const fetchData = async () => {
         try {
@@ -169,8 +305,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             // ถ้า user เป็น shipper
             // https://app.clickup.com/t/86ert2k28 ตามที่คุยกัน หากเป็น shipper user ถ้ามี filter ชื่อ shipper ให้ค้างชื่อ shipper ตัวเองไว้เลย ไม่ต้องขึ้นเป็น dropdown ให้เลือก - ปรับทั้ง system
+            // if (userDT?.account_manage?.[0]?.user_type_id == 3) {
+            //     setSrchShipper(userDT?.account_manage?.[0]?.group?.id)
+            // }
             if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-                setSrchShipper(userDT?.account_manage?.[0]?.group?.id)
+                setSrchShipper([
+                    userDT?.account_manage?.[0]?.group?.id
+                ]);
             }
 
             // GET CLOSE BALANCE DATA
@@ -228,6 +369,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             // setLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchShipperFilter(
+            srchGasDayFrom,
+            srchGasDayTo
+        );
+    }, [
+        srchGasDayFrom,
+        srchGasDayTo
+    ]);
 
     useEffect(() => {
         fetchData();
@@ -550,7 +701,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         customWidth={200}
                     />
 
-                    <InputSearch
+                    {/* <InputSearch
                         id="searchShipper"
                         label="Shipper Name"
                         // type="select"
@@ -570,6 +721,35 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 label: item.name,
                             }))
                         }
+                    /> */}
+
+                    <InputSearch
+                        id="searchShipper"
+                        label="Shipper Name"
+                        type="select-multi-checkbox"
+                        isDisabled={
+                            userDT?.account_manage?.[0]?.user_type_id == 3
+                        }
+                        value={
+                            userDT?.account_manage?.[0]?.user_type_id == 3
+                                ? [userDT?.account_manage?.[0]?.group?.id]
+                                : srchShipper
+                        }
+                        onChange={(e) => {
+                            setSrchShipper(
+                                Array.isArray(e?.target?.value)
+                                    ? e.target.value
+                                    : []
+                            );
+                        }}
+                        options={(
+                            Array.isArray(dataShipperFilter)
+                                ? dataShipperFilter
+                                : []
+                        ).map((item: any) => ({
+                            value: item?.id,
+                            label: item?.name,
+                        }))}
                     />
 
                     <BtnSearch handleFieldSearch={handleFieldSearch} />

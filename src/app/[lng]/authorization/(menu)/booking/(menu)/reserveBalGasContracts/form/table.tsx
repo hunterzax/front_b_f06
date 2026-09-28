@@ -32,12 +32,7 @@ const TableReserveBalGas: React.FC<TableProps> = ({ openEditForm, openViewForm, 
     const [sortedData, setSortedData] = useState(tableData);
 
     useEffect(() => {
-        if (tableData && tableData.length > 0) {
-            setSortedData(tableData);
-        } else {
-            setSortedData(tableData);
-        }
-
+        setSortedData(tableData);
     }, [tableData]);
 
     const getArrowIcon = (column: string) => {
@@ -98,7 +93,7 @@ const TableReserveBalGas: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-1">
 
                             <tr className="h-9">
-                                {columnVisibility.res_bal_gas_contract && (
+                                {columnVisibility?.res_bal_gas_contract && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -110,7 +105,7 @@ const TableReserveBalGas: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.group && (
+                                {columnVisibility?.group && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -122,21 +117,21 @@ const TableReserveBalGas: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.comment && (
+                                {columnVisibility?.comment && (
                                     <th rowSpan={2} scope="col" className={`${table_header_style}`}>
                                         {`Comment`}
                                         {/* {getArrowIcon("comment")} */}
                                     </th>
                                 )}
 
-                                {columnVisibility.file && (
+                                {columnVisibility?.file && (
                                     <th rowSpan={2} scope="col" className={`${table_header_style}`}>
                                         {`File`}
                                         {/* {getArrowIcon("file")} */}
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -152,15 +147,15 @@ const TableReserveBalGas: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                         className={`${table_row_style} border-b h-12`}
                                     >
 
-                                        {columnVisibility.res_bal_gas_contract && (
+                                        {columnVisibility?.res_bal_gas_contract && (
                                             <td className="px-2 py-1 text-[#464255] font-light">{row?.res_bal_gas_contract ? row?.res_bal_gas_contract : ''}</td>
                                         )}
 
-                                        {columnVisibility.group && (
+                                        {columnVisibility?.group && (
                                             <td className={`px-2 py-1 text-[#464255] font-light`}>{row?.group ? row?.group?.name : ''}</td>
                                         )}
 
-                                        {columnVisibility.comment && (
+                                        {columnVisibility?.comment && (
                                             <td className="px-2 py-1 text-center">
                                                 <div className="inline-flex items-center justify-center relative">
                                                     {/* <button
@@ -192,7 +187,7 @@ const TableReserveBalGas: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                             </td>
                                         )}
 
-                                        {columnVisibility.file && (
+                                        {columnVisibility?.file && (
                                             <td className="px-2 py-1 text-center">
                                                 <div className="inline-flex items-center justify-center relative">
                                                     <button
@@ -211,7 +206,7 @@ const TableReserveBalGas: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                             </td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 <div className="relative inline-flex justify-center items-center w-full">
                                                     <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view && !userPermission?.f_edit ? true : false} />

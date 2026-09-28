@@ -1,13 +1,14 @@
 import { useEffect, useRef } from "react";
 import React, { FC, useState } from 'react';
-import TableSkeleton, { DefaultSkeleton } from '@/components/material_custom/DefaultSkeleton';
-import { formatDate, formatDateNoTime, formatDateTimeSec, formatNumber, formatNumberThreeDecimal } from '@/utils/generalFormatter';
+import TableSkeleton from '@/components/material_custom/DefaultSkeleton';
+import { formatDateNoTime, formatDateTimeSec, iconButtonClass } from '@/utils/generalFormatter';
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined';
 import BtnActionTable from "@/components/other/btnActionInTable";
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import AdjustIcon from "@mui/icons-material/Adjust";
 import { table_col_arrow_sort_style, table_header_style, table_row_style, table_sort_header_style } from "@/utils/styles";
 import { handleSort } from "@/utils/sortTable";
 interface TableProps {
@@ -92,49 +93,56 @@ const TablePlanningFileSubmissionTemplate: React.FC<TableProps> = ({ openEditFor
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                {columnVisibility.term && (
+                {columnVisibility?.term && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("term_type.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Term`}
                     {getArrowIcon("term_type.name")}
                   </th>
                 )}
 
-                {columnVisibility.shipper_name && (
+                {columnVisibility?.shipper_name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("group.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Shipper Name`}
                     {getArrowIcon("group.name")}
                   </th>
                 )}
 
-                {columnVisibility.start_date && (
+                {columnVisibility?.nomination_point && (
+                  <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("planning_file_submission_template_nom", sortState, setSortState, setSortedData, tableData)}>
+                    {`Nomination Point`}
+                    {getArrowIcon("planning_file_submission_template_nom")}
+                  </th>
+                )}
+
+                {columnVisibility?.start_date && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                     {`Start Date`}
                     {getArrowIcon("start_date")}
                   </th>
                 )}
 
-                {columnVisibility.end_date && (
+                {columnVisibility?.end_date && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}>
                     {`End Date`}
                     {getArrowIcon("end_date")}
                   </th>
                 )}
 
-                {columnVisibility.created_by && (
+                {columnVisibility?.created_by && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Created by`}
                     {getArrowIcon("create_by_account.first_name")}
                   </th>
                 )}
 
-                {columnVisibility.updated_by && (
+                {columnVisibility?.updated_by && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Updated by`}
                     {getArrowIcon("update_by_account.first_name")}
                   </th>
                 )}
 
-                {columnVisibility.action && (
+                {columnVisibility?.action && (
                   <th scope="col" className={`${table_header_style} text-center`}>
                     {`Action`}
                   </th>
@@ -143,13 +151,14 @@ const TablePlanningFileSubmissionTemplate: React.FC<TableProps> = ({ openEditFor
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => (
+              {(sortedData || [])?.map((row: any, index: any) => {
+                return (
                 <tr
                   key={row?.id}
                   className={`${table_row_style}`}
                 >
 
-                  {columnVisibility.term && (
+                  {columnVisibility?.term && (
                     <td className="pl-2 py-1 text-center">
                       {row?.term_type && (
                         <div className="w-full flex items-center justify-center">
@@ -164,19 +173,50 @@ const TablePlanningFileSubmissionTemplate: React.FC<TableProps> = ({ openEditFor
                     </td>
                   )}
 
-                  {columnVisibility.shipper_name && (
+                  {columnVisibility?.shipper_name && (
                     <td className="px-2 py-1 text-[#464255]">{row?.group ? row?.group?.name : ''}</td>
                   )}
 
-                  {columnVisibility.start_date && (
+                  {columnVisibility?.nomination_point && (
+                    <td className="px-2 py-1 text-[#464255]">
+                      <div className="flex justify-center items-center">
+                        <div className="inline-flex items-center justify-center relative">
+
+                          <button
+                            type="button"
+                            className={iconButtonClass}
+                            onClick={(e) => {
+                              e.stopPropagation(); // กันไม่ให้ row‑click ซ้อนทับ
+                              openViewPointModal(
+                                row?.id,
+                                row?.planning_file_submission_template_nom,
+                              );
+                            }}
+                          >
+                            <AdjustIcon
+                              fontSize="inherit"
+                              className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-[1px]"
+                              sx={{ color: "currentColor", fontSize: 18 }}
+                            />
+                          </button>
+
+                          <span className="px-2 text-[#464255]">
+                            {row?.planning_file_submission_template_nom?.length ?? 0}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                  )}
+
+                  {columnVisibility?.start_date && (
                     <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                   )}
 
-                  {columnVisibility.end_date && (
+                  {columnVisibility?.end_date && (
                     <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                   )}
 
-                  {columnVisibility.created_by && (
+                  {columnVisibility?.created_by && (
                     <td className="px-2 py-1 ">
                       <div>
                         <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -185,7 +225,7 @@ const TablePlanningFileSubmissionTemplate: React.FC<TableProps> = ({ openEditFor
                     </td>
                   )}
 
-                  {columnVisibility.updated_by && (
+                  {columnVisibility?.updated_by && (
                     <td className="px-2 py-1">
                       <div>
                         <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
@@ -194,7 +234,7 @@ const TablePlanningFileSubmissionTemplate: React.FC<TableProps> = ({ openEditFor
                     </td>
                   )}
 
-                  {columnVisibility.action && (
+                  {columnVisibility?.action && (
                     <td className="px-2 py-1">
                       <div className="relative inline-flex justify-center items-center w-full">
                         <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view && !userPermission?.f_edit ? true : false} />
@@ -217,7 +257,8 @@ const TablePlanningFileSubmissionTemplate: React.FC<TableProps> = ({ openEditFor
                     </td>
                   )}
                 </tr>
-              ))}
+                )
+              })}
             </tbody>
           </table>
           :

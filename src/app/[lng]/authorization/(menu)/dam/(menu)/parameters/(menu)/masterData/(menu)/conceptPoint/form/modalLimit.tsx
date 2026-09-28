@@ -345,7 +345,7 @@ const ModalLimit: React.FC<FormExampleProps> = ({
                                                     type="select"
                                                     value={srchShipperName}
                                                     onChange={(e) => setSrchShipperName(e.target.value)}
-                                                    options={shipperGroupData?.length > 0 && shipperGroupData?.map((item: any) => ({
+                                                    options={(shipperGroupData || [])?.map((item: any) => ({
                                                         value: item.id,
                                                         label: item.name
                                                     }))}
@@ -361,7 +361,7 @@ const ModalLimit: React.FC<FormExampleProps> = ({
                                                     type="select"
                                                     value={srchConceptPoint}
                                                     onChange={(e) => setSrchConceptPoint(e.target.value)}
-                                                    options={dataTable && dataTable?.map((item: any) => ({
+                                                    options={(dataTable || [])?.map((item: any) => ({
                                                         value: item.id,
                                                         label: item.concept_point
                                                     }))}
@@ -426,9 +426,9 @@ const ModalLimit: React.FC<FormExampleProps> = ({
                                                             setValue("concept_pointx", undefined);
                                                             setDataSelectedConceptPoint([])
                                                         }}
-                                                        options={filteredShipperGroupData?.length > 0 && filteredShipperGroupData?.map((item: any) => ({
-                                                            value: item?.id?.toString(),
-                                                            label: item.name
+                                                        options={(filteredShipperGroupData || [])?.map((item: any) => ({
+                                                            value: item?.id ? item?.id?.toString() : '',
+                                                            label: item?.name || ''
                                                         }))}
                                                         customWidth={210}
                                                         customWidthPopup={210}
@@ -447,12 +447,12 @@ const ModalLimit: React.FC<FormExampleProps> = ({
                                                         value={dataSelectedConceptPoint}
                                                         // onChange={(e) => setSrchConceptPoint(e.target.value)}
                                                         onChange={(e) => {
-                                                            setValue("concept_pointx", e.target.value);
-                                                            setDataSelectedConceptPoint(e.target.value)
+                                                            setValue("concept_pointx", e?.target?.value || []);
+                                                            setDataSelectedConceptPoint(e?.target?.value || [])
                                                         }}
-                                                        options={filteredDataConceptPoint?.map((item: any) => ({
-                                                            value: item?.id?.toString(),
-                                                            label: item.concept_point
+                                                        options={(filteredDataConceptPoint || []).map((item: any) => ({
+                                                            value: item?.id ? item?.id?.toString() : '',
+                                                            label: item?.concept_point || ''
                                                         }))}
                                                         customWidth={210}
                                                         customWidthPopup={210}
@@ -501,13 +501,13 @@ const ModalLimit: React.FC<FormExampleProps> = ({
                                                                 {`Concept Point`}
                                                                 {getArrowIcon("concept_point.concept_point")}
                                                             </th>
-                                                            <th
+                                                            {/* <th
                                                                 className={` ${table_sort_header_style}`}
                                                                 onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, filteredDataTable)}
                                                             >
                                                                 {`Created by`}
                                                                 {getArrowIcon("create_by_account.first_name")}
-                                                            </th>
+                                                            </th> */}
                                                             <th className={`rounded-tr-lg  ${table_header_style}`}>
                                                                 {`Delete`}
                                                             </th>
@@ -519,7 +519,7 @@ const ModalLimit: React.FC<FormExampleProps> = ({
                                                                 <td className={pxpyClass}>{item.group?.name}</td>
                                                                 <td className={pxpyClass}>{item.concept_point?.concept_point}</td>
 
-                                                                <td className={pxpyClass}>
+                                                                {/* <td className={pxpyClass}>
                                                                     <div>
                                                                         <span className="text-[#464255]">
                                                                             {item.create_by_account ? `${item?.create_by_account?.first_name} ${item?.create_by_account?.last_name} ` : ''}
@@ -528,7 +528,7 @@ const ModalLimit: React.FC<FormExampleProps> = ({
                                                                             {item.create_date ? formatDate(item.create_date) : '-'}
                                                                         </div>
                                                                     </div>
-                                                                </td>
+                                                                </td> */}
 
                                                                 <td className="px-2 py-1">
                                                                     <DeleteOutlineOutlined

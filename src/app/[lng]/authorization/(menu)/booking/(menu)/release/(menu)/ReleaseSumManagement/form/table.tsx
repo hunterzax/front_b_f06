@@ -94,7 +94,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
 
                             <tr className="h-9">
-                                {columnVisibility.release_start_date && (
+                                {columnVisibility?.release_start_date && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -106,7 +106,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.release_end_date && (
+                                {columnVisibility?.release_end_date && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -118,7 +118,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.submitted_timestamp && (
+                                {columnVisibility?.submitted_timestamp && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -130,7 +130,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.contract_code && (
+                                {columnVisibility?.contract_code && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -142,7 +142,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.group && (
+                                {columnVisibility?.group && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -154,7 +154,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.point && (
+                                {columnVisibility?.point && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -166,7 +166,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.contracted_mmbtu_d && (
+                                {columnVisibility?.contracted_mmbtu_d && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -178,7 +178,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.contracted_mmscfd && (
+                                {columnVisibility?.contracted_mmscfd && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -190,7 +190,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.release_mmbtu_d && (
+                                {columnVisibility?.release_mmbtu_d && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -202,7 +202,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.release_mmscfd && (
+                                {columnVisibility?.release_mmscfd && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -214,13 +214,13 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.comment && (
+                                {columnVisibility?.comment && (
                                     <th rowSpan={2} scope="col" className={`${table_header_style}`}>
                                         {`Comment`}
                                     </th>
                                 )}
 
-                                {columnVisibility.release_type && (
+                                {columnVisibility?.release_type && (
                                     <th
                                         rowSpan={2}
                                         scope="col"
@@ -232,7 +232,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -241,23 +241,23 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData?.map((row: any, index: any) => {
-                                const theMostTotalRelease = row?.release_summary_detail?.length > 0 && row?.release_summary_detail?.reduce((prev: any, curr: any) => {
-                                    if (!curr.total_release_mmbtu_d) {
-                                        return prev
+                            {(sortedData || [])?.map((row: any, index: any) => {
+                                const theMostTotalRelease = ((row?.release_summary_detail?.length ?? 0) > 0) ? (row?.release_summary_detail || []).reduce((prev: any, curr: any) => {
+                                    if (!curr?.total_release_mmbtu_d) {
+                                        return prev;
                                     }
-                                    return prev.total_release_mmbtu_d < curr.total_release_mmbtu_d ? prev : curr
-                                })?.total_release_mmbtu_d
+                                    return (prev?.total_release_mmbtu_d ?? 0) < (curr?.total_release_mmbtu_d ?? 0) ? prev : curr;
+                                })?.total_release_mmbtu_d : undefined;
 
                                 return (
                                     <tr
-                                        key={index}
+                                        key={row?.id ?? index}
                                         className={`${table_row_style} border-b ${index % 2 === 0 ? '!bg-[#EBF9FF]' : 'bg-white'} h-12`}
                                     >
-                                        {columnVisibility.release_start_date && (
+                                        {columnVisibility?.release_start_date && (
                                             row?.entryReleaseStartDate == row?.exitReleaseStartDate
                                                 ?
-                                                <td className="px-2 py-1 text-[#464255] font-light">{row?.entryReleaseStartDate ? row.entryReleaseStartDate : row?.release_summary_detail?.length > 0 && row?.release_summary_detail[0].release_start_date ? formatDateNoTime(row?.release_summary_detail[0].release_start_date) : ''}</td>
+                                                <td className="px-2 py-1 text-[#464255] font-light">{row?.entryReleaseStartDate ? row?.entryReleaseStartDate : ((row?.release_summary_detail?.length ?? 0) > 0 && row?.release_summary_detail?.[0]?.release_start_date ? formatDateNoTime(row?.release_summary_detail?.[0]?.release_start_date) : '')}</td>
                                                 :
                                                 <td className="px-2 py-1 justify-center ">
                                                     {(() => {
@@ -282,11 +282,10 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                                 </td>
                                         )}
 
-                                        {columnVisibility.release_end_date && (
+                                        {columnVisibility?.release_end_date && (
                                             row?.entryReleaseEndDate == row?.exitReleaseEndDate
                                                 ?
-                                                <td className="px-2 py-1 text-[#464255] font-light">{row?.entryReleaseEndDate ? formatDateNoTime(toDayjs(row.entryReleaseEndDate, 'DD/MM/YYYY').add(1, 'day').toISOString()) : row?.release_summary_detail?.length > 0 && row?.release_summary_detail[0].release_end_date ? formatDateNoTime(row?.release_summary_detail[0].release_end_date) : ''}</td>
-                                                // <td className="px-2 py-1 text-[#464255] font-light">{row?.entryReleaseEndDate ? formatDateNoTime(toDayjs(row.entryReleaseEndDate, 'DD/MM/YYYY').toISOString()) : row?.release_summary_detail?.length > 0 && row?.release_summary_detail[0].release_end_date ? formatDateNoTime(row?.release_summary_detail[0].release_end_date) : ''}</td>
+                                                <td className="px-2 py-1 text-[#464255] font-light">{row?.entryReleaseEndDate ? (toDayjs(row?.entryReleaseEndDate, 'DD/MM/YYYY')?.isValid() ? formatDateNoTime(toDayjs(row?.entryReleaseEndDate, 'DD/MM/YYYY').add(1, 'day').toISOString()) : row?.entryReleaseEndDate) : ((row?.release_summary_detail?.length ?? 0) > 0 && row?.release_summary_detail?.[0]?.release_end_date ? formatDateNoTime(row?.release_summary_detail?.[0]?.release_end_date) : '')}</td>
                                                 :
                                                 <td className="px-2 py-1 justify-center ">
                                                     {(() => {
@@ -294,7 +293,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                                             <div
                                                                 className={`flex mt-1 mb-1 items-center p-1 text-[#464255] font-light`}
                                                             >
-                                                                {row?.entryReleaseEndDate ? formatDateNoTime(toDayjs(row.entryReleaseEndDate, 'DD/MM/YYYY').add(1, 'day').toISOString()) : ''}
+                                                                {row?.entryReleaseEndDate ? (toDayjs(row?.entryReleaseEndDate, 'DD/MM/YYYY')?.isValid() ? formatDateNoTime(toDayjs(row?.entryReleaseEndDate, 'DD/MM/YYYY').add(1, 'day').toISOString()) : row?.entryReleaseEndDate) : ''}
                                                                 {/* {row?.entryReleaseEndDate ? formatDateNoTime(toDayjs(row.entryReleaseEndDate, 'DD/MM/YYYY').toISOString()) : ''} */}
                                                             </div>
                                                         );
@@ -305,7 +304,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                                             <div
                                                                 className={`flex items-center p-1 text-[#464255] `}
                                                             >
-                                                                {row?.exitReleaseEndDate ? formatDateNoTime(toDayjs(row.exitReleaseEndDate, 'DD/MM/YYYY').add(1, 'day').toISOString()) : ''}
+                                                                {row?.exitReleaseEndDate ? (toDayjs(row?.exitReleaseEndDate, 'DD/MM/YYYY')?.isValid() ? formatDateNoTime(toDayjs(row?.exitReleaseEndDate, 'DD/MM/YYYY').add(1, 'day').toISOString()) : row?.exitReleaseEndDate) : ''}
                                                                 {/* {row?.exitReleaseEndDate ? formatDateNoTime(toDayjs(row.exitReleaseEndDate, 'DD/MM/YYYY').toISOString()) : ''} */}
                                                             </div>
                                                         );
@@ -313,28 +312,28 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                                 </td>
                                         )}
 
-                                        {columnVisibility.submitted_timestamp && (
+                                        {columnVisibility?.submitted_timestamp && (
                                             // <td className={`px-2 py-1 text-[#464255] font-light`}>{row?.submitted_timestamp ? formatDateNoTimeNoPlusSeven(row?.submitted_timestamp) : ''}</td>
                                             // <td className={`px-2 py-1 text-[#464255] font-light`}>{row?.submitted_timestamp ? formatDateTimeNoPlusSeven(row?.submitted_timestamp) : ''}</td>
                                             <td className={`px-2 py-1 text-[#464255] font-light`}>{row?.submitted_timestamp ? formatDateNoTime(row?.submitted_timestamp) : ''}</td>
                                         )}
 
-                                        {columnVisibility.contract_code && (
+                                        {columnVisibility?.contract_code && (
                                             <td className={`px-2 py-1 text-[#464255] font-light`}>{row?.contract_code ? row?.contract_code?.contract_code : ''}</td>
                                         )}
 
-                                        {columnVisibility.group && (
-                                            <td className={`px-2 py-1 text-[#464255] font-light`}>{row?.group ? row?.group?.name : ''}</td>
+                                        {columnVisibility?.group && (
+                                            <td className={`px-2 py-1 text-[#464255] font-light`}>{row?.group ? row?.group?.name || "" : ''}</td>
                                         )}
 
-                                        {columnVisibility.point && (
+                                        {columnVisibility?.point && (
                                             <td className="px-2 py-1 justify-center whitespace-nowrap">
                                                 {(() => {
                                                     return (
                                                         <div
                                                             className={`flex justify-end mt-1 mb-1 items-end p-1 text-[#464255] `}
                                                         >
-                                                            {row?.entryContractPoint ? row.entryContractPoint : row?.release_summary_detail?.length > 0 && row?.release_summary_detail[0].temp_contract_point}
+                                                            {row?.entryContractPoint ? row.entryContractPoint : ((row?.release_summary_detail?.length ?? 0) > 0 ? row?.release_summary_detail?.[0]?.temp_contract_point : '')}
                                                         </div>
                                                     );
                                                 })()}
@@ -344,22 +343,21 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                                         <div
                                                             className={`flex justify-end items-end p-1 text-[#464255] `}
                                                         >
-                                                            {row?.exitContractPoint ? row.exitContractPoint : row?.release_summary_detail?.length > 1 ? row?.release_summary_detail[1].temp_contract_point : ''}
+                                                            {row?.exitContractPoint ? row.exitContractPoint : ((row?.release_summary_detail?.length ?? 0) > 1 ? row?.release_summary_detail?.[1]?.temp_contract_point : '')}
                                                         </div>
                                                     );
                                                 })()}
                                             </td>
                                         )}
 
-                                        {columnVisibility.contracted_mmbtu_d && (
+                                        {columnVisibility?.contracted_mmbtu_d && (
                                             <td className="px-2 py-1  ">
                                                 {(() => {
                                                     return (
                                                         <div
                                                             className={`flex justify-end mt-1 mb-1  text-[#464255] `}
                                                         >
-                                                            {/* {row?.entryContractedMmbtud ? row.entryContractedMmbtud : row?.release_summary_detail?.length > 0 && formatNumber(row?.release_summary_detail[0].total_contracted_mmbtu_d)} */}
-                                                            {row?.entryContractedMmbtud ? formatNumberThreeDecimal(removeComma(row.entryContractedMmbtud)) : row?.release_summary_detail?.length > 0 && formatNumberThreeDecimalNom(row?.release_summary_detail[0].total_contracted_mmbtu_d)}
+                                                            {row?.entryContractedMmbtud ? formatNumberThreeDecimal(removeComma(row?.entryContractedMmbtud)) : ((row?.release_summary_detail?.length ?? 0) > 0 ? formatNumberThreeDecimalNom(row?.release_summary_detail?.[0]?.total_contracted_mmbtu_d) : '')}
                                                         </div>
                                                     );
                                                 })()}
@@ -369,23 +367,21 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                                         <div
                                                             className={`flex justify-end items-center text-[#464255] `}
                                                         >
-                                                            {/* {row?.exitContractedMmbtud ? row.exitContractedMmbtud : row?.release_summary_detail?.length > 1 ? formatNumber(row?.release_summary_detail[1].total_contracted_mmbtu_d) : ''} */}
-                                                            {row?.exitContractedMmbtud ? formatNumberThreeDecimal(removeComma(row.exitContractedMmbtud)) : row?.release_summary_detail?.length > 1 ? formatNumberThreeDecimalNom(row?.release_summary_detail[1].total_contracted_mmbtu_d) : ''}
+                                                            {row?.exitContractedMmbtud ? formatNumberThreeDecimal(removeComma(row?.exitContractedMmbtud)) : ((row?.release_summary_detail?.length ?? 0) > 1 ? formatNumberThreeDecimalNom(row?.release_summary_detail?.[1]?.total_contracted_mmbtu_d) : '')}
                                                         </div>
                                                     );
                                                 })()}
                                             </td>
                                         )}
 
-                                        {columnVisibility.contracted_mmscfd && (
+                                        {columnVisibility?.contracted_mmscfd && (
                                             <td className="px-2 py-1 justify-center ">
                                                 {(() => {
                                                     return (
                                                         <div
-                                                            className={`flex justify-end mt-1 mb-1 items-center p-1 ${row.entryContractedMmscfd == '-' ? 'text-transparent' : 'text-[#464255]'} `}
+                                                            className={`flex justify-end mt-1 mb-1 items-center p-1 ${row?.entryContractedMmscfd == '-' ? 'text-transparent' : 'text-[#464255]'} `}
                                                         >
-                                                            {/* {row?.entryContractedMmscfd ? row.entryContractedMmscfd : row?.release_summary_detail?.length > 0 ? formatNumber(row?.release_summary_detail[0].total_contracted_mmbtu_d) : ''} */}
-                                                            {row?.entryContractedMmscfd ? formatNumberThreeDecimal(removeComma(row.entryContractedMmscfd)) : row?.release_summary_detail?.length > 0 ? formatNumberThreeDecimalNom(row?.release_summary_detail[0].total_contracted_mmbtu_d) : ''}
+                                                            {row?.entryContractedMmscfd ? formatNumberThreeDecimal(removeComma(row?.entryContractedMmscfd)) : ((row?.release_summary_detail?.length ?? 0) > 0 ? formatNumberThreeDecimalNom(row?.release_summary_detail?.[0]?.total_contracted_mmbtu_d) : '')}
                                                         </div>
                                                     );
                                                 })()}
@@ -393,10 +389,9 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                                 {(() => {
                                                     return (
                                                         <div
-                                                            className={`flex justify-end items-center p-1 ${row.exitContractedMmscfd == '-' ? 'text-transparent' : 'text-[#464255]'} `}
+                                                            className={`flex justify-end items-center p-1 ${row?.exitContractedMmscfd == '-' ? 'text-transparent' : 'text-[#464255]'} `}
                                                         >
-                                                            {/* {row?.exitContractedMmscfd ? row.exitContractedMmscfd : row?.release_summary_detail?.length > 1 ? formatNumber(row?.release_summary_detail[1].total_contracted_mmbtu_d) : ''} */}
-                                                            {row?.exitContractedMmscfd ? formatNumberThreeDecimal(removeComma(row.exitContractedMmscfd)) : row?.release_summary_detail?.length > 1 ? formatNumberThreeDecimalNom(row?.release_summary_detail[1].total_contracted_mmbtu_d) : ''}
+                                                            {row?.exitContractedMmscfd ? formatNumberThreeDecimal(removeComma(row?.exitContractedMmscfd)) : ((row?.release_summary_detail?.length ?? 0) > 1 ? formatNumberThreeDecimalNom(row?.release_summary_detail?.[1]?.total_contracted_mmbtu_d) : '')}
 
                                                         </div>
                                                     );
@@ -404,15 +399,15 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                             </td>
                                         )}
 
-                                        {columnVisibility.release_mmbtu_d && (
+                                        {columnVisibility?.release_mmbtu_d && (
                                             <td className="px-2 py-1 justify-center ">
-                                                {row?.release_summary_detail?.length >= 2 ?
+                                                {(row?.release_summary_detail?.length ?? 0) >= 2 ?
                                                     <>
 
                                                         {(() => {
                                                             return (
                                                                 <div
-                                                                    className={`flex justify-end mt-1 mb-1 items-center p-1 ${row.entryReleaseMmbtud == '-' ? 'text-transparent' : 'text-[#464255]'} `}
+                                                                    className={`flex justify-end mt-1 mb-1 items-center p-1 ${row?.entryReleaseMmbtud == '-' ? 'text-transparent' : 'text-[#464255]'} `}
                                                                 >
                                                                     {row?.entryReleaseMmbtud ? row.entryReleaseMmbtud : theMostTotalRelease ? theMostTotalRelease != 'undefined' ? theMostTotalRelease : '' : ''}
                                                                 </div>
@@ -422,21 +417,21 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                                         {(() => {
                                                             return (
                                                                 <div
-                                                                    className={`flex justify-end items-center p-1 ${row.exitReleaseMmbtud == '-' ? 'text-transparent' : 'text-[#464255]'}`}
+                                                                    className={`flex justify-end items-center p-1 ${row?.exitReleaseMmbtud == '-' ? 'text-transparent' : 'text-[#464255]'}`}
                                                                 >
                                                                     {row?.exitReleaseMmbtud ? row.exitReleaseMmbtud : theMostTotalRelease ? theMostTotalRelease != 'undefined' ? theMostTotalRelease : '' : ''}
                                                                 </div>
                                                             );
                                                         })()}
                                                     </>
-                                                    : row?.release_summary_detail?.length == 1 &&
+                                                    : (row?.release_summary_detail?.length ?? 0) == 1 &&
 
-                                                        row?.release_summary_detail[0]?.entry_exit == 'Entry' ?
+                                                        row?.release_summary_detail?.[0]?.entry_exit == 'Entry' ?
                                                         <>
                                                             {(() => {
                                                                 return (
                                                                     <div
-                                                                        className={`flex justify-end mt-1 mb-1 items-center p-1 ${row.entryReleaseMmbtud == '-' ? 'text-transparent' : 'text-[#464255]'} `}
+                                                                        className={`flex justify-end mt-1 mb-1 items-center p-1 ${row?.entryReleaseMmbtud == '-' ? 'text-transparent' : 'text-[#464255]'} `}
                                                                     >
                                                                         {row?.entryReleaseMmbtud ? row.entryReleaseMmbtud : theMostTotalRelease ? theMostTotalRelease != 'undefined' ? theMostTotalRelease : '' : ''}
                                                                     </div>
@@ -448,7 +443,7 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                                             {(() => {
                                                                 return (
                                                                     <div
-                                                                        className={`flex justify-end items-center p-1 ${row.exitReleaseMmbtud == '-' ? 'text-transparent' : 'text-[#464255]'}`}
+                                                                        className={`flex justify-end items-center p-1 ${row?.exitReleaseMmbtud == '-' ? 'text-transparent' : 'text-[#464255]'}`}
                                                                     >
                                                                         {row?.exitReleaseMmbtud ? row.exitReleaseMmbtud : theMostTotalRelease ? theMostTotalRelease != 'undefined' ? theMostTotalRelease : '' : ''}
                                                                     </div>
@@ -460,14 +455,14 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                             </td>
                                         )}
 
-                                        {columnVisibility.release_mmscfd && (
+                                        {columnVisibility?.release_mmscfd && (
                                             <td className="px-2 py-1 justify-center ">
                                                 {(() => {
                                                     return (
                                                         <div
-                                                            className={`flex justify-end mt-1 mb-1 items-center p-1 ${row.entryReleaseMmscfd == '-' ? 'text-transparent' : 'text-[#464255]'} `}
+                                                            className={`flex justify-end mt-1 mb-1 items-center p-1 ${row?.entryReleaseMmscfd == '-' ? 'text-transparent' : 'text-[#464255]'} `}
                                                         >
-                                                            {row?.entryReleaseMmscfd ? row.entryReleaseMmscfd : row?.release_summary_detail?.length > 0 && row?.release_summary_detail[0].total_release_mmbtu_d !== 'undefined' ? formatNumber(row?.release_summary_detail[0].total_release_mmbtu_d) : ''}
+                                                            {row?.entryReleaseMmscfd ? row.entryReleaseMmscfd : ((row?.release_summary_detail?.length ?? 0) > 0 && row?.release_summary_detail?.[0]?.total_release_mmbtu_d !== 'undefined' ? formatNumber(row?.release_summary_detail?.[0]?.total_release_mmbtu_d) : '')}
                                                         </div>
                                                     );
                                                 })()}
@@ -475,16 +470,16 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                                 {(() => {
                                                     return (
                                                         <div
-                                                            className={`flex justify-end items-center p-1 ${row.exitReleaseMmscfd == '-' ? 'text-transparent' : 'text-[#464255]'} `}
+                                                            className={`flex justify-end items-center p-1 ${row?.exitReleaseMmscfd == '-' ? 'text-transparent' : 'text-[#464255]'} `}
                                                         >
-                                                            {row?.exitReleaseMmscfd ? row.exitReleaseMmscfd : row?.release_summary_detail?.length > 1 && row?.release_summary_detail[1].total_release_mmbtu_d !== 'undefined' ? formatNumber(row?.release_summary_detail[1].total_release_mmbtu_d) : ''}
+                                                            {row?.exitReleaseMmscfd ? row.exitReleaseMmscfd : ((row?.release_summary_detail?.length ?? 0) > 1 && row?.release_summary_detail?.[1]?.total_release_mmbtu_d !== 'undefined' ? formatNumber(row?.release_summary_detail?.[1]?.total_release_mmbtu_d) : '')}
                                                         </div>
                                                     );
                                                 })()}
                                             </td>
                                         )}
 
-                                        {columnVisibility.comment && (
+                                        {columnVisibility?.comment && (
                                             <td className="px-2 py-1 text-center">
                                                 <div className="inline-flex items-center justify-center relative">
                                                     {/* <button
@@ -519,11 +514,11 @@ const TableReleaseSumMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                                             </td>
                                         )}
 
-                                        {columnVisibility.release_type && (
+                                        {columnVisibility?.release_type && (
                                             <td className={`px-2 py-1 text-[#464255] font-light`}>{row?.release_type ? row?.release_type?.name : ''}</td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 <div className="relative inline-flex justify-center items-center w-full">
 

@@ -1,4 +1,3 @@
-"use client";
 import { useEffect, useMemo, useState } from "react";
 import { findRoleConfigByMenuName, formatDateNoTime, generateUserPermission, isDisabledByContractEnd, shouldDisableByDeadline, toDayjs } from '@/utils/generalFormatter';
 import { getService, postService } from "@/utils/postService";
@@ -86,9 +85,9 @@ const NomCodeView: React.FC<any> = ({ setDivMode, dataNomCode, dataMasterZone, d
 
         const fetchData = async () => {
             let body_validate = {
-                "nomination_type_id": dataNomCode.nomination_type_id,
-                "contract_code_id": dataNomCode.contract_code_id,
-                "nomination_version_id": dataNomCode.nomination_version[0]?.id
+                "nomination_type_id": dataNomCode?.nomination_type_id,
+                "contract_code_id": dataNomCode?.contract_code_id,
+                "nomination_version_id": dataNomCode?.nomination_version?.[0]?.id
             };
 
             let res = await getValidateData(body_validate);
@@ -300,7 +299,7 @@ const NomCodeView: React.FC<any> = ({ setDivMode, dataNomCode, dataMasterZone, d
     const open = Boolean(anchorEl);
 
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries(initialColumns.map((column: any) => [column?.key, column?.visible]))
     );
 
     const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
@@ -460,7 +459,7 @@ const NomCodeView: React.FC<any> = ({ setDivMode, dataNomCode, dataMasterZone, d
             id: Math.floor(Math.random() * 90000) + 1,
         })).filter((item: any) => item.text !== '');;
 
-        setActiveButton(zoneButtons ? zoneButtons[0]?.id : null)
+        setActiveButton(zoneButtons && zoneButtons.length > 0 ? zoneButtons[0]?.id : null)
 
         return [...zoneButtons, ...baseButtons]; // Append zone buttons before existing ones
         // }, [mod_data_mock.nominationRowJson]); // Runs only when `mod_data_mock.nominationRowJson` changes
@@ -503,7 +502,7 @@ const NomCodeView: React.FC<any> = ({ setDivMode, dataNomCode, dataMasterZone, d
         //kom 7 month disaled
         const transformedData = {
             rowChange: [
-                ...fntempData.map(item_ => ({
+                ...(fntempData || [])?.map(item_ => ({
                     id: item_?.id,
                     old_index: item_?.old_index,
                     data_temp: JSON.stringify(item_?.data_temp2)
@@ -517,6 +516,7 @@ const NomCodeView: React.FC<any> = ({ setDivMode, dataNomCode, dataMasterZone, d
         const errorMsg = res_edit?.response?.data?.error ?? res_edit?.data?.error ?? res_edit?.response?.error ?? res_edit?.error;
 
         if (statusCode === 400 || statusCode === 500) {
+            setIsLoadingSubmit(false)
             setModalErrorMsg(errorMsg ? errorMsg : "Something went wrong.");
             setModalErrorOpen(true)
         } else {
@@ -531,16 +531,16 @@ const NomCodeView: React.FC<any> = ({ setDivMode, dataNomCode, dataMasterZone, d
     const [isAfterGasDay, setIsAfterGasDay] = useState<any>(false)
     const [disableColumnAt, setDisableColumnAt] = useState<number[]>([])
     useEffect(() => {
-        setIsAfterGasDay(toDayjs(dataNomCode?.gas_day).isBefore(toDayjs(), 'day'))
+        setIsAfterGasDay(toDayjs(dataNomCode?.gas_day)?.isValid() ? toDayjs(dataNomCode?.gas_day)?.isBefore(toDayjs(), 'day') : false)
         if (dataNomCode?.gas_day) {
-            const gasDay = toDayjs(dataNomCode.gas_day)
-            if (gasDay.isValid()) {
+            const gasDay = toDayjs(dataNomCode?.gas_day)
+            if (gasDay && gasDay?.isValid()) {
                 let tempDisableColumnAt: number[] = []
                 const firstNomValueColumn = 14 // คอลัมน์วันอาทิตย์
-                if (dataNomCode.contract_code?.contract_start_date) {
+                if (dataNomCode?.contract_code?.contract_start_date) {
                     const contractStartDate = toDayjs(dataNomCode?.contract_code?.contract_start_date)
-                    if (contractStartDate.isValid() && contractStartDate.isSame(gasDay, 'week')) {
-                        const dayOfWeek = Number(contractStartDate.format('d')) // วันในสัปดาห์ (0 = Sunday, 6 = Saturday)
+                    if (contractStartDate && contractStartDate?.isValid() && contractStartDate?.isSame(gasDay, 'week')) {
+                        const dayOfWeek = Number(contractStartDate?.format('d')) // วันในสัปดาห์ (0 = Sunday, 6 = Saturday)
                         // วนลูปทุกวันก่อนวันเริ่มต้นสัญญา (ตั้งแต่ Sunday ถึงวันก่อน contract_start_date)
                         for (let dayOfWeekIndex = 0; dayOfWeekIndex < dayOfWeek; dayOfWeekIndex++) {
                             const columnIndex = firstNomValueColumn + dayOfWeekIndex
@@ -552,8 +552,8 @@ const NomCodeView: React.FC<any> = ({ setDivMode, dataNomCode, dataMasterZone, d
                 const endDate = dataNomCode?.contract_code?.terminate_date ?? dataNomCode?.contract_code?.extend_deadline ?? dataNomCode?.contract_code?.contract_end_date
                 if (endDate) {
                     const contractEndDate = toDayjs(endDate)
-                    if (contractEndDate.isValid() && contractEndDate.isSame(gasDay, 'week')) {
-                        let dayOfWeekIndex = Number(contractEndDate.format('d')) // วันในสัปดาห์ (0 = Sunday, 6 = Saturday)
+                    if (contractEndDate && contractEndDate?.isValid() && contractEndDate?.isSame(gasDay, 'week')) {
+                        let dayOfWeekIndex = Number(contractEndDate?.format('d')) // วันในสัปดาห์ (0 = Sunday, 6 = Saturday)
                         // วนลูปทุกวันหลังวันสิ้นสุดสัญญา (ตั้งแต่ contract_end_date+1 ถึง Saturday)
                         for (; dayOfWeekIndex < 7; dayOfWeekIndex++) {
                             const columnIndex = firstNomValueColumn + dayOfWeekIndex
@@ -569,16 +569,16 @@ const NomCodeView: React.FC<any> = ({ setDivMode, dataNomCode, dataMasterZone, d
                 ) {
                     const reserveBalancingDetails = dataNomCode?.reserve_balancing_gas_contract?.reserve_balancing_gas_contract_detail;
                     // Find min start_date and max end_date
-                    const startDates = reserveBalancingDetails.map((detail: any) => detail.start_date).filter((date: any) => date !== null);
-                    const endDates = reserveBalancingDetails.map((detail: any) => detail.end_date).filter((date: any) => date !== null);
+                    const startDates = (reserveBalancingDetails || [])?.map((detail: any) => detail?.start_date).filter((date: any) => date !== null);
+                    const endDates = (reserveBalancingDetails || [])?.map((detail: any) => detail?.end_date).filter((date: any) => date !== null);
 
-                    const minStartDate = startDates.length > 0 ? new Date(Math.min(...startDates.map((date: Date) => new Date(date).getTime()))) : null;
-                    const maxEndDate = endDates.length > 0 ? new Date(Math.max(...endDates.map((date: Date) => new Date(date).getTime()))) : null;
+                    const minStartDate = startDates.length > 0 ? new Date(Math.min(...(startDates || [])?.map((date: Date) => new Date(date).getTime()))) : null;
+                    const maxEndDate = endDates.length > 0 ? new Date(Math.max(...(endDates || [])?.map((date: Date) => new Date(date).getTime()))) : null;
 
                     if (minStartDate) {
-                        const contractStartDate = toDayjs(minStartDate).tz('Asia/Bangkok')
-                        if (contractStartDate.isValid() && contractStartDate.isSame(gasDay, 'week')) {
-                            const dayOfWeek = Number(contractStartDate.format('d')) // วันในสัปดาห์ (0 = Sunday, 6 = Saturday)
+                        const contractStartDate = toDayjs(minStartDate)?.tz ? toDayjs(minStartDate).tz('Asia/Bangkok') : toDayjs(minStartDate)
+                        if (contractStartDate && contractStartDate?.isValid() && contractStartDate?.isSame(gasDay, 'week')) {
+                            const dayOfWeek = Number(contractStartDate?.format('d')) // วันในสัปดาห์ (0 = Sunday, 6 = Saturday)
                             // วนลูปทุกวันก่อนวันเริ่มต้นสัญญา (ตั้งแต่ Sunday ถึงวันก่อน contract_start_date)
                             for (let dayOfWeekIndex = 0; dayOfWeekIndex < dayOfWeek; dayOfWeekIndex++) {
                                 const columnIndex = firstNomValueColumn + dayOfWeekIndex
@@ -589,8 +589,8 @@ const NomCodeView: React.FC<any> = ({ setDivMode, dataNomCode, dataMasterZone, d
 
                     if (maxEndDate) {
                         const contractEndDate = toDayjs(maxEndDate)
-                        if (contractEndDate.isValid() && contractEndDate.isSame(gasDay, 'week')) {
-                            let dayOfWeekIndex = Number(contractEndDate.format('d')) // วันในสัปดาห์ (0 = Sunday, 6 = Saturday)
+                        if (contractEndDate && contractEndDate?.isValid() && contractEndDate?.isSame(gasDay, 'week')) {
+                            let dayOfWeekIndex = Number(contractEndDate?.format('d')) // วันในสัปดาห์ (0 = Sunday, 6 = Saturday)
                             // วนลูปทุกวันหลังวันสิ้นสุดสัญญา (ตั้งแต่ contract_end_date+1 ถึง Saturday)
                             for (; dayOfWeekIndex < 7; dayOfWeekIndex++) {
                                 const columnIndex = firstNomValueColumn + dayOfWeekIndex
@@ -750,7 +750,7 @@ const NomCodeView: React.FC<any> = ({ setDivMode, dataNomCode, dataMasterZone, d
         <div className="flex h-[calc(100vh-100px)] gap-2 pt-2 overflow-hidden">
             {/* Sidebar (15%) */}
             <div className="w-[15%] p-2 flex flex-col">
-                {buttons.map(({ text, id }) => (
+                {(buttons || [])?.map(({ text, id }) => (
                     <div key={id} className="pb-2">
                         <BtnNomination
                             idToggle={id}
@@ -768,7 +768,7 @@ const NomCodeView: React.FC<any> = ({ setDivMode, dataNomCode, dataMasterZone, d
             <div className="w-[85%] h-full border-[#DFE4EA] border-[1px] gap-2 pt-2 rounded-xl shadow-sm flex flex-col overflow-hidden">
                 <div className="flex-1 px-4 overflow-hidden">
 
-                    {buttons.map((button) => {
+                    {(buttons || [])?.map((button) => {
                         if (activeButton === button.id) {
 
                             const filter_tab_entry = dataNomCodeX?.nomination_version[0].nomination_row_json?.filter(

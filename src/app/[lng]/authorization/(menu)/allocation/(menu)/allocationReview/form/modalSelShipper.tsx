@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import {
     Dialog,
@@ -7,6 +7,8 @@ import {
 } from "@headlessui/react";
 import Spinloading from "@/components/other/spinLoading";
 import SelectFormProps from "@/components/other/selectProps";
+import DatePickaSearch from "@/components/library/dateRang/dateSearch";
+import dayjs from "dayjs";
 
 type FormExampleProps = {
     mode?: "download" | "upload";
@@ -52,6 +54,24 @@ const ModalSelShipperContract: React.FC<FormExampleProps> = ({
         reset();
     };
 
+    console.log('shipperGroupData : ', shipperGroupData);
+
+    const test = shipperGroupData?.filter((item: any) => {
+        return userDT?.account_manage?.[0]?.user_type_id == 3 ? item?.id === userDT?.account_manage?.[0]?.group?.id : true
+    })?.filter((f: any) => {
+        const selectedYear = Number(watch('year'))
+        if (!selectedYear) return true
+        if (!f || !f?.start_date) return false
+        const startYear = new Date(f.start_date).getFullYear()
+        if (!f || !f?.end_date) {
+            return selectedYear >= startYear
+        }
+        const endYear = new Date(f.end_date).getFullYear()
+        return selectedYear >= startYear && selectedYear <= endYear
+
+    })
+    console.log('test : ', test);
+
     return (
         <Dialog open={open} onClose={() => { handleClose() }} className="relative z-20">
             <DialogBackdrop
@@ -82,6 +102,43 @@ const ModalSelShipperContract: React.FC<FormExampleProps> = ({
 
                                         <div>
                                             <label
+                                                htmlFor="year"
+                                                className="block mb-2 text-sm font-light"
+                                            >
+                                                {/* <span className="text-red-500">*</span> */}
+                                                {`Year`}
+                                            </label>
+                                          
+                                            <SelectFormProps
+                                                id={'year'}
+                                                disabled={userDT?.account_manage?.[0]?.user_type_id == 3 ? true : false}
+                                                valueWatch={watch("year")}
+                                                handleChange={(e) => {
+                                                    updateValue("year", e.target.value);
+
+                                                }}
+                                                errors={errors?.y}
+                                                errorsText={'Select Year'}
+                                                options={Array.from({ length: 5 }, (_, index) => {
+                                                const year = dayjs().subtract(index, 'year').year()
+
+                                                return {
+                                                    id: year,
+                                                    year: String(year),
+                                                }
+                                                })}
+                                                optionsKey={'id'}
+                                                optionsValue={'id'}
+                                                optionsText={'year'}
+                                                optionsResult={'year'}
+                                                placeholder={'Select Year'}
+                                                pathFilter={'year'}
+
+                                            /> 
+
+                                        </div>
+                                        <div>
+                                            <label
                                                 htmlFor="group_id"
                                                 className="block mb-2 text-sm font-light"
                                             >
@@ -103,9 +160,25 @@ const ModalSelShipperContract: React.FC<FormExampleProps> = ({
                                                 errors={errors?.group_id}
                                                 errorsText={'Select Shipper Name'}
                                                 // options={shipperGroupData}
-                                                options={shipperGroupData?.filter((item: any) => // เห็นแค่ชื่อตัวเอง
-                                                    userDT?.account_manage?.[0]?.user_type_id == 3 ? item?.id === userDT?.account_manage?.[0]?.group?.id : true
-                                                )}
+                                                options={
+                                                    (shipperGroupData || [])?.filter((item: any) => {
+                                                    
+                                                  
+                                                    return userDT?.account_manage?.[0]?.user_type_id == 3 ? item?.id === userDT?.account_manage?.[0]?.group?.id : true
+                                                })?.filter((f: any) => {
+                                                    const selectedYear = Number(watch('year'))
+                                                    if (!selectedYear) return true
+                                                    if (!f?.start_date) return false
+                                                    const startYear = new Date(f?.start_date).getFullYear()
+                                                    // ถ้า end_date เป็น null ให้เทียบเฉพาะปีของ start_date
+                                                    if (!f?.end_date) {
+                                                    return selectedYear >= startYear
+                                                    }
+                                                    const endYear = new Date(f?.end_date).getFullYear()
+                                                    return selectedYear >= startYear && selectedYear <= endYear
+
+                                                })
+                                            }
                                                 optionsKey={'id_name'}
                                                 optionsValue={'id_name'}
                                                 optionsText={'name'}
@@ -138,11 +211,25 @@ const ModalSelShipperContract: React.FC<FormExampleProps> = ({
                                                 errors={errors?.contract_code}
                                                 errorsText={'Select Contract Code'}
                                                 // options={dataContractOriginal}
-                                                options={dataContractOriginal?.filter((item: any) => // เห็นแค่ชื่อตัวเอง
-                                                    userDT?.account_manage?.[0]?.user_type_id == 3 ?
+                                                options={dataContractOriginal?.filter((item: any) => {
+
+                                                   return userDT?.account_manage?.[0]?.user_type_id == 3 ?
                                                         item?.group?.id === userDT?.account_manage?.[0]?.group?.id
                                                         : watch('group_id') ? item?.group?.id_name == watch('group_id') : true
-                                                )}
+                                                })?.filter((f: any) => {
+                                                    const selectedYear = Number(watch('year'))
+                                                    if (!selectedYear) return true
+                                                    if (!f?.contract_start_date) return false
+                                                    const startYear = new Date(f?.contract_start_date).getFullYear()
+                                                    // ถ้า end_date เป็น null ให้เทียบเฉพาะปีของ start_date
+                                                    if (!f?.contract_end_date) {
+                                                    return selectedYear === startYear
+                                                    }
+                                                    const endYear = new Date(f?.contract_end_date).getFullYear()
+                                                    return selectedYear >= startYear && selectedYear <= endYear
+
+                                                })
+                                            }
                                                 optionsKey={'contract_code'}
                                                 optionsValue={'contract_code'}
                                                 optionsText={'contract_code'}

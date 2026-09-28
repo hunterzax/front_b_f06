@@ -52,34 +52,34 @@ const TableBalIntradayAccImbalanceInventoryAdjustHistory: React.FC<TableProps> =
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-9">
 
-                        {columnVisibility.gas_day && (
+                        {columnVisibility?.gas_day && (
                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Gas Day`}
                                 {getArrowIcon("gas_day")}
                             </th>
                         )}
 
-                        {columnVisibility.east && (
+                        {columnVisibility?.east && (
                             <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSort("east", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`East (MMBTU)`}
                                 {getArrowIcon("east")}
                             </th>
                         )}
 
-                        {columnVisibility.west && (
+                        {columnVisibility?.west && (
                             <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSort("west", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`West (MMBTU)`}
                                 {getArrowIcon("west")}
                             </th>
                         )}
 
-                        {columnVisibility.comment && (
+                        {columnVisibility?.comment && (
                             <th rowSpan={2} scope="col" className={`${table_header_style} text-center`}>
                                 {`Comment`}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -90,7 +90,7 @@ const TableBalIntradayAccImbalanceInventoryAdjustHistory: React.FC<TableProps> =
                 </thead>
 
                 <tbody>
-                    {sortedData && sortedData?.map((row: any, index: any) => (
+                    {(sortedData || [])?.map((row: any, index: any) => (
                         <tr
                             key={row?.id}
                             className={`${table_row_style} `}
@@ -116,7 +116,7 @@ const TableBalIntradayAccImbalanceInventoryAdjustHistory: React.FC<TableProps> =
                                 </td>
                             )}
 
-                            {columnVisibility.comment && (
+                            {columnVisibility?.comment && (
                                 <td className="px-2 py-1 text-center">
                                     <div className="inline-flex items-center justify-center relative">
                                         <button
@@ -138,7 +138,7 @@ const TableBalIntradayAccImbalanceInventoryAdjustHistory: React.FC<TableProps> =
                                 </td>
                             )}
 
-                            {columnVisibility.updated_by && (
+                            {columnVisibility?.updated_by && (
                                 <td className="px-2 py-1">
                                     <div>
                                         <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

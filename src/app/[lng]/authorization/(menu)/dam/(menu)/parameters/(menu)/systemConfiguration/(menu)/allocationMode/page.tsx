@@ -28,7 +28,7 @@ interface ClientProps {
     };
 }
 
-const ClientPage: React.FC<ClientProps> = (props) => {
+const ClientPage: React.FC<ClientProps> = () => {
 
     // ############### Check Authen ###############
     const userDT: any = getUserValue();
@@ -37,25 +37,27 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
-    // let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-    let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+    let user_permission: any = typeof window !== 'undefined' ? (getCookieValue("k3a9r2b6m7t0x5w1s8j") || localStorage?.getItem("k3a9r2b6m7t0x5w1s8j")) : null;
     user_permission = user_permission ? decryptData(user_permission) : null;
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+            }
 
-            const permission = findRoleConfigByMenuName('Allocation Mode', userDT)
+            const permission = findRoleConfigByMenuName('Allocation Mode', userDT);
             if (permission) {
                 setUserPermission(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermission(updatedUserPermission);
             }
         } catch (error) {
             // Failed to parse user_permission:
         }
-    }
+    };
 
     // ############### REDUX DATA ###############
     const { allocationModeMaster } = useFetchMasters();
@@ -65,24 +67,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [dataExport, setDataExport] = useState<any>([]);
     const [srchModule, setSrchModule] = useState<any>([]);
     const [srchStartDate, setSrchStartDate] = useState<Date | null>(null);
-    // const [srchEndDate, setSrchEndDate] = useState<Date | null>(null);
+    const [srchEndDate, setSrchEndDate] = useState<Date | null>(null);
     const [key, setKey] = useState(0);
 
     const handleFieldSearch = () => {
-        // const result = filterDataTableByDateRange(dataTable, srchStartDate, srchEndDate);
-        // const res_filtered_date: any = filterStartEndDate(dataTable, srchStartDate, null); // เดิมโรงงาน
-        const res_filtered_date: any = filterStartEndDateNewLogic(dataTable, srchStartDate, null); // v1.0.90 ปรับ logic filter start date และ end date https://app.clickup.com/t/86erqt8ed
+        const res_filtered_date: any = filterStartEndDateNewLogic(dataTable, srchStartDate, srchEndDate || null); // v1.0.90 ปรับ logic filter start date และ end date https://app.clickup.com/t/86erqt8ed
 
-        const result_2 = res_filtered_date?.filter((item: any) => {
+        const result_2 = (Array.isArray(res_filtered_date) ? res_filtered_date : [])?.filter((item: any) => {
+            if (!item) return false;
             return (
-                // (srchModule ? item?.allocation_mode_type?.id == srchModule : true)
-
-                // (srchSystemParam ? item?.system_parameter?.id == srchSystemParam : true)
-                // (srchStartDate ? formatSearchDate(item?.start_date) === formatSearchDate(srchStartDate) : true)
-                // (srchEndDate ? formatSearchDate(item?.end_date) === formatSearchDate(srchEndDate) : true)
-
-                // ปรับ Filter ทุกเมนูให้เป็นแบบ Multi https://app.clickup.com/t/86eub6d11
-                (srchModule?.length > 0 ? srchModule.includes(item?.allocation_mode_type?.id?.toString()) : true)
+                Array.isArray(srchModule) && srchModule.length > 0 ? srchModule.includes(item?.allocation_mode_type?.id?.toString()) : true
             );
         });
         setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
@@ -90,30 +84,37 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     };
 
     const handleReset = () => {
-        setSrchModule([])
+        setSrchModule([]);
         setSrchStartDate(null);
-        // setSrchEndDate(null);
-        setFilteredDataTable(dataTable);
+        setFilteredDataTable(dataTable || []);
         setKey((prevKey) => prevKey + 1);
     };
 
     // ############### LIKE SEARCH ###############
     const handleSearch = (query: string) => {
-        const filtered = dataTable.filter(
+        const queryLower = (query || '').toLowerCase().replace(/\s+/g, '')?.trim();
+        if (!queryLower) {
+            setFilteredDataTable(Array.isArray(dataTable) ? dataTable : []);
+            return;
+        }
+
+        const filtered = (Array.isArray(dataTable) ? dataTable : []).filter(
             (item: any) => {
-                const queryLower = query.toLowerCase().replace(/\s+/g, '')?.trim();
+                if (!item) return false;
+                const firstName = item?.create_by_account?.first_name ? String(item.create_by_account.first_name).trim() : '';
+                const lastName = item?.create_by_account?.last_name ? String(item.create_by_account.last_name).trim() : '';
+                const fullName = `${firstName}${lastName}`.toLowerCase().replace(/\s+/g, '');
 
                 return (
-                    item?.allocation_mode_type?.mode.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    formatDateNoTime(item?.start_date)?.toLowerCase().includes(queryLower) ||
-                    item?.create_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower.trim()) ||
-                    item?.create_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower.trim()) || // เผื่อ search นามสกุล
-                    item?.create_by_account?.first_name && item?.create_by_account?.last_name && (item?.create_by_account?.first_name + item?.create_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower.trim()) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
-                    formatTime(item?.create_date)?.toLowerCase().includes(queryLower) ||
-                    formatDate(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)
-                )
+                    (item?.allocation_mode_type?.mode ? String(item.allocation_mode_type.mode).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (item?.start_date && formatDateNoTime(item.start_date)?.toLowerCase().includes(queryLower)) ||
+                    (firstName && firstName.toLowerCase().replace(/\s+/g, '').includes(queryLower)) ||
+                    (lastName && lastName.toLowerCase().replace(/\s+/g, '').includes(queryLower)) ||
+                    (fullName && fullName.includes(queryLower)) ||
+                    (item?.create_date && formatTime(item.create_date)?.toLowerCase().includes(queryLower)) ||
+                    (item?.create_date && formatDate(item.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower))
+                );
             }
-
         );
         setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
         setFilteredDataTable(filtered);
@@ -126,18 +127,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const fetchData = async () => {
         try {
-
             const response: any = await getService(`/master/allocation-mode`);
             setData(response);
             setFilteredDataTable(response);
 
             setIsLoading(true);
         } catch (err) {
-            // setError(err.message);
-        } finally {
-            // setLoading(false);
+            // Error
         }
-        getPermission()
+        getPermission();
     };
 
     useEffect(() => {
@@ -151,7 +149,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [isModalErrorOpen, setModalErrorOpen] = useState(false);
 
     const [formOpen, setFormOpen] = useState(false);
-    const [selectedId, setSelectedId] = useState(null);
     const [formMode, setFormMode] = useState<'create' | 'edit' | 'view'>('create');
 
     const fdInterface: any = {
@@ -159,8 +156,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         system_parameter_id: '',
         value: '',
         link: '',
-        // start_date: new Date(),
-        // end_date: new Date(),
         start_date: undefined,
         end_date: undefined,
     };
@@ -176,7 +171,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 if (statusCode === 400 || statusCode === 500) {
                     setFormOpen(false);
                     setModalErrorMsg(errorMsg || '');
-                    setModalErrorOpen(true)
+                    setModalErrorOpen(true);
                 } else {
                     setFormOpen(false);
                     setModalSuccessOpen(true);
@@ -206,21 +201,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setCurrentPage(1);
     };
 
-    const paginatedData = Array.isArray(filteredDataTable)
-        ? filteredDataTable.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage
-        )
-        : [];
-
     // ############### COLUMN SHOW/HIDE ###############
     const initialColumns: any = [
         { key: 'mode', label: 'Mode', visible: true },
         { key: 'start_date', label: 'Start Date', visible: true },
-        // { key: 'end_date', label: 'End Date', visible: true },
+        { key: 'end_date', label: 'End Date', visible: true },
         { key: 'created_by', label: 'Created by', visible: true },
-        // { key: 'updated_by', label: 'Updated by', visible: true },
-        // { key: 'action', label: 'Action', visible: true }
     ];
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -228,10 +214,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [columnVisibility, setColumnVisibility] = useState<any>(
         Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
     );
-
-    const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(anchorEl ? null : event.currentTarget);
-    };
 
     const handleColumnToggle = (columnKey: string | VisibilityState) => {
         if (typeof columnKey === 'string') {
@@ -257,8 +239,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => row?.allocation_mode_type?.mode || '',
                 cell: (info) => {
-                    const row: any = info?.row?.original
-                    return (<div>{row?.allocation_mode_type && row?.allocation_mode_type?.mode}</div>)
+                    const row: any = info?.row?.original;
+                    return (<div>{row?.allocation_mode_type?.mode ?? ''}</div>);
                 }
             },
             {
@@ -267,13 +249,24 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => formatDateNoTime(row?.start_date) || '',
                 sortingFn: myCustomSortingByDateFn,
-                // sortingFn: 'datetime', // recommended for date columns 
-                // sortUndefined: -1,
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
                     return (
-                        <div className={`text-[#464255]`}>{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</div>
-                    )
+                        <div className="text-[#464255]">{row?.start_date ? formatDateNoTime(row.start_date) : ''}</div>
+                    );
+                }
+            },
+            {
+                accessorKey: "end_date",
+                header: "End Date",
+                enableSorting: true,
+                accessorFn: (row: any) => formatDateNoTime(row?.end_date) || '',
+                sortingFn: myCustomSortingByDateFn,
+                cell: (info) => {
+                    const row: any = info?.row?.original;
+                    return (
+                        <div className="text-[#464255]">{row?.end_date ? formatDateNoTime(row.end_date) : ''}</div>
+                    );
                 }
             },
             {
@@ -281,19 +274,26 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 header: "Created by",
                 width: 250,
                 enableSorting: true,
-                accessorFn: (row) => `${`${row?.create_by_account?.first_name} ` || ''}${row?.create_by_account?.last_name} ${row?.create_date ? formatDate(row?.create_date) : ''}`,
+                accessorFn: (row) => {
+                    const first = row?.create_by_account?.first_name ?? '';
+                    const last = row?.create_by_account?.last_name ?? '';
+                    const dateStr = row?.create_date ? formatDate(row.create_date) : '';
+                    return `${first} ${last} ${dateStr}`.trim();
+                },
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    const first = row?.create_by_account?.first_name ?? '';
+                    const last = row?.create_by_account?.last_name ?? '';
                     return (
                         <div>
-                            <span className={`text-[#464255]`}>{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
-                            <div className="text-gray-500 text-xs">{row?.create_date ? formatDate(row?.create_date) : ''}</div>
+                            <span className="text-[#464255]">{`${first} ${last}`.trim()}</span>
+                            <div className="text-gray-500 text-xs">{row?.create_date ? formatDate(row.create_date) : ''}</div>
                         </div>
-                    )
+                    );
                 }
             },
         ], []
-    )
+    );
 
     return (
         <div className=" space-y-2">
@@ -306,9 +306,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         type="select-multi-checkbox"
                         value={srchModule}
                         onChange={(e) => setSrchModule(e.target.value)}
-                        options={allocationModeMaster?.data?.map((item: any) => ({
-                            value: item?.id?.toString(),
-                            label: item.mode
+                        options={(Array.isArray(allocationModeMaster?.data) ? allocationModeMaster.data : []).map((item: any) => ({
+                            value: item?.id != null ? String(item.id) : '',
+                            label: item?.mode ?? ''
                         }))}
                     />
 
@@ -318,6 +318,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         placeHolder="Select Start Date " // ที่ใส่ space ไว้ข้างหลังเพราะไม่อยากให้ tooltips ขึ้นมา
                         allowClear
                         onChange={(e: any) => setSrchStartDate(e ? e : null)}
+                    // disabledTooltipInfo={false}
+                    />
+
+                    <DatePickaSearch
+                        key={"end" + key}
+                        label="End Date"
+                        placeHolder="Select End Date " // ที่ใส่ space ไว้ข้างหลังเพราะไม่อยากให้ tooltips ขึ้นมา
+                        allowClear
+                        onChange={(e: any) => setSrchEndDate(e ? e : null)}
                     // disabledTooltipInfo={false}
                     />
 

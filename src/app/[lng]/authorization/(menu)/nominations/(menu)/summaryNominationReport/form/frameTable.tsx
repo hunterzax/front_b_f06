@@ -75,7 +75,7 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
         
         if(data?.type === "TableAllNomination"){
             // [...tableData.nomination?.all?.MMBTUD, ...tableData.nomination?.all?.MMSCFD]
-            const allNomdata = activeButton == 1 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 ? [...tableData.nomination?.all?.MMSCFD]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1) : [...tableData.nomination?.all?.MMBTUD]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)
+            const allNomdata = activeButton == 1 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 ? [...(tableData?.nomination?.all?.MMSCFD || [])]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1) : [...(tableData?.nomination?.all?.MMBTUD || [])]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)
             // data?.paginatedData?.length > 0 && data?.paginatedData?.map((row: any, index: any) => {
             allNomdata?.map((row: any, index: any) => {
 
@@ -96,19 +96,10 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                    
                 } else { // MMBTU
                     
-                    if(row?.zone_text === "EAST-WEST"){
-                        validate_total = row?.hv * find_validate?.maximum_capacity
-                        validate = (row?.hv * find_validate?.maximum_capacity) / 24
-
-                        total_max_cap = find_validate?.mmscf_max_cap
-                        hr_max_cap = find_validate?.mmscf_max_cap / 24
-                    }else{
-                        validate_total = find_validate?.maximum_capacity * row?.hv
-                        validate = (find_validate?.maximum_capacity * row?.hv) / 24
-
-                        total_max_cap = find_validate?.find_validate?.maximum_capacity * row?.hv
-                        hr_max_cap = (find_validate?.maximum_capacity * row?.hv) / 24
-                    }
+                    validate_total = (find_validate?.maximum_capacity ?? 0) * (row?.hv ?? 0)
+                    validate = ((find_validate?.maximum_capacity ?? 0) * (row?.hv ?? 0)) / 24
+                    total_max_cap = (find_validate?.maximum_capacity ?? 0) * (row?.hv ?? 0)
+                    hr_max_cap = ((find_validate?.maximum_capacity ?? 0) * (row?.hv ?? 0)) / 24
                 }
               
                 // if(!Number.isFinite(validate) || !Number.isFinite(validate)){
@@ -278,10 +269,10 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
             console.log('activeButton : ', activeButton);
             console.log('tabIndexNomAreaTotal : ', tabIndexNomAreaTotal);
             console.log('tabIndex2ndTab : ', tabIndex2ndTab);
-            const allNomdata = activeButton == 1 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 ? [...tableData?.area?.all?.MMBTUD] : []
+            const allNomdata = activeButton == 1 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 ? [...(tableData?.area?.all?.MMBTUD || [])] : [];
 
             //  data?.paginatedData.length > 0 && data?.paginatedData?.map((row: any, index: any) => {
-             allNomdata.length > 0 && allNomdata?.map((row: any, index: any) => {
+             allNomdata.map((row: any, index: any) => {
 
                 let find_validate = data?.areaMaster?.data?.find((item: any) => item?.name === row?.area_text)
                 const area_nominal_capacity = find_validate?.area_nominal_capacity
@@ -449,7 +440,7 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
         }else if(data?.type === "TableAllTotalSystem"){
             // ใน UI ยังไม่มีทำ validate แดง
             // [...tableData.nomination?.all?.MMBTUD, ...tableData.nomination?.all?.MMSCFD]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)?.length > 0 && [...tableData.nomination?.all?.MMBTUD, ...tableData.nomination?.all?.MMSCFD]?.map((row: any, index: any) => {
-            [...(tableData.nomination?.all?.MMSCFD)?.filter((f:any) => f?.entry_exit_id === 1), ...tableData.nomination?.all?.MMBTUD]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)?.map((row: any, index: any) => {
+            [...((tableData?.nomination?.all?.MMSCFD || [])?.filter((f:any) => f?.entry_exit_id === 1)), ...(tableData?.nomination?.all?.MMBTUD || [])]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)?.map((row: any, index: any) => {
             // [...tableData.nomination?.all?.MMSCFD]?.map((row: any, index: any) => {
             // [...tableData.nomination?.all?.MMBTUD, ...tableData.nomination?.all?.MMSCFD]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)?.length > 0 && [...tableData.nomination?.all?.MMSCFD]?.map((row: any, index: any) => {
 
@@ -465,13 +456,8 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                     validate_total = find_validate?.mmscf_max_cap
                 } else { // MMBTU
                    
-                    if(row?.zone_text === "EAST-WEST"){
-                        validate = (row?.hv * find_validate?.maximum_capacity) / 24
-                        validate_total = row?.hv * find_validate?.maximum_capacity
-                    }else{
-                        validate = (find_validate?.maximum_capacity * row?.hv) / 24
-                        validate_total = find_validate?.maximum_capacity * row?.hv
-                    }
+                    validate = ((find_validate?.maximum_capacity ?? 0) * (row?.hv ?? 0)) / 24
+                    validate_total = (find_validate?.maximum_capacity ?? 0) * (row?.hv ?? 0)
                 }
 
                 // if(!Number.isFinite(validate) || !Number.isFinite(validate)){
@@ -639,7 +625,7 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                 return row
             })
         }else if(data?.type === "TableWeeklyNomination"){
-            const allNomdata = activeButton == 2 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 ? [...tableData.nomination?.weekly?.MMSCFD]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1) : [...tableData.nomination?.weekly?.MMBTUD]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)
+            const allNomdata = activeButton == 2 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 ? [...(tableData?.nomination?.weekly?.MMSCFD || [])]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1) : [...(tableData?.nomination?.weekly?.MMBTUD || [])]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)
 
             allNomdata?.map((row: any, index: any) => {
                 // tabIndex2ndTab 0 = mmscf
@@ -650,9 +636,9 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                 const targetData = data?.dataEva?.newWeekly?.find((item: any) => {
                     const area_id = find_validate?.area?.entry_exit_id == 1 ? find_validate?.area?.id : find_validate?.area?.supply_reference_quality_area
                     return (
-                        item.area.id === area_id &&
-                        item.zone.name === find_validate.zone.name &&
-                        item.parameter === "HV"
+                        item?.area?.id === area_id &&
+                        item?.zone?.name === find_validate?.zone?.name &&
+                        item?.parameter === "HV"
                     );
                 });
 
@@ -673,43 +659,21 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                 let saturday_max_cap;
                 
                 if(row?.unix === "MMBTU/D"){
-                    if(row?.zone_text === "EAST-WEST"){
-                        
-                        sunday_max_cap = parseFloat(row?.sunday_hv) * parseFloat(find_validate?.maximum_capacity)
-                        monday_max_cap = parseFloat(row?.monday_hv) * parseFloat(find_validate?.maximum_capacity)
-                        tuesday_max_cap = parseFloat(row?.tuesday_hv) * parseFloat(find_validate?.maximum_capacity)
-                        wednesday_max_cap = parseFloat(row?.wednesday_hv) * parseFloat(find_validate?.maximum_capacity)
-                        thursday_max_cap = parseFloat(row?.thursday_hv) * parseFloat(find_validate?.maximum_capacity)
-                        friday_max_cap = parseFloat(row?.friday_hv) * parseFloat(find_validate?.maximum_capacity)
-                        saturday_max_cap = parseFloat(row?.saturday_hv) * parseFloat(find_validate?.maximum_capacity)
+                    sunday_max_cap = parseFloat(row?.sunday_hv) * parseFloat(find_validate?.maximum_capacity)
+                    monday_max_cap = parseFloat(row?.monday_hv) * parseFloat(find_validate?.maximum_capacity)
+                    tuesday_max_cap = parseFloat(row?.tuesday_hv) * parseFloat(find_validate?.maximum_capacity)
+                    wednesday_max_cap = parseFloat(row?.wednesday_hv) * parseFloat(find_validate?.maximum_capacity)
+                    thursday_max_cap = parseFloat(row?.thursday_hv) * parseFloat(find_validate?.maximum_capacity)
+                    friday_max_cap = parseFloat(row?.friday_hv) * parseFloat(find_validate?.maximum_capacity)
+                    saturday_max_cap = parseFloat(row?.saturday_hv) * parseFloat(find_validate?.maximum_capacity)
 
-                        sunday_validate = sunday_max_cap > parseFloat(row?.sunday)
-                        monday_validate = monday_max_cap > parseFloat(row?.monday)
-                        tuesday_validate = tuesday_max_cap > parseFloat(row?.tuesday)
-                        wednesday_validate = wednesday_max_cap > parseFloat(row?.wednesday)
-                        thursday_validate = thursday_max_cap > parseFloat(row?.thursday)
-                        friday_validate = friday_max_cap > parseFloat(row?.friday)
-                        saturday_validate = saturday_max_cap > parseFloat(row?.saturday)
-                        
-                    }else{
-                       
-                        sunday_max_cap = parseFloat(row?.sunday_hv) * parseFloat(find_validate?.maximum_capacity)
-                        monday_max_cap = parseFloat(row?.monday_hv) * parseFloat(find_validate?.maximum_capacity)
-                        tuesday_max_cap = parseFloat(row?.tuesday_hv) * parseFloat(find_validate?.maximum_capacity)
-                        wednesday_max_cap = parseFloat(row?.wednesday_hv) * parseFloat(find_validate?.maximum_capacity)
-                        thursday_max_cap = parseFloat(row?.thursday_hv) * parseFloat(find_validate?.maximum_capacity)
-                        friday_max_cap = parseFloat(row?.friday_hv) * parseFloat(find_validate?.maximum_capacity)
-                        saturday_max_cap = parseFloat(row?.saturday_hv) * parseFloat(find_validate?.maximum_capacity)
-
-                        sunday_validate = sunday_max_cap > parseFloat(row?.sunday)
-                        monday_validate = monday_max_cap > parseFloat(row?.monday)
-                        tuesday_validate = tuesday_max_cap > parseFloat(row?.tuesday)
-                        wednesday_validate = wednesday_max_cap > parseFloat(row?.wednesday)
-                        thursday_validate = thursday_max_cap > parseFloat(row?.thursday)
-                        friday_validate = friday_max_cap > parseFloat(row?.friday)
-                        saturday_validate = saturday_max_cap > parseFloat(row?.saturday)
-                        
-                    }
+                    sunday_validate = sunday_max_cap > parseFloat(row?.sunday)
+                    monday_validate = monday_max_cap > parseFloat(row?.monday)
+                    tuesday_validate = tuesday_max_cap > parseFloat(row?.tuesday)
+                    wednesday_validate = wednesday_max_cap > parseFloat(row?.wednesday)
+                    thursday_validate = thursday_max_cap > parseFloat(row?.thursday)
+                    friday_validate = friday_max_cap > parseFloat(row?.friday)
+                    saturday_validate = saturday_max_cap > parseFloat(row?.saturday)
                 }else{
                    
                         sunday_max_cap = find_validate?.mmscf_max_cap
@@ -733,7 +697,7 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                 
                 if(!sunday_validate && (row?.sunday !== null)){
                     
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(sunday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(sunday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(sunday_max_cap).replace(/,/g, '').trim()))}`
                     
                     const msgValue = row?.sunday ? tabIndex2ndTab == 0 ? formatNumberSixDecimalNom(parseToNumber(row?.sunday)) : formatNumberThreeDecimalNom(parseToNumber(row?.sunday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(0, "day").format("DD/MM/YYYY")}`
@@ -741,42 +705,42 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                 }
                 
                 if(!monday_validate && (row?.monday !== null)){
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(monday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(monday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(monday_max_cap).replace(/,/g, '').trim()))}`
                     const msgValue = row?.monday ? tabIndex2ndTab == 0 ? formatNumberSixDecimalNom(parseToNumber(row?.monday)) : formatNumberThreeDecimalNom(parseToNumber(row?.monday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(1, "day").format("DD/MM/YYYY")}`
                     messageWarning.push(messageText)
                 }
                 
                 if(!tuesday_validate && (row?.tuesday !== null)){
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(tuesday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(tuesday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(tuesday_max_cap).replace(/,/g, '').trim()))}`
                     const msgValue = row?.tuesday ? tabIndex2ndTab == 0 ? formatNumberSixDecimalNom(parseToNumber(row?.tuesday)) : formatNumberThreeDecimalNom(parseToNumber(row?.tuesday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(2, "day").format("DD/MM/YYYY")}`
                     messageWarning.push(messageText)
                 }
                 
                 if(!wednesday_validate && (row?.wednesday !== null)){
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(wednesday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(wednesday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(wednesday_max_cap).replace(/,/g, '').trim()))}`
                     const msgValue = row?.wednesday ? tabIndex2ndTab == 0 ? formatNumberSixDecimalNom(parseToNumber(row?.wednesday)) : formatNumberThreeDecimalNom(parseToNumber(row?.wednesday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(3, "day").format("DD/MM/YYYY")}`
                     messageWarning.push(messageText)
                 }
                 
                 if(!thursday_validate && (row?.thursday !== null)){
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(thursday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(thursday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(thursday_max_cap).replace(/,/g, '').trim()))}`
                     const msgValue = row?.thursday ? tabIndex2ndTab == 0 ? formatNumberSixDecimalNom(parseToNumber(row?.thursday)) : formatNumberThreeDecimalNom(parseToNumber(row?.thursday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(4, "day").format("DD/MM/YYYY")}`
                     messageWarning.push(messageText)
                 }
                 
                 if(!friday_validate && (row?.friday !== null)){
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(friday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(friday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(friday_max_cap).replace(/,/g, '').trim()))}`
                     const msgValue = row?.friday ? tabIndex2ndTab == 0 ? formatNumberSixDecimalNom(parseToNumber(row?.friday)) : formatNumberThreeDecimalNom(parseToNumber(row?.friday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(5, "day").format("DD/MM/YYYY")}`
                     messageWarning.push(messageText)
                 }
                 
                 if(!saturday_validate && (row?.saturday !== null)){
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(saturday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(saturday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(saturday_max_cap).replace(/,/g, '').trim()))}`
                     const msgValue = row?.saturday ? tabIndex2ndTab == 0 ? formatNumberSixDecimalNom(parseToNumber(row?.saturday)) : formatNumberThreeDecimalNom(parseToNumber(row?.saturday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(6, "day").format("DD/MM/YYYY")}`
                     messageWarning.push(messageText)
@@ -786,10 +750,10 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
             })
         }else if(data?.type === "TableWeeklyArea"){
            
-            const allNomdata = activeButton == 2 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 ? [...tableData?.area?.weekly?.MMBTUD] : []
+            const allNomdata = activeButton == 2 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 ? [...(tableData?.area?.weekly?.MMBTUD || [])] : [];
            
             // data?.paginatedData?.length > 0 && data?.paginatedData?.map((row: any, index: any) => {
-            allNomdata?.length > 0 && allNomdata?.map((row: any, index: any) => {
+            allNomdata.map((row: any, index: any) => {
 
                 let find_validate = data?.areaMaster?.data?.find((item: any) => item?.name === row?.area_text)
                 let sunday_validate = find_validate?.area_nominal_capacity > parseFloat(row?.sunday)
@@ -864,7 +828,7 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
             })
         }else if(data?.type === "TableWeeklyTotalSystem"){
             // ใน UI ยังไม่มีทำ validate แดง
-            const allNomdata = [...(tableData.nomination?.weekly?.MMSCFD)?.filter((f:any) => f?.entry_exit_id === 1), ...tableData.nomination?.weekly?.MMBTUD]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)
+            const allNomdata = [...((tableData?.nomination?.weekly?.MMSCFD || [])?.filter((f:any) => f?.entry_exit_id === 1)), ...(tableData?.nomination?.weekly?.MMBTUD || [])]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)
 
             allNomdata?.map((row: any, index: any) => {
                 // tabIndex2ndTab 0 = mmscf
@@ -875,9 +839,9 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                 const targetData = data?.dataEva?.newWeekly?.find((item: any) => {
                     const area_id = find_validate?.area?.entry_exit_id == 1 ? find_validate?.area?.id : find_validate?.area?.supply_reference_quality_area
                     return (
-                        item.area.id === area_id &&
-                        item.zone.name === find_validate.zone.name &&
-                        item.parameter === "HV"
+                        item?.area?.id === area_id &&
+                        item?.zone?.name === find_validate?.zone?.name &&
+                        item?.parameter === "HV"
                     );
                 });
 
@@ -961,7 +925,7 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                 
                 if(!sunday_validate && (row?.sunday !== null)){
                     
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(sunday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(sunday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(sunday_max_cap).replace(/,/g, '').trim()))}`
                     
                     const msgValue = row?.sunday ? row?.units === "MMSCFD" ? formatNumberSixDecimalNom(parseToNumber(row?.sunday)) : formatNumberThreeDecimalNom(parseToNumber(row?.sunday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(0, "day").format("DD/MM/YYYY")}`
@@ -969,42 +933,42 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                 }
                 
                 if(!monday_validate && (row?.monday !== null)){
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNom(Number(String(monday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(monday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(monday_max_cap).replace(/,/g, '').trim()))}`
                     const msgValue = row?.monday ? row?.units === "MMSCFD" ? formatNumberSixDecimalNom(parseToNumber(row?.monday)) : formatNumberThreeDecimalNom(parseToNumber(row?.monday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(1, "day").format("DD/MM/YYYY")}`
                     messageWarning.push(messageText)
                 }
                 
                 if(!tuesday_validate && (row?.tuesday !== null)){
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(tuesday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(tuesday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(tuesday_max_cap).replace(/,/g, '').trim()))}`
                     const msgValue = row?.tuesday ? row?.units === "MMSCFD" ? formatNumberSixDecimalNom(parseToNumber(row?.tuesday)) : formatNumberThreeDecimalNom(parseToNumber(row?.tuesday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(2, "day").format("DD/MM/YYYY")}`
                     messageWarning.push(messageText)
                 }
                 
                 if(!wednesday_validate && (row?.wednesday !== null)){
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(wednesday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(wednesday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(wednesday_max_cap).replace(/,/g, '').trim()))}`
                     const msgValue = row?.wednesday ? row?.units === "MMSCFD" ? formatNumberSixDecimalNom(parseToNumber(row?.wednesday)) : formatNumberThreeDecimalNom(parseToNumber(row?.wednesday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(3, "day").format("DD/MM/YYYY")}`
                     messageWarning.push(messageText)
                 }
                 
                 if(!thursday_validate && (row?.thursday !== null)){
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(thursday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(thursday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(thursday_max_cap).replace(/,/g, '').trim()))}`
                     const msgValue = row?.thursday ? row?.units === "MMSCFD" ? formatNumberSixDecimalNom(parseToNumber(row?.thursday)) : formatNumberThreeDecimalNom(parseToNumber(row?.thursday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(4, "day").format("DD/MM/YYYY")}`
                     messageWarning.push(messageText)
                 }
                 
                 if(!friday_validate && (row?.friday !== null)){
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(friday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(friday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(friday_max_cap).replace(/,/g, '').trim()))}`
                     const msgValue = row?.friday ? row?.units === "MMSCFD" ? formatNumberSixDecimalNom(parseToNumber(row?.friday)) : formatNumberThreeDecimalNom(parseToNumber(row?.friday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(5, "day").format("DD/MM/YYYY")}`
                     messageWarning.push(messageText)
                 }
                 
                 if(!saturday_validate && (row?.saturday !== null)){
-                    const validateVal = data?.tabIndex2ndTab == 1 ? `${formatNumberThreeDecimalNomRound(Number(String(saturday_max_cap).replace(/,/g, '').trim()))}` : `${formatNumberThreeDecimalNomRound(Number(String(saturday_max_cap).replace(/,/g, '').trim()))}`
+                    const validateVal = `${formatNumberThreeDecimalNomRound(Number(String(saturday_max_cap).replace(/,/g, '').trim()))}`
                     const msgValue = row?.saturday ? row?.units === "MMSCFD" ? formatNumberSixDecimalNom(parseToNumber(row?.saturday)) : formatNumberThreeDecimalNom(parseToNumber(row?.saturday)) : ''
                     const messageText = `Nominated [${row?.nomination_point}] (${row?.units || row?.unix}) max volume ${msgValue} exceeds max cap value ${validateVal} gas day ${dayjs(row?.gas_day_text, "DD/MM/YYYY").add(6, "day").format("DD/MM/YYYY")}`
                     messageWarning.push(messageText)
@@ -1013,7 +977,7 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                 return row
             })
         }else if(data?.type === "TableDailyNomination"){
-            const allNomdata = activeButton == 3 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 ? [...tableData.nomination?.daily?.MMSCFD]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1) : [...tableData.nomination?.daily?.MMBTUD]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)
+            const allNomdata = activeButton == 3 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 ? [...(tableData?.nomination?.daily?.MMSCFD || [])]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1) : [...(tableData?.nomination?.daily?.MMBTUD || [])]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)
 
             //  data?.paginatedData?.length > 0 && data?.paginatedData?.map((row: any, index: any) => {
              allNomdata?.map((row: any, index: any) => {
@@ -1021,11 +985,11 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                 let find_validate = data?.nomData?.find((item: any) => item?.nomination_point === row?.nomination_point)
 
                 const targetData = data?.dataEva?.newDaily?.find((item: any) => {
-                    const area_id = find_validate?.area?.entry_exit_id == 1 ? find_validate?.area?.id : find_validate?.area?.supply_reference_quality_area
+                    const area_id = find_validate?.area?.entry_exit_id == 1 ? find_validate?.area?.id : find_validate?.area?.supply_reference_quality_area;
                     return (
-                        item.area.id === area_id &&
-                        item.zone.name === find_validate?.zone?.name &&
-                        item.parameter === "HV"
+                        item?.area?.id === area_id &&
+                        item?.zone?.name === find_validate?.zone?.name &&
+                        item?.parameter === "HV"
                     );
                 });
 
@@ -1037,13 +1001,8 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                     validate = find_validate?.mmscf_max_cap / 24
                     validate_total = find_validate?.mmscf_max_cap
                 } else { // MMBTU
-                    if(row?.zone_text === "EAST-WEST"){
-                        validate = (row?.hv * find_validate?.maximum_capacity) / 24
-                        validate_total = row?.hv * find_validate?.maximum_capacity
-                    }else{
-                        validate = (find_validate?.maximum_capacity * row?.hv) / 24
-                        validate_total = find_validate?.maximum_capacity * row?.hv
-                    }
+                    validate = ((find_validate?.maximum_capacity ?? 0) * (row?.hv ?? 0)) / 24
+                    validate_total = (find_validate?.maximum_capacity ?? 0) * (row?.hv ?? 0)
                 }
 
                 let total_cap_validate = validate_total > row?.totalCap
@@ -1208,9 +1167,9 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
             // console.log('activeButton : ', activeButton);
             // console.log('tabIndexNomAreaTotal : ', tabIndexNomAreaTotal);
             // console.log('tabIndex2ndTab : ', tabIndex2ndTab);
-            const allNomdata = activeButton == 3 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 ? [...tableData?.area?.daily?.MMBTUD] : []
+            const allNomdata = activeButton == 3 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 ? [...tableData?.area?.daily?.MMBTUD] : [];
             // data?.paginatedData?.length > 0 && data?.paginatedData?.map((row: any, index: any) => {
-            allNomdata?.length > 0 && allNomdata?.map((row: any, index: any) => {
+            allNomdata.map((row: any, index: any) => {
 
                 let find_validate = data?.areaMaster?.data?.find((item: any) => item?.name === row?.area_text)
 
@@ -1377,7 +1336,7 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
             })
         }else if(data?.type === "TableDailyTotalSystem"){
             // ใน UI ยังไม่มีทำ validate แดง
-            const allNomdata = [...(tableData.nomination?.daily?.MMSCFD)?.filter((f:any) => f?.entry_exit_id === 1), ...tableData.nomination?.daily?.MMBTUD]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)
+            const allNomdata = [...((tableData?.nomination?.daily?.MMSCFD || [])?.filter((f:any) => f?.entry_exit_id === 1) || []), ...(tableData?.nomination?.daily?.MMBTUD || [])]?.filter((f:any) => f?.query_shipper_nomination_type_id === 1)
 
             //  data?.paginatedData?.length > 0 && data?.paginatedData?.map((row: any, index: any) => {
              allNomdata?.map((row: any, index: any) => {
@@ -1385,11 +1344,11 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                 let find_validate = nomDataK?.find((item: any) => item?.nomination_point === row?.nomination_point)
 
                 const targetData = data?.dataEva?.newDaily?.find((item: any) => {
-                    const area_id = find_validate?.area?.entry_exit_id == 1 ? find_validate?.area?.id : find_validate?.area?.supply_reference_quality_area
+                    const area_id = find_validate?.area?.entry_exit_id == 1 ? find_validate?.area?.id : find_validate?.area?.supply_reference_quality_area;
                     return (
-                        item.area.id === area_id &&
-                        item.zone.name === find_validate?.zone?.name &&
-                        item.parameter === "HV"
+                        item?.area?.id === area_id &&
+                        item?.zone?.name === find_validate?.zone?.name &&
+                        item?.parameter === "HV"
                     );
                 });
 
@@ -1405,13 +1364,8 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                     // validate = (find_validate?.maximum_capacity) / 24 
                     // validate_total = find_validate?.maximum_capacity
 
-                    if(row?.zone_text === "EAST-WEST"){
-                        validate = (row?.hv * find_validate?.maximum_capacity) / 24
-                        validate_total = row?.hv * find_validate?.maximum_capacity
-                    }else{
-                        validate = (find_validate?.maximum_capacity * row?.hv) / 24
-                        validate_total = find_validate?.maximum_capacity * row?.hv
-                    }
+                    validate = ((find_validate?.maximum_capacity ?? 0) * (row?.hv ?? 0)) / 24
+                    validate_total = (find_validate?.maximum_capacity ?? 0) * (row?.hv ?? 0)
                 }
 
                 let total_cap_validate = row?.query_shipper_nomination_type_id === 1 ? validate_total > row?.totalCap : false
@@ -1602,20 +1556,9 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
     // activeButton == 1 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 1
 
     useEffect(() => {
-        if (activeButton == 1 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 1) { // tab all
-            setCheckIsAllAreaImbalance(true)
-        // } else if (activeButton == 1 && tabIndexNomAreaTotal == 2) {
-        //     setCheckIsAllAreaImbalance(true) // All > Total System > เอา Check Box Over Total Cap ออก https://app.clickup.com/t/86euy3aub
-        // } else if (activeButton == 3 && tabIndexNomAreaTotal == 2) {
-        //     setCheckIsAllAreaImbalance(true) // Daily > Total System > เอา Check Box Total Cap ออก https://app.clickup.com/t/86euy3pjd
-        } else if (activeButton == 2 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 1) { // tab weekly
-            setCheckIsAllAreaImbalance(true)
-        } else if (activeButton == 3 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 1) { // tab daily
-            setCheckIsAllAreaImbalance(true)
-        } else {
-            setCheckIsAllAreaImbalance(false)
-        }
-    }, [tabIndexNomAreaTotal, tabIndex2ndTab, activeButton])
+        const isImbalance = [1, 2, 3].includes(activeButton) && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 1;
+        setCheckIsAllAreaImbalance(isImbalance);
+    }, [tabIndexNomAreaTotal, tabIndex2ndTab, activeButton]);
     
     
     return (
@@ -1718,30 +1661,30 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                     {
                         // TABLE ALL --> NOMINATION --> MMSCF
                         // activeButton == 1 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 && <TableAllNomination tabIndex2ndTab={tabIndex2ndTab} isLoading={true} tableData={tableData?.nomination?.all?.MMSCFD} nomData={tableData?.nomData} userPermission={userPermission} />
-                        activeButton == 1 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 && <TableAllNomination openWarning={openWarning} tabIndex2ndTab={tabIndex2ndTab} isLoading={true} tableData={tableData?.nomination?.all?.MMSCFD} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
+                        activeButton == 1 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 && <TableAllNomination openWarning={openWarning} tabIndex2ndTab={tabIndex2ndTab} isLoading={false} tableData={tableData?.nomination?.all?.MMSCFD} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
                     }
 
                     {
                         // TABLE ALL --> NOMINATION --> MMBTU
                         // activeButton == 1 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 1 && <TableAllNomination tabIndex2ndTab={tabIndex2ndTab} isLoading={true} tableData={tableData?.nomination?.all?.MMBTUD} nomData={tableData?.nomData} userPermission={userPermission} />
-                        activeButton == 1 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 1 && <TableAllNomination openWarning={openWarning} tabIndex2ndTab={tabIndex2ndTab} isLoading={true} tableData={tableData?.nomination?.all?.MMBTUD} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
+                        activeButton == 1 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 1 && <TableAllNomination openWarning={openWarning} tabIndex2ndTab={tabIndex2ndTab} isLoading={false} tableData={tableData?.nomination?.all?.MMBTUD} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
                     }
 
                     {
                         // TABLE ALL --> AREA --> MMSCF
                         // activeButton == 1 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 && <TableAllArea tabIndex2ndTab={tabIndex2ndTab} isLoading={true} tableData={tableData?.area?.all?.MMBTUD} areaMaster={areaMaster} nomData={tableData?.nomData} userPermission={userPermission} />
-                        activeButton == 1 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 && <TableAllArea openWarning={openWarning} tabIndex2ndTab={tabIndex2ndTab} isLoading={true} tableData={tableData?.area?.all?.MMBTUD} areaMaster={areaMaster} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
+                        activeButton == 1 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 && <TableAllArea openWarning={openWarning} tabIndex2ndTab={tabIndex2ndTab} isLoading={false} tableData={tableData?.area?.all?.MMBTUD} areaMaster={areaMaster} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
                     }
 
                     {
                         // TABLE ALL --> AREA --> IMBALANCE
                         // activeButton == 1 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 1 && <TableAllArea tabIndex2ndTab={tabIndex2ndTab} isLoading={true} tableData={tableData?.area?.all?.Imbalance} areaMaster={areaMaster} nomData={tableData?.nomData} userPermission={userPermission} />
-                        activeButton == 1 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 1 && <TableAllArea checkIsAllAreaImbalance={checkIsAllAreaImbalance} openWarning={openWarning} tabIndex2ndTab={tabIndex2ndTab} isLoading={true} tableData={tableData?.area?.all?.Imbalance} areaMaster={areaMaster} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
+                        activeButton == 1 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 1 && <TableAllArea checkIsAllAreaImbalance={checkIsAllAreaImbalance} openWarning={openWarning} tabIndex2ndTab={tabIndex2ndTab} isLoading={false} tableData={tableData?.area?.all?.Imbalance} areaMaster={areaMaster} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
                     }
 
                     {
                         // TABLE ALL --> TOTAL SYSTEM
-                        activeButton == 1 && tabIndexNomAreaTotal == 2 && <TableAllTotalSystem openWarning={openWarning} nomData={nomDataK} isLoading={true} tableData={tableData?.total?.all} areaMaster={areaMaster} zoneMaster={zoneMaster} userPermission={userPermission} srchStartDate={srchStartDate} />
+                        activeButton == 1 && tabIndexNomAreaTotal == 2 && <TableAllTotalSystem openWarning={openWarning} nomData={nomDataK} isLoading={false} tableData={tableData?.total?.all} areaMaster={areaMaster} zoneMaster={zoneMaster} userPermission={userPermission} srchStartDate={srchStartDate} />
                     }
 
 
@@ -1751,28 +1694,28 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                     {
                         // TABLE WEEKLY --> NOMINATION --> MMSCF
                         // activeButton == 2 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 && <TableWeeklyNomination tabIndex2ndTab={tabIndex2ndTab} isLoading={true} tableData={tableData?.nomination?.weekly?.MMSCFD} nomData={tableData?.nomData} userPermission={userPermission} />
-                        activeButton == 2 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 && <TableWeeklyNomination openWarning={openWarning} tabIndex2ndTab={tabIndex2ndTab} isLoading={true} tableData={tableData?.nomination?.weekly?.MMSCFD} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} dataEva={dataEva} />
+                        activeButton == 2 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 && <TableWeeklyNomination openWarning={openWarning} tabIndex2ndTab={tabIndex2ndTab} isLoading={false} tableData={tableData?.nomination?.weekly?.MMSCFD} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} dataEva={dataEva} />
                     }
 
                     {
                         // TABLE WEEKLY --> NOMINATION --> MMBTU
                         // activeButton == 2 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 1 && <TableWeeklyNomination tabIndex2ndTab={tabIndex2ndTab} isLoading={true} tableData={tableData?.nomination?.weekly?.MMBTUD} nomData={tableData?.nomData} userPermission={userPermission} />
-                        activeButton == 2 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 1 && <TableWeeklyNomination openWarning={openWarning} tabIndex2ndTab={tabIndex2ndTab} isLoading={true} tableData={tableData?.nomination?.weekly?.MMBTUD} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} dataEva={dataEva} />
+                        activeButton == 2 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 1 && <TableWeeklyNomination openWarning={openWarning} tabIndex2ndTab={tabIndex2ndTab} isLoading={false} tableData={tableData?.nomination?.weekly?.MMBTUD} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} dataEva={dataEva} />
                     }
 
                     {
                         // TABLE WEEKLY --> AREA --> MMBTU
-                        activeButton == 2 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 && <TableWeeklyArea openWarning={openWarning} isLoading={true} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.area?.weekly?.MMBTUD} areaMaster={areaMaster} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
+                        activeButton == 2 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 && <TableWeeklyArea openWarning={openWarning} isLoading={false} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.area?.weekly?.MMBTUD} areaMaster={areaMaster} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
                     }
 
                     {
                         // TABLE WEEKLY --> AREA --> IMBALANCE
-                        activeButton == 2 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 1 && <TableWeeklyArea checkIsAllAreaImbalance={checkIsAllAreaImbalance} openWarning={openWarning} isLoading={true} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.area?.weekly?.Imbalance} areaMaster={areaMaster} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
+                        activeButton == 2 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 1 && <TableWeeklyArea checkIsAllAreaImbalance={checkIsAllAreaImbalance} openWarning={openWarning} isLoading={false} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.area?.weekly?.Imbalance} areaMaster={areaMaster} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
                     }
 
                     {
                         // TABLE WEEKLY --> TOTAL SYSTEM
-                        activeButton == 2 && tabIndexNomAreaTotal == 2 && <TableWeeklyTotalSystem openWarning={openWarning} nomData={nomDataK} dataEva={dataEva} isLoading={true} tableData={tableData?.total?.weekly} areaMaster={areaMaster} zoneMaster={zoneMaster} userPermission={userPermission} srchStartDate={srchStartDate} />
+                        activeButton == 2 && tabIndexNomAreaTotal == 2 && <TableWeeklyTotalSystem openWarning={openWarning} nomData={nomDataK} dataEva={dataEva} isLoading={false} tableData={tableData?.total?.weekly} areaMaster={areaMaster} zoneMaster={zoneMaster} userPermission={userPermission} srchStartDate={srchStartDate} />
                     }
 
 
@@ -1782,28 +1725,28 @@ const FrameTable: React.FC<any> = ({ checkIsAllAreaImbalance, tabIndexNomAreaTot
                     {
                         // TABLE DAILY --> NOMINATION --> MMSCF
                         // activeButton == 3 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 && <TableDailyNomination isLoading={true} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.nomination?.daily?.MMSCFD} nomData={tableData?.nomData} userPermission={userPermission} />
-                        activeButton == 3 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 && <TableDailyNomination openWarning={openWarning} isLoading={true} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.nomination?.daily?.MMSCFD} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} dataEva={dataEva} />
+                        activeButton == 3 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 0 && <TableDailyNomination openWarning={openWarning} isLoading={false} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.nomination?.daily?.MMSCFD} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} dataEva={dataEva} />
                     }
 
                     {
                         // TABLE DAILY --> NOMINATION --> MMBTU
                         // activeButton == 3 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 1 && <TableDailyNomination isLoading={true} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.nomination?.daily?.MMBTUD} nomData={tableData?.nomData} userPermission={userPermission} />
-                        activeButton == 3 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 1 && <TableDailyNomination openWarning={openWarning} isLoading={true} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.nomination?.daily?.MMBTUD} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} dataEva={dataEva} />
+                        activeButton == 3 && tabIndexNomAreaTotal == 0 && tabIndex2ndTab == 1 && <TableDailyNomination openWarning={openWarning} isLoading={false} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.nomination?.daily?.MMBTUD} nomData={nomDataK} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} dataEva={dataEva} />
                     }
 
                     {
                         // TABLE DAILY --> AREA --> MMBTU
-                        activeButton == 3 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 && <TableDailyArea openWarning={openWarning} isLoading={true} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.area?.daily?.MMBTUD} areaMaster={areaMaster} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
+                        activeButton == 3 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 0 && <TableDailyArea openWarning={openWarning} isLoading={false} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.area?.daily?.MMBTUD} areaMaster={areaMaster} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
                     }
 
                     {
                         // TABLE DAILY --> AREA --> IMBALANCE
-                        activeButton == 3 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 1 && <TableDailyArea checkIsAllAreaImbalance={checkIsAllAreaImbalance} openWarning={openWarning} isLoading={true} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.area?.daily?.Imbalance} areaMaster={areaMaster} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
+                        activeButton == 3 && tabIndexNomAreaTotal == 1 && tabIndex2ndTab == 1 && <TableDailyArea checkIsAllAreaImbalance={checkIsAllAreaImbalance} openWarning={openWarning} isLoading={false} tabIndex2ndTab={tabIndex2ndTab} tableData={tableData?.area?.daily?.Imbalance} areaMaster={areaMaster} userPermission={userPermission} srchCheckbox={srchCheckbox} activeButton={activeButton} />
                     }
 
                     {
                         // TABLE DAILY --> TOTAL SYSTEM
-                        activeButton == 3 && tabIndexNomAreaTotal == 2 && <TableDailyTotalSystem openWarning={openWarning} nomData={nomDataK} dataEva={dataEva} isLoading={true} tableData={tableData?.total?.daily} areaMaster={areaMaster} zoneMaster={zoneMaster} userPermission={userPermission} srchStartDate={srchStartDate} />
+                        activeButton == 3 && tabIndexNomAreaTotal == 2 && <TableDailyTotalSystem openWarning={openWarning} nomData={nomDataK} dataEva={dataEva} isLoading={false} tableData={tableData?.total?.daily} areaMaster={areaMaster} zoneMaster={zoneMaster} userPermission={userPermission} srchStartDate={srchStartDate} />
                     }
 
                 </div>

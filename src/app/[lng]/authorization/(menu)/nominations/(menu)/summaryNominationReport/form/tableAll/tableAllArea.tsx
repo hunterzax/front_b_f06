@@ -339,7 +339,11 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
         setSortedData(filtered);
         setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
     }
-
+    useEffect(() => {
+      console.log('A paginatedData : ', paginatedData);
+      console.log('A tabIndex2ndTab : ', tabIndex2ndTab);
+    }, [paginatedData])
+    
     return (
         // <div className={`relative h-[calc(100vh-340px)] overflow-y-auto block  rounded-t-md z-1`}>
         <div className={`relative h-[calc(100vh-230px)] overflow-y-auto block  rounded-t-md z-1`}>
@@ -429,14 +433,14 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                 <div className="overflow-y-auto overflow-x-auto w-full h-[54dvh]">
                     {
                         // TABLE TAB MMSCF
-                        isLoading && tabIndex2ndTab == 0 ?
+                        !isLoading && tabIndex2ndTab == 0 ?
                             <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
                                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                     <tr className="h-20">
 
                                         {/* ที่ handleSort ส่ง paginatedData แทน dataTable เพราะข้อนี้ */}
                                         {/* All > Weekly > Nomination > MMSCF > Smart Sear แล้ว Sort Column ทำให้ Smart Search หลุด https://app.clickup.com/t/86euy05du */}
-                                        {columnVisibility.gas_day && (
+                                        {columnVisibility?.gas_day && (
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("gas_day_text", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("gas_day_text", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Gas Day`}
@@ -444,7 +448,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                             </th>
                                         )}
 
-                                        {columnVisibility.area && (
+                                        {columnVisibility?.area && (
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("area_text", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Area`}
@@ -452,7 +456,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                             </th>
                                         )}
 
-                                        {columnVisibility.total_cap && (
+                                        {columnVisibility?.total_cap && (
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalCap", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalCap", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Total`}
@@ -460,7 +464,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization && (
+                                        {columnVisibility?.utilization && (
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("utilization", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Utilization (%)`}
@@ -469,7 +473,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                         )}
 
                                         {getVisibleHours().map(({ key, label, timeRange }) =>
-                                            columnVisibility[key] && (
+                                            columnVisibility?.[key] && (
                                                 <th
                                                     key={key}
                                                     scope="col"
@@ -488,85 +492,84 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
 
                                 <tbody>
                                     {
-                                        // sortedData?.length > 0 && sortedData?.map((row: any, index: any) => {
-                                        paginatedData.length > 0 && paginatedData?.map((row: any, index: any) => {
+                                        // (sortedData || [])?.map((row: any, index: any) => {
+                                        (paginatedData || [])?.map((row: any, index: any) => {
+                                                if(!row) return undefined
 
-                                            let find_validate = areaMaster?.data?.find((item: any) => item?.name === row?.area_text)
-                                            // https://app.clickup.com/t/9018502823/86ey4nagb
-                                            const area_nominal_capacity = find_validate?.area_nominal_capacity
-                                            let total_cap_validate = area_nominal_capacity > row?.totalCap
-                                            let h1_validate = (area_nominal_capacity / 24) > row?.H1
-                                            let h2_validate = (area_nominal_capacity / 24) > row?.H2
-                                            let h3_validate = (area_nominal_capacity / 24) > row?.H3
-                                            let h4_validate = (area_nominal_capacity / 24) > row?.H4
-                                            let h5_validate = (area_nominal_capacity / 24) > row?.H5
-                                            let h6_validate = (area_nominal_capacity / 24) > row?.H6
-                                            let h7_validate = (area_nominal_capacity / 24) > row?.H7
-                                            let h8_validate = (area_nominal_capacity / 24) > row?.H8
-                                            let h9_validate = (area_nominal_capacity / 24) > row?.H9
-                                            let h10_validate = (area_nominal_capacity / 24) > row?.H10
-                                            let h11_validate = (area_nominal_capacity / 24) > row?.H11
-                                            let h12_validate = (area_nominal_capacity / 24) > row?.H12
-                                            let h13_validate = (area_nominal_capacity / 24) > row?.H13
-                                            let h14_validate = (area_nominal_capacity / 24) > row?.H14
-                                            let h15_validate = (area_nominal_capacity / 24) > row?.H15
-                                            let h16_validate = (area_nominal_capacity / 24) > row?.H16
-                                            let h17_validate = (area_nominal_capacity / 24) > row?.H17
-                                            let h18_validate = (area_nominal_capacity / 24) > row?.H18
-                                            let h19_validate = (area_nominal_capacity / 24) > row?.H19
-                                            let h20_validate = (area_nominal_capacity / 24) > row?.H20
-                                            let h21_validate = (area_nominal_capacity / 24) > row?.H21
-                                            let h22_validate = (area_nominal_capacity / 24) > row?.H22
-                                            let h23_validate = (area_nominal_capacity / 24) > row?.H23
-                                            let h24_validate = (area_nominal_capacity / 24) > row?.H24
-                                          
-                                            return (
-                                                <tr
-                                                    key={row?.id}
-                                                    className={`${table_row_style}`}
-                                                >
+                                                const find_validate = areaMaster?.data?.find((item: any) => item?.name === row?.area_text);
+                                                const area_nominal_capacity = find_validate?.area_nominal_capacity;
+                                                const total_cap_validate = area_nominal_capacity > row?.totalCap;
+                                                const h1_validate = (area_nominal_capacity / 24) > row?.H1;
+                                                const h2_validate = (area_nominal_capacity / 24) > row?.H2;
+                                                const h3_validate = (area_nominal_capacity / 24) > row?.H3;
+                                                const h4_validate = (area_nominal_capacity / 24) > row?.H4;
+                                                const h5_validate = (area_nominal_capacity / 24) > row?.H5;
+                                                const h6_validate = (area_nominal_capacity / 24) > row?.H6;
+                                                const h7_validate = (area_nominal_capacity / 24) > row?.H7;
+                                                const h8_validate = (area_nominal_capacity / 24) > row?.H8;
+                                                const h9_validate = (area_nominal_capacity / 24) > row?.H9;
+                                                const h10_validate = (area_nominal_capacity / 24) > row?.H10;
+                                                const h11_validate = (area_nominal_capacity / 24) > row?.H11;
+                                                const h12_validate = (area_nominal_capacity / 24) > row?.H12;
+                                                const h13_validate = (area_nominal_capacity / 24) > row?.H13;
+                                                const h14_validate = (area_nominal_capacity / 24) > row?.H14;
+                                                const h15_validate = (area_nominal_capacity / 24) > row?.H15;
+                                                const h16_validate = (area_nominal_capacity / 24) > row?.H16;
+                                                const h17_validate = (area_nominal_capacity / 24) > row?.H17;
+                                                const h18_validate = (area_nominal_capacity / 24) > row?.H18;
+                                                const h19_validate = (area_nominal_capacity / 24) > row?.H19;
+                                                const h20_validate = (area_nominal_capacity / 24) > row?.H20;
+                                                const h21_validate = (area_nominal_capacity / 24) > row?.H21;
+                                                const h22_validate = (area_nominal_capacity / 24) > row?.H22;
+                                                const h23_validate = (area_nominal_capacity / 24) > row?.H23;
+                                                const h24_validate = (area_nominal_capacity / 24) > row?.H24;
+                                                
+                                                return (
+                                                    <tr
+                                                        key={row?.id ?? index}
+                                                        className={`${table_row_style}`}
+                                                    >
 
-                                                    {columnVisibility.gas_day && (
-                                                        <td className="px-2 py-1 text-[#464255] ">{row?.gas_day_text ? row?.gas_day_text : ''}</td>
-                                                    )}
+                                                        {columnVisibility?.gas_day && (
+                                                            <td className="px-2 py-1 text-[#464255] ">{row?.gas_day_text ? row?.gas_day_text : ''}</td>
+                                                        )}
 
-                                                    {columnVisibility?.area && (
-                                                        <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} !justify-center items-center text-center flex`}>
+                                                        {columnVisibility?.area && (
+                                                            <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} !justify-center items-center text-center flex`}>
 
-                                                            {(() => {
-                                                                const filter_area = areaMaster?.data?.find((item: any) => item.name === row?.area_text?.trim());
+                                                                {(() => {
+                                                                    const filter_area = areaMaster?.data?.find((item: any) => item?.name === row?.area_text?.trim());
 
-                                                                return filter_area?.entry_exit_id == 2 ? (
-                                                                    <div
-                                                                        className="flex justify-center items-center rounded-full p-1 text-[#464255]"
-                                                                        style={{ backgroundColor: filter_area?.color, width: '40px', height: '40px', color: getContrastTextColor(filter_area?.color) }}
-                                                                    >
-                                                                        {`${filter_area?.name}`}
-                                                                    </div>
-                                                                ) : filter_area?.entry_exit_id == 1 ? (
-                                                                    <div
-                                                                        className="flex justify-center items-center rounded-lg p-1 text-[#464255]"
-                                                                        style={{ backgroundColor: filter_area?.color, width: '40px', height: '40px', color: getContrastTextColor(filter_area?.color) }}
-                                                                    >
-                                                                        {`${filter_area?.name}`}
-                                                                    </div>
-                                                                )
-                                                                    : null;
-                                                            })()}
-                                                        </td>
-                                                    )}
+                                                                    return filter_area?.entry_exit_id == 2 ? (
+                                                                        <div
+                                                                            className="flex items-center justify-center rounded-full p-1 text-[#464255]"
+                                                                            style={{ backgroundColor: filter_area?.color, width: '40px', height: '40px', color: getContrastTextColor(filter_area?.color) }}
+                                                                        >
+                                                                            {`${row?.area_text}`}
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div
+                                                                            className="flex items-center justify-center rounded-lg p-1 text-[#464255]"
+                                                                            style={{ backgroundColor: filter_area?.color, width: '40px', height: '40px', color: getContrastTextColor(filter_area?.color) }}
+                                                                        >
+                                                                            {`${row?.area_text}`}
+                                                                        </div>
+                                                                    );
+                                                                })()}
+                                                            </td>
+                                                        )}
 
-                                                    {columnVisibility.total_cap && (
+                                                    {columnVisibility?.total_cap && (
                                                         // <td className={`px-2 py-1 ${total_cap_validate ? 'text-[#464255]' : 'text-red-600'} text-right font-bold`}>{row?.totalCap ? formatNumberThreeDecimalNom(row?.totalCap) : ''}</td>
                                                         <td className={`px-2 py-1 ${total_cap_validate ? 'text-[#464255]' : 'text-red-600'} text-right font-bold`}>{row?.totalCap !== null && row?.totalCap !== undefined ? formatNumberThreeDecimalNom(row?.totalCap) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization && (
+                                                    {columnVisibility?.utilization && (
                                                         // <td className={`px-2 py-1 text-[#464255] ${row?.utilization > 100 && 'text-red-600'} text-right`}>{typeof row?.utilization === 'number' ? formatNumberTwoDecimalNom(row?.utilization) : ''}</td>
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.utilization > 100 && 'text-red-600'} text-right`}>{row?.utilization !== null && row?.utilization !== undefined && row?.utilization !== '' ? formatNumberTwoDecimalNom(row?.utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.h1 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h1 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h1_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -576,7 +579,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h2 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h2 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h2_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // typeof row?.H2 === 'number' || !isNaN(Number(row?.H2)) ? formatNumberThreeDecimalNom(row?.H2) : ''
@@ -588,7 +591,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h3 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h3 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h3_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -598,7 +601,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h4 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h4 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h4_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -608,7 +611,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h5 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h5 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h5_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -618,7 +621,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h6 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h6 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h6_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -628,7 +631,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h7 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h7 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h7_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -638,7 +641,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h8 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h8 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h8_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -648,7 +651,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h9 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h9 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h9_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -658,7 +661,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h10 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h10 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h10_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -668,7 +671,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h11 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h11 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h11_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -678,7 +681,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h12 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h12 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h12_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -688,7 +691,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h13 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h13 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h13_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -698,7 +701,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h14 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h14 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h14_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -708,7 +711,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h15 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h15 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h15_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -718,7 +721,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h16 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h16 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h16_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -728,7 +731,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h17 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h17 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h17_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -738,7 +741,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h18 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h18 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h18_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -748,7 +751,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h19 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h19 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h19_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -758,7 +761,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h20 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h20 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h20_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -768,7 +771,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h21 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h21 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h21_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -778,7 +781,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h22 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h22 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h22_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -788,7 +791,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h23 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h23 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h23_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -798,7 +801,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h24 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h24 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h24_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -818,10 +821,10 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
 
                     {/******************* TABLE TAB IMBALANCE *******************/}
                     {
-                        isLoading && tabIndex2ndTab == 1 ? <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
+                        !isLoading && tabIndex2ndTab == 1 ? <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
                             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                 <tr className="h-20">
-                                    {columnVisibility.gas_day && (
+                                    {columnVisibility?.gas_day && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("gas_day_text", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("gas_day_text", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Gas Day`}
@@ -829,14 +832,14 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                         </th>
                                     )}
 
-                                    {/* {columnVisibility.area && (
+                                    {/* {columnVisibility?.area && (
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("area", sortState, setSortState, setSortedData, sortedData)}>
                                             {`Area`}
                                             {getArrowIcon("area")}
                                         </th>
                                     )} */}
 
-                                    {columnVisibility.imbalance && (
+                                    {columnVisibility?.imbalance && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("imbalance", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("imbalance", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Imbalance`}
@@ -844,7 +847,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                         </th>
                                     )}
 
-                                    {columnVisibility.imbalance_percent && (
+                                    {columnVisibility?.imbalance_percent && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("imbalance_percent", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("imbalance_percent", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Imbalance (%)`}
@@ -852,7 +855,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                         </th>
                                     )}
 
-                                    {columnVisibility.park && (
+                                    {columnVisibility?.park && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("park", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("park", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Park`}
@@ -860,7 +863,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                         </th>
                                     )}
 
-                                    {columnVisibility.unpark && (
+                                    {columnVisibility?.unpark && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("unpark", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("unpark", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Unpark`}
@@ -868,7 +871,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                         </th>
                                     )}
 
-                                    {columnVisibility.change_min_invent && (
+                                    {columnVisibility?.change_min_invent && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("change_min_invent", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("change_min_invent", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Change Min Invent`}
@@ -876,7 +879,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                         </th>
                                     )}
 
-                                    {columnVisibility.shrinkage && (
+                                    {columnVisibility?.shrinkage && (
                                         // <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("shrinkage", sortState, setSortState, setSortedData, sortedData)}>
                                         <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("shrinkage", sortState, setSortState, setSortedData, dataTable)}>
                                             {`Shrinkage`}
@@ -889,8 +892,8 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
 
                             <tbody>
                                 {
-                                    // sortedData.length > 0 && sortedData?.map((row: any, index: any) => {
-                                    paginatedData?.length > 0 && paginatedData?.map((row: any, index: any) => {
+                                    // (sortedData || [])?.map((row: any, index: any) => {
+                                    (paginatedData || [])?.map((row: any, index: any) => {
 
                                         // All > Area > Imbalance > ในตารางมี Row ว่างเกินมา (ลองเปลี่ยนวันก็มีทุกวันเลย เหมือนจะมี Row นี้อยู่ทุกวัน) https://app.clickup.com/t/86euy2143
                                         if (row?.length == 0) { return false }
@@ -901,7 +904,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                 className={`${table_row_style}`}
                                             >
 
-                                                {columnVisibility.gas_day && (
+                                                {columnVisibility?.gas_day && (
                                                     <td className="px-2 py-1 text-[#464255] ">{row?.gas_day_text ? row?.gas_day_text : ''}</td>
                                                 )}
 
@@ -931,27 +934,27 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                                                     </td>
                                                 )} */}
 
-                                                {columnVisibility.imbalance && (
+                                                {columnVisibility?.imbalance && (
                                                     <td className="px-2 py-1 text-[#464255] text-center">{row?.imbalance !== null && row?.imbalance !== undefined ? formatNumberThreeDecimalNom(row?.imbalance) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.imbalance_percent && (
+                                                {columnVisibility?.imbalance_percent && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.imbalance_percent !== null && row?.imbalance_percent !== undefined ? formatNumberThreeDecimalNom(row?.imbalance_percent) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.park && (
+                                                {columnVisibility?.park && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.park !== null && row?.park !== undefined ? formatNumberThreeDecimalNom(row?.park) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.unpark && (
+                                                {columnVisibility?.unpark && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.unpark !== null && row?.unpark !== undefined ? formatNumberThreeDecimalNom(row?.unpark) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.change_min_invent && (
+                                                {columnVisibility?.change_min_invent && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.change_min_invent !== null && row?.change_min_invent !== undefined ? formatNumberThreeDecimalNom(row?.change_min_invent) : ''}</td>
                                                 )}
 
-                                                {columnVisibility.shrinkage && (
+                                                {columnVisibility?.shrinkage && (
                                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.shrinkage !== null && row?.shrinkage !== undefined ? formatNumberThreeDecimalNom(row?.shrinkage) : ''}</td>
                                                 )}
 
@@ -965,7 +968,7 @@ const TableAllArea: React.FC<any> = ({ checkIsAllAreaImbalance, openWarning, tab
                     }
 
                     {
-                        isLoading && sortedData?.length <= 0 && <NodataTable />
+                        !isLoading && sortedData?.length <= 0 && <NodataTable />
                     }
                 </div>
 

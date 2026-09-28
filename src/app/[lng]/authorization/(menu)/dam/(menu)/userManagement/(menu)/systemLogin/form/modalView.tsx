@@ -159,17 +159,8 @@ const ModalView: React.FC<FormExampleProps> = ({
                                     <span className='font-bold text-[#58585A]'>Password</span>
                                 </div>
                             </div>
-                            {data?.system_login_account?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto p-2 ">
-
-                                    {/* <div className='grid grid-cols-2 pb-2'>
-                                        <div>
-                                            <span className='font-bold col-span-2 text-[#58585A]'>User Name</span>
-                                        </div>
-                                        <div>
-                                            <span className='font-bold text-[#58585A]'>Password</span>
-                                        </div>
-                                    </div> */}
+                            {(data?.system_login_account || [])?.map((item: any, index: number) => (
+                                <div key={item?.id ?? index} className="w-full h-auto p-2 ">
 
                                     <div className="grid grid-cols-[350px_250px_50px_50px] justify-center items-center p-3 text-sm font-semibold w-full border rounded-lg">
                                         <div>
@@ -177,11 +168,8 @@ const ModalView: React.FC<FormExampleProps> = ({
                                         </div>
 
                                         <div className='flex items-center'>
-                                            {/* <span className='font-light'>
-                                                {item?.account?.password_gen_flag ? item?.account?.password_gen_origin : '**********'}
-                                            </span> */}
                                             <input
-                                                type={passwordVisibility[item.id] ? 'text' : 'password'}
+                                                type={passwordVisibility?.[item?.id] ? 'text' : 'password'}
                                                 className={`font-light !text-[14px] w-[230px] h-[35px] border rounded-[6px] border-[#DFE4EA] px-2 pointer-events-none user-select-none`}
                                                 placeholder=""
                                                 value={item?.account?.password_gen_flag ? item?.account?.password_gen_origin : 'Iputmyfingersintomyeyes'}
@@ -191,29 +179,13 @@ const ModalView: React.FC<FormExampleProps> = ({
 
                                         <button
                                             type="button"
-                                            // onClick={togglePasswordVisibility}
-                                            onClick={() => togglePasswordVisibility(item.id)}
-                                            // className={`${!item?.account?.password_gen_flag && '!bg-[#EFECEC]'} w-[35px] h-[35px] font-light bg-[#0E688B] bg-slate-100 text-grey py-2 rounded-lg border flex justify-center items-center hover:bg-rose-500 focus:outline-none focus:bg-rose-500`}
+                                            onClick={() => togglePasswordVisibility(item?.id)}
                                             className={`${!item?.account?.password_gen_flag && '!bg-[#EFECEC]'} w-[35px] h-[35px] font-light bg-[#ffffff] bg-slate-100 text-grey py-2 rounded-lg border flex justify-center items-center hover:bg-rose-500 focus:outline-none focus:bg-rose-500`}
-                                            disabled={!item?.account?.password_gen_flag && true}
+                                            disabled={!item?.account?.password_gen_flag}
                                         >
-                                            {/* {isPasswordVisible ? ( */}
-                                            {/* {passwordVisibility[item.id] ? ( */}
-
-                                            {/* {item?.account?.password_gen_flag && passwordVisibility[item.id] ? (
-                                                // <VisibilityOffRoundedIcon sx={{ color: '#58585A', fontSize: '16px' }} />
-                                                // <RemoveRedEyeRoundedIcon sx={{ color: '#58585A', fontSize: '20px' }} />
+                                            {passwordVisibility?.[item?.id] ? (
                                                 <RemoveRedEyeRoundedIcon sx={{ color: '#58585A', fontSize: '20px' }} />
                                             ) : (
-                                                // <RemoveRedEyeRoundedIcon sx={{ color: '#ffffff', fontSize: '16px' }} />
-                                                // <VisibilityOffRoundedIcon sx={{ color: '#B6B6B6', fontSize: '20px' }} />
-                                                <VisibilityOffRoundedIcon sx={{ color: '#B6B6B6', fontSize: '20px' }} />
-                                            )} */}
-
-                                            {passwordVisibility[item.id] ? (
-                                                <RemoveRedEyeRoundedIcon sx={{ color: '#58585A', fontSize: '20px' }} />
-                                            ) : (
-                                                // <VisibilityOffRoundedIcon sx={{ color: '#58585A', fontSize: '20px', opacity: !item?.account?.password_gen_flag && '0.2' }} />
                                                 <VisibilityOffRoundedIcon
                                                     sx={{
                                                         color: '#58585A',
@@ -229,7 +201,7 @@ const ModalView: React.FC<FormExampleProps> = ({
                                             <button
                                                 type="button"
                                                 // onClick={() => copyToClipboard(item?.account?.password_gen_origin)}
-                                                onClick={() => copyToClipboard(item?.account?.password_gen_origin, item.id)}
+                                                onClick={() => copyToClipboard(item?.account?.password_gen_origin, item?.id)}
                                                 // className={`${!item?.account?.password_gen_flag && '!bg-[#EFECEC]'} w-[35px] h-[35px] font-light bg-[#24AB6A] text-grey py-2 rounded-lg border flex justify-center items-center hover:bg-rose-500 focus:outline-none focus:bg-rose-500`}
                                                 className={`${!item?.account?.password_gen_flag && '!bg-[#EFECEC]'} w-[35px] h-[35px] font-light bg-[#FFFFFF] text-grey py-2 rounded-lg border flex justify-center items-center hover:bg-rose-500 focus:outline-none focus:bg-rose-500`}
                                                 disabled={!item?.account?.password_gen_flag && true}

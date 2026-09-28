@@ -1,3 +1,5 @@
+// Next.js client boundary. Coverity flags this as unused_expr (NO_EFFECT).
+// coverity[unused_expr:SUPPRESS]
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -9,7 +11,6 @@ import LayoutHeader from "@/components/headers/Layout";
 import { getNoTokenService, getService } from "@/utils/postService";
 import { useAppDispatch } from "@/utils/store/store";
 import { fetchAllData } from "@/hook/fetchAllMaster";
-import useLogoutSync from "@/hook/useLogoutSync";
 
 const PMIS_URL = process.env.NEXT_PUBLIC_PMIS_URL
 
@@ -127,13 +128,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         <div className=" h-[70%] overflow-y-auto py-3">
           <aside className="px-5 overflow-y-auto h-auto">
             <section className="grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4md:grid-cols-5 sm:grid-cols-5  gap-4 transition duration-300 ease-in-out">
-              {(tempMenu() || []).map((item: any, ix: number) => {
-                return (
+              {((typeof tempMenu === 'function' ? tempMenu() : []) || []).map((item: any, ix: number) => item && (
                   <Link
-                    href={item?.url === 'pmis.pipeline.pttplc.com/smartTSO/login.php' ? '#' : `/en/authorization/${item?.url}`}
-                    onClick={() => handleLinkClick(item?.url)}
+                    href={item?.url === 'pmis.pipeline.pttplc.com/smartTSO/login.php' ? '#' : `/en/authorization/${item?.url || ''}`}
+                    onClick={() => handleLinkClick(item?.url || '')}
                     prefetch={true}
-                    key={ix}
+                    key={item?.url || ix}
                     className="row-span-1 noisy01 hover:bg-[#4F83B7] text-white py-6 sm:py-1 md:py-6 px-2 rounded-[20px] grid justify-center items-center h-[240px] sm:h-[100px] md:h-[25vh] lg:h-[10rem] xl:h-[240px] 1xl:h-[500px] bg-[#3A699373] duration-200 ease-in-out"
                   >
                     <div className="grid justify-center items-center h-[80px] sm:h-[50px] md:h-[50px] lg:h-[80px] duration-200 ease-in-out">
@@ -141,13 +141,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     </div>
                     <div className="grid justify-center items-end text-[24px] sm:text-[1.5vw] md:text-[1.5vw] lg:text-[1.5vw] h-[35px] -mt-[50px] text-center">{item?.name}</div>
                   </Link>
-                );
-              })}
+                )
+              )}
             </section>
           </aside>
         </div>
         <div className="h-[7%] flex items-end relative z-50">
-          {announcement?.length > 0 && (
+          {(announcement?.length ?? 0) > 0 && (
             // <footer className="fixed bottom-0 left-0 w-full bg-[#0D539A80] text-white h-[20px] sm:h-[30px] md:h-[40px] lg:h-[50px] flex items-center">
             <footer className="w-full bg-[#0D539A80] text-white h-[20px] sm:h-[30px] md:h-[40px] lg:h-[50px] flex items-center">
               <Marquee className="w-full">

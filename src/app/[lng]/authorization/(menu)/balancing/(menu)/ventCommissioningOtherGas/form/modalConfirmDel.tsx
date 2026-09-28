@@ -54,50 +54,31 @@ const ModalConfirmDel: React.FC<FormExampleProps> = ({
 
 
                         <div className={`mb-1 p-3 w-[100%] ${data?.length > 3 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
-                            {data?.length > 0 && data?.map((item: any) => (<>
-
-                                {/* <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
-                                    <div className="flex flex-col p-2">
-                                        <div className="mb-2 flex justify-between items-center">
-                                            <div className="flex items-center">
-                                                <span className='font-light'>By <span className="font-bold">{item?.create_by_account && item?.create_by_account?.first_name + ' ' + item?.create_by_account?.last_name}</span></span>
-                                            </div>
-                                            <span className="text-gray-500">{formatDate(item?.create_date)}</span>
+                            {(data || [])?.map((item: any) => (
+                                <React.Fragment key={item?.id}>
+                                    <div className="mb-4 w-[100%]">
+                                        <div className="grid grid-cols-[100px_120px_130px_150px_240px_170px] text-sm font-semibold text-[#58585A]">
+                                            <p>{`Gas Day`}</p>
+                                            <p>{`Shipper Name`}</p>
+                                            <p className='text-center'>{`Zone`}</p>
+                                            <p className='text-right'>{`Vent Gas (MMBTU)`}</p>
+                                            <p className='text-right'>{`Commissioning Gas (MMBTU)`}</p>
+                                            <p className='text-right'>{`Other Gas (MMBTU)`}</p>
                                         </div>
 
-                                        <div className="flex justify-between items-center w-full border rounded-lg mb-2 p-4">
-                                            <p className="flex items-center break-words text-ellipsis overflow-hidden">
-                                                {item?.comment}
-                                            </p>
+                                        <div className="grid grid-cols-[100px_120px_130px_150px_240px_170px] text-sm font-light text-[#58585A]">
+                                            <p>{item?.gas_day_text || ''}</p>
+                                            <p>{item?.group ? item?.group?.name : ''}</p>
+                                            <p className='text-center'>{item?.zone ? item?.zone?.name : ''}</p>
+                                            <p className='text-right'>{item?.vent_gas_value_mmbtud ? formatNumberFourDecimal(item?.vent_gas_value_mmbtud) : ''}</p>
+                                            <p className='text-right'>{item?.commissioning_gas_value_mmbtud ? formatNumberFourDecimal(item?.commissioning_gas_value_mmbtud) : ''}</p>
+                                            <p className='text-right'>{item?.other_gas_value_mmbtud ? formatNumberFourDecimal(item?.other_gas_value_mmbtud) : ''}</p>
                                         </div>
                                     </div>
-                                </div> */}
-
-                                <div key={item.id} className="mb-4 w-[100%]">
-                                    <div className="grid grid-cols-[100px_120px_130px_150px_240px_170px] text-sm font-semibold text-[#58585A]">
-                                        <p>{`Gas Day`}</p>
-                                        <p>{`Shipper Name`}</p>
-                                        <p className='text-center'>{`Zone`}</p>
-                                        <p className='text-right'>{`Vent Gas (MMBTU)`}</p>
-                                        <p className='text-right'>{`Commissioning Gas (MMBTU)`}</p>
-                                        <p className='text-right'>{`Other Gas (MMBTU)`}</p>
+                                    <div className="my-1 pt-4 pb-4">
+                                        <hr className=" border-t border-[#9CA3AF] w-full mx-auto" />
                                     </div>
-
-                                    <div className="grid grid-cols-[100px_120px_130px_150px_240px_170px] text-sm font-light text-[#58585A]">
-                                        <p>{item?.gas_day_text ? item?.gas_day_text : ''}</p>
-                                        <p>{item?.group ? item?.group?.name : ''}</p>
-                                        <p className='text-center'>{item?.zone ? item?.zone?.name : ''}</p>
-                                        <p className='text-right'>{item?.vent_gas_value_mmbtud ? formatNumberFourDecimal(item?.vent_gas_value_mmbtud) : ''}</p>
-                                        <p className='text-right'>{item?.commissioning_gas_value_mmbtud ? formatNumberFourDecimal(item?.commissioning_gas_value_mmbtud) : ''}</p>
-                                        <p className='text-right'>{item?.other_gas_value_mmbtud ? formatNumberFourDecimal(item?.other_gas_value_mmbtud) : ''}</p>
-                                    </div>
-                                </div>
-                                <div className="my-1 pt-4 pb-4">
-                                    <hr className=" border-t border-[#9CA3AF] w-full mx-auto" />
-                                </div>
-
-                            </>
-
+                                </React.Fragment>
                             ))}
                         </div>
 

@@ -97,7 +97,7 @@ const TableParameter: React.FC<TableProps> = ({ openEditForm, openViewForm, open
             const validUrl = url.startsWith('http://') || url.startsWith('https://')
                 ? url : `https://${url}`;
 
-            window.open(validUrl, '_blank');
+            window.open(validUrl, '_blank', 'noopener,noreferrer');
         } else {
             // The file URL is not valid or unavailable
         }
@@ -111,41 +111,41 @@ const TableParameter: React.FC<TableProps> = ({ openEditForm, openViewForm, open
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.module && (
+                                {columnVisibility?.module && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("menus_id", sortState, setSortState, setSortedData, tableData)}>
                                         {`Module`}
                                         {getArrowIcon("menus_id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.system_parameter && (
+                                {columnVisibility?.system_parameter && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("system_parameter_id", sortState, setSortState, setSortedData, tableData)}>
                                         {`System Parameter`}
                                         {getArrowIcon("system_parameter_id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.value && (
+                                {columnVisibility?.value && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("value", sortState, setSortState, setSortedData, tableData)}>
                                         {`Value`}
                                         {getArrowIcon("value")}
                                     </th>
                                 )}
 
-                                {columnVisibility.link && (
+                                {columnVisibility?.link && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Link`}
                                     </th>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`Start Date`}
                                         {getArrowIcon("start_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`End Date`}
                                         {getArrowIcon("end_date")}
@@ -154,7 +154,7 @@ const TableParameter: React.FC<TableProps> = ({ openEditForm, openViewForm, open
                                 {/* <th scope="col" className="whitespace-nowrap px-2 py-1">
                                     {`Created by`}
                                 </th> */}
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -165,21 +165,19 @@ const TableParameter: React.FC<TableProps> = ({ openEditForm, openViewForm, open
                         <tbody>
                             {sortedData && sortedData.map((row: any, index: any) => {
                                 return (
-                                    <tr
-                                        key={row?.id}
-                                        className={`${table_row_style}`}
+                                    <tr key={row?.id ?? index} className={`${table_row_style}`}
                                     >
-                                        {columnVisibility.module && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.menus && row?.menus?.name}</td>
+                                        {columnVisibility?.module && (
+                                            <td className="px-2 py-1 text-[#464255]">{row?.menus?.name}</td>
                                         )}
-                                        {columnVisibility.system_parameter && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.system_parameter && row?.system_parameter?.name}</td>
+                                        {columnVisibility?.system_parameter && (
+                                            <td className="px-2 py-1 text-[#464255]">{row?.system_parameter?.name}</td>
                                         )}
-                                        {columnVisibility.value && (
+                                        {columnVisibility?.value && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.value && formatNumberThreeDecimal(row?.value)}</td>
                                         )}
                                         {/* <td className="px-2 py-1">
-                                            <OpenInNewOutlinedIcon /> {row?.link && row?.link}
+                                            <OpenInNewOutlinedIcon /> {row?.link}
                                         </td> */}
 
                                         {/* <td className="px-2 py-1 text-center justify-center">
@@ -194,27 +192,27 @@ const TableParameter: React.FC<TableProps> = ({ openEditForm, openViewForm, open
                                             </div>
                                         </td> */}
 
-                                        {columnVisibility.link && (
+                                        {columnVisibility?.link && (
                                             <td className="px-2 py-1 text-center justify-center">
                                                 <div className="inline-flex items-center justify-center relative">
                                                     <button
                                                         type="button"
-                                                        disabled={row?.link ? false : true}
+                                                        disabled={(row?.link || '') ? false : true}
                                                         className={`flex items-center justify-center px-[2px] py-[2px] border  rounded-md hover:bg-[#DFE4EA] hover:border hover:border-[#DFE4EA] relative`}
-                                                        onClick={() => openInNewTab(row?.link)}
+                                                        onClick={() => {if (row?.link || '') openInNewTab(row?.link || '')}}
                                                     >
                                                         <OpenInNewOutlinedIcon sx={{ fontSize: 18, color: row?.link ? '#A6CE39' : '#9CA3AF' }} />
                                                     </button>
                                                 </div>
                                             </td>
                                         )}
-                                        {columnVisibility.start_date && (
+                                        {columnVisibility?.start_date && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                         )}
-                                        {columnVisibility.end_date && (
+                                        {columnVisibility?.end_date && (
                                             <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                         )}
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 {/* <div className="relative inline-block text-left "> */}
                                                 <div className="relative inline-flex justify-center items-center w-full">

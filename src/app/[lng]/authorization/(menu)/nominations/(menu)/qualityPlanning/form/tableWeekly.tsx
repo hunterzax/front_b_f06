@@ -80,21 +80,21 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-20">
 
-                                {columnVisibility.zone && (
+                                {columnVisibility?.zone && (
                                     <th scope="col" className={`${table_sort_header_style} text-center !min-w-[100px] !max-w-[150px]`} onClick={() => handleSort("zone.name", sortState, setSortState, setSortedData, dataForSortFunction)}>
                                         {`Zone`}
                                         {getArrowIcon("zone.name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.area && (
+                                {columnVisibility?.area && (
                                     <th scope="col" className={`${table_sort_header_style} text-center !min-w-[100px] !max-w-[150px]`} onClick={() => handleSort("area.name", sortState, setSortState, setSortedData, dataForSortFunction)}>
                                         {`Area`}
                                         {getArrowIcon("area.name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.parameter && (
+                                {columnVisibility?.parameter && (
                                     <th scope="col" className={`${table_sort_header_style} text-center !min-w-[100px] !max-w-[150px]`}
                                         onClick={() => handleSort("parameter", sortState, setSortState, setSortedData, dataForSortFunction)}
                                     >
@@ -107,7 +107,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                     const formattedDate = toDayjs(date_next_sunday).add(index, "day").format("DD/MM/YYYY");
                                     const columnKey = day.toLowerCase();
 
-                                    return columnVisibility[columnKey] ? (
+                                    return columnVisibility?.[columnKey] ? (
                                         <th
                                             key={day}
                                             scope="col"
@@ -125,17 +125,17 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData?.map((row: any, index: any) => (
+                            {(sortedData || [])?.map((row: any, index: any) => (
                                 <tr
                                     key={row?.gasday + '_' + index}
                                     className={`${table_row_style}`}
                                 >
 
-                                    {columnVisibility.zone && (
+                                    {columnVisibility?.zone && (
                                         <td className="px-2 py-1  justify-center ">{row?.zone && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone?.color }}>{`${row?.zone?.name}`}</div>}</td>
                                     )}
 
-                                    {columnVisibility.area && (
+                                    {columnVisibility?.area && (
                                         <td className="px-2 py-1 justify-center ">
                                             {
                                                 row?.area?.entry_exit_id == 2 ?
@@ -156,11 +156,11 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                         </td>
                                     )}
 
-                                    {columnVisibility.parameter && (
+                                    {columnVisibility?.parameter && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.parameter ? row?.parameter : ''}</td>
                                     )}
 
-                                    {/* {columnVisibility.sunday && (
+                                    {/* {columnVisibility?.sunday && (
                                         <td className={`px-2 py-1 text-[#464255] text-right `}>
                                             {
                                                 row?.sunday?.value ? formatNumberThreeDecimal(row?.sunday?.value) : ''
@@ -168,7 +168,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                         </td>
                                     )}
 
-                                    {columnVisibility.tuesday && (
+                                    {columnVisibility?.tuesday && (
                                         <td className={`px-2 py-1 text-[#464255] text-right `}>
                                             {
                                                 row?.tuesday?.value ? formatNumberThreeDecimal(row?.tuesday?.value) : ''
@@ -176,7 +176,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                         </td>
                                     )}
 
-                                    {columnVisibility.wednesday && (
+                                    {columnVisibility?.wednesday && (
                                         <td className={`px-2 py-1 text-[#464255] text-right `}>
                                             {
                                                 row?.wednesday?.value ? formatNumberThreeDecimal(row?.wednesday?.value) : ''
@@ -184,7 +184,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                         </td>
                                     )}
 
-                                    {columnVisibility.thursday && (
+                                    {columnVisibility?.thursday && (
                                         <td className={`px-2 py-1 text-[#464255] text-right `}>
                                             {
                                                 row?.thursday?.value ? formatNumberThreeDecimal(row?.thursday?.value) : ''
@@ -192,7 +192,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                         </td>
                                     )}
 
-                                    {columnVisibility.friday && (
+                                    {columnVisibility?.friday && (
                                         <td className={`px-2 py-1 text-[#464255] text-right `}>
                                             {
                                                 row?.friday?.value ? formatNumberThreeDecimal(row?.friday?.value) : ''
@@ -200,7 +200,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                         </td>
                                     )}
 
-                                    {columnVisibility.saturday && (
+                                    {columnVisibility?.saturday && (
                                         <td className={`px-2 py-1 text-[#464255] text-right `}>
                                             {
                                                 row?.saturday?.value ? formatNumberThreeDecimal(row?.saturday?.value) : ''
@@ -210,7 +210,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
 
                                     {/* --------------------------------------------------------------- */}
 
-                                    {columnVisibility.sunday && (
+                                    {columnVisibility?.sunday && (
                                         <td className={`px-2 py-1 text-right 
                                                                                 ${(row?.parameter === "HV" && (row?.sunday?.value < row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_min || row?.sunday?.value > row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_max)) ||
                                                 (row?.parameter === "WI" && (row?.sunday?.value < row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_min || row?.sunday?.value > row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_max))
@@ -221,7 +221,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                         </td>
                                     )}
 
-                                    {columnVisibility.monday && (
+                                    {columnVisibility?.monday && (
                                         <td className={`px-2 py-1 text-right 
                                                                                 ${(row?.parameter === "HV" && (row?.monday?.value < row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_min || row?.monday?.value > row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_max)) ||
                                                 (row?.parameter === "WI" && (row?.monday?.value < row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_min || row?.monday?.value > row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_max))
@@ -232,7 +232,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                         </td>
                                     )}
 
-                                    {columnVisibility.tuesday && (
+                                    {columnVisibility?.tuesday && (
                                         <td className={`px-2 py-1 text-right 
                                                                                 ${(row?.parameter === "HV" && (row?.tuesday?.value < row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_min || row?.tuesday?.value > row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_max)) ||
                                                 (row?.parameter === "WI" && (row?.tuesday?.value < row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_min || row?.tuesday?.value > row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_max))
@@ -243,7 +243,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                         </td>
                                     )}
 
-                                    {columnVisibility.wednesday && (
+                                    {columnVisibility?.wednesday && (
                                         <td className={`px-2 py-1 text-right 
                                                                                 ${(row?.parameter === "HV" && (row?.wednesday?.value < row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_min || row?.wednesday?.value > row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_max)) ||
                                                 (row?.parameter === "WI" && (row?.wednesday?.value < row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_min || row?.wednesday?.value > row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_max))
@@ -254,7 +254,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                         </td>
                                     )}
 
-                                    {columnVisibility.thursday && (
+                                    {columnVisibility?.thursday && (
                                         <td className={`px-2 py-1 text-right 
                                                                                 ${(row?.parameter === "HV" && (row?.thursday?.value < row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_min || row?.thursday?.value > row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_max)) ||
                                                 (row?.parameter === "WI" && (row?.thursday?.value < row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_min || row?.thursday?.value > row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_max))
@@ -265,7 +265,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                         </td>
                                     )}
 
-                                    {columnVisibility.friday && (
+                                    {columnVisibility?.friday && (
                                         <td className={`px-2 py-1 text-right 
                                                                                 ${(row?.parameter === "HV" && (row?.friday?.value < row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_min || row?.friday?.value > row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_max)) ||
                                                 (row?.parameter === "WI" && (row?.friday?.value < row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_min || row?.friday?.value > row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_max))
@@ -276,7 +276,7 @@ const TableNomQualityPlanningWeekly: React.FC<TableProps> = ({ tableData, isLoad
                                         </td>
                                     )}
 
-                                    {columnVisibility.saturday && (
+                                    {columnVisibility?.saturday && (
                                         <td className={`px-2 py-1 text-right 
                                                                                 ${(row?.parameter === "HV" && (row?.saturday?.value < row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_min || row?.saturday?.value > row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_max)) ||
                                                 (row?.parameter === "WI" && (row?.saturday?.value < row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_min || row?.saturday?.value > row?.zone?.zone_master_quality?.[0]?.v2_wobbe_index_max))

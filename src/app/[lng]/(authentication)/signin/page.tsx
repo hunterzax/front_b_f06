@@ -1,7 +1,6 @@
 "use client";
-import Image from "next/image";
-// import { useTranslation } from "@/app/i18n";
 import Marquee from "react-fast-marquee";
+import CustomerLogo from "@/components/other/CustomerLogo";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import { useEffect, useState } from "react";
 import FormSignin from "./form/form-lgn";
@@ -258,57 +257,12 @@ const SignInPage: React.FC<HomeProps> = (props) => {
     const statusCode = result?.response?.data?.statusCode ?? result?.response?.data?.status ?? result?.status ?? result?.statusCode ?? result?.code ?? result?.response?.status;
     const errorMsg = result?.response?.data?.error ?? result?.data?.error ?? result?.response?.error ?? result?.error;
 
-    if (!statusCode) {
-      if (statusCode == "ERR_NETWORK") {
+
+    if(statusCode){
+      if (statusCode === "ERR_NETWORK") {
         seterrorNetworkTricker(true);
-      } else {
-        setCookie("v4r2d9z5m3h0c1p0x7l", result?.token, 1);
-        // localStorage.setItem("dev_mode_token", result?.token)
-        localStorage.setItem("v4r2d9z5m3h0c1p0x7l", encryptData(result?.token))
-        localStorage.setItem("x9f3w1m8q2y0u5d7v1z", encryptData(result?.account))
-        localStorage.setItem("p5n3b7j2k9s1a6wq8t0", encryptData(result?.tac))
-        activeAccount(data?.email);
-
-        // Broadcast login event to other tabs
-        window.dispatchEvent(new Event('storage'));
-
-        let last_page = await getCookie("redirectAfterLogin")
-
-        if (result?.tac == null) { // อันนี้คือไม่ได้ set t and c ไว้ใน dam หรือหมดอายุแล้ว จะผ่านเข้าไปเลย
-          if (result?.account?.password_gen_flag == true || result?.account?.account_password_check?.length <= 0) {
-            // go to reset password page
-            // router.push(`/en/reset-password?ref=${result?.token}`);
-            gotoResetPassword(result?.token);
-          } else {
-            if (last_page && last_page !== "/en/reset-password") {
-              router.push(`${last_page}`);
-            } else {
-              router.push("/en/authorization");
-            }
-          }
-        } else if (result?.tac?.url == result?.account?.t_a_c_url) { // อย่าให้มีครั้งที่ 3 ตรงนี้เช็คว่า t&c ที่ accept ไปเท่ากับของใหม่หรือป่าว ถ้าเท่าก็ผ่านเข้าระบบไปเลย
-
-          if (result?.account?.password_gen_flag == true || result?.account?.account_password_check?.length <= 0) {
-            // go to reset password page
-            // router.push(`/en/reset-password?ref=${result?.token}`);
-            gotoResetPassword(result?.token);
-          } else {
-            if (last_page && last_page !== "/en/reset-password") {
-              router.push(`${last_page}`);
-            } else {
-              router.push("/en/authorization");
-            }
-          }
-        } else {
-          // please accept term
-          setTac(result?.tac)
-          // setTac(result?.account?.t_a_c_url)
-          setpopuptc(true);
-        }
       }
-
-    } else {
-      if ([401, 403, 412, 500].includes(Number(statusCode))) {
+      else if ([401, 403, 412, 500].includes(Number(statusCode))) {
         if (statusCode == 401 || statusCode == 500) { // user หรือ email ผิด
           setisModalTxt("Invalid email or password. Please try again.")
           handleFaildlgn(data?.email);
@@ -348,6 +302,51 @@ const SignInPage: React.FC<HomeProps> = (props) => {
 
       if (resetForm) resetForm();
     }
+    else{
+      setCookie("v4r2d9z5m3h0c1p0x7l", result?.token, 1);
+      // localStorage.setItem("dev_mode_token", result?.token)
+      localStorage.setItem("v4r2d9z5m3h0c1p0x7l", encryptData(result?.token))
+      localStorage.setItem("x9f3w1m8q2y0u5d7v1z", encryptData(result?.account))
+      localStorage.setItem("p5n3b7j2k9s1a6wq8t0", encryptData(result?.tac))
+      activeAccount(data?.email);
+
+        // Broadcast login event to other tabs
+        window.dispatchEvent(new Event('storage'));
+
+        let last_page = await getCookie("redirectAfterLogin")
+
+        if (result?.tac == null) { // อันนี้คือไม่ได้ set t and c ไว้ใน dam หรือหมดอายุแล้ว จะผ่านเข้าไปเลย
+          if (result?.account?.password_gen_flag == true || result?.account?.account_password_check?.length <= 0) {
+            // go to reset password page
+            // router.push(`/en/reset-password?ref=${result?.token}`);
+            gotoResetPassword(result?.token);
+          } else {
+            if (last_page && last_page !== "/en/reset-password") {
+              router.push(`${last_page}`);
+            } else {
+              router.push("/en/authorization");
+            }
+          }
+        } else if (result?.tac?.url == result?.account?.t_a_c_url) { // อย่าให้มีครั้งที่ 3 ตรงนี้เช็คว่า t&c ที่ accept ไปเท่ากับของใหม่หรือป่าว ถ้าเท่าก็ผ่านเข้าระบบไปเลย
+
+          if (result?.account?.password_gen_flag == true || result?.account?.account_password_check?.length <= 0) {
+            // go to reset password page
+            // router.push(`/en/reset-password?ref=${result?.token}`);
+            gotoResetPassword(result?.token);
+          } else {
+            if (last_page && last_page !== "/en/reset-password") {
+              router.push(`${last_page}`);
+            } else {
+              router.push("/en/authorization");
+            }
+          }
+        } else {
+          // please accept term
+          setTac(result?.tac)
+          // setTac(result?.account?.t_a_c_url)
+          setpopuptc(true);
+        }
+      }
 
     setIsLoading(false)
   }
@@ -498,71 +497,15 @@ const SignInPage: React.FC<HomeProps> = (props) => {
     const result = await postService('/master/account-manage/account-local', data);
     setResLogin(result)
 
-    const statusCode = result?.response?.data?.statusCode ?? result?.response?.data?.status ?? result?.status ?? result?.statusCode ?? result?.code ?? result?.response?.status;
-    const errorMsg = result?.response?.data?.error ?? result?.data?.error ?? result?.response?.error ?? result?.error;
+    const statusCode = result?.response?.data?.statusCode || result?.response?.data?.status || result?.status || result?.statusCode || result?.code || result?.response?.status || '';
+    const errorMsg = result?.response?.data?.error || result?.data?.error || result?.response?.error || result?.error || '';
 
-    if (!statusCode) {
-      if (statusCode == "ERR_NETWORK") {
+    if(statusCode){
+      if (statusCode === "ERR_NETWORK") {
         seterrorNetworkTricker(true);
-        setIsLoading(false)
-      } else {
-        setCookie("v4r2d9z5m3h0c1p0x7l", result?.token, 1);
-        // localStorage.setItem("dev_mode_token", result?.token)
-        localStorage.setItem("v4r2d9z5m3h0c1p0x7l", encryptData(result?.token))
-        localStorage.setItem("x9f3w1m8q2y0u5d7v1z", encryptData(result?.account))
-        localStorage.setItem("p5n3b7j2k9s1a6wq8t0", encryptData(result?.tac))
-        activeAccount(data?.email);
-
-        // Broadcast login event to other tabs
-        window.dispatchEvent(new Event('storage'));
-
-        let last_page = await getCookie("redirectAfterLogin")
-
-        // case t and c หมดอายุ หรือไม่มี
-        if (result?.tac == null) { // อันนี้คือไม่ได้ set t and c ไว้ใน dam หรือหมดอายุแล้ว จะผ่านเข้าไปเลย
-          if (result?.account?.password_gen_flag == true || result?.account?.account_password_check?.length <= 0) {
-            // go to reset password page
-            // router.push(`/en/reset-password?ref=${result?.token}`);
-            gotoResetPassword(result?.token);
-          } else {
-            if (last_page && last_page !== "/en/reset-password") {
-              router.push(`${last_page}`);
-            } else {
-              router.push("/en/authorization");
-            }
-          }
-        } else if (result?.tac?.url == result?.account?.t_a_c_url) { // อย่าให้มีครั้งที่ 3 ตรงนี้เช็คว่า t&c ที่ accept ไปเท่ากับของใหม่หรือป่าว ถ้าเท่าก็ผ่านเข้าระบบไปเลย
-
-          // if ( result?.account?.f_t_and_c == true ) {
-
-          // ถ้า password_gen_flag == true ให้ route ไปหน้า reset password
-          // if account_password_check?.length = 0 ให้ route ไปหน้า reset password
-          // if (result?.account?.account_password_check?.length <= 0) {
-
-          if (result?.account?.password_gen_flag == true || result?.account?.account_password_check?.length <= 0) {
-            // go to reset password page
-            // router.push(`/en/reset-password?ref=${result?.token}`);
-            gotoResetPassword(result?.token);
-          } else {
-            if (last_page && last_page !== "/en/reset-password") {
-              router.push(`${last_page}`);
-            } else {
-              router.push("/en/authorization");
-            }
-          }
-
-        } else {
-          // please accept term
-          setTac(result?.tac)
-          // setTac(result?.account?.t_a_c_url)
-          setpopuptc(true);
-          setIsLoading(false)
-        }
+        setIsLoading(false);
       }
-
-    } else {
-
-      if ([401, 403, 412, 500].includes(Number(statusCode))) {
+      else if ([401, 403, 412, 500].includes(Number(statusCode))) {
         if (statusCode == 401 || statusCode == 500) { // user หรือ email ผิด
           setisModalTxt("Invalid email or password. Please try again.")
           handleFaildlgn(data?.email);
@@ -576,7 +519,7 @@ const SignInPage: React.FC<HomeProps> = (props) => {
             setTempToken(result?.response?.data?.token ?? result?.data?.token ?? result?.token)
             setModeAcceptModal('password-expire')
           }
-
+  
         } else if (statusCode == 403) {
           setisModalTxt(errorMsg ? errorMsg : "Login mode does not match. Please contact the administrator.")
         }
@@ -598,9 +541,63 @@ const SignInPage: React.FC<HomeProps> = (props) => {
         setisModalTxt(errorMsg)
         setisModalOpen(true);
       }
-
+  
       if (resetForm) resetForm();
       setIsLoading(false)
+    }
+    else {
+      setCookie("v4r2d9z5m3h0c1p0x7l", result?.token, 1);
+      // localStorage.setItem("dev_mode_token", result?.token)
+      localStorage.setItem("v4r2d9z5m3h0c1p0x7l", encryptData(result?.token))
+      localStorage.setItem("x9f3w1m8q2y0u5d7v1z", encryptData(result?.account))
+      localStorage.setItem("p5n3b7j2k9s1a6wq8t0", encryptData(result?.tac))
+      activeAccount(data?.email);
+
+      // Broadcast login event to other tabs
+      window.dispatchEvent(new Event('storage'));
+
+      let last_page = await getCookie("redirectAfterLogin")
+
+      // case t and c หมดอายุ หรือไม่มี
+      if (result?.tac == null) { // อันนี้คือไม่ได้ set t and c ไว้ใน dam หรือหมดอายุแล้ว จะผ่านเข้าไปเลย
+        if (result?.account?.password_gen_flag == true || result?.account?.account_password_check?.length <= 0) {
+          // go to reset password page
+          // router.push(`/en/reset-password?ref=${result?.token}`);
+          gotoResetPassword(result?.token);
+        } else {
+          if (last_page && last_page !== "/en/reset-password") {
+            router.push(`${last_page}`);
+          } else {
+            router.push("/en/authorization");
+          }
+        }
+      } else if (result?.tac?.url == result?.account?.t_a_c_url) { // อย่าให้มีครั้งที่ 3 ตรงนี้เช็คว่า t&c ที่ accept ไปเท่ากับของใหม่หรือป่าว ถ้าเท่าก็ผ่านเข้าระบบไปเลย
+
+        // if ( result?.account?.f_t_and_c == true ) {
+
+        // ถ้า password_gen_flag == true ให้ route ไปหน้า reset password
+        // if account_password_check?.length = 0 ให้ route ไปหน้า reset password
+        // if (result?.account?.account_password_check?.length <= 0) {
+
+        if (result?.account?.password_gen_flag == true || result?.account?.account_password_check?.length <= 0) {
+          // go to reset password page
+          // router.push(`/en/reset-password?ref=${result?.token}`);
+          gotoResetPassword(result?.token);
+        } else {
+          if (last_page && last_page !== "/en/reset-password") {
+            router.push(`${last_page}`);
+          } else {
+            router.push("/en/authorization");
+          }
+        }
+
+      } else {
+        // please accept term
+        setTac(result?.tac)
+        // setTac(result?.account?.t_a_c_url)
+        setpopuptc(true);
+        setIsLoading(false)
+      }
     }
   };
 
@@ -608,10 +605,10 @@ const SignInPage: React.FC<HomeProps> = (props) => {
     let newdata: any = logFailed ? logFailed : [];
     let findmail: any = newdata?.findIndex((item: any) => item?.mail == mail);
 
-    if (findmail >= 0) {
-      if (newdata[findmail]?.count <= 2) {
-        newdata[findmail].count = Number(newdata[findmail]?.count + 1);
-      } else if (newdata[findmail]?.count == 3) {
+    if (findmail >= 0 && newdata[findmail]) {
+      if (newdata[findmail].count <= 2) {
+        newdata[findmail].count = Number(newdata[findmail].count + 1);
+      } else if (newdata[findmail].count == 3) {
         newdata[findmail].count = 1;
       }
       disableAccount(newdata[findmail]?.mail, Number(newdata[findmail]?.count));
@@ -630,15 +627,15 @@ const SignInPage: React.FC<HomeProps> = (props) => {
   }
 
   const activeAccount = async (mail: any) => {
-    let newdata: any = logFailed ? logFailed : [];
-    let findmail: any = newdata?.findIndex((item: any) => item?.mail == mail);
+    let newdata: any[] = Array.isArray(logFailed) ? logFailed : [];
+    let findmail = newdata.findIndex((item: any) => item?.mail == mail);
     if (findmail >= 0) {
       newdata.splice(findmail, 1);
-      if (newdata?.length > 0) {
+      if (newdata.length > 0) {
         setlogFailed((pre: any) => newdata);
         settk(!tk);
         setCookie("logFailed", JSON.stringify(newdata), 1);
-      } else if (newdata?.length == 0) {
+      } else if (newdata.length == 0) {
         setlogFailed(undefined);
         settk(!tk);
         deleteCookie("logFailed");
@@ -739,13 +736,10 @@ const SignInPage: React.FC<HomeProps> = (props) => {
         <div className="bg-white h-auto rounded-[20px] custom-layout-un-auth relative">
 
           <div className="w-full flex justify-center items-center mt-[1rem] panel-logo-customer">
-            <Image
+            <CustomerLogo
               className="logo-customer"
-              src={`/assets/icon/ptt-logo-2.svg`}
               width={170}
               height={30}
-              alt={`/assets/icon/ptt-logo-2.svg`}
-              priority
             />
           </div>
           <div className="text-center text-[#2B2A87] text-[1.8rem] font-bold mb-[2rem]">{mode == "mode1" ? "TPA System" : "Local Mode"}</div>

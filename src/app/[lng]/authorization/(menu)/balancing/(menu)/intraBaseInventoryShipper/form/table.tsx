@@ -52,126 +52,126 @@ const TableBalanceIntradayBaseInventoryShipper: React.FC<TableProps> = ({ openEd
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.gas_day && (
+                                {columnVisibility?.gas_day && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, tableData)}>
                                         {`Gas Day`}
                                         {getArrowIcon("gas_day")}
                                     </th>
                                 )}
 
-                                {columnVisibility.gas_hour && (
+                                {columnVisibility?.gas_hour && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("gas_hour", sortState, setSortState, setSortedData, tableData)}>
                                         {`Gas Hour`}
                                         {getArrowIcon("gas_hour")}
                                     </th>
                                 )}
 
-                                {columnVisibility.timestamp && (
+                                {columnVisibility?.timestamp && (
                                     <th scope="col" className={`${table_sort_header_style}  text-center`} onClick={() => handleSort("timestamp", sortState, setSortState, setSortedData, tableData)}>
                                         {`Timestamp`}
                                         {getArrowIcon("timestamp")}
                                     </th>
                                 )}
 
-                                {columnVisibility.zone && (
+                                {columnVisibility?.zone && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("zoneObj.name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Zone`}
                                         {getArrowIcon("zoneObj.name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.mode && (
+                                {columnVisibility?.mode && (
                                     <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSort("mode", sortState, setSortState, setSortedData, tableData)}>
                                         {`Mode`}
                                         {getArrowIcon("mode")}
                                     </th>
                                 )}
 
-                                {columnVisibility.group && (
+                                {columnVisibility?.group && (
                                     <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSort("groupObj.name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Shipper Name`}
                                         {getArrowIcon("groupObj.name")}
                                     </th>
                                 )}
 
-                                {/* {columnVisibility.hv && (
+                                {/* {columnVisibility?.hv && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("heatingValue_base", sortState, setSortState, setSortedData, tableData)}>
                                         {`HV (BTU/SCF)`}
                                         {getArrowIcon("heatingValue_base")}
                                     </th>
                                 )} */}
 
-                                {/* {columnVisibility.base_inventory_value && (
+                                {/* {columnVisibility?.base_inventory_value && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("baseInv", sortState, setSortState, setSortedData, tableData)}>
                                         {`Base Inventory Value (MMBTU)`}
                                         {getArrowIcon("baseInv")}
                                     </th>
                                 )} */}
 
-                                {/* {columnVisibility.high_max && (
+                                {/* {columnVisibility?.high_max && (
                                     <th scope="col" className={`${table_sort_header_style} text-center hover:bg-[#4b4b4b] bg-[#606060]`} onClick={() => handleSort("high_max", sortState, setSortState, setSortedData, tableData)}>
                                         {`High Max (MMBTU)`}
                                         {getArrowIcon("high_max")}
                                     </th>
                                 )} */}
 
-                                {columnVisibility.high_difficult_day && (
+                                {columnVisibility?.high_difficult_day && (
                                     <th scope="col" className={`${table_sort_header_style} text-center hover:bg-[#a247c3] bg-[#A855C5]`} onClick={() => handleSort("high_dd", sortState, setSortState, setSortedData, tableData)}>
                                         {`High Difficult Day (MMBTU)`}
                                         {getArrowIcon("high_dd")}
                                     </th>
                                 )}
 
-                                {columnVisibility.high_red && (
+                                {columnVisibility?.high_red && (
                                     <th scope="col" className={`${table_sort_header_style} text-center hover:bg-[#cd373e] bg-[#EB484F]`} onClick={() => handleSort("high_red", sortState, setSortState, setSortedData, tableData)}>
                                         {`High Red (MMBTU)`}
                                         {getArrowIcon("high_red")}
                                     </th>
                                 )}
 
-                                {columnVisibility.high_orange && (
+                                {columnVisibility?.high_orange && (
                                     <th scope="col" className={`${table_sort_header_style} text-center hover:bg-[#ce7231] bg-[#EF8538]`} onClick={() => handleSort("high_orange", sortState, setSortState, setSortedData, tableData)}>
                                         {`High Orange (MMBTU)`}
                                         {getArrowIcon("high_orange")}
                                     </th>
                                 )}
 
-                                {columnVisibility.alert_high && (
+                                {columnVisibility?.alert_high && (
                                     <th scope="col" className={`${table_sort_header_style} text-center hover:bg-[#c9a830] bg-[#EAC12E]`} onClick={() => handleSort("high_alert", sortState, setSortState, setSortedData, tableData)}>
                                         {`Alert High (MMBTU)`}
                                         {getArrowIcon("high_alert")}
                                     </th>
                                 )}
 
-                                {columnVisibility.alert_low && (
+                                {columnVisibility?.alert_low && (
                                     <th scope="col" className={`${table_sort_header_style} text-center hover:bg-[#c9a830] bg-[#EAC12E]`} onClick={() => handleSort("low_alert", sortState, setSortState, setSortedData, tableData)}>
                                         {`Alert Low (MMBTU)`}
                                         {getArrowIcon("low_alert")}
                                     </th>
                                 )}
 
-                                {columnVisibility.low_orange && (
+                                {columnVisibility?.low_orange && (
                                     <th scope="col" className={`${table_sort_header_style} text-center hover:bg-[#ce7231] bg-[#EF8538]`} onClick={() => handleSort("low_orange", sortState, setSortState, setSortedData, tableData)}>
                                         {`Low Orange (MMBTU)`}
                                         {getArrowIcon("low_orange")}
                                     </th>
                                 )}
 
-                                {columnVisibility.low_red && (
+                                {columnVisibility?.low_red && (
                                     <th scope="col" className={`${table_sort_header_style} text-center hover:bg-[#cd373e] bg-[#EB484F]`} onClick={() => handleSort("low_red", sortState, setSortState, setSortedData, tableData)}>
                                         {`Low Red (MMBTU)`}
                                         {getArrowIcon("low_red")}
                                     </th>
                                 )}
 
-                                {columnVisibility.low_difficult_day && (
+                                {columnVisibility?.low_difficult_day && (
                                     <th scope="col" className={`${table_sort_header_style} text-center hover:bg-[#a247c3] bg-[#A855C5]`} onClick={() => handleSort("low_dd", sortState, setSortState, setSortedData, tableData)}>
                                         {`Low Difficult Day (MMBTU)`}
                                         {getArrowIcon("low_dd")}
                                     </th>
                                 )}
 
-                                {/* {columnVisibility.low_max && (
+                                {/* {columnVisibility?.low_max && (
                                     <th scope="col" className={`${table_sort_header_style} text-center hover:bg-[#4b4b4b] bg-[#606060]`} onClick={() => handleSort("low_max", sortState, setSortState, setSortedData, tableData)}>
                                         {`Low Max (MMBTU)`}
                                         {getArrowIcon("low_max")}
@@ -182,7 +182,7 @@ const TableBalanceIntradayBaseInventoryShipper: React.FC<TableProps> = ({ openEd
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData?.map((row: any, index: any) => (
+                            {(sortedData || [])?.map((row: any, index: any) => (
                                 <tr
                                     key={row?.id}
                                     className={`${table_row_style}`}

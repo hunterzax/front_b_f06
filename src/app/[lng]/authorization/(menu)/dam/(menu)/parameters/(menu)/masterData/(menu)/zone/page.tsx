@@ -36,7 +36,7 @@ interface ClientProps {
   };
 }
 
-const ClientPage: React.FC<ClientProps> = (props) => {
+const ClientPage: React.FC<ClientProps> = () => {
 
   // ############### Check Authen ###############
   const userDT: any = getUserValue();
@@ -53,7 +53,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     try {
       user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
 
-      const permission = findRoleConfigByMenuName('Zone', userDT)
+      const permission = findRoleConfigByMenuName('Zone', userDT);
       if (permission) {
         setUserPermission(permission);
       } else if (user_permission?.role_config) {
@@ -63,7 +63,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     } catch (error) {
       // Failed to parse user_permission:
     }
-  }
+  };
 
   // ############### REDUX DATA ###############
   const { entryExitMaster, zoneMaster } = useFetchMasters();
@@ -83,8 +83,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   // ############### FIELD SEARCH ###############
   const [filteredDataTable, setFilteredDataTable] = useState<any>([]);
   const [dataExport, setDataExport] = useState<any>([]);
-  // const [srchId, setSrchId] = useState('');
-  // const [srchName, setSrchName] = useState('');
   const [srchEntryExit, setSrchEntryExit] = useState<any>([]);
   const [srchZone, setSrchZone] = useState('');
   const [srchName, setSrchName] = useState('');
@@ -93,19 +91,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [key, setKey] = useState(0);
 
   const handleFieldSearch = () => {
-    // const result = filterDataTableByDateRange(dataTable, srchStartDate, srchEndDate);
-    // const res_filtered_date: any = filterStartEndDate(dataTable, srchStartDate, srchEndDate); // เดิมโรงงาน
-    const res_filtered_date: any = filterStartEndDateNewLogic(dataTable, srchStartDate, srchEndDate); // v1.0.90 ปรับ logic filter start date และ end date https://app.clickup.com/t/86erqt8ed
+    const res_filtered_date: any = filterStartEndDateNewLogic(dataTable, srchStartDate, srchEndDate);
 
-    const result_2 = res_filtered_date?.filter((item: any) => {
+    const result_2 = (Array.isArray(res_filtered_date) ? res_filtered_date : [])?.filter((item: any) => {
+      if (!item) return false;
       return (
-        // (srchEntryExit ? item?.entry_exit_id && item?.entry_exit_id.toString().toLowerCase().includes(srchEntryExit.toLowerCase()) : true) &&
-        // (srchEntryExit ? item?.entry_exit_id && item?.entry_exit_id.toString().toLowerCase().includes(srchEntryExit.toLowerCase()) : true) &&
-        (srchEntryExit?.length > 0 ? srchEntryExit.includes(item?.entry_exit_id?.toString()) : true) && // Filter Master data ใน DAM อยากให้เพิ่ม Select แบบ Multi (ดูเป็นรายหน้า) https://app.clickup.com/t/86etzcgzr
-
-        // (srchZone ? item?.name === srchZone : true) &&
-        (srchZone ? item?.name?.toLowerCase().includes(srchZone.toLowerCase()) : true) &&
-        (srchName ? item?.description?.toLowerCase().includes(srchName.toLowerCase()) : true)
+        (Array.isArray(srchEntryExit) && srchEntryExit.length > 0 ? srchEntryExit.includes(String(item?.entry_exit_id ?? '')) : true) &&
+        (srchZone !== '' ? (item?.name ? String(item.name).toLowerCase().includes(srchZone.toLowerCase()) : false) : true) &&
+        (srchName !== '' ? (item?.description ? String(item.description).toLowerCase().includes(srchName.toLowerCase()) : false) : true)
       );
     });
 
@@ -114,39 +107,39 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   };
 
   const handleReset = () => {
-    // setSrchEntryExit('')
-    setSrchEntryExit([])
-    setSrchZone('')
+    setSrchEntryExit([]);
+    setSrchZone('');
     setSrchName('');
     setSrchStartDate(null);
     setSrchEndDate(null);
-    setFilteredDataTable(dataTable);
+    setFilteredDataTable(filterActiveByCurrentDate(dataTable));
+    setCurrentPage(1);
     setKey((prevKey) => prevKey + 1);
   };
 
+
   // ############### LIKE SEARCH ###############
   const handleSearch = (query: string) => {
+    const queryLower = (query || '').toLowerCase().replace(/\s+/g, '')?.trim();
 
-    const filtered = dataTable?.filter(
+    const filtered = (dataTable || [])?.filter(
       (item: any) => {
-        const queryLower = query.toLowerCase().replace(/\s+/g, '')?.trim();
+        if (!item) return false;
+        const cFirst = item?.create_by_account?.first_name ? String(item.create_by_account.first_name).trim() : '';
+        const cLast = item?.create_by_account?.last_name ? String(item.create_by_account.last_name).trim() : '';
+
         return (
-          item?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatDateNoTime(item?.start_date)?.toLowerCase().includes(queryLower) ||
-          formatDateNoTime(item?.end_date)?.toLowerCase().includes(queryLower) ||
-          item?.description?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.create_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.create_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || // เผื่อ search นามสกุล
-          item?.create_by_account?.first_name && item?.create_by_account?.last_name && (item?.create_by_account?.first_name + item?.create_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
-
-          formatDateNoTime(item?.start_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-          formatDateNoTime(item?.end_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-          formatTime(item?.create_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-          formatDate(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-
-          item?.entry_exit?.name?.toLowerCase().includes(queryLower) ||
-          item?.create_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)
-        )
+          (item?.name ? item.name.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+          (item?.description ? item.description.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+          (item?.start_date ? formatDateNoTime(item.start_date)?.toLowerCase().includes(queryLower) : false) ||
+          (item?.end_date ? formatDateNoTime(item.end_date)?.toLowerCase().includes(queryLower) : false) ||
+          (item?.create_date ? formatDate(item.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower) : false) ||
+          (item?.create_date ? formatTime(item.create_date)?.toLowerCase().includes(queryLower) : false) ||
+          (cFirst ? cFirst.replace(/\s+/g, '').toLowerCase().includes(queryLower) : false) ||
+          (cLast ? cLast.replace(/\s+/g, '').toLowerCase().includes(queryLower) : false) ||
+          ((cFirst + cLast).replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+          (item?.entry_exit?.name ? item.entry_exit.name.toLowerCase().includes(queryLower) : false)
+        );
       }
     );
     setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
@@ -155,31 +148,67 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   // ############### DATA TABLE ###############
   const [dataTable, setData] = useState<any>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false); // false ตอนนี้เป็น load (จริงๆควรให้ true เป็น load นะ)
   const [resetForm, setResetForm] = useState<() => void | null>();
   const [dataZoneMasterZ, setDataZoneMasterZ] = useState<any>([]);
 
+  const filterActiveByCurrentDate = (data: any[] = []) => {
+    const now = new Date();
+
+    return data.filter((item: any) => {
+      if (!item?.start_date) return false;
+
+      const startDate = new Date(item?.start_date);
+      const endDate = item?.end_date
+        ? new Date(item?.end_date)
+        : null;
+
+      // ป้องกันข้อมูลวันที่ไม่ถูกต้อง
+      if (Number.isNaN(startDate.getTime())) return false;
+      if (endDate && Number.isNaN(endDate.getTime())) return false;
+
+      const hasStarted = startDate.getTime() <= now.getTime();
+      const hasNotEnded =
+        endDate === null || endDate.getTime() >= now.getTime();
+
+      return hasStarted && hasNotEnded;
+    });
+  };
+
   const fetchData = async () => {
     try {
-      const response: any = await getService(`/master/asset/zone`);
-      response?.reverse();
-      setData(response);
-      setFilteredDataTable(response);
+      setIsLoading(false);
 
+      const response: any = await getService(`/master/asset/zone`);
+
+      const allData = Array.isArray(response)
+        ? [...response].reverse()
+        : [];
+
+      // ข้อมูลทั้งหมด เอาไว้ใช้ตอนค้นหา/กรอง
+      setData(allData);
+
+      // ตอนเปิดหน้าครั้งแรก แสดงเฉพาะข้อมูลที่ Active ตามช่วงวันที่
+      const activeData = filterActiveByCurrentDate(allData);
+      setFilteredDataTable(activeData);
 
       // DATA ZONE แบบไม่ซ้ำ
-      const data_zone_de_dup = Array.from(
+      const dataZoneDeDup = Array.from(
         new Map(
-          response?.map((item: any) => [item.name, { zone_name: item.name }])
+          (allData || [])?.map((item: any) => [
+            item?.name,
+            { zone_name: item?.name },
+          ])
         ).values()
       );
-      setDataZoneMasterZ(data_zone_de_dup);
 
-      setIsLoading(true);
+      setDataZoneMasterZ(dataZoneDeDup);
     } catch (err) {
-      // setError(err.message);
+      console.error("Fetch zone error:", err);
+      setData([]);
+      setFilteredDataTable([]);
     } finally {
-      // setLoading(false);
+      setIsLoading(true);
     }
   };
   useEffect(() => {
@@ -238,17 +267,17 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   const handleFormSubmit = async (data: any) => {
     // const newData = replaceEmptyStringsWithNull(data)
-    const { name, description, entry_exit_id, start_date, end_date, color, ...quality } = data
-    if (typeof data.end_date !== 'string' || data.end_date == "Invalid Date") {
-      data.end_date = null;
+    const { name, description, entry_exit_id, start_date, end_date, color, ...quality } = data || {}
+    if (typeof data?.end_date !== 'string' || data?.end_date == "Invalid Date") {
+      if (data) data.end_date = null;
     }
 
     const dataCreate = {
-      name: name.toUpperCase(),
+      name: name?.toUpperCase?.() ?? '',
       description: description,
       entry_exit_id: entry_exit_id,
       start_date: start_date,
-      end_date: data.end_date,
+      end_date: data?.end_date,
       color: color
     }
     const { zone_id, ...newQuality } = quality;
@@ -268,7 +297,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         } else {
           delete qualityClean.supply_reference_quality_area
           // ค่อยเอา res.id มาอัพ quality
-          await putService(`/master/asset/zone-master-quality-update/${res.id}`, qualityClean);
+          if (res?.id) await putService(`/master/asset/zone-master-quality-update/${res?.id}`, qualityClean);
           setFormOpen(false);
           setModalSuccessOpen(true);
         }
@@ -302,56 +331,56 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   const openEditForm = (id: any) => {
     setSelectedId(id);
-    const filteredData = dataTable.find((item: any) => item.id === id);
+    const filteredData = (dataTable || []).find((item: any) => item?.id === id);
     if (filteredData) {
 
-      fdInterface.id = filteredData.id;
-      fdInterface.name = filteredData.name;
-      fdInterface.zone_id = filteredData.zone_id;
-      fdInterface.description = filteredData.description;
-      fdInterface.entry_exit_id = filteredData.entry_exit_id;
-      fdInterface.start_date = new Date(filteredData.start_date);
-      fdInterface.end_date = filteredData.end_date ? new Date(filteredData.end_date) : null;
-      fdInterface.color = filteredData.color;
+      fdInterface.id = filteredData?.id;
+      fdInterface.name = filteredData?.name;
+      fdInterface.zone_id = filteredData?.zone_id;
+      fdInterface.description = filteredData?.description;
+      fdInterface.entry_exit_id = filteredData?.entry_exit_id;
+      fdInterface.start_date = filteredData?.start_date ? new Date(filteredData.start_date) : null;
+      fdInterface.end_date = filteredData?.end_date ? new Date(filteredData.end_date) : null;
+      fdInterface.color = filteredData?.color;
 
-      fdInterface.v2_wobbe_index_min = filteredData?.zone_master_quality[0]?.v2_wobbe_index_min;
-      fdInterface.v2_wobbe_index_max = filteredData?.zone_master_quality[0]?.v2_wobbe_index_max;
+      fdInterface.v2_wobbe_index_min = filteredData?.zone_master_quality?.[0]?.v2_wobbe_index_min;
+      fdInterface.v2_wobbe_index_max = filteredData?.zone_master_quality?.[0]?.v2_wobbe_index_max;
 
-      fdInterface.v2_methane_min = filteredData?.zone_master_quality[0]?.v2_methane_min;
-      fdInterface.v2_methane_max = filteredData?.zone_master_quality[0]?.v2_methane_max;
+      fdInterface.v2_methane_min = filteredData?.zone_master_quality?.[0]?.v2_methane_min;
+      fdInterface.v2_methane_max = filteredData?.zone_master_quality?.[0]?.v2_methane_max;
 
-      fdInterface.v2_oxygen_min = filteredData?.zone_master_quality[0]?.v2_oxygen_min;
-      fdInterface.v2_oxygen_max = filteredData?.zone_master_quality[0]?.v2_oxygen_max;
+      fdInterface.v2_oxygen_min = filteredData?.zone_master_quality?.[0]?.v2_oxygen_min;
+      fdInterface.v2_oxygen_max = filteredData?.zone_master_quality?.[0]?.v2_oxygen_max;
 
-      fdInterface.v2_carbon_dioxide_nitrogen_min = filteredData?.zone_master_quality[0]?.v2_carbon_dioxide_nitrogen_min;
-      fdInterface.v2_carbon_dioxide_nitrogen_max = filteredData?.zone_master_quality[0]?.v2_carbon_dioxide_nitrogen_max;
+      fdInterface.v2_carbon_dioxide_nitrogen_min = filteredData?.zone_master_quality?.[0]?.v2_carbon_dioxide_nitrogen_min;
+      fdInterface.v2_carbon_dioxide_nitrogen_max = filteredData?.zone_master_quality?.[0]?.v2_carbon_dioxide_nitrogen_max;
 
-      fdInterface.v2_total_sulphur_min = filteredData?.zone_master_quality[0]?.v2_total_sulphur_min;
-      fdInterface.v2_total_sulphur_max = filteredData?.zone_master_quality[0]?.v2_total_sulphur_max;
+      fdInterface.v2_total_sulphur_min = filteredData?.zone_master_quality?.[0]?.v2_total_sulphur_min;
+      fdInterface.v2_total_sulphur_max = filteredData?.zone_master_quality?.[0]?.v2_total_sulphur_max;
 
-      fdInterface.v2_hydrocarbon_dew_min = filteredData?.zone_master_quality[0]?.v2_hydrocarbon_dew_min;
-      fdInterface.v2_hydrocarbon_dew_max = filteredData?.zone_master_quality[0]?.v2_hydrocarbon_dew_max;
+      fdInterface.v2_hydrocarbon_dew_min = filteredData?.zone_master_quality?.[0]?.v2_hydrocarbon_dew_min;
+      fdInterface.v2_hydrocarbon_dew_max = filteredData?.zone_master_quality?.[0]?.v2_hydrocarbon_dew_max;
 
-      fdInterface.v2_sat_heating_value_min = filteredData?.zone_master_quality[0]?.v2_sat_heating_value_min;
-      fdInterface.v2_sat_heating_value_max = filteredData?.zone_master_quality[0]?.v2_sat_heating_value_max;
+      fdInterface.v2_sat_heating_value_min = filteredData?.zone_master_quality?.[0]?.v2_sat_heating_value_min;
+      fdInterface.v2_sat_heating_value_max = filteredData?.zone_master_quality?.[0]?.v2_sat_heating_value_max;
 
-      fdInterface.v2_c2_plus_min = filteredData?.zone_master_quality[0]?.v2_c2_plus_min;
-      fdInterface.v2_c2_plus_max = filteredData?.zone_master_quality[0]?.v2_c2_plus_max;
+      fdInterface.v2_c2_plus_min = filteredData?.zone_master_quality?.[0]?.v2_c2_plus_min;
+      fdInterface.v2_c2_plus_max = filteredData?.zone_master_quality?.[0]?.v2_c2_plus_max;
 
-      fdInterface.v2_nitrogen_min = filteredData?.zone_master_quality[0]?.v2_nitrogen_min;
-      fdInterface.v2_nitrogen_max = filteredData?.zone_master_quality[0]?.v2_nitrogen_max;
+      fdInterface.v2_nitrogen_min = filteredData?.zone_master_quality?.[0]?.v2_nitrogen_min;
+      fdInterface.v2_nitrogen_max = filteredData?.zone_master_quality?.[0]?.v2_nitrogen_max;
 
-      fdInterface.v2_carbon_dioxide_min = filteredData?.zone_master_quality[0]?.v2_carbon_dioxide_min;
-      fdInterface.v2_carbon_dioxide_max = filteredData?.zone_master_quality[0]?.v2_carbon_dioxide_max;
+      fdInterface.v2_carbon_dioxide_min = filteredData?.zone_master_quality?.[0]?.v2_carbon_dioxide_min;
+      fdInterface.v2_carbon_dioxide_max = filteredData?.zone_master_quality?.[0]?.v2_carbon_dioxide_max;
 
-      fdInterface.v2_hydrogen_sulfide_min = filteredData?.zone_master_quality[0]?.v2_hydrogen_sulfide_min;
-      fdInterface.v2_hydrogen_sulfide_max = filteredData?.zone_master_quality[0]?.v2_hydrogen_sulfide_max;
+      fdInterface.v2_hydrogen_sulfide_min = filteredData?.zone_master_quality?.[0]?.v2_hydrogen_sulfide_min;
+      fdInterface.v2_hydrogen_sulfide_max = filteredData?.zone_master_quality?.[0]?.v2_hydrogen_sulfide_max;
 
-      fdInterface.v2_mercury_min = filteredData?.zone_master_quality[0]?.v2_mercury_min;
-      fdInterface.v2_mercury_max = filteredData?.zone_master_quality[0]?.v2_mercury_max;
+      fdInterface.v2_mercury_min = filteredData?.zone_master_quality?.[0]?.v2_mercury_min;
+      fdInterface.v2_mercury_max = filteredData?.zone_master_quality?.[0]?.v2_mercury_max;
 
-      fdInterface.v2_moisture_min = filteredData?.zone_master_quality[0]?.v2_moisture_min;
-      fdInterface.v2_moisture_max = filteredData?.zone_master_quality[0]?.v2_moisture_max;
+      fdInterface.v2_moisture_min = filteredData?.zone_master_quality?.[0]?.v2_moisture_min;
+      fdInterface.v2_moisture_max = filteredData?.zone_master_quality?.[0]?.v2_moisture_max;
 
     }
     setFormMode('edit');
@@ -360,56 +389,56 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   };
 
   const openViewForm = (id: any) => {
-    const filteredData = dataTable.find((item: any) => item.id === id);
+    const filteredData = (dataTable || []).find((item: any) => item?.id === id);
 
     if (filteredData) {
-      fdInterface.id = filteredData.id;
-      fdInterface.name = filteredData.name;
-      fdInterface.zone_id = filteredData.zone_id;
-      fdInterface.description = filteredData.description;
-      fdInterface.entry_exit_id = filteredData.entry_exit_id;
-      fdInterface.start_date = new Date(filteredData.start_date);
-      fdInterface.end_date = filteredData.end_date ? new Date(filteredData.end_date) : null;
-      fdInterface.color = filteredData.color;
+      fdInterface.id = filteredData?.id;
+      fdInterface.name = filteredData?.name;
+      fdInterface.zone_id = filteredData?.zone_id;
+      fdInterface.description = filteredData?.description;
+      fdInterface.entry_exit_id = filteredData?.entry_exit_id;
+      fdInterface.start_date = filteredData?.start_date ? new Date(filteredData.start_date) : null;
+      fdInterface.end_date = filteredData?.end_date ? new Date(filteredData.end_date) : null;
+      fdInterface.color = filteredData?.color;
 
-      fdInterface.v2_wobbe_index_min = filteredData?.zone_master_quality[0]?.v2_wobbe_index_min;
-      fdInterface.v2_wobbe_index_max = filteredData?.zone_master_quality[0]?.v2_wobbe_index_max;
+      fdInterface.v2_wobbe_index_min = filteredData?.zone_master_quality?.[0]?.v2_wobbe_index_min;
+      fdInterface.v2_wobbe_index_max = filteredData?.zone_master_quality?.[0]?.v2_wobbe_index_max;
 
-      fdInterface.v2_methane_min = filteredData?.zone_master_quality[0]?.v2_methane_min;
-      fdInterface.v2_methane_max = filteredData?.zone_master_quality[0]?.v2_methane_max;
+      fdInterface.v2_methane_min = filteredData?.zone_master_quality?.[0]?.v2_methane_min;
+      fdInterface.v2_methane_max = filteredData?.zone_master_quality?.[0]?.v2_methane_max;
 
-      fdInterface.v2_oxygen_min = filteredData?.zone_master_quality[0]?.v2_oxygen_min;
-      fdInterface.v2_oxygen_max = filteredData?.zone_master_quality[0]?.v2_oxygen_max;
+      fdInterface.v2_oxygen_min = filteredData?.zone_master_quality?.[0]?.v2_oxygen_min;
+      fdInterface.v2_oxygen_max = filteredData?.zone_master_quality?.[0]?.v2_oxygen_max;
 
-      fdInterface.v2_carbon_dioxide_nitrogen_min = filteredData?.zone_master_quality[0]?.v2_carbon_dioxide_nitrogen_min;
-      fdInterface.v2_carbon_dioxide_nitrogen_max = filteredData?.zone_master_quality[0]?.v2_carbon_dioxide_nitrogen_max;
+      fdInterface.v2_carbon_dioxide_nitrogen_min = filteredData?.zone_master_quality?.[0]?.v2_carbon_dioxide_nitrogen_min;
+      fdInterface.v2_carbon_dioxide_nitrogen_max = filteredData?.zone_master_quality?.[0]?.v2_carbon_dioxide_nitrogen_max;
 
-      fdInterface.v2_total_sulphur_min = filteredData?.zone_master_quality[0]?.v2_total_sulphur_min;
-      fdInterface.v2_total_sulphur_max = filteredData?.zone_master_quality[0]?.v2_total_sulphur_max;
+      fdInterface.v2_total_sulphur_min = filteredData?.zone_master_quality?.[0]?.v2_total_sulphur_min;
+      fdInterface.v2_total_sulphur_max = filteredData?.zone_master_quality?.[0]?.v2_total_sulphur_max;
 
-      fdInterface.v2_hydrocarbon_dew_min = filteredData?.zone_master_quality[0]?.v2_hydrocarbon_dew_min;
-      fdInterface.v2_hydrocarbon_dew_max = filteredData?.zone_master_quality[0]?.v2_hydrocarbon_dew_max;
+      fdInterface.v2_hydrocarbon_dew_min = filteredData?.zone_master_quality?.[0]?.v2_hydrocarbon_dew_min;
+      fdInterface.v2_hydrocarbon_dew_max = filteredData?.zone_master_quality?.[0]?.v2_hydrocarbon_dew_max;
 
-      fdInterface.v2_sat_heating_value_min = filteredData?.zone_master_quality[0]?.v2_sat_heating_value_min;
-      fdInterface.v2_sat_heating_value_max = filteredData?.zone_master_quality[0]?.v2_sat_heating_value_max;
+      fdInterface.v2_sat_heating_value_min = filteredData?.zone_master_quality?.[0]?.v2_sat_heating_value_min;
+      fdInterface.v2_sat_heating_value_max = filteredData?.zone_master_quality?.[0]?.v2_sat_heating_value_max;
 
-      fdInterface.v2_c2_plus_min = filteredData?.zone_master_quality[0]?.v2_c2_plus_min;
-      fdInterface.v2_c2_plus_max = filteredData?.zone_master_quality[0]?.v2_c2_plus_max;
+      fdInterface.v2_c2_plus_min = filteredData?.zone_master_quality?.[0]?.v2_c2_plus_min;
+      fdInterface.v2_c2_plus_max = filteredData?.zone_master_quality?.[0]?.v2_c2_plus_max;
 
-      fdInterface.v2_nitrogen_min = filteredData?.zone_master_quality[0]?.v2_nitrogen_min;
-      fdInterface.v2_nitrogen_max = filteredData?.zone_master_quality[0]?.v2_nitrogen_max;
+      fdInterface.v2_nitrogen_min = filteredData?.zone_master_quality?.[0]?.v2_nitrogen_min;
+      fdInterface.v2_nitrogen_max = filteredData?.zone_master_quality?.[0]?.v2_nitrogen_max;
 
-      fdInterface.v2_carbon_dioxide_min = filteredData?.zone_master_quality[0]?.v2_carbon_dioxide_min;
-      fdInterface.v2_carbon_dioxide_max = filteredData?.zone_master_quality[0]?.v2_carbon_dioxide_max;
+      fdInterface.v2_carbon_dioxide_min = filteredData?.zone_master_quality?.[0]?.v2_carbon_dioxide_min;
+      fdInterface.v2_carbon_dioxide_max = filteredData?.zone_master_quality?.[0]?.v2_carbon_dioxide_max;
 
-      fdInterface.v2_hydrogen_sulfide_min = filteredData?.zone_master_quality[0]?.v2_hydrogen_sulfide_min;
-      fdInterface.v2_hydrogen_sulfide_max = filteredData?.zone_master_quality[0]?.v2_hydrogen_sulfide_max;
+      fdInterface.v2_hydrogen_sulfide_min = filteredData?.zone_master_quality?.[0]?.v2_hydrogen_sulfide_min;
+      fdInterface.v2_hydrogen_sulfide_max = filteredData?.zone_master_quality?.[0]?.v2_hydrogen_sulfide_max;
 
-      fdInterface.v2_mercury_min = filteredData?.zone_master_quality[0]?.v2_mercury_min;
-      fdInterface.v2_mercury_max = filteredData?.zone_master_quality[0]?.v2_mercury_max;
+      fdInterface.v2_mercury_min = filteredData?.zone_master_quality?.[0]?.v2_mercury_min;
+      fdInterface.v2_mercury_max = filteredData?.zone_master_quality?.[0]?.v2_mercury_max;
 
-      fdInterface.v2_moisture_min = filteredData?.zone_master_quality[0]?.v2_moisture_min;
-      fdInterface.v2_moisture_max = filteredData?.zone_master_quality[0]?.v2_moisture_max;
+      fdInterface.v2_moisture_min = filteredData?.zone_master_quality?.[0]?.v2_moisture_min;
+      fdInterface.v2_moisture_max = filteredData?.zone_master_quality?.[0]?.v2_moisture_max;
 
     }
     setFormMode('view');
@@ -547,14 +576,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         enableSorting: true,
         accessorFn: (row: any) => row?.entry_exit?.name || '',
         cell: (info) => {
-          const row: any = info?.row?.original
+          const row: any = info?.row?.original;
+          if (!row) return null;
           return (
             <div className="flex justify-center items-center">
-              <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color }}>
-                {row?.entry_exit?.name}
+              <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color || '#E5E7EB' }}>
+                {row?.entry_exit?.name ?? ''}
               </div>
             </div>
-          )
+          );
         }
       },
       {
@@ -563,20 +593,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         enableSorting: true,
         accessorFn: (row: any) => row?.name || '',
         cell: (info) => {
-          const row: any = info?.row?.original
+          const row: any = info?.row?.original;
+          if (!row) return null;
           return (
             <div className="flex justify-center items-center">
               <div
                 className="flex w-[140px] justify-center rounded-full p-1"
                 style={{
-                  backgroundColor: row?.color,
-                  color: getContrastTextColor(row?.color), // Dynamic text color
+                  backgroundColor: row?.color || '#E5E7EB',
+                  color: getContrastTextColor(row?.color),
                 }}
               >
-                {`${row?.name}`}
+                {`${row?.name ?? ''}`}
               </div>
             </div>
-          )
+          );
         }
       },
       {
@@ -585,10 +616,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         enableSorting: true,
         accessorFn: (row: any) => row?.description || '',
         cell: (info) => {
-          const row: any = info?.row?.original
+          const row: any = info?.row?.original;
+          if (!row) return null;
           return (
-            <div>{row?.description}</div>
-          )
+            <div>{row?.description ?? ''}</div>
+          );
         }
       },
       {
@@ -597,13 +629,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         enableSorting: true,
         accessorFn: (row: any) => formatDateNoTime(row?.start_date) || '',
         sortingFn: myCustomSortingByDateFn,
-        // sortingFn: 'datetime', // recommended for date columns 
-        // sortUndefined: -1,
         cell: (info) => {
-          const row: any = info?.row?.original
+          const row: any = info?.row?.original;
+          if (!row) return null;
           return (
-            <div className={`text-[#464255]`}>{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</div>
-          )
+            <div className={`text-[#464255]`}>{row?.start_date ? formatDateNoTime(row.start_date) : ''}</div>
+          );
         }
       },
       {
@@ -612,13 +643,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         enableSorting: true,
         accessorFn: (row: any) => formatDateNoTime(row?.end_date) || '',
         sortingFn: myCustomSortingByDateFn,
-        // sortingFn: 'datetime', // recommended for date columns 
-        // sortUndefined: -1,
         cell: (info) => {
-          const row: any = info?.row?.original
+          const row: any = info?.row?.original;
+          if (!row) return null;
           return (
-            <div className={`text-[#0DA2A2]`}>{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</div>
-          )
+            <div className={`text-[#0DA2A2]`}>{row?.end_date ? formatDateNoTime(row.end_date) : ''}</div>
+          );
         }
       },
       {
@@ -626,15 +656,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         header: "Created by",
         width: 250,
         enableSorting: true,
-        accessorFn: (row) => `${`${row?.create_by_account?.first_name} ` || ''}${row?.create_by_account?.last_name} ${row?.create_date ? formatDate(row?.create_date) : ''}`,
+        accessorFn: (row: any) => `${row?.create_by_account?.first_name || ''} ${row?.create_by_account?.last_name || ''} ${row?.create_date ? formatDate(row?.create_date) : ''}`.trim(),
         cell: (info) => {
-          const row: any = info?.row?.original
+          const row: any = info?.row?.original;
+          if (!row) return null;
           return (
             <div>
-              <span className={`text-[#464255]`}>{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
-              <div className="text-gray-500 text-xs">{row?.create_date ? formatDate(row?.create_date) : ''}</div>
+              <span className={`text-[#464255]`}>{row?.create_by_account?.first_name ?? ''} {row?.create_by_account?.last_name ?? ''}</span>
+              <div className="text-gray-500 text-xs">{row?.create_date ? formatDate(row.create_date) : ''}</div>
             </div>
-          )
+          );
         }
       },
       {
@@ -646,14 +677,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         size: 100,
         cell: (info) => {
           const row: any = info?.row?.original;
+          if (!row) return null;
           const getPermission: any = renderPermission();
           return (
             <BtnActionTable
               togglePopover={togglePopover}
               row_id={row?.id}
-              disable={getPermission?.f_view == true ? false : true}
+              disable={!getPermission?.f_view}
             />
-          )
+          );
         }
       },
     ], []
@@ -743,13 +775,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           <InputSearch
             id="searchEntryExit"
             label="Entry/Exit"
-            // type="select"
             type="select-multi-checkbox"
             value={srchEntryExit}
             onChange={(e) => setSrchEntryExit(e.target.value)}
-            options={entryExitMaster?.data?.map((item: any) => ({
-              value: item?.id?.toString(),
-              label: item.name
+            options={(entryExitMaster?.data || [])?.map((item: any) => ({
+              value: item?.id != null ? String(item.id) : '',
+              label: item?.name ?? ''
             }))}
           />
 
@@ -860,7 +891,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             can_export={userPermission ? userPermission?.f_export : false} columnVisibility={columnVisibility} initialColumns={initialColumns}
           />
         }
-        initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
+        initialColumns={Object.fromEntries((initialColumns || []).map((column: any) => [column?.key, column?.visible]))}
         onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
         onFilteredDataChange={(filteredData: any) => {
           const newData = filteredData || [];
@@ -877,10 +908,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         open={formOpen}
         zoneMasterData={zoneMaster?.data}
         entryExitMasterData={entryExitMaster?.data}
-        // onClose={() => {
-        //   setFormOpen(false);
-        //   if (resetForm) resetForm();
-        // }}
         onClose={() => {
           setFormOpen(false);
           if (resetForm) {
@@ -898,7 +925,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         open={isModalSuccessOpen}
         handleClose={handleCloseModal}
         title="Success"
-        // description="Zone/Quality has been added."
         description={formMode == 'create' ? 'Zone/Quality has been added.' : 'Your changes have been saved.'}
       />
 
@@ -932,19 +958,19 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         description={
           <div>
             {
-              modalErrorMsg?.split('<br/>').length > 1 ?
+              modalErrorMsg && typeof modalErrorMsg === 'string' && modalErrorMsg.includes('<br/>') ?
                 <ul className="text-start list-disc">
                   {
-                    modalErrorMsg.split('<br/>').map(item => {
+                    modalErrorMsg.split('<br/>').map((item: string, idx: number) => {
                       return (
-                        <li>{item}</li>
-                      )
+                        <li key={idx}>{item}</li>
+                      );
                     })
                   }
                 </ul>
                 :
                 <div className="text-center">
-                  {`${modalErrorMsg}`}
+                  {`${modalErrorMsg ?? ''}`}
                 </div>
             }
           </div>

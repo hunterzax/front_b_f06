@@ -408,8 +408,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 {...register("nomination_point", {
                                                                     required: mode === 'create' || mode === 'period' && stepAdd == 2,
                                                                     onChange: (e) => {
-                                                                        setNomPointText(e.target.value); // update your local state if needed
-                                                                        setValue("nomination_point", e.target.value)
+                                                                        setNomPointText(e?.target?.value ?? ""); // update your local state if needed
+                                                                        setValue("nomination_point", e?.target?.value ?? "")
                                                                     }
                                                                 })}
                                                                 readOnly={isReadOnly}
@@ -425,7 +425,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             disabled={isReadOnly}
                                                             valueWatch={stepAdd == 1 ? watch("nomination_point") : nomPointText}
                                                             handleChange={(e) => {
-                                                                modeNewPeriod(e.target.value);
+                                                                modeNewPeriod((e?.target?.value ?? ""));
                                                                 clearErrors('ref_id');
                                                             }}
                                                             errors={errors?.ref_id}
@@ -477,13 +477,13 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             disabled={mode == "period" ? true : isReadOnly}
                                                             valueWatch={watch("entry_exit_id") || ""}
                                                             handleChange={(e) => {
-                                                                if (watch("entry_exit_id") != e.target.value) {
+                                                                if (watch("entry_exit_id") != (e?.target?.value ?? "")) {
                                                                     resetField("zone_id")
                                                                     resetField("area_id")
                                                                     resetField("contract_point_id")
                                                                 }
-                                                                setValue("entry_exit_id", e.target.value);
-                                                                const filteredZones = zoneMasterData.filter((zone: any) => zone.entry_exit_id === e.target.value);
+                                                                setValue("entry_exit_id", e?.target?.value ?? "");
+                                                                const filteredZones = (zoneMasterData || []).filter((zone: any) => zone.entry_exit_id === (e?.target?.value ?? ""));
                                                                 setZoneMaster(filteredZones)
                                                             }}
                                                             errors={errors?.entry_exit_id}
@@ -514,13 +514,13 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             disabled={isReadOnly}
                                                             valueWatch={watch("zone_id") || ""}
                                                             handleChange={(e) => {
-                                                                if (watch("zone_id") != e.target.value) {
+                                                                if (watch("zone_id") != (e?.target?.value ?? "")) {
                                                                     resetField("area_id")
                                                                     resetField("contract_point_id")
                                                                 }
 
-                                                                setValue("zone_id", e.target.value);
-                                                                const filteredArea = flatArea.filter((item: any) => item.zone_id === e.target.value);
+                                                                setValue("zone_id", e?.target?.value ?? "");
+                                                                const filteredArea = flatArea.filter((item: any) => item.zone_id === (e?.target?.value ?? ""));
                                                                 setAreaMaster(filteredArea)
                                                                 if (errors?.zone_id) { clearErrors('zone_id') }
                                                             }}
@@ -551,10 +551,10 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             disabled={isReadOnly}
                                                             valueWatch={watch("area_id") || ""}
                                                             handleChange={(e) => {
-                                                                if (watch("area_id") != e.target.value) {
+                                                                if (watch("area_id") != (e?.target?.value ?? "")) {
                                                                     resetField("contract_point_id")
                                                                 }
-                                                                setValue("area_id", e.target.value);
+                                                                setValue("area_id", e?.target?.value ?? "");
                                                                 if (errors?.area_id) { clearErrors('area_id') }
                                                             }}
                                                             errors={errors?.area_id}
@@ -601,7 +601,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             }}
                                                             onChange={(e: any) => {
                                                                 const value = watch("contract_point_id") ? Array.isArray(watch("contract_point_id")) ? watch("contract_point_id") : [watch("contract_point_id")] : []
-                                                                const selectedValues = e.target.value as string[];
+                                                                const selectedValues = (e?.target?.value ?? []) as string[];
                                                                 let newValues;
                                                                 if (selectedValues.includes("all")) {
                                                                     newValues = value.length === contractPointDataX.length ? [] : contractPointDataX.map((item: any) => item.id);
@@ -719,7 +719,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             disabled={isReadOnly}
                                                             valueWatch={watch("customer_type_id") || ""}
                                                             handleChange={(e) => {
-                                                                setValue("customer_type_id", e.target.value);
+                                                                setValue("customer_type_id", e?.target?.value ?? "");
                                                             }}
                                                             errors={errors?.customer_type_id}
                                                             errorsText={'Select Customer Type'}

@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import React, { useState } from "react";
+import React, {useEffect, useRef, useState} from 'react'
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -77,6 +76,7 @@ interface TableProps {
   filterDataShortTermEach?: any; // area ที่กรองมาแล้ว
   setfilterList?: any;
   filterList?: any;
+  subTabComponent?: JSX.Element;
 }
 
 const ChartShortTermAll: React.FC<TableProps> = ({
@@ -93,6 +93,7 @@ const ChartShortTermAll: React.FC<TableProps> = ({
   filterDataShortTermEach,
   setfilterList,
   filterList,
+  subTabComponent
 }) => {
   // ############### REDUX DATA ###############
   const { shipperGroupData, areaMaster, entryExitMaster } = useFetchMasters();
@@ -556,10 +557,23 @@ const ChartShortTermAll: React.FC<TableProps> = ({
               strokeStyle: dataset.borderColor,
               hidden: !chart.isDatasetVisible(index),
               pointStyle: dataset.isEntry ? "rect" : "circle",
+              datasetIndex: index
             }));
           },
         },
-        onClick: null,
+        // onClick: null,
+        onClick: (_event: any, legendItem: any, legend: any) => {
+          const chart = legend.chart
+          const datasetIndex = legendItem.datasetIndex
+
+          if (datasetIndex === undefined) return
+
+          const currentlyVisible = chart.isDatasetVisible(datasetIndex)
+
+          chart.setDatasetVisibility(datasetIndex, !currentlyVisible)
+
+          chart.update()
+        },
       },
       title: {
         display: false,
@@ -586,17 +600,22 @@ const ChartShortTermAll: React.FC<TableProps> = ({
         bodyColor: "black", // Set body text color to black (optional)
         borderColor: "#cfcfd1",
         borderWidth: 1,
+        usePointStyle: true,
         callbacks: {
           label: (tooltipItem: any) => {
             // Access the label name and value
             const labelName: any = tooltipItem?.dataset
               ? tooltipItem?.dataset?.label
               : ""; // Accessing the label name
-            const value = tooltipItem.raw
-              ? formatNumberThreeDecimal(tooltipItem.raw)
+            const value = tooltipItem?.raw
+              ? formatNumberThreeDecimal(tooltipItem?.raw)
               : 0; // Formatting the value
             return `${labelName} : ${value}`; // Showing label name and value
           },
+          labelPointStyle: (context: any) => ({
+            pointStyle: context?.dataset?.isEntry ? "rect" : "circle",
+            rotation: 0,
+          }),
         },
       },
       datalabels: {
@@ -637,6 +656,7 @@ const ChartShortTermAll: React.FC<TableProps> = ({
     <div
       className={`h-auto overflow-hidden block rounded-t-md relative z-1 p-2`}
     >
+      {subTabComponent}
       <div className="flex justify-between w-full">
         <div className="py-[7px] pl-[12px]">
           <h2 className="text-[16px] font-bold text-[#58585A] ">

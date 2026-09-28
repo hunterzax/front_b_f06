@@ -1,4 +1,3 @@
-"use client";
 import React, { useState } from 'react';
 import { Handle, NodeProps, Position } from 'reactflow';
 
@@ -14,7 +13,7 @@ const exitNode = ({ data, id }: NodeProps) => {
 
     return (
         <div
-            key={data.id}
+            key={data?.id}
             className="flex justify-center p-2 items-center cursor-pointer text-gray-400 text-xs"
             // onClick={() => handleSelect(item.id, 'entry')}
             style={{
@@ -36,7 +35,7 @@ const exitNode = ({ data, id }: NodeProps) => {
             {isHovered && (
                 <div
                     className="absolute top-0 right-0 bg-[#58585A] text-white w-[18px] h-[18px] rounded-full flex justify-center items-center cursor-pointer"
-                    onClick={() => data.onDelete(id, 'exit')}
+                    onClick={() => data?.onDelete?.(id, 'exit')}
                     // onClick={(e) => {
                     //     // e.stopPropagation(); // Prevent click event from reaching the parent
                     //     data.onDelete(id, 'exit');
@@ -48,7 +47,7 @@ const exitNode = ({ data, id }: NodeProps) => {
             )}
 
             <span className={`text-black`}>
-                {data.label}
+                {data?.label}
             </span>
             <Handle
                 type="target"

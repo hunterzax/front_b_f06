@@ -188,22 +188,24 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const handleFormSubmitEmail = async (data: any) => {
 
         try {
-            const resultLink: any = await postService('/master/account-manage/get-link', data);
-            if (resultLink?.link) {
-                const bodyMail = await TemplateMail({
-                    header: "Reset Your Password",
-                    description: "A request has been received to reset the password for your account. <br/> Please click the button below to reset your password",
-                    btntxt: "Reset Password",
-                    url: resultLink?.link,
-                    mode: "resetmail"
-                });
+            if (data?.email) {
+                const resultLink: any = await postService('/master/account-manage/get-link', data);
+                if (resultLink?.link) {
+                    const bodyMail = await TemplateMail({
+                        header: "Reset Your Password",
+                        description: "A request has been received to reset the password for your account. <br/> Please click the button below to reset your password",
+                        btntxt: "Reset Password",
+                        url: resultLink?.link,
+                        mode: "resetmail"
+                    });
 
-                let body: any = {
-                    "to": data?.email,
-                    "subject": "Reset Your Password",
-                    "body": JSON.parse(bodyMail)
+                    let body: any = {
+                        "to": data?.email,
+                        "subject": "Reset Your Password",
+                        "body": JSON.parse(bodyMail)
+                    }
+                    await postService('/mail/send-email', body);
                 }
-                await postService('/mail/send-email', body);
             }
         } catch (error) {
 
@@ -212,9 +214,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     };
 
     const handleFormSubmit = async (data: any) => {
-        const { id, ...newData } = data
-        const newDataPost = dataPost.map((e: any) => e)
-        const editDataPut = selectedItems.map((e: any) => e)
+        const { id, ...newData } = data || {}
+        const newDataPost = (dataPost || []).map((e: any) => e)
+        const editDataPut = (selectedItems || []).map((e: any) => e)
 
         const dataPostReal = {
             // role_id: newDataPost[0]?.role,
@@ -236,7 +238,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             // mode_account_id: 2, // 1 == SSO, 2 == Local
             // mode_account_id: data?.mode_account == "SSO Login" ? 1 : 2, // 1 == SSO, 2 == Local
             mode_account_id: modeLogin == "SSO Login" ? 1 : 2, // 1 == SSO, 2 == Local
-            system_login_account: editDataPut.length > 0 ? editDataPut?.map((user: any) => ({
+            system_login_account: (Array.isArray(editDataPut) && editDataPut.length > 0) ? editDataPut.map((user: any) => ({
                 account_id: user?.user_data?.id,
                 // mode_account_id: dataPost[0]?.mode_account_id,
                 // mode_account_id: data?.mode_account == "SSO Login" ? 1 : 2,
@@ -247,24 +249,23 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         };
 
         // Remove duplicates based on account_id
-        dataPut.system_login_account = dataPut.system_login_account.filter(
+        dataPut.system_login_account = (dataPut.system_login_account || []).filter(
             (item: { account_id: any; }, index: any, self: any[]) =>
-                index === self.findIndex((t) => t.account_id === item.account_id)
+                index === self.findIndex((t) => t?.account_id === item?.account_id)
         );
 
         switch (formMode) {
             case "create":
 
-                let arrOkc: any = []
-                selectedItems.map((e: any) => {
-                    const find = selectedItemsTemp.find((f: any) => { return f?.user === e?.user })
+                let arrOkc: any = [];
+                (selectedItems || []).forEach((e: any) => {
+                    const find = (selectedItemsTemp || []).find((f: any) => { return f?.user === e?.user })
                     if (!find) {
                         // arrOkc.push(e?.user_data?.email)
                         if (e?.mode_account_id !== 2) {
                             arrOkc.push(e?.user_data?.email)
                         }
                     }
-                    return e
                 })
 
                 let res_create = await postService('/master/account-manage/system-logi-config', dataPostReal);
@@ -292,27 +293,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     }, 700);
                 }
 
-                if (arrOkc.length > 0) {
-                    for (let i = 0; i < arrOkc.length; i++) {
-                        await handleFormSubmitEmail({ email: arrOkc[i] })
-                    }
-                }
-
-                await fetchData();
-                if (resetForm) resetForm();
-
-                setTimeout(() => {
-                    setFormOpen(false);
-                    setViewCreate(true)
-                    openViewForm(res_create?.data?.id);
-                }, 700);
-
                 break;
             case "edit":
                 let arrOk: any = []
 
-                selectedItems.map((e: any) => {
-                    const find = selectedItemsTemp.find((f: any) => { return f?.user === e?.user })
+                ;(selectedItems || []).forEach((e: any) => {
+                    const find = (selectedItemsTemp || []).find((f: any) => f?.user === e?.user)
                     if (!find) {
                         // R : Local Login  ไม่ควรได้รับ  email
                         // case > กด edit แล้ว add user ที่เป็น local อยู่แล้วเข้าไป ระบบยังส่งเมล์ให้ reset password อยู่ค่ะ https://app.clickup.com/t/86er0fngf
@@ -320,7 +306,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             arrOk.push(e?.user_data?.email)
                         }
                     }
-                    return e
                 })
 
                 const res_update = await putService(`/master/account-manage/system-logi-config-edit/${selectedId}`, dataPut);
@@ -433,7 +418,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const openEditForm = (id: any) => {
         setSelectedId(id);
-        const filteredData = dataTable.find((item: any) => item.id === id);
+        const filteredData = (dataTable || []).find((item: any) => item?.id === id);
         fetchDataViewEdit(id)
         setFormMode('edit');
         setFormData(filteredData);
@@ -442,7 +427,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const openViewForm = async (id: any) => {
         const res_system_login: any = await getService(`/master/account-manage/system-login`);
-        const filteredData = res_system_login.find((item: any) => item.id === id);
+        const filteredData = (res_system_login || []).find((item: any) => item?.id === id);
         setViewData(filteredData);
         setViewOpen(true);
     };
@@ -471,14 +456,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const openHistoryForm = async (id: any) => {
         try {
             const response: any = await getService(`/master/account-manage/history?type=system-login&method=all&id_value=${id}`);
-            const valuesArray = response.map((item: any) => item.value);
+            const valuesArray = (response || [])?.map((item: any) => item?.value);
 
             let mappings = [
                 { key: "mode_account.name", title: "Login Mode" },
                 { key: "create_date", title: "Create Date" },
             ];
             let result = mappings.map(({ key, title }) => {
-                const value = key.split('.').reduce((acc, part) => acc && acc[part], valuesArray[0]);
+                const value = key.split('.').reduce((acc: any, part: string) => (acc ? acc[part] : undefined), valuesArray?.[0]);
 
                 const isIsoString = typeof value === 'string' && !isNaN(Date.parse(value));
 
@@ -586,7 +571,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.mode_account?.name || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
-                    const generateLowercase: any = row?.mode_account?.name == 'SSO' ? row?.mode_account?.name : row?.mode_account?.name?.toLowerCase();
+                    if (!row) return null
+                    const generateLowercase: any = row?.mode_account?.name == 'SSO' ? row?.mode_account?.name : (row?.mode_account?.name ? row.mode_account.name.toLowerCase() : '');
                     return (
                         <div className="w-auto flex justify-start items-center absolute" style={{ transform: 'translate(-8px, -13px)' }}>
                             <div
@@ -603,8 +589,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.role?.name || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
+                    if (!row) return null
                     return (
-                        <div>{row?.role?.name}</div>
+                        <div>{row?.role?.name ?? ''}</div>
                     )
                 }
             },
@@ -615,21 +602,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.system_login_account?.length || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
+                    if (!row) return null
                     return (
                         <div className="inline-flex items-center justify-center relative">
-                            {/* <button
-                                type="button"
-                                className="flex items-center justify-center px-[2px] py-[2px] rounded-md hover:bg-blue-600 border border-[#DFE4EA] relative"
-                                onClick={() => openUserView(row?.id, row?.system_login_account)}
-                                disabled={(userPermission?.f_view == false ? true : row?.system_login_account?.length <= 0) && true}
-                            >
-                                <SupervisorAccountRoundedIcon sx={{ fontSize: 18, color: '#1473A1', '&:hover': { color: '#ffffff' } }} />
-                            </button> */}
                             <button
                                 type="button"
                                 className={iconButtonClass}
                                 onClick={() => openUserView(row?.id, row?.system_login_account)}
-                                disabled={(userPermission?.f_view == false ? true : row?.system_login_account?.length <= 0) && true}
+                                disabled={(userPermission?.f_view == false ? true : (row?.system_login_account?.length ?? 0) <= 0) && true}
                             >
                                 <SupervisorAccountRoundedIcon
                                     fontSize="inherit"
@@ -638,7 +618,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 />
                             </button>
                             <span className="px-2 text-[#464255]">
-                                {row?.system_login_account?.length}
+                                {row?.system_login_account?.length ?? 0}
                             </span>
                         </div>
                     )
@@ -651,10 +631,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.create_by_account?.first_name || row?.create_by_account?.last_name || formatDate(row?.create_date) || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
+                    if (!row) return null
                     return (
                         <div>
-                            <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
-                            <div className="text-gray-500 text-xs">{formatDate(row?.create_date)}</div>
+                            <span className="text-[#464255]">{row?.create_by_account?.first_name ?? ''} {row?.create_by_account?.last_name ?? ''}</span>
+                            <div className="text-gray-500 text-xs">{row?.create_date ? formatDate(row.create_date) : ''}</div>
                         </div>
                     )
                 }
@@ -666,9 +647,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.update_by_account?.first_name || row?.update_by_account?.last_name || formatDateTimeSec(row?.update_date) || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
+                    if (!row) return null
                     return (
                         <div>
-                            <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
+                            <span className="text-[#464255]">{row?.update_by_account?.first_name ?? ''} {row?.update_by_account?.last_name ?? ''}</span>
                             <div className="text-gray-500 text-xs">{row?.update_date ? formatDateTimeSec(row?.update_date) : ''}</div>
                         </div>
                     )
@@ -683,7 +665,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 size: 100,
                 cell: (info) => {
                     const row: any = info?.row?.original;
-                    // const getPermission: any = renderPermission();
+                    if (!row) return null;
                     return (
                         <BtnActionTable
                             togglePopover={togglePopover}

@@ -205,84 +205,84 @@ const TableAlloReportIntraday: React.FC<TableProps> = ({ openEditForm, openViewF
                                 )}
 
 
-                                {columnVisibility.entry_exit && (
+                                {columnVisibility?.entry_exit && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("entry_exit", sortState, setSortState, setSortedData, tableData)}>
                                         {`Entry / Exit`}
                                         {getArrowIcon("entry_exit")}
                                     </th>
                                 )}
 
-                                {columnVisibility.gas_day && (
+                                {columnVisibility?.gas_day && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, tableData)}>
                                         {`Gas Day`}
                                         {getArrowIcon("gas_day")}
                                     </th>
                                 )}
 
-                                {columnVisibility.gas_hour && (
+                                {columnVisibility?.gas_hour && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("gas_hour", sortState, setSortState, setSortedData, tableData)}>
                                         {`Gas Hour`}
                                         {getArrowIcon("gas_hour")}
                                     </th>
                                 )}
 
-                                {columnVisibility.timestamp && (
+                                {columnVisibility?.timestamp && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("timestamp", sortState, setSortState, setSortedData, tableData)}>
                                         {`Timestamp`}
                                         {getArrowIcon("timestamp")}
                                     </th>
                                 )}
 
-                                {columnVisibility.shipper_name && (
+                                {columnVisibility?.shipper_name && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("shipper_name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Shipper Name`}
                                         {getArrowIcon("shipper_name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.contract_code && (
+                                {columnVisibility?.contract_code && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("contract_code", sortState, setSortState, setSortedData, tableData)}>
                                         {`Contract Code`}
                                         {getArrowIcon("contract_code")}
                                     </th>
                                 )}
 
-                                {columnVisibility.contract_point && (
+                                {columnVisibility?.contract_point && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("contract_point", sortState, setSortState, setSortedData, tableData)}>
                                         {`Contract Point`}
                                         {getArrowIcon("contract_point")}
                                     </th>
                                 )}
 
-                                {columnVisibility.capacity_right && (
+                                {columnVisibility?.capacity_right && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("capacity_right", sortState, setSortState, setSortedData, tableData)}>
                                         {`Capacity Right (MMBTU/D)`}
                                         {getArrowIcon("capacity_right")}
                                     </th>
                                 )}
 
-                                {columnVisibility.nominated_value && (
+                                {columnVisibility?.nominated_value && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("nominated_value", sortState, setSortState, setSortedData, tableData)}>
                                         {`Nominated Value (MMBTU/D)`}
                                         {getArrowIcon("nominated_value")}
                                     </th>
                                 )}
 
-                                {columnVisibility.system_allocation && (
+                                {columnVisibility?.system_allocation && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("system_allocation", sortState, setSortState, setSortedData, tableData)}>
                                         {`System Allocation (MMBTU/D)`}
                                         {getArrowIcon("system_allocation")}
                                     </th>
                                 )}
 
-                                {columnVisibility.overusage && (
+                                {columnVisibility?.overusage && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("overusage", sortState, setSortState, setSortedData, tableData)}>
                                         {`Overusage (MMBTU/D)`}
                                         {getArrowIcon("overusage")}
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -298,7 +298,7 @@ const TableAlloReportIntraday: React.FC<TableProps> = ({ openEditForm, openViewF
                                         className={`${table_row_style}`}
                                     >
 
-                                        {columnVisibility.publication && userDT?.account_manage?.[0]?.user_type_id !== 3 && (
+                                        {columnVisibility?.publication && userDT?.account_manage?.[0]?.user_type_id !== 3 && (
                                             <td className="px-2 py-1 min-w-[80px] ">
                                                 <input
                                                     type="checkbox"
@@ -311,15 +311,15 @@ const TableAlloReportIntraday: React.FC<TableProps> = ({ openEditForm, openViewF
                                             </td>
                                         )}
 
-                                        {columnVisibility.entry_exit && (
+                                        {columnVisibility?.entry_exit && (
                                             <td className="px-2 py-1  justify-center ">{row?.entry_exit_obj && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit_obj?.color }}>{`${row?.entry_exit_obj?.name}`}</div>}</td>
                                         )}
 
-                                        {columnVisibility.gas_day && (
+                                        {columnVisibility?.gas_day && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.gas_day ? formatDateNoTime(row?.gas_day) : ''}</td>
                                         )}
 
-                                        {columnVisibility.gas_hour && (
+                                        {columnVisibility?.gas_hour && (
                                             <td className="px-2 py-1 text-[#464255] text-center">{row?.gas_hour ? row?.gas_hour + ':00' : ''}</td>
                                         )}
 
@@ -371,7 +371,7 @@ const TableAlloReportIntraday: React.FC<TableProps> = ({ openEditForm, openViewF
                                             </td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 <div className="relative inline-flex justify-center items-center w-full">
                                                     <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view ? true : false} />

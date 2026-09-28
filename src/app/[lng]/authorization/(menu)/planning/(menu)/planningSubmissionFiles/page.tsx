@@ -489,8 +489,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                     },
                                 }}
                                 onChange={(e) => {
-                                    setSelectedTermMaster(termMaster[e.target.value])
-                                    setValue("term", e.target.value);
+                                    setSelectedTermMaster(termMaster[e?.target?.value ?? ""])
+                                    setValue("term", e?.target?.value ?? "");
                                 }}
                                 displayEmpty
                                 renderValue={(value: any) => {
@@ -536,7 +536,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("year", e.target.value);
+                                                    setValue("year", e?.target?.value ?? "");
                                                 }}
                                                 MenuProps={{
                                                     PaperProps: {
@@ -569,7 +569,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                                 disabled={false}
                                                 valueWatch={watch("year") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("year", e.target.value);
+                                                    setValue("year", e?.target?.value ?? "");
                                                     if (errors?.year) { clearErrors('year') }
                                                 }}
                                                 errors={errors?.month}
@@ -612,7 +612,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                                             },
                                                         }}
                                                         onChange={(e) => {
-                                                            setValue("month", e.target.value);
+                                                            setValue("month", e?.target?.value ?? "");
                                                         }}
                                                         MenuProps={{
                                                             PaperProps: {
@@ -642,7 +642,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                                         disabled={false}
                                                         valueWatch={watch("month") || ""}
                                                         handleChange={(e) => {
-                                                            setValue("month", e.target.value);
+                                                            setValue("month", e?.target?.value ?? "");
                                                             if (errors?.month) { clearErrors('month') }
                                                         }}
                                                         errors={errors?.month}
@@ -798,8 +798,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 }}
                 title="Failed"
                 description={
-                    modalErrorMsg?.split('<br/>')?.length > 1 ?
-                        <div className={`${modalErrorMsg?.length > 400 ? "h-[calc(300px)] overflow-y-auto text-sm" : ""}`}>
+                    modalErrorMsg.split('<br/>')?.length > 1 ?
+                        <div className={`${modalErrorMsg.length > 400 ? "h-[calc(300px)] overflow-y-auto text-sm" : ""}`}>
                             <ul className=" text-start list-disc space-y-3">
                                 {
                                     modalErrorMsg.split('<br/>').map(item => {

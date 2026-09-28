@@ -46,7 +46,7 @@ const TableTariffChargeReportInside: React.FC<TableProps> = ({
     const popoverRef = useRef<HTMLDivElement>(null);
 
     // เอาไว้ span column แบบ dynamic เคสเปิด ปิดไส้ใน
-    // const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility[col.key]).length || 1;
+    // const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility?.[col.key]).length || 1;
 
     {/* Confirm Save */ }
     const [modaConfirmSave, setModaConfirmSave] = useState<any>(false)
@@ -224,7 +224,7 @@ const TableTariffChargeReportInside: React.FC<TableProps> = ({
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} !min-w-[100px] text-center`}>
                                         {`Action`}
                                     </th>
@@ -233,9 +233,9 @@ const TableTariffChargeReportInside: React.FC<TableProps> = ({
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData?.map((row: any, index: any) => (
+                            {(sortedData || [])?.map((row: any, index: any) => row && (
                                 <tr
-                                    key={row?.id}
+                                    key={row?.id ?? index}
                                     className={`${table_row_style}`}
                                 >
 
@@ -260,12 +260,10 @@ const TableTariffChargeReportInside: React.FC<TableProps> = ({
                                     )}
 
                                     {columnVisibility?.quantity_operator && (
-                                        // <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.quantity_operator ? formatNumberTwoDecimalNom(row?.quantity_operator) : ''}</td>
                                         <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.quantity_operator !== null && row?.quantity_operator !== undefined ? roundNumber(row?.quantity_operator) : ''}</td>
                                     )}
 
                                     {columnVisibility?.quantity && (
-                                        // <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.quantity ? formatNumberThreeDecimal(row?.quantity) : ''}</td>
                                         <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.quantity !== null && row?.quantity !== undefined ? roundNumber(row?.quantity) : ''}</td>
                                     )}
 
@@ -278,13 +276,11 @@ const TableTariffChargeReportInside: React.FC<TableProps> = ({
                                     )} */}
 
                                     {columnVisibility?.fee && (
-                                        // <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.fee !== null && row?.fee !== undefined ? formatNumberTwoDecimalNom(row?.fee) : ''}</td>
                                         <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.fee !== null && row?.fee !== undefined ? formatNumberFourDecimalNom(row?.fee) : ''}</td>
                                     )}
 
                                     {columnVisibility?.amount_baht && (
-                                        // <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.amount !== null && row?.amount !== undefined ? formatNumberTwoDecimalNom(row?.amount) : ''}</td>
-                                        <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.amount !== null && row?.amount !== undefined ? formatNumberTwoDecimalNomRound(row?.amount) : ''}</td> // Column Amount (Baht) คำนวณไม่ถูก มันต้องเอาค่าจำนวนเต็มของ Quantity ที่แสดงตรงหน้า UI มา x กับ ค่า Fee แล้วถ้าทศนิยมมันเกิน 2 ตำแหน่ง จะต้องปัดให้เหลือ 2 ตำแหน่ง (ปัดขึ้นปัดลงตามปกติ) https://app.clickup.com/t/86evh20ju
+                                        <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.amount !== null && row?.amount !== undefined ? formatNumberTwoDecimalNomRound(row?.amount) : ''}</td>
                                     )}
 
                                     {columnVisibility?.amount_operator_baht && (
@@ -299,7 +295,7 @@ const TableTariffChargeReportInside: React.FC<TableProps> = ({
                                         <td className={`px-2 py-1 text-[#464255] min-w-[120px] text-right`}>{row?.difference !== null && row?.difference !== undefined ? formatNumberTwoDecimalNom(row?.difference) : ''}</td>
                                     )}
 
-                                    {columnVisibility.action && (
+                                    {columnVisibility?.action && (
                                         <td className="px-2 py-1">
                                             <div className="relative inline-flex justify-center items-center w-full">
                                                 <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view && !userPermission?.f_edit ? true : false} />

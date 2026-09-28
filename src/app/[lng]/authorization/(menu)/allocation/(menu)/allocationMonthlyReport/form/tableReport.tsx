@@ -150,12 +150,12 @@ export const TableReport: React.FC<TableProps> = ({
     }, [headDates, isoToDisplay]);
 
     const visibleDateDisplayKeys = useMemo(() => {
-        const candidates = Object.entries(columnVisibility).filter(([k, v]) => v && !["nomination_point", "contract_code", "shipper_name", "point", "type", "area"].includes(k)).map(([k]) => normalizeToDDMMYYYY(k));
+        const candidates = Object.entries(columnVisibility || {}).filter(([k, v]) => v && !["nomination_point", "contract_code", "shipper_name", "point", "type", "area"].includes(k)).map(([k]) => normalizeToDDMMYYYY(k));
 
         if (candidates.length > 0) return candidates;
 
         // fallback จาก headDate
-        return headDates.map((iso: any) => isoToDisplay.get(iso)).filter(Boolean).map((d: any) => normalizeToDDMMYYYY(d));
+        return (headDates || []).map((iso: any) => isoToDisplay.get(iso)).filter(Boolean).map((d: any) => normalizeToDDMMYYYY(d));
     }, [columnVisibility, headDates, isoToDisplay]);
 
     const visibleDateIsoKeys = useMemo(() => {
@@ -187,36 +187,49 @@ export const TableReport: React.FC<TableProps> = ({
             >
         >();
 
-        const areaShipperData = tableData?.areaShipperData ?? [];
+        const areaShipperData = Array.isArray(tableData?.areaShipperData) ? tableData.areaShipperData : [];
 
         for (const areaGroup of areaShipperData) {
-            const area = areaGroup.area;
+            if (!areaGroup) continue;
+            const area = String(areaGroup?.area ?? '');
+            if (!area) continue;
 
             if (!areaPointIndex.has(area)) areaPointIndex.set(area, new Set());
             if (!areaPointShippers.has(area)) areaPointShippers.set(area, new Map());
 
-            for (const ship of areaGroup.shipperData ?? []) {
-                const shipperId = ship.shipperId;
-                const shipperName = ship.shipperName;
+            const shipperList = Array.isArray(areaGroup?.shipperData) ? areaGroup.shipperData : [];
+            for (const ship of shipperList) {
+                if (!ship) continue;
+                const shipperId = String(ship?.shipperId ?? '');
+                const shipperName = String(ship?.shipperName ?? '');
 
-                for (const pt of ship.data ?? []) {
-                    const point = pt.point;
-                    const customerType = pt.customer_type ?? "";
-                    const contractCode = pt.contract_code ?? "-";
+                const ptList = Array.isArray(ship?.data) ? ship.data : [];
+                for (const pt of ptList) {
+                    if (!pt) continue;
+                    const point = String(pt?.point ?? '');
+                    if (!point) continue;
+                    const customerType = pt?.customer_type ?? "";
+                    const contractCode = pt?.contract_code ?? "-";
 
-                    areaPointIndex.get(area)!.add(point);
+                    const ptIndexSet = areaPointIndex.get(area);
+                    if (ptIndexSet) {
+                        ptIndexSet.add(point);
+                    }
 
                     // map shipper meta ต่อ point
                     const shipperKey = `${area}|${point}|${shipperId}`;
-                    const metaMap = areaPointShippers.get(area)!;
-                    if (!metaMap.has(shipperKey)) {
+                    const metaMap = areaPointShippers.get(area);
+                    if (metaMap && !metaMap.has(shipperKey)) {
                         metaMap.set(shipperKey, { shipperId, shipperName, customerType, contractCode });
                     }
 
                     // values per date
-                    for (const dv of pt.data ?? []) {
-                        const dateIso = dv.date;
-                        const val = Number(dv.value ?? 0);
+                    const dvList = Array.isArray(pt?.data) ? pt.data : [];
+                    for (const dv of dvList) {
+                        if (!dv) continue;
+                        const dateIso = String(dv?.date ?? '');
+                        if (!dateIso) continue;
+                        const val = Number(dv?.value ?? 0);
 
                         // detail cell (point+shipper)
                         pointShipperMap.set(`${area}|${point}|${shipperId}|${dateIso}`, val);
@@ -238,12 +251,12 @@ export const TableReport: React.FC<TableProps> = ({
         }
 
         return { areaTotalMap, pointShipperMap, shipperTotalMap, pointTotalMap, areaPointIndex, areaPointShippers };
-    }, [tableData]);
+    }, [tableData?.areaShipperData]);
 
     // ----- 3) เตรียม UI helper area badge เหมือนเดิม
     const renderAreaBadge = useCallback(
         (area: string) => {
-            const filter_area = areaMaster?.data?.find((item: any) => item.name === area);
+            const filter_area = (areaMaster?.data || [])?.find((item: any) => item?.name === area);
             if (!filter_area) return <div className="text-center">{area}</div>;
 
             const commonStyle: React.CSSProperties = {
@@ -275,54 +288,47 @@ export const TableReport: React.FC<TableProps> = ({
     );
 
     // ----- 4) Render table
-    const areaShipperData = tableData?.areaShipperData ?? [];
-
-    // ---- หา contract code
-    const contractByShipperId = useMemo(() => {
-        const m = new Map<string, string[]>();
-
-        (tableData?.data ?? []).forEach((r: any) => {
-            const shipperId = String(r?.shipperId ?? "").trim();
-            const contract = String(r?.contract ?? "").trim();
-
-            // กัน row พิเศษ เช่น Summary หรือไม่มี shipperId/contract
-            if (!shipperId || !contract || contract.toLowerCase() === "summary") return;
-
-            const prev = m.get(shipperId) ?? [];
-            if (!prev.includes(contract)) prev.push(contract);
-            m.set(shipperId, prev);
-        });
-
-        return m;
-    }, [tableData?.data]);
+    const areaShipperData = Array.isArray(tableData?.areaShipperData) ? tableData.areaShipperData : [];
 
     // ---- หา contract code ที่ match กับ shipper
     const computedContracts: any = useMemo(() => {
         const contractByShipperAreaPoint = new Map<string, string[]>(); // shipper|area|point -> [contract...]
         const contractValueMap = new Map<string, number>();             // contract|shipper|area|point|iso -> value
 
+        if (!tableData || !Array.isArray(tableData?.data)) {
+            return { contractByShipperAreaPoint, contractValueMap };
+        }
+
         const pushContract = (key: string, contract: string) => {
             const prev = contractByShipperAreaPoint.get(key) ?? [];
             if (!prev.includes(contract)) contractByShipperAreaPoint.set(key, [...prev, contract]);
         };
 
-        (tableData?.data ?? []).forEach((c: any) => {
+        const dataList = Array.isArray(tableData?.data) ? tableData.data : [];
+        dataList.forEach((c: any) => {
+            if (!c) return;
             const contract = c?.contract;
             const shipperId = String(c?.shipperId ?? "").trim();
 
             if (!contract || contract === "Summary" || !shipperId) return;
 
-            (c?.data ?? []).forEach((areaObj: any) => {
+            const areaList = Array.isArray(c?.data) ? c.data : [];
+            areaList.forEach((areaObj: any) => {
+                if (!areaObj) return;
                 const area = String(areaObj?.area ?? "").trim();
 
-                (areaObj?.data ?? []).forEach((pt: any) => {
+                const ptList = Array.isArray(areaObj?.data) ? areaObj.data : [];
+                ptList.forEach((pt: any) => {
+                    if (!pt) return;
                     const point = String(pt?.point ?? "").trim();
 
                     // 1) map: shipper|area|point -> contracts
                     pushContract(`${shipperId}|${area}|${point}`, contract);
 
                     // 2) map: contract|shipper|area|point|iso -> value
-                    (pt?.data ?? []).forEach((d: any) => {
+                    const dvList = Array.isArray(pt?.data) ? pt.data : [];
+                    dvList.forEach((d: any) => {
+                        if (!d) return;
                         const iso = String(d?.date ?? "").trim(); // "YYYY-MM-DD"
                         const v = d?.value;
 
@@ -336,14 +342,15 @@ export const TableReport: React.FC<TableProps> = ({
         });
 
         return { contractByShipperAreaPoint, contractValueMap };
-    }, [tableData]);
+    }, [tableData?.data]);
 
 
     const sortedContractsMap = useMemo(() => {
         const out = new Map<string, string[]>();
 
         // contractByShipperAreaPoint: Map<"shipperId|area|point", string[]>
-        for (const [k, contracts] of computedContracts.contractByShipperAreaPoint.entries()) {
+        const entries = (computedContracts?.contractByShipperAreaPoint || new Map<string, string[]>()).entries();
+        for (const [k, contracts] of entries) {
             const arr = [...(contracts ?? [])];
 
             if (detailSort.column && detailSort.direction) {
@@ -351,24 +358,24 @@ export const TableReport: React.FC<TableProps> = ({
                 if (detailSort.column === "contract") {
                     arr.sort((a, b) =>
                         detailSort.direction === "asc"
-                            ? a.localeCompare(b)
-                            : b.localeCompare(a)
+                            ? (a ?? '').localeCompare(b ?? '')
+                            : (b ?? '').localeCompare(a ?? '')
                     );
                 } else {
                     // 👇 sort ด้วย date iso
                     const iso = detailSort.column; // YYYY-MM-DD
 
                     // ต้อง parse key เพื่อดึง shipperId/area/point ออกมา
-                    const [shipperId, area, point] = k.split("|");
+                    const [shipperId, area, point] = (k || '').split("|");
 
                     arr.sort((a, b) => {
                         const valA =
-                            computedContracts.contractValueMap.get(
+                            computedContracts?.contractValueMap?.get?.(
                                 `${a}|${shipperId}|${area}|${point}|${iso}`
                             ) ?? -Infinity;
 
                         const valB =
-                            computedContracts.contractValueMap.get(
+                            computedContracts?.contractValueMap?.get?.(
                                 `${b}|${shipperId}|${area}|${point}|${iso}`
                             ) ?? -Infinity;
 
@@ -391,32 +398,32 @@ export const TableReport: React.FC<TableProps> = ({
                         <tr className="h-9">
                             <th className="px-2 py-1 text-left">{``}</th>
 
-                            {columnVisibility.nomination_point && (
+                            {columnVisibility?.nomination_point && (
                                 <th className={`${table_header_style} min-w-[160px] text-center`} >
                                     {`Nomination Point`}
                                 </th>
                             )}
 
-                            {columnVisibility.shipper_name && (
+                            {columnVisibility?.shipper_name && (
                                 <th className={`${table_header_style} min-w-[160px] text-center`}>
                                     {`Shipper Name`}
                                 </th>
                             )}
 
-                            {columnVisibility.contract_code && (
+                            {columnVisibility?.contract_code && (
                                 <th className={`${table_sort_header_style} min-w-[160px] text-center`} onClick={() => handleDetailSort("contract")}>
                                     {`Contract Code`}
                                     {getArrowIcon("contract")}
                                 </th>
                             )}
 
-                            {columnVisibility.type && (
+                            {columnVisibility?.type && (
                                 <th className={`${table_header_style} min-w-[120px] text-center`}>
                                     {`Type`}
                                 </th>
                             )}
 
-                            {columnVisibility.area && (
+                            {columnVisibility?.area && (
                                 <th className={`${table_header_style} min-w-[120px] text-center`}>
                                     {`Area`}
                                 </th>
@@ -442,7 +449,7 @@ export const TableReport: React.FC<TableProps> = ({
                             const isExpanded = expandedAreas.has(area);
 
                             // point list ใน area (sort ตามชื่อ)
-                            const points = Array.from(computed.areaPointIndex.get(area) ?? []).sort((a, b) => a.localeCompare(b));
+                            const points = Array.from(computed.areaPointIndex.get(area) ?? []).sort((a: any, b: any) => (a ?? '').localeCompare(b ?? ''));
 
                             return (
                                 <React.Fragment key={area}>
@@ -457,12 +464,12 @@ export const TableReport: React.FC<TableProps> = ({
                                             {` Total Area`}
                                         </td>
 
-                                        {columnVisibility.nomination_point && <td className="px-2 py-1 text-[#06522E] font-bold">{/* point blank */}</td>}
-                                        {columnVisibility.shipper_name && <td className="px-2 py-1 text-[#06522E] font-bold">{/* shipper blank */}</td>}
-                                        {columnVisibility.contract_code && <td className="px-2 py-1 text-[#06522E] font-bold">{/* contract blank */}</td>}
-                                        {columnVisibility.type && <td className="px-2 py-1 text-[#06522E] font-bold">{/* type blank */}</td>}
+                                        {columnVisibility?.nomination_point && <td className="px-2 py-1 text-[#06522E] font-bold">{/* point blank */}</td>}
+                                        {columnVisibility?.shipper_name && <td className="px-2 py-1 text-[#06522E] font-bold">{/* shipper blank */}</td>}
+                                        {columnVisibility?.contract_code && <td className="px-2 py-1 text-[#06522E] font-bold">{/* contract blank */}</td>}
+                                        {columnVisibility?.type && <td className="px-2 py-1 text-[#06522E] font-bold">{/* type blank */}</td>}
 
-                                        {columnVisibility.area && (
+                                        {columnVisibility?.area && (
                                             <td className="px-2 py-1 text-[#06522E] font-bold">
                                                 <div className="flex justify-center">{renderAreaBadge(area)}</div>
                                             </td>
@@ -485,7 +492,7 @@ export const TableReport: React.FC<TableProps> = ({
                                             const shipperMetaList = Array.from(computed.areaPointShippers.get(area)?.entries() ?? [])
                                                 .filter(([k]) => k.startsWith(`${area}|${point}|`))
                                                 .map(([_, meta]) => meta)
-                                                .sort((a, b) => a.shipperName.localeCompare(b.shipperName));
+                                                .sort((a: any, b: any) => (a?.shipperName ?? '').localeCompare(b?.shipperName ?? ''));
 
                                             return (
                                                 <React.Fragment key={`${area}_${point}`}>
@@ -530,29 +537,29 @@ export const TableReport: React.FC<TableProps> = ({
                                                                 >
                                                                     <td className="px-2 py-1 text-[#464255]" />
 
-                                                                    {columnVisibility.nomination_point && (
+                                                                    {columnVisibility?.nomination_point && (
                                                                         <td className="px-2 py-1 text-[#464255]">
                                                                             <div className="font-medium">{point}</div>
                                                                         </td>
                                                                     )}
 
                                                                     {/* shipper */}
-                                                                    {columnVisibility.shipper_name && (
+                                                                    {columnVisibility?.shipper_name && (
                                                                         <td className="px-2 py-1 text-[#464255] text-center">{shipMeta.shipperName}</td>
                                                                     )}
 
                                                                     {/* contract code */}
-                                                                    {columnVisibility.contract_code && (
+                                                                    {columnVisibility?.contract_code && (
                                                                         <td className="px-2 py-1 text-[#464255] whitespace-normal">
                                                                             <div className="font-medium">{contractCode}</div>
                                                                         </td>
                                                                     )}
 
-                                                                    {columnVisibility.type && (
+                                                                    {columnVisibility?.type && (
                                                                         <td className="px-2 py-1 text-[#464255] text-center">{shipMeta.customerType}</td>
                                                                     )}
 
-                                                                    {columnVisibility.area && (
+                                                                    {columnVisibility?.area && (
                                                                         <td className="px-2 py-1 text-[#464255] text-center">
                                                                             <div className="flex justify-center">{renderAreaBadge(area)}</div>
                                                                         </td>
@@ -572,11 +579,11 @@ export const TableReport: React.FC<TableProps> = ({
                                                             : [
                                                                 <tr key={`${area}_${point}_${shipperId}_no_contract`} className={`${table_row_style} bg-white`}>
                                                                     <td className="px-2 py-1 text-[#464255]" />
-                                                                    {columnVisibility.nomination_point && <td className="px-2 py-1 text-[#464255]"><div className="font-medium">{point}</div></td>}
+                                                                    {columnVisibility?.nomination_point && <td className="px-2 py-1 text-[#464255]"><div className="font-medium">{point}</div></td>}
                                                                     <td className="px-2 py-1 text-[#464255] text-center">{shipMeta.shipperName}</td>
                                                                     <td className="px-2 py-1 text-center">-</td>
-                                                                    {columnVisibility.type && <td className="px-2 py-1 text-[#464255] text-center">{shipMeta.customerType}</td>}
-                                                                    {columnVisibility.area && <td className="px-2 py-1 text-[#464255] text-center"><div className="flex justify-center">{renderAreaBadge(area)}</div></td>}
+                                                                    {columnVisibility?.type && <td className="px-2 py-1 text-[#464255] text-center">{shipMeta.customerType}</td>}
+                                                                    {columnVisibility?.area && <td className="px-2 py-1 text-[#464255] text-center"><div className="flex justify-center">{renderAreaBadge(area)}</div></td>}
                                                                     {visibleDateIsoKeys.map((iso: any) => (
                                                                         <td key={iso} className="px-2 py-1 text-right text-[#464255] min-w-[120px]" />
                                                                     ))}
@@ -592,23 +599,23 @@ export const TableReport: React.FC<TableProps> = ({
                                                             >
                                                                 <td className="px-2 py-1 text-[#234] font-bold">{`Total Shipper`}</td>
 
-                                                                {columnVisibility.nomination_point && (
+                                                                {columnVisibility?.nomination_point && (
                                                                     <td className="px-2 py-1 text-[#234] font-bold">{point}</td>
                                                                 )}
 
-                                                                {columnVisibility.shipper_name && (
+                                                                {columnVisibility?.shipper_name && (
                                                                     <td className="px-2 py-1 text-[#234] font-bold text-center">{shipMeta.shipperName}</td>
                                                                 )}
 
-                                                                {columnVisibility.contract_code && (
+                                                                {columnVisibility?.contract_code && (
                                                                     <td className="px-2 py-1 text-[#234] font-bold text-center">{/* contract blank */}</td>
                                                                 )}
 
-                                                                {columnVisibility.type && (
+                                                                {columnVisibility?.type && (
                                                                     <td className="px-2 py-1 text-[#234] font-bold text-center">{shipMeta.customerType}</td>
                                                                 )}
 
-                                                                {columnVisibility.area && (
+                                                                {columnVisibility?.area && (
                                                                     <td className="px-2 py-1 text-[#234] font-bold text-center">
                                                                         <div className="flex justify-center">{renderAreaBadge(area)}</div>
                                                                     </td>
@@ -638,21 +645,21 @@ export const TableReport: React.FC<TableProps> = ({
                                                     <tr key={`${area}_${point}_pointTotal`} className={`${table_row_style} !bg-[#FFF7D6] border-b-black border-b-2`}>
                                                         <td className="px-2 py-1 text-[#333] font-bold">{`Total Point`}</td>
 
-                                                        {columnVisibility.nomination_point && (
+                                                        {columnVisibility?.nomination_point && (
                                                             <td className="px-2 py-1 text-[#333] font-bold">{point}</td>
                                                         )}
 
-                                                        {columnVisibility.shipper_name && (
+                                                        {columnVisibility?.shipper_name && (
                                                             <td className="px-2 py-1 text-[#333] font-bold">{/* shipper blank */}</td>
                                                         )}
 
-                                                        {columnVisibility.contract_code && (
+                                                        {columnVisibility?.contract_code && (
                                                             <td className="px-2 py-1 text-[#333] font-bold">{/* contract blank */}</td>
                                                         )}
 
-                                                        {columnVisibility.type && <td className="px-2 py-1 text-[#333] font-bold">{/* type blank */}</td>}
+                                                        {columnVisibility?.type && <td className="px-2 py-1 text-[#333] font-bold">{/* type blank */}</td>}
 
-                                                        {columnVisibility.area && (
+                                                        {columnVisibility?.area && (
                                                             <td className="px-2 py-1 text-[#333] font-bold text-center">
                                                                 <div className="flex justify-center">{renderAreaBadge(area)}</div>
                                                             </td>

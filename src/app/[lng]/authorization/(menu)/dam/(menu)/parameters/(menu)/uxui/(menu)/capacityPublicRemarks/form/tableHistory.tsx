@@ -50,27 +50,27 @@ const TableCapPublicRemarkHistory: React.FC<TableProps> = ({ tableData, isLoadin
             <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-9">
-                        {columnVisibility.start_date && (
+                        {columnVisibility?.start_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Start Date`}
                                 {getArrowIcon("start_date")}
                             </th>
                         )}
 
-                        {columnVisibility.end_date && (
+                        {columnVisibility?.end_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`End Date`}
                                 {getArrowIcon("end_date")}
                             </th>
                         )}
 
-                        {columnVisibility.remark && (
+                        {columnVisibility?.remark && (
                             <th scope="col" className={`${table_header_style}`}>
                                 {`Remarks`}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -87,15 +87,15 @@ const TableCapPublicRemarkHistory: React.FC<TableProps> = ({ tableData, isLoadin
                                 className={`border-b ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} h-12 `}
                             >
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <td className="px-2 py-1 text-[#464255] w-[100px] ">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <td className="px-2 py-1 text-[#0DA2A2] w-[100px]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                 )}
 
-                                {/* {columnVisibility.remark && (
+                                {/* {columnVisibility?.remark && (
                                     <td className="px-2 py-1 text-center">
                                         <div className="inline-flex items-center justify-center relative">
                                             <button
@@ -112,7 +112,7 @@ const TableCapPublicRemarkHistory: React.FC<TableProps> = ({ tableData, isLoadin
                                     </td>
                                 )} */}
 
-                                {/* {columnVisibility.remark && (
+                                {/* {columnVisibility?.remark && (
                                     <td className="px-2 py-1 text-left">
                                         <div className="text-[#464255] truncate w-[450px]" title={row?.remark}>
                                             {row?.remark ? row?.remark : ''}
@@ -120,7 +120,7 @@ const TableCapPublicRemarkHistory: React.FC<TableProps> = ({ tableData, isLoadin
                                     </td>
                                 )} */}
 
-                                {columnVisibility.remark && (
+                                {columnVisibility?.remark && (
                                     <td className="px-2 py-1 text-left">
                                         <div className="text-[#464255] break-words w-full whitespace-normal">
                                             {row?.remark ? row?.remark : ""}
@@ -129,7 +129,7 @@ const TableCapPublicRemarkHistory: React.FC<TableProps> = ({ tableData, isLoadin
                                 )}
 
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div>
                                             <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

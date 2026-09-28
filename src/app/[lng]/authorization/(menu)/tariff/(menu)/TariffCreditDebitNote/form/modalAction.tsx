@@ -149,13 +149,14 @@ const ModalAction: React.FC<FormExampleProps> = ({
                 }
 
                 const newRows = data?.tariff_credit_debit_note_detail?.map((item: any) => {
-                    const find_contract = res_contract_data?.find((itemx: any) => itemx.id == item?.contract_code_id)
+                    if (!item) return item;
+                    const find_contract = res_contract_data?.find((itemx: any) => itemx.id == item.contract_code_id)
                     // setSelectedTermType(find_contract?.term_type)
                     // setSelectedContractCode(find_contract?.contract_code)
                     return (
                         {
                             id: item.id,
-                            contract_code_id: item?.contract_code_id,
+                            contract_code_id: item.contract_code_id,
                             contract_code: find_contract?.contract_code,
                             quantity: item.quantity,
                             unit: item.unit,
@@ -306,16 +307,16 @@ const ModalAction: React.FC<FormExampleProps> = ({
         // แก้ไข editTableData ตาม value ให้ตรง key ที่ได้มา 
         setEditTableDataTemp((prevData: any) => {
             return prevData.map((row: any) => {
-
+                if (!row) return row;
                 // type_key == 'fee'
                 // type_key == 'quantity'
                 let amount = 0
                 switch (type_key) {
                     case 'fee':
-                        amount = value * parseFloat(row?.quantity)
+                        amount = value * parseFloat(row.quantity)
                         break;
                     case 'quantity':
-                        amount = value * parseFloat(row?.fee)
+                        amount = value * parseFloat(row.fee)
                         break;
 
                     default:
@@ -494,13 +495,14 @@ const ModalAction: React.FC<FormExampleProps> = ({
         setEditTableData(() => {
             return new_data
                 .map(item => {
-                    const contractId = item?.contract_code?.id ?? null;
+                    if (!item) return item;
+                    const contractId = item.contract_code?.id ?? null;
                     if (!contractId) return null; // skip ถ้าไม่มี contract_code
 
                     return {
                         id: id_ + item.id, // gen id ใหม่
                         contract_code_id: contractId,
-                        contract_code: item?.contract_code.contract_code,
+                        contract_code: item.contract_code.contract_code,
                         quantity: item.quantity,
                         unit: item.unit,
                         fee: item.fee,
@@ -565,15 +567,15 @@ const ModalAction: React.FC<FormExampleProps> = ({
     // New > กรณีที่ใน Table มีข้อมูลของ Contract Code เลขที่นั้น, และ Unit นั้นแล้ว ระบบต้องไม่มีข้อมูลชุดนั้นแสดงให้เลือกอีก https://app.clickup.com/t/86euqk36r
     const getAvailableContracts2 = (dataContractData: any[], editTableData: any[]) => {
         const excludeIds = new Set(
-            editTableData
-                ?.filter(item => item.unit && item?.contract_code_id) // มี unit
-                .map(item => item?.contract_code_id)
+            editTableData?.filter(item => item && item.unit && item.contract_code_id) // มี unit
+                .map(item => item.contract_code_id)
         );
 
         // group unit per contract_code_id
         const unitsByContractId = editTableData?.reduce((acc, item) => {
-            if (!acc[item?.contract_code_id]) acc[item?.contract_code_id] = new Set();
-            acc[item?.contract_code_id].add(item.unit);
+            if (!item) return acc;
+            if (!acc[item.contract_code_id]) acc[item.contract_code_id] = new Set();
+            acc[item.contract_code_id].add(item.unit);
             return acc;
         }, {} as Record<number, Set<string>>);
 
@@ -713,7 +715,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 // valueWatch={watch("shipper_id") || ""}
                                                 valueWatch={userDT?.account_manage?.[0]?.user_type_id == 3 ? userDT?.account_manage?.[0]?.group?.id_name : watch("shipper_id")}
                                                 handleChange={(e) => {
-                                                    setValue('shipper_id', e.target.value)
+                                                    setValue('shipper_id', e?.target?.value ?? "")
 
                                                     // ถ้าเปลี่ยน shipper_id เคลียร์ tariff_id ด้วย
                                                     setValue("tariff_id", null);
@@ -792,7 +794,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 readOnly={isReadOnly}
                                                 maxLength={200}
                                                 onChange={(e) => {
-                                                    setValue('cndn_id', e.target.value);
+                                                    setValue('cndn_id', e?.target?.value ?? "");
                                                 }}
                                                 className={`text-[16px] border-[1px] border-[#DFE4EA]  bg-white ps-[21px] h-[46px] w-full rounded-lg outline-none bg-opacity-100 focus:border-[#00ADEF] ${errors.cndn_id && "border-red-500"} ${isReadOnly && '!bg-[#EFECEC]'}`}
                                             />
@@ -813,7 +815,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly || mode === 'edit'}
                                                 valueWatch={watch("cndn_type") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("cndn_type", e.target.value);
+                                                    setValue("cndn_type", e?.target?.value ?? "");
                                                     if (errors?.cndn_type) { clearErrors('cndn_type') }
                                                 }}
                                                 errors={errors?.cndn_type}
@@ -851,7 +853,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         setEditTableDataTemp([])
                                                         setEditTableData([])
                                                     }
-                                                    setValue("type_change", e.target.value);
+                                                    setValue("type_change", e?.target?.value ?? "");
                                                     if (errors?.type_change) { clearErrors('type_change') }
                                                 }}
                                                 errors={errors?.type_change}
@@ -881,7 +883,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("tariff_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("tariff_id", e.target.value);
+                                                    setValue("tariff_id", e?.target?.value ?? "");
                                                     if (errors?.tariff_id) { clearErrors('tariff_id') }
                                                 }}
                                                 errors={errors?.tariff_id}
@@ -919,8 +921,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 label=""
                                                 multiline
                                                 onChange={(e) => {
-                                                    if (e.target.value.length <= 500) {
-                                                        setValue("comment", e.target.value);
+                                                    if ((e?.target?.value?.length ?? 0) <= 500) {
+                                                        setValue("comment", e?.target?.value ?? "");
                                                     }
                                                 }}
                                                 placeholder="Enter Comment"
@@ -985,7 +987,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         disabled={false}
                                                         valueWatch={watch("contract_code_id") || ""}
                                                         handleChange={(e) => {
-                                                            setValue("contract_code_id", e.target.value);
+                                                            setValue("contract_code_id", e?.target?.value ?? "");
                                                             const find_contract = dataContractData?.find((item: any) => item.id == e.target.value)
                                                             setSelectedTermType(find_contract?.term_type)
                                                             setSelectedContractCode(find_contract?.contract_code)
@@ -1055,7 +1057,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         disabled={false}
                                                         valueWatch={watch("unit") || ""}
                                                         handleChange={(e) => {
-                                                            setValue("unit", e.target.value);
+                                                            setValue("unit", e?.target?.value ?? "");
                                                             if (errors?.unit) { clearErrors('unit') }
                                                         }}
                                                         errors={errors?.unit}

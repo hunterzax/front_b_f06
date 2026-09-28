@@ -119,7 +119,7 @@ const ModalSendEmail: React.FC<FormExampleProps> = ({
                                         maxLength={200}
                                         onChange={(e) => {
                                             if (e.target.value.length <= 200) {
-                                                setValue('subject', e.target.value);
+                                                setValue('subject', e?.target?.value ?? "");
                                             }
                                         }}
                                         className={`text-[16px] border-[1px] border-[#DFE4EA]  bg-white ps-[21px] h-[46px] w-[600px] rounded-lg outline-none bg-opacity-100 focus:border-[#00ADEF] ${errors.subject && "border-red-500"} ${isReadOnly && '!bg-[#EFECEC]'}`}
@@ -150,7 +150,7 @@ const ModalSendEmail: React.FC<FormExampleProps> = ({
                                         onChange={(e) => {
                                             clearErrors('detail');
                                             if (e.target.value.length <= 1000) {
-                                                setValue("detail", e.target.value);
+                                                setValue("detail", e?.target?.value ?? "");
                                             }
                                         }}
                                         rows={4}
@@ -215,7 +215,7 @@ const ModalSendEmail: React.FC<FormExampleProps> = ({
                                                 handleChange={(e) => {
                                                     setValue('group', undefined);
                                                     setValue('user_mail', undefined);
-                                                    setValue("user_type", e.target.value);
+                                                    setValue("user_type", e?.target?.value ?? "");
                                                     filterGetGroup(e.target.value);
                                                     if (errors?.user_type) { clearErrors('user_type') }
                                                 }}

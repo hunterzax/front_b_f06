@@ -19,6 +19,24 @@ const ModalSubmissionDetails: React.FC<FormExampleProps> = ({
     //     // setResetForm(() => reset);
     // }, []);
 
+    const seenRemarks = new Set<string>()
+
+    const uniqueComments = data?.submission_comment_capacity_request_management
+    ?.sort(
+        (a: any, b: any) =>
+        new Date(b.create_date).getTime() - new Date(a.create_date).getTime()
+    )
+    .filter((item: any) => {
+        const remark = item?.remark
+
+        if (!remark || seenRemarks.has(remark)) {
+        return false
+        }
+
+        seenRemarks.add(remark)
+        return true
+    })
+
     return (
         <Dialog open={open} onClose={onClose} className="relative z-20">
             {/* <div className="fixed inset-0 bg-[#000000] bg-opacity-45 transition-opacity" /> */}
@@ -64,7 +82,8 @@ const ModalSubmissionDetails: React.FC<FormExampleProps> = ({
                                 className={`text-[#464255] font-light text-[14px] ${data?.submission_comment_capacity_request_management?.length > 10 ? 'max-h-[350px] overflow-y-auto' : ''}`}
                             >
                                 {/* v1.0.90 เรียงลำดับเวลา submitted ใน submission comments ด้วย https://app.clickup.com/t/86ert8mpq */}
-                                {data?.submission_comment_capacity_request_management
+                                {/* {data?.submission_comment_capacity_request_management */}
+                                {uniqueComments
                                     ?.sort((a: any, b: any) => new Date(b.create_date).getTime() - new Date(a.create_date).getTime()) // Descending order
                                     .map((item: any, index: number) => (
                                         <div

@@ -89,49 +89,49 @@ const TableAlloCurtailArea: React.FC<TableProps> = ({ openEditForm, openViewForm
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.case_id && (
+                                {columnVisibility?.case_id && (
                                     <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSort("case_id", sortState, setSortState, setSortedData, tableData)}>
                                         {`Case ID`}
                                         {getArrowIcon("case_id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.gas_day && (
+                                {columnVisibility?.gas_day && (
                                     <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, tableData)}>
                                         {`Gas Day`}
                                         {getArrowIcon("gas_day")}
                                     </th>
                                 )}
 
-                                {columnVisibility.area && (
+                                {columnVisibility?.area && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("areaObj.name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Area`}
                                         {getArrowIcon("areaObj.name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.maximum_capacity && (
+                                {columnVisibility?.maximum_capacity && (
                                     <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSort("max_capacity", sortState, setSortState, setSortedData, tableData)}>
                                         {`Maximum Capacity`}
                                         {getArrowIcon("max_capacity")}
                                     </th>
                                 )}
 
-                                {columnVisibility.nominated_value && (
+                                {columnVisibility?.nominated_value && (
                                     <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSort("nomination_value", sortState, setSortState, setSortedData, tableData)}>
                                         {`Nomination Value`}
                                         {getArrowIcon("nomination_value")}
                                     </th>
                                 )}
 
-                                {columnVisibility.units && (
+                                {columnVisibility?.units && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("unit", sortState, setSortState, setSortedData, tableData)}>
                                         {`Unit`}
                                         {getArrowIcon("unit")}
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -148,15 +148,15 @@ const TableAlloCurtailArea: React.FC<TableProps> = ({ openEditForm, openViewForm
                                         className={`${table_row_style}`}
                                     >
 
-                                        {columnVisibility.case_id && (
+                                        {columnVisibility?.case_id && (
                                             <td className="px-2 py-1 text-[#464255] justify-center ">{row?.case_id ? row?.case_id : ''}</td>
                                         )}
 
-                                        {columnVisibility.gas_day && (
+                                        {columnVisibility?.gas_day && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.gas_day ? formatDateNoTime(row?.gas_day) : ''}</td>
                                         )}
 
-                                        {columnVisibility.area && (
+                                        {columnVisibility?.area && (
                                             <td className="px-2 py-1 justify-center flex min-w-[120px] text-center">
                                                 {
                                                     row?.areaObj ?
@@ -197,7 +197,7 @@ const TableAlloCurtailArea: React.FC<TableProps> = ({ openEditForm, openViewForm
                                             </td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 <div className="relative inline-flex justify-center items-center w-full">
                                                     <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view ? true : false} />

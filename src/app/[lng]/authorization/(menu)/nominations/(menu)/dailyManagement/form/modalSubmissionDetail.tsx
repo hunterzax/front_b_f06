@@ -63,9 +63,9 @@ const ModalSubmissionDetails: React.FC<FormExampleProps> = ({
                                         submission_comment_query_shipper_nomination_file: find_ || []
                                     }))
                                 }}
-                                options={(data?.data_submission)?.map((item: any, ix:number) => ({
+                                options={(data?.data_submission || [])?.map((item: any, ix:number) => ({
                                     value: item?.id?.toString(),
-                                    label: ix === 0 ? "Last Version" : item.version
+                                    label: ix === 0 ? "Last Version" : (item?.version || '')
                                 }))}
                             />
                         </div>

@@ -129,35 +129,35 @@ const TableNomDailyAdjustment: React.FC<TableProps> = ({ openEditForm, openViewF
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                {columnVisibility.status && (
+                {columnVisibility?.status && (
                   <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("daily_adjustment_status.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Status`}
                     {getArrowIcon("daily_adjustment_status.name")}
                   </th>
                 )}
 
-                {columnVisibility.gas_day && (
+                {columnVisibility?.gas_day && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, tableData)}>
                     {`Gas Day`}
                     {getArrowIcon("gas_day")}
                   </th>
                 )}
 
-                {columnVisibility.time && (
+                {columnVisibility?.time && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("time", sortState, setSortState, setSortedData, tableData)}>
                     {`Time`}
                     {getArrowIcon("time")}
                   </th>
                 )}
 
-                {columnVisibility.daily_adjustment_code && (
+                {columnVisibility?.daily_adjustment_code && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("daily_code", sortState, setSortState, setSortedData, tableData)}>
                     {`Daily Adjustment Code`}
                     {getArrowIcon("daily_code")}
                   </th>
                 )}
 
-                {columnVisibility.shipper_name && (
+                {columnVisibility?.shipper_name && (
                   <th
                     scope="col"
                     className={`${table_header_style}`}
@@ -168,27 +168,27 @@ const TableNomDailyAdjustment: React.FC<TableProps> = ({ openEditForm, openViewF
                   </th>
                 )}
 
-                {columnVisibility.reasons && (
+                {columnVisibility?.reasons && (
                   <th scope="col" className={`${table_header_style} text-center`} >
                     {`Reasons`}
                   </th>
                 )}
 
-                {columnVisibility.created_by && (
+                {columnVisibility?.created_by && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Created by`}
                     {getArrowIcon("create_by_account.first_name")}
                   </th>
                 )}
 
-                {columnVisibility.updated_by && (
+                {columnVisibility?.updated_by && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Updated by`}
                     {getArrowIcon("update_by_account.first_name")}
                   </th>
                 )}
 
-                {columnVisibility.action && (
+                {columnVisibility?.action && (
                   <th scope="col" className={`${table_header_style} text-center`}>
                     {`Action`}
                   </th>
@@ -197,7 +197,7 @@ const TableNomDailyAdjustment: React.FC<TableProps> = ({ openEditForm, openViewF
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => {
+              {(sortedData || [])?.map((row: any, index: any) => {
 
                 return (
                   <tr
@@ -217,7 +217,7 @@ const TableNomDailyAdjustment: React.FC<TableProps> = ({ openEditForm, openViewF
                       { key: 'action', label: 'Action', visible: true }
                   ]; */}
 
-                    {columnVisibility.status && (
+                    {columnVisibility?.status && (
                       <td className="px-2 py-1 justify-center">
                         {
                           <div className="flex min-w-[130px] max-w-[190px] w-auto text-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: String(row?.daily_adjustment_status?.color) }}>{row?.daily_adjustment_status?.name}</div>
@@ -225,23 +225,23 @@ const TableNomDailyAdjustment: React.FC<TableProps> = ({ openEditForm, openViewF
                       </td>
                     )}
 
-                    {columnVisibility.gas_day && (
+                    {columnVisibility?.gas_day && (
                       <td className="px-2 py-1 text-[#464255]">{row?.gas_day ? formatDateNoTime(row?.gas_day) : ''}</td>
                     )}
 
-                    {columnVisibility.time && (
+                    {columnVisibility?.time && (
                       <td className="px-2 py-1 text-[#464255]">{row?.time ? row?.time : ''}</td>
                     )}
 
-                    {columnVisibility.daily_adjustment_code && (
+                    {columnVisibility?.daily_adjustment_code && (
                       <td className="px-2 py-1 text-[#464255]">{row?.daily_code ? row?.daily_code : ''}</td>
                     )}
 
-                    {/* {columnVisibility.shipper_name && (
+                    {/* {columnVisibility?.shipper_name && (
                     <td className="px-2 py-1 text-[#464255]">{row?.group ? row?.group?.name : ''}</td>
                   )} */}
 
-                    {columnVisibility.shipper_name && (
+                    {columnVisibility?.shipper_name && (
                       <td className="px-2 py-1 text-center">
                         {row?.daily_adjustment_group?.length == 1 ?
                           <></> :
@@ -262,7 +262,7 @@ const TableNomDailyAdjustment: React.FC<TableProps> = ({ openEditForm, openViewF
                       </td>
                     )}
 
-                    {columnVisibility.reasons && (
+                    {columnVisibility?.reasons && (
                       <td className="px-2 py-1 text-center">
                         <div className="inline-flex items-center justify-center relative">
                           {/* <button
@@ -296,7 +296,7 @@ const TableNomDailyAdjustment: React.FC<TableProps> = ({ openEditForm, openViewF
                       </td>
                     )}
 
-                    {columnVisibility.created_by && (
+                    {columnVisibility?.created_by && (
                       <td className="px-2 py-1">
                         <div>
                           <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -305,7 +305,7 @@ const TableNomDailyAdjustment: React.FC<TableProps> = ({ openEditForm, openViewF
                       </td>
                     )}
 
-                    {columnVisibility.updated_by && (
+                    {columnVisibility?.updated_by && (
                       <td className="px-2 py-1">
                         <div>
                           <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
@@ -334,7 +334,7 @@ const TableNomDailyAdjustment: React.FC<TableProps> = ({ openEditForm, openViewF
                   }
                   */}
 
-                    {columnVisibility.action && (
+                    {columnVisibility?.action && (
                       <td className="px-2 py-1">
                         <div className="relative inline-flex justify-center items-center">
                           {/* <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view && !userPermission?.f_edit ? true : false} /> */}

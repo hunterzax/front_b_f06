@@ -1,6 +1,5 @@
-"use client";
-import Image from "next/image";
 import Profile from "./Profile";
+import CustomerLogo from "../other/CustomerLogo";
 import { useRouter } from "next/navigation";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ModalComponent from "../other/ResponseModal";
@@ -61,12 +60,9 @@ function LayoutHeader() {
   return (
     // <header className="fixed top-0 left-0 w-screen flex items-center justify-between px-[15px] sm:px-[15px] md:px-[30px] lg:px-[3rem] py-[10px] sm:py-[10px] md:py-[35px] lg:py-[2rem] h-[40px] sm:h-[60px] md:h-[100px] lg:h-[120px] xl:h-[150px]">
     <header className="h-full w-full flex items-center justify-between">
-      <Image
-        src={`/assets/icon/ptt-logo-2.svg`}
+      <CustomerLogo
         width={60}
         height={26.25}
-        alt={`/assets/icon/ptt-logo-2.svg`}
-        priority
         className="w-[50px] sm:w-[70px] md:w-[100px] lg:w-[100px] xl:w-[8vw] h-auto duration-200 ease-in-out"
       />
       <div className="flex items-center gap-2">

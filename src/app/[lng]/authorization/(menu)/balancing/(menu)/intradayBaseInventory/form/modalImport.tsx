@@ -162,13 +162,8 @@ const ModalImport: React.FC<FormExampleProps> = ({
     const [idShipper, setIdShipper] = useState<any>();
 
     const checkIsShipper = (mode?: any) => {
-         
-        if (userDT?.account_manage?.[0]?.user_type?.id !== 3) {
-            setOpenSelShipper(true)
-        } else {
-            setOpenSelShipper(true)
-        }
-    }
+        setOpenSelShipper(true);
+    };
 
     const handleClose = () => {
         handleRemoveFile();
@@ -219,11 +214,16 @@ const ModalImport: React.FC<FormExampleProps> = ({
                                                             min={new Date()}
                                                             maxNormalForm={watch('end_date') && watch('end_date')} // ไม่ให้ start_date เกิน end_date
                                                             allowClear
-                                                            isError={errors.start_date && !watch("start_date") ? true : false}
-                                                            onChange={(e: any) => { setValue('start_date', formatFormDate(e)), e == undefined && setValue('start_date', null, { shouldValidate: true, shouldDirty: true }); }}
+                                                            isError={Boolean(errors?.start_date && !watch("start_date"))}
+                                                            onChange={(e: any) => {
+                                                                setValue('start_date', formatFormDate(e));
+                                                                if (e == undefined) {
+                                                                    setValue('start_date', null, { shouldValidate: true, shouldDirty: true });
+                                                                }
+                                                            }}
                                                             forMode='form'
                                                         />
-                                                        {errors.start_date && !watch("start_date") && <p className={`${textErrorClass}`}>{'Select Start Date'}</p>}
+                                                        {errors?.start_date && !watch("start_date") && <p className={`${textErrorClass}`}>{'Select Start Date'}</p>}
                                                     </div>
 
                                                     <div className="pb-2">
@@ -236,11 +236,16 @@ const ModalImport: React.FC<FormExampleProps> = ({
                                                             min={formattedStartDate || undefined}
                                                             valueShow={watch("end_date") ? dayjs(watch("end_date")).format("DD/MM/YYYY") : undefined}
                                                             allowClear
-                                                            isError={errors?.end_date && !watch("end_date") ? true : false}
-                                                            onChange={(e: any) => { setValue('end_date', formatFormDate(e)), e == undefined && setValue('end_date', null, { shouldValidate: true, shouldDirty: true }); }}
+                                                            isError={Boolean(errors?.end_date && !watch("end_date"))}
+                                                            onChange={(e: any) => {
+                                                                setValue('end_date', formatFormDate(e));
+                                                                if (e == undefined) {
+                                                                    setValue('end_date', null, { shouldValidate: true, shouldDirty: true });
+                                                                }
+                                                            }}
                                                             forMode='form'
                                                         />
-                                                        {errors.end_date && !watch("end_date") && <p className={`${textErrorClass}`}>{'Select end date'}</p>}
+                                                        {errors?.end_date && !watch("end_date") && <p className={`${textErrorClass}`}>{'Select end date'}</p>}
                                                     </div>
                                                 </div>
                                                 <div className="flex justify-end pt-8 gap-[40px]">

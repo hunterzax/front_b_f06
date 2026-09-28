@@ -15,15 +15,17 @@ const FormResetPwd: React.FC<any> = ({
     setResetForm
 }) => {
 
-    let page = window?.location?.href.split("ref=");
-    let pageTOKEN: any = page[1];
+    let page = typeof window !== "undefined" && window?.location?.href ? window.location.href.split("ref=") : [];
+    let pageTOKEN: any = page.length > 1 ? page[1] : undefined;
     const { register, handleSubmit, reset, formState: { errors }, clearErrors, setError, setValue, getValues } = useForm<FormData>({ defaultValues: data });
     const [flgpwd, setflgpwd] = useState<boolean>(false);
     const [flgconfpwd, setflgconfpwd] = useState<boolean>(false);
     const [enabledContinue, setEnabledContinue] = useState<boolean>(false);
 
     React.useEffect(() => {
-        setResetForm(() => reset);
+        if (setResetForm) {
+            setResetForm(() => reset);
+        }
     }, [reset, setResetForm]);
 
     // function checkedPwd() {
@@ -169,7 +171,9 @@ const FormResetPwd: React.FC<any> = ({
         // }else if(result){
         //   onSubmit(password);
         // }
-        onSubmit(password);
+        if (onSubmit) {
+            onSubmit(password);
+        }
     };
 
 
@@ -181,8 +185,8 @@ const FormResetPwd: React.FC<any> = ({
                         {...register('password', { required: "Enter new password" })}
                         id={"password"}
                         required={true}
-                        errors={errors.password}
-                        errors_message={errors.password && errors?.password?.message}
+                        errors={errors?.password}
+                        errors_message={errors?.password && errors?.password?.message}
                         clearErrors={clearErrors}
                         placeholder={"New Password"}
                         onChange={(e: any) => {
@@ -197,8 +201,8 @@ const FormResetPwd: React.FC<any> = ({
                         {...register('confirmpassword', { required: "Enter new test password" })}
                         id={"confirmpassword"}
                         required={true}
-                        errors={errors.confirmpassword}
-                        errors_message={errors.confirmpassword && errors?.confirmpassword?.message}
+                        errors={errors?.confirmpassword}
+                        errors_message={errors?.confirmpassword && errors?.confirmpassword?.message}
                         clearErrors={clearErrors}
                         placeholder={"Confirm New Password"}
                         onChange={(e: any) => {

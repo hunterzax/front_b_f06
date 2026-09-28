@@ -241,10 +241,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 setFilteredDataTable(dataTable);
                 return;
             }
-            const normalizedQuery = query.replace(/\s+/g, '').toLowerCase();
+            const normalizedQuery = (query || '').replace(/\s+/g, '').toLowerCase();
 
             const filtered = dataTable?.map((entry: any) => {
-                const gasDayMatch = formatDateNoTime(entry.gas_day)?.toLowerCase().includes(normalizedQuery);
+                const gasDayMatch = formatDateNoTime(entry?.gas_day)?.toLowerCase().includes(normalizedQuery);
 
                 // If gasDay matches, keep the full entry with original structure
                 if (gasDayMatch) {
@@ -252,21 +252,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 }
 
                 // Else, do deeper filtering
-                const filteredNomPoints = entry?.nomPoint?.map((point: any) => {
-                    const pointTotalMatch = point.total?.toString().toLowerCase().includes(normalizedQuery);
-                    const meterValueMatch = point.meterValue?.toString().toLowerCase().includes(normalizedQuery);
+                const filteredNomPoints = (entry?.nomPoint || [])?.map((point: any) => {
+                    const pointTotalMatch = point?.total?.toString().toLowerCase().includes(normalizedQuery);
+                    const meterValueMatch = point?.meterValue?.toString().toLowerCase().includes(normalizedQuery);
 
-                    const pointTotalMatchFormatted = formatNumberFourDecimal(point.total)?.toString().toLowerCase().includes(normalizedQuery);
-                    const pointTotalMatchFormattedNoComma = formatNumberFourDecimalNoComma(point.total)?.toString().toLowerCase().includes(normalizedQuery);
-                    const meterValueMatchFormatted = formatNumberFourDecimal(point.meterValue)?.toString().toLowerCase().includes(normalizedQuery);
-                    const meterValueMatchFormattedNoComma = formatNumberFourDecimalNoComma(point.meterValue)?.toString().toLowerCase().includes(normalizedQuery);
+                    const pointTotalMatchFormatted = formatNumberFourDecimal(point?.total)?.toString().toLowerCase().includes(normalizedQuery);
+                    const pointTotalMatchFormattedNoComma = formatNumberFourDecimalNoComma(point?.total)?.toString().toLowerCase().includes(normalizedQuery);
+                    const meterValueMatchFormatted = formatNumberFourDecimal(point?.meterValue)?.toString().toLowerCase().includes(normalizedQuery);
+                    const meterValueMatchFormattedNoComma = formatNumberFourDecimalNoComma(point?.meterValue)?.toString().toLowerCase().includes(normalizedQuery);
 
-                    const filteredData = point?.data?.filter((dataItem: any) => {
+                    const filteredData = (point?.data || [])?.filter((dataItem: any) => {
                         return (
-                            dataItem.allocatedValue?.toString().toLowerCase().includes(normalizedQuery) ||
-                            dataItem.gas_day?.toLowerCase().includes(normalizedQuery) ||
-                            formatNumberFourDecimal(dataItem.allocatedValue)?.toString().toLowerCase().includes(normalizedQuery) ||
-                            formatNumberFourDecimalNoComma(dataItem.allocatedValue)?.toString().toLowerCase().includes(normalizedQuery)
+                            dataItem?.allocatedValue?.toString().toLowerCase().includes(normalizedQuery) ||
+                            dataItem?.gas_day?.toLowerCase().includes(normalizedQuery) ||
+                            formatNumberFourDecimal(dataItem?.allocatedValue)?.toString().toLowerCase().includes(normalizedQuery) ||
+                            formatNumberFourDecimalNoComma(dataItem?.allocatedValue)?.toString().toLowerCase().includes(normalizedQuery)
                             // dataItem.shipper_name?.toLowerCase().includes(normalizedQuery)
                         );
                     });
@@ -639,7 +639,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             const filteredData = (npItem?.data || [])
                                 .map((npsItem: any) => {
                                     const getKeyNPS = initialColumnsReport?.find((f: any) => f?.key == `${pointKey}-${npsItem?.shipper_name}`);
-                                    if (columnVisibility[getKeyNPS?.key]) {
+                                    if (columnVisibility?.[getKeyNPS?.key]) {
                                         return npsItem;
                                     }
                                     return null
@@ -648,7 +648,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
 
                             // ถ้า data ว่าง หรือ point ไม่อยู่ใน visibility → ตัดทิ้ง
-                            if (filteredData.length > 0 && columnVisibility[getKeyNP?.key]) {
+                            if ((filteredData?.length ?? 0) > 0 && columnVisibility?.[getKeyNP?.key]) {
                                 const clonedNPItem = {
                                     ...npItem,
                                     data: filteredData?.sort((a: any, b: any) => {
@@ -666,23 +666,23 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 };
 
                                 // เปลี่ยนค่าเป็น 'disabled' แทนการลบ
-                                if (!columnVisibility[getKeyTOTAL?.key]) {
+                                if (!columnVisibility?.[getKeyTOTAL?.key]) {
                                     clonedNPItem.total = 'disabled';
                                 }
 
-                                if (!columnVisibility[getKeyMETERING?.key]) {
+                                if (!columnVisibility?.[getKeyMETERING?.key]) {
                                     clonedNPItem.meterValue = 'disabled';
                                 }
 
                                 return clonedNPItem;
-                            } else if (columnVisibility[getKeyNP?.key]) {
+                            } else if (columnVisibility?.[getKeyNP?.key]) {
                                 const clonedNPItem = npItem;
 
-                                // if (!columnVisibility[getKeyTOTAL?.key]) {
+                                // if (!columnVisibility?.[getKeyTOTAL?.key]) {
                                 //     clonedNPItem.total = 'disabled';
                                 // }
 
-                                // if (!columnVisibility[getKeyMETERING?.key]) {
+                                // if (!columnVisibility?.[getKeyMETERING?.key]) {
                                 //     clonedNPItem.meterValue = 'disabled';
                                 // }
 
@@ -695,7 +695,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         })
                         .filter(Boolean);
 
-                    if (filteredNomPoint.length > 0) {
+                    if ((filteredNomPoint?.length ?? 0) > 0) {
                         return {
                             ...item,
                             nomPoint: filteredNomPoint?.sort((a: any, b: any) => {
@@ -732,9 +732,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     }
 
     useEffect(() => {
-        setFilteredDataTableDownload(dataTabDownload)
+        setFilteredDataTableDownload(dataTabDownload) 
     }, [dataTabDownload])
     
+
+    console.log(filteredDataTableDownload, 'allocation-summary-shipper-report', columnVisibility);
 
     return (
         <div className=" space-y-2">

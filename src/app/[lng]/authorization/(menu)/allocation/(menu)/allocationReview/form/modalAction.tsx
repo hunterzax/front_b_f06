@@ -74,7 +74,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
 
     const handleClose = () => {
         onClose();
-        clearErrors
+        clearErrors();
         setValue("shipper_review_allocation", null);
         setValue("comment", null);
         reset();
@@ -186,8 +186,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 label=""
                                                 multiline
                                                 onChange={(e) => {
-                                                    if (e.target.value.length <= 255) {
-                                                        setValue("comment", e.target.value);
+                                                    if ((e?.target?.value ?? "").length <= 255) {
+                                                        setValue("comment", e?.target?.value ?? "");
                                                     }
                                                 }}
                                                 placeholder="Enter Comment"

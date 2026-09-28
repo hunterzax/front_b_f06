@@ -1,4 +1,3 @@
-"use client";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -82,102 +81,29 @@ const NavMenu = ({ toggleNav, setToggleNav, menu, setMenu, goToUrl, permission }
 
   const isExpanded = (url: string) => expandedMenu[url] || isActive(url);
 
-  const isHightLight = (url: string) => currentPath.includes(url);
+  // const isHightLight = (url: string) => currentPath.includes(url);
+  const isHightLight = (url: string) => {
+  if (!url) return false;
 
-  // เดิมโรงงาน
-  // const renderMenu = (items: any, level = 0) => {
-  //   return items?.map((item: any, ix: any) => {
-  //     const isLastItem = ix === items.length - 1;
-  //     const isMenuExpanded = isExpanded(item.url);
+  const fullPath = `/en/authorization/${url}`;
 
-  //     return (
-  //       <section key={ix} className={`${!toggleNav ? 'pl-[15px]' : 'pl-[5px]'} relative pt-2 ${item?.menu?.length > 0 && toggleNav ? '' : 'flex'}`}>
-  //         {level > 0 && (
-  //           <span
-  //             className="absolute left-[-10px] top-0 h-full border-l-2 border-gray-300"
-  //             style={{
-  //               height: isLastItem ? '20%' : '100%',
-  //             }}
-  //           ></span>
-  //         )}
-
-  //         {level > 0 && (
-  //           <span
-  //             className="absolute mt-1 left-[-10px] top-[11px] transform -translate-y-1/2 border-b-2 border-l-2 rounded-bl-lg border-gray-300"
-  //             style={{ width: "15px", height: "15px" }}
-  //           ></span>
-  //         )}
-
-  //         {/* Menu item header */}
-  //         <header
-  //           className={`
-  //             relative 
-  //             ${item?.menu?.length > 0 && toggleNav ? 'grid grid-cols-[80%_20%]' : 'flex'} 
-  //             items-center 
-  //             rounded-md 
-  //             cursor-pointer
-  //             ${level > 0 ? 'w-full' : !toggleNav ? 'w-auto' : 'w-full'}
-  //             ${!toggleNav ? 'pl-[5px] pr-[5px]' : 'pl-[10px]'} 
-  //             ${isHightLight(item.url) || isMenuExpanded ? `bg-[#F6F6F6] ${!toggleNav ? 'py-[0px]' : item?.menu?.length > 0 && toggleNav ? 'py-[0px]' : level > 0 ? 'py-[0px]' : 'py-[10px]'}` : ""}
-  //           `}
-
-  //           onClick={() => {
-  //             if (!toggleNav) {
-  //               handleClick(item);
-  //             }
-
-  //             if ((item?.menu || []).length <= 0) {
-  //               localStorage.setItem("k3a9r2b6m7t0x5w1s8j", encryptData(item));
-  //               setCookie("k3a9r2b6m7t0x5w1s8j", encryptData(item), 1);
-  //               router.push("/en/authorization/" + item.url);
-  //             } else {
-  //               toggleMenuXX(item.url);
-  //             }
-  //           }}
-  //         >
-  //           {/* side menu */}
-  //           <section className="flex items-center gap-2 py-1">
-  //             {(toggleNav && item?.icon) || null}
-  //             {toggleNav ? (
-  //               <h1 className={`break-words whitespace-normal text-[#757575] ${level === 0 ? "text-[14px]" : "text-[12px]"}`}>
-  //                 <div
-  //                   className={`flex justify-center items-center px-2 h-[26px] text-[#757575] ${(isHightLight(item.url) || isMenuExpanded) && "!text-[#000000]"} ${level === 0 ? "text-[14px]" : "text-[12px]"}`}
-  //                 >
-  //                   {item?.name || "-"}
-  //                 </div>
-  //               </h1>
-  //             ) : (
-  //               <TooltipWrapper text={item?.name || "Default tooltip"} placement="right">
-  //                 <h1 className="text-[#757575]">{item?.icon || "-"}</h1>
-  //               </TooltipWrapper>
-  //             )}
-  //           </section>
-
-  //           {item?.menu?.length > 0 && toggleNav && (isMenuExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />)}
-  //         </header>
-
-  //         {toggleNav && isMenuExpanded && item?.menu?.length > 0 && (
-  //           <section className="ml-5">
-  //             {renderMenu(item.menu, level + 1)}
-  //           </section>
-  //         )}
-
-  //       </section>
-  //     );
-  //   });
-  // };
-
+  return (
+    currentPath === fullPath ||
+    currentPath.startsWith(`${fullPath}/`)
+  );
+};
 
   const renderMenu = (list?: any[], level = 0) => {
     if (!list?.length) return null;
 
-    return list.map((item, ix) => {
-      const isLastItem = ix === list.length - 1;
-      const expanded = isExpanded(item.url);
+    return (list || [])?.map((item, ix) => {
+      if (!item) return null;
+      const isLastItem = ix === (list?.length ?? 0) - 1;
+      const expanded = isExpanded(item?.url);
 
       return (
         <section
-          key={`${level}-${ix}-${item.url ?? ix}`}
+          key={`${level}-${ix}-${item?.url ?? ix}`}
           className={`${!toggleNav ? "pl-[15px]" : "pl-[5px]"} ${level > 0 ? "pl-[12px]" : ""} relative pt-2 ${item?.menu?.length && toggleNav ? "" : "flex"}`}
         >
 
@@ -208,7 +134,7 @@ const NavMenu = ({ toggleNav, setToggleNav, menu, setMenu, goToUrl, permission }
               cursor-pointer
               ${level > 0 ? "w-full" : !toggleNav ? "w-auto" : "w-full"}
               ${!toggleNav ? "pl-[5px] pr-[5px]" : "pl-[10px]"}
-              ${isHightLight(item.url) || expanded
+              ${isHightLight(item?.url) || expanded
                 ? `bg-[#F6F6F6] ${!toggleNav
                   ? "py-[0px]"
                   : item?.menu?.length && toggleNav
@@ -231,10 +157,10 @@ const NavMenu = ({ toggleNav, setToggleNav, menu, setMenu, goToUrl, permission }
                 const enc = encryptData(item);
                 localStorage.setItem(key, enc);
                 setCookie(key, enc, 1);
-                if (item.url) router.push("/en/authorization/" + item.url);
+                if (item?.url) router.push("/en/authorization/" + item?.url);
               } else {
                 // node มีลูก: toggle expand/collapse
-                toggleMenuXX(item.url);
+                toggleMenuXX(item?.url);
               }
 
               // clear item หากย้ายไปหน้าอื่น (เฉพาะหน้า Capacity Contract Management)
@@ -254,7 +180,7 @@ const NavMenu = ({ toggleNav, setToggleNav, menu, setMenu, goToUrl, permission }
                   className={`break-words whitespace-normal text-[#757575] ${level === 0 ? "text-[14px]" : "text-[12px]"}`}
                 >
                   <div
-                    className={`flex justify-center items-center px-2 h-[26px] text-[#757575] ${(isHightLight(item.url) || expanded) && "!text-[#000000]"} ${level === 0 ? "text-[14px]" : "text-[12px]"}`}
+                    className={`flex justify-center items-center px-2 h-[26px] text-[#757575] ${(isHightLight(item?.url) || expanded) && "!text-[#000000]"} ${level === 0 ? "text-[14px]" : "text-[12px]"}`}
                   >
                     {item?.name || "-"}
                   </div>
@@ -267,7 +193,7 @@ const NavMenu = ({ toggleNav, setToggleNav, menu, setMenu, goToUrl, permission }
             </section>
 
             {/* ลูกศรหมุนตอนขยาย/ยุบ */}
-            {item?.menu?.length > 0 && toggleNav && (
+            {(item?.menu?.length ?? 0) > 0 && toggleNav && (
               <span
                 className={`justify-self-end transition-transform duration-200 ease-out ${expanded ? "rotate-180" : "rotate-0"}`}
               >
@@ -292,7 +218,7 @@ const NavMenu = ({ toggleNav, setToggleNav, menu, setMenu, goToUrl, permission }
                   ${expanded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"}
                 `}
               >
-                {renderMenu(item.menu, level + 1)}
+                {renderMenu(item?.menu, level + 1)}
               </section>
             </div>
           )}
@@ -306,7 +232,7 @@ const NavMenu = ({ toggleNav, setToggleNav, menu, setMenu, goToUrl, permission }
   useEffect(() => {
     const handleClickOutside = (event: any) => {
       // If click is outside the popup, close it
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      if (popupRef?.current && !popupRef?.current?.contains(event?.target as Node)) {
         closePopup();
       }
     };
@@ -376,12 +302,12 @@ const NavMenu = ({ toggleNav, setToggleNav, menu, setMenu, goToUrl, permission }
             className="absolute bg-white shadow-lg rounded-[20px] p-4 border w-[200px] !z-50"
             style={{ top: anchorPosition.top + 70, left: anchorPosition.left + 60 }}
           >
-            <h2 className="text-lg font-bold mb-2">{selectedMenu.name}</h2>
+            <h2 className="text-lg font-bold mb-2">{selectedMenu?.name}</h2>
             <ul>
               {selectedMenu?.map((subMenu: any) => (
-                <li key={subMenu.id} className="mb-2">
+                <li key={subMenu?.id} className="mb-2">
                   <Link href={`/en/authorization/${subMenu?.url}`} passHref>
-                    <MenuItem className="-mx-1 text-[14px]" onClick={closePopup}>{subMenu.name}</MenuItem>
+                    <MenuItem className="-mx-1 text-[14px]" onClick={closePopup}>{subMenu?.name}</MenuItem>
                   </Link>
                 </li>
               ))}

@@ -295,7 +295,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                 {/* {showPicker && !isReadOnly && !disableAfterstartDate && ( */}
                                 {showPicker && (
                                   <div ref={pickerRef} className="absolute z-10 mt-0 -ml-20" >
-                                    <SketchPicker
+                                    {/* <SketchPicker
                                       color={watch("color")}
                                       presetColors={["#189bcc", "#2c6fc3", "#fbec5d", "#ea213a", "#eeeeee", "#ff7373", "#267de3", "#4ea27a", "#854442", "#3d4761", "#becc41", "#6b3fa0", "#324033", "#2bbcbb", "#1f2431", "#ff6600", "#ccffcc", "#ff99ff", "#00ffcc", "#663300", "#189bcc", "#2c6fc3", "#fbec5d", "#ea213a"]}
                                       {...register("color")}
@@ -303,7 +303,50 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                         setValue("color", color.hex)
                                         setBlockPickerColor(color.hex);
                                       }}
-                                    />
+                                    /> */}
+                                    <SketchPicker
+                                      color={watch("color") || "rgba(55, 214, 122, 1)"}
+                                      presetColors={[
+                                          "#189bcc",
+                                          "#2c6fc3",
+                                          "#fbec5d",
+                                          "#ea213a",
+                                          "#eeeeee",
+                                          "#ff7373",
+                                          "#267de3",
+                                          "#4ea27a",
+                                          "#854442",
+                                          "#3d4761",
+                                          "#becc41",
+                                          "#6b3fa0",
+                                          "#324033",
+                                          "#2bbcbb",
+                                          "#1f2431",
+                                          "#ff6600",
+                                          "#ccffcc",
+                                          "#ff99ff",
+                                          "#00ffcc",
+                                          "#663300",
+                                      ]}
+                                      onChange={(color) => {
+                                          const {
+                                              r,
+                                              g,
+                                              b,
+                                              a = 1,
+                                          } = color.rgb;
+
+                                          const rgbaColor =
+                                              `rgba(${r}, ${g}, ${b}, ${a})`;
+
+                                          setValue("color", rgbaColor, {
+                                              shouldDirty: true,
+                                              shouldValidate: true,
+                                          });
+
+                                          setBlockPickerColor(rgbaColor);
+                                      }}
+                                  />
                                   </div>
                                 )}
                               </>
@@ -344,7 +387,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                               readOnly={isReadOnly}
                               onChange={(e) => {
                                 if (e.target.value.length <= 50) {
-                                  setValue('description', e.target.value);
+                                  setValue('description', e?.target?.value ?? "");
                                 }
                               }}
                               maxLength={50}
@@ -371,7 +414,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                           disabled={isReadOnly || disableAfterstartDate}
                           valueWatch={watch("entry_exit_id") || ""}
                           handleChange={(e) => {
-                            setValue("entry_exit_id", e.target.value);
+                            setValue("entry_exit_id", e?.target?.value ?? "");
                             setValue("supply_reference_quality_area", null);
                             setValue("east_supply_reference_quality_area", null);
                             setValue("west_supply_reference_quality_area", null);
@@ -404,7 +447,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                           disabled={isReadOnly || disableAfterstartDate}
                           valueWatch={watch("zone_id") || ""}
                           handleChange={(e) => {
-                            setValue("zone_id", e.target.value);
+                            setValue("zone_id", e?.target?.value ?? "");
                             if (errors?.zone_id) { clearErrors('zone_id') }
                           }}
                           errors={errors?.zone_id}
@@ -467,7 +510,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                             disabled={isReadOnly || disableAfterstartDate || (entryExitId === 1 && true)}
                             valueWatch={watch("supply_reference_quality_area") || ""}
                             handleChange={(e) => {
-                              setValue("supply_reference_quality_area", e.target.value);
+                              setValue("supply_reference_quality_area", e?.target?.value ?? "");
                               if (errors?.supply_reference_quality_area) { clearErrors('supply_reference_quality_area') }
                             }}
                             errors={errors?.supply_reference_quality_area}
@@ -500,7 +543,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                             disabled={(isReadOnly || disableAfterstartDate || (entryExitId === 1 && true)) && watch("east_supply_reference_quality_area")}
                             valueWatch={watch("east_supply_reference_quality_area") || ""}
                             handleChange={(e) => {
-                              setValue("east_supply_reference_quality_area", e.target.value);
+                              setValue("east_supply_reference_quality_area", e?.target?.value ?? "");
                               if (errors?.east_supply_reference_quality_area) { clearErrors('east_supply_reference_quality_area') }
                             }}
                             errors={errors?.east_supply_reference_quality_area}
@@ -533,7 +576,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                             disabled={(isReadOnly || disableAfterstartDate || (entryExitId === 1 && true) || watch("name") === "E") && watch("west_supply_reference_quality_area")}
                             valueWatch={watch("west_supply_reference_quality_area") || ""}
                             handleChange={(e) => {
-                              setValue("west_supply_reference_quality_area", e.target.value);
+                              setValue("west_supply_reference_quality_area", e?.target?.value ?? "");
                               if (errors?.west_supply_reference_quality_area) { clearErrors('west_supply_reference_quality_area') }
                             }}
                             errors={errors?.west_supply_reference_quality_area}

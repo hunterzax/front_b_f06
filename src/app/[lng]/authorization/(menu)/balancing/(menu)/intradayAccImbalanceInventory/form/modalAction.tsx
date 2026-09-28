@@ -144,7 +144,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("zone_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("zone_id", e.target.value);
+                                                    setValue("zone_id", e?.target?.value ?? "");
                                                     if (errors?.zone_id) { clearErrors('zone_id') }
                                                 }}
                                                 errors={errors?.zone_id}
@@ -173,7 +173,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("mode") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("mode", e.target.value);
+                                                    setValue("mode", e?.target?.value ?? "");
                                                     if (errors?.mode) { clearErrors('mode') }
                                                 }}
                                                 errors={errors?.mode}
@@ -227,7 +227,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         disabled={isReadOnly}
                                                         valueWatch={watch("hour") || ""}
                                                         handleChange={(e) => {
-                                                            setValue("hour", e.target.value);
+                                                            setValue("hour", e?.target?.value ?? "");
                                                             if (errors?.hour) { clearErrors('hour') }
                                                         }}
                                                         errors={errors?.hour}
@@ -251,7 +251,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         disabled={isReadOnly}
                                                         valueWatch={watch("minute") || ""}
                                                         handleChange={(e) => {
-                                                            setValue("minute", e.target.value);
+                                                            setValue("minute", e?.target?.value ?? "");
                                                             if (errors?.minute) { clearErrors('minute') }
                                                         }}
                                                         errors={errors?.minute}

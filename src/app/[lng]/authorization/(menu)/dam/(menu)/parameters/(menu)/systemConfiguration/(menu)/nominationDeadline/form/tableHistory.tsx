@@ -50,56 +50,56 @@ const TableNomiDeadHistory: React.FC<TableProps> = ({ tableData, isLoading, colu
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-9">
 
-                        {columnVisibility.user_type && (
+                        {columnVisibility?.user_type && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("user_type_id", sortState, setSortState, setSortedData, tableDataMod)}>
                                 {`User Type`}
                                 {getArrowIcon("user_type_id")}
                             </th>
                         )}
 
-                        {columnVisibility.process_type && (
+                        {columnVisibility?.process_type && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("process_type_id", sortState, setSortState, setSortedData, tableDataMod)}>
                                 {`Process Type`}
                                 {getArrowIcon("process_type_id")}
                             </th>
                         )}
 
-                        {columnVisibility.nom_type && (
+                        {columnVisibility?.nom_type && (
                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("nomination_type_id", sortState, setSortState, setSortedData, tableDataMod)}>
                                 {`Nomination Type`}
                                 {getArrowIcon("nomination_type_id")}
                             </th>
                         )}
 
-                        {columnVisibility.time && (
+                        {columnVisibility?.time && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("final_time", sortState, setSortState, setSortedData, tableDataMod)}>
                                 {`Time`}
                                 {getArrowIcon("final_time")}
                             </th>
                         )}
 
-                        {columnVisibility.before_gas && (
+                        {columnVisibility?.before_gas && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("before_gas_day", sortState, setSortState, setSortedData, tableDataMod)}>
                                 {`Before Gas Day`}
                                 {getArrowIcon("before_gas_day")}
                             </th>
                         )}
 
-                        {columnVisibility.start_date && (
+                        {columnVisibility?.start_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableDataMod)}>
                                 {`Start Date`}
                                 {getArrowIcon("start_date")}
                             </th>
                         )}
 
-                        {columnVisibility.end_date && (
+                        {columnVisibility?.end_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableDataMod)}>
                                 {`End Date`}
                                 {getArrowIcon("end_date")}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, tableDataMod)}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -116,7 +116,7 @@ const TableNomiDeadHistory: React.FC<TableProps> = ({ tableData, isLoading, colu
                                 key={row?.id}
                                 className={`${table_row_style}`}
                             >
-                                {columnVisibility.user_type && (
+                                {columnVisibility?.user_type && (
                                     <td className="px-2 py-1 justify-center">
                                         {
                                             row?.user_type &&
@@ -125,11 +125,11 @@ const TableNomiDeadHistory: React.FC<TableProps> = ({ tableData, isLoading, colu
                                     </td>
                                 )}
 
-                                {columnVisibility.process_type && (
-                                    <td className="px-2 py-1 text-[#464255]">{row?.process_type && row?.process_type?.name}</td>
+                                {columnVisibility?.process_type && (
+                                    <td className="px-2 py-1 text-[#464255]">{row?.process_type?.name}</td>
                                 )}
 
-                                {columnVisibility.nom_type && (
+                                {columnVisibility?.nom_type && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div className="flex justify-center items-center w-full">
                                             <div className="w-[200px] text-center py-1 rounded-[20px]" style={{ background: row?.nomination_type?.color }}>{row?.nomination_type && row?.nomination_type?.name + " Nomination"}</div>
@@ -137,7 +137,7 @@ const TableNomiDeadHistory: React.FC<TableProps> = ({ tableData, isLoading, colu
                                     </td>
                                 )}
 
-                                {columnVisibility.time && (
+                                {columnVisibility?.time && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         {/* {row?.hour !== undefined && String(row?.hour).padStart(2, '0')}
                                         {`:`}
@@ -147,20 +147,20 @@ const TableNomiDeadHistory: React.FC<TableProps> = ({ tableData, isLoading, colu
                                     </td>
                                 )}
 
-                                {columnVisibility.before_gas && (
-                                    <td className="px-2 py-1 text-[#464255]">{row?.before_gas_day && row?.before_gas_day}</td>
+                                {columnVisibility?.before_gas && (
+                                    <td className="px-2 py-1 text-[#464255]">{row?.before_gas_day}</td>
                                 )}
 
                                 {/* <td className="px-2 py-1 text-right text-[#464255]">{formatNumber(row?.area_nominal_capacity)}</td> */}
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div>
                                             <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

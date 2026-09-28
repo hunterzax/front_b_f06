@@ -47,56 +47,56 @@ const TableContractPointHistory: React.FC<TableProps> = ({ tableData, isLoading,
             <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-9">
-                        {columnVisibility.entry_exit && (
+                        {columnVisibility?.entry_exit && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Entry / Exit`}
                                 {getArrowIcon("entry_exit_id")}
                             </th>
                         )}
 
-                        {columnVisibility.zone && (
+                        {columnVisibility?.zone && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("zone_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Zone`}
                                 {getArrowIcon("zone_id")}
                             </th>
                         )}
 
-                        {columnVisibility.area && (
+                        {columnVisibility?.area && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("area_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Area`}
                                 {getArrowIcon("area_id")}
                             </th>
                         )}
 
-                        {columnVisibility.contract_point && (
+                        {columnVisibility?.contract_point && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("contract_point", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Contract Point`}
                                 {getArrowIcon("contract_point")}
                             </th>
                         )}
 
-                        {columnVisibility.desc && (
+                        {columnVisibility?.desc && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("description", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Description`}
                                 {getArrowIcon("description")}
                             </th>
                         )}
 
-                        {columnVisibility.start_date && (
+                        {columnVisibility?.start_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("contract_point_start_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Start Date`}
                                 {getArrowIcon("contract_point_start_date")}
                             </th>
                         )}
 
-                        {columnVisibility.end_date && (
+                        {columnVisibility?.end_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("contract_point_end_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`End Date`}
                                 {getArrowIcon("contract_point_end_date")}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -107,21 +107,21 @@ const TableContractPointHistory: React.FC<TableProps> = ({ tableData, isLoading,
                 </thead>
 
                 <tbody>
-                    {sortedData && sortedData?.map((row: any, index: any) => (
+                    {(sortedData || [])?.map((row: any, index: any) => (
                         <tr
                             key={row?.id}
                             className={`${table_row_style}`}
                         >
 
-                            {columnVisibility.entry_exit && (
+                            {columnVisibility?.entry_exit && (
                                 <td className="px-2 py-1  justify-center ">{row?.entry_exit_id && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color }}>{`${row?.entry_exit?.name}`}</div>}</td>
                             )}
 
-                            {columnVisibility.zone && (
+                            {columnVisibility?.zone && (
                                 <td className="px-2 py-1  justify-center ">{row?.zone && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone?.color }}>{`${row?.zone?.name}`}</div>}</td>
                             )}
 
-                            {columnVisibility.area && (
+                            {columnVisibility?.area && (
                                 <td className="px-2 py-1 justify-center ">
                                     {
                                         row?.area.entry_exit_id == 2 ?
@@ -142,23 +142,23 @@ const TableContractPointHistory: React.FC<TableProps> = ({ tableData, isLoading,
                                 </td>
                             )}
 
-                            {columnVisibility.contract_point && (
+                            {columnVisibility?.contract_point && (
                                 <td className="px-2 py-1 text-[#464255]">{row?.contract_point}</td>
                             )}
 
-                            {columnVisibility.desc && (
+                            {columnVisibility?.desc && (
                                 <td className="px-2 py-1 text-[#464255]">{row?.description}</td>
                             )}
 
-                            {columnVisibility.start_date && (
+                            {columnVisibility?.start_date && (
                                 <td className="px-2 py-1 text-[#464255]">{row?.contract_point_start_date ? formatDateNoTime(row?.contract_point_start_date) : ''}</td>
                             )}
 
-                            {columnVisibility.end_date && (
+                            {columnVisibility?.end_date && (
                                 <td className="px-2 py-1 text-[#0DA2A2]">{row?.contract_point_end_date ? formatDateNoTime(row?.contract_point_end_date) : ''}</td>
                             )}
 
-                            {columnVisibility.updated_by && (
+                            {columnVisibility?.updated_by && (
                                 <td className="px-2 py-1 text-[#464255]">
                                     <div>
                                         <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

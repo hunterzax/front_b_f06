@@ -31,15 +31,17 @@ const ModalPassword: React.FC<FormExampleProps> = ({
     const fetchData = async () => {
         try {
             // Group (2 = TSO, 3 = Shipper, 4 = Other)
-            const response: any = await patchService(`/master/account-manage/account-local-gen-password/${data.id}`);
+            const response: any = await patchService(`/master/account-manage/account-local-gen-password/${data?.id}`);
             setPasswordValue(response?.password_gen_origin)
             setIsGenerate(true)
 
             // ส่ง email หา user ที่โดน generate password
-            let body_email = {
-                "email": data?.email
-            }
-            await sendEmailResetPassword(body_email, 'createuser', response?.password_gen_origin)
+            const body_email = {
+                "email": data?.email || ""
+            };
+            const actionType = 'createuser';
+            const generatedPassword = response?.password_gen_origin;
+            await sendEmailResetPassword(body_email, actionType, generatedPassword);
         } catch (err) {
             // setError(err.message);
         } finally {

@@ -37,20 +37,20 @@ const ModalComment: React.FC<FormExampleProps> = ({
                                 </div>
 
                                 <div className="grid grid-cols-4 text-sm font-light text-[#58585A]">
-                                    <p>{dataRow?.gas_day_text ? toDayjs(dataRow?.gas_day).format("DD/MM/YYYY") : ''}</p>
+                                    <p>{dataRow?.gas_day_text ? (toDayjs(dataRow?.gas_day)?.isValid() ? toDayjs(dataRow?.gas_day)?.format("DD/MM/YYYY") : '') : ''}</p>
                                     <p>{dataRow?.group ? dataRow?.group?.name : ''}</p>
                                     <p>{dataRow?.zone ? dataRow?.zone?.name : ''}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className={`mb-1 w-[100%] ${data?.length > 2 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
-                            {data?.length > 0 && data?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                        <div className={`mb-1 w-[100%] ${(data?.length ?? 0) > 2 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
+                            {(data || [])?.map((item: any) => (
+                                <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
                                         <div className="mb-2 flex justify-between items-center">
                                             <div className="flex items-center">
-                                                <span className='font-light'>By <span className="font-bold">{item?.create_by_account && item?.create_by_account?.first_name + ' ' + item?.create_by_account?.last_name}</span></span>
+                                                <span className='font-light'>By <span className="font-bold">{item?.create_by_account ? `${item?.create_by_account?.first_name || ''} ${item?.create_by_account?.last_name || ''}` : ''}</span></span>
                                             </div>
                                             {/* <span className="text-gray-500">{formatDateK(item?.create_date)}</span> */}
 

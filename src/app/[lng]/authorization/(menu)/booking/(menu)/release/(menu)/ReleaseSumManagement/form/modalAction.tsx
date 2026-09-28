@@ -117,8 +117,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
             setReleaseEndDate(formatDateNoTime(maxReleaseEndDate))
         }
         else {
-            setReleaseStartDate(formatDateNoTime(data.entryReleaseStartDate))
-            setReleaseEndDate(formatDateNoTime(data.exitReleaseStartDate))
+            setReleaseStartDate(formatDateNoTime(data?.entryReleaseStartDate))
+            setReleaseEndDate(formatDateNoTime(data?.exitReleaseStartDate))
         }
 
         if (exitContractedMmmbtud < entryContractedMmmbtud && exitContractedMmmbtud != Number.MAX_VALUE) {

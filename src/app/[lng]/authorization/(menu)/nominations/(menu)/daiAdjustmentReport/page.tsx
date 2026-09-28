@@ -614,7 +614,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     };
 
     // ############### DATA TABLE ###############
-    const [tabIndex, setTabIndex] = useState(0); // 0=daily, 1=weekly
+    const [tabIndex, setTabIndex] = useState(1); // 0=detail, 1=total
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [dataShipper, setDataShipper] = useState<any>([]);
     const [resetForm, setResetForm] = useState<() => void | null>();

@@ -154,7 +154,7 @@ const TableDownload: React.FC<TableProps> = ({ openViewForm, tableData, isLoadin
                                     </th>
                                 )}
 
-                                {columnVisibility.approved_by && (
+                                {columnVisibility?.approved_by && (
                                     <th scope="col"
                                         className={`${table_sort_header_style} text-left`}
                                         onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, tableData)}
@@ -164,7 +164,7 @@ const TableDownload: React.FC<TableProps> = ({ openViewForm, tableData, isLoadin
                                     </th>
                                 )}
 
-                                {columnVisibility.download && (
+                                {columnVisibility?.download && (
                                     <th scope="col" className="px-2 py-1 text-center">
                                         {`Download`}
                                     </th>
@@ -174,7 +174,7 @@ const TableDownload: React.FC<TableProps> = ({ openViewForm, tableData, isLoadin
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData?.map((row: any, index: any) => {
+                            {(sortedData || [])?.map((row: any, index: any) => {
 
                                 return (
                                     <tr
@@ -210,7 +210,7 @@ const TableDownload: React.FC<TableProps> = ({ openViewForm, tableData, isLoadin
                                             <td className="px-2 py-1 text-[#464255]">{row?.typeReport ? row?.typeReport : ''}</td>
                                         )}
 
-                                        {columnVisibility.approved_by && (
+                                        {columnVisibility?.approved_by && (
                                             <td className="px-2 py-1 text-[#464255]">
                                                 <div>
                                                     <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -219,7 +219,7 @@ const TableDownload: React.FC<TableProps> = ({ openViewForm, tableData, isLoadin
                                             </td>
                                         )}
 
-                                        {columnVisibility.download && (
+                                        {columnVisibility?.download && (
                                             <td className="px-2 py-1 text-center justify-center">
                                                 <div className="inline-flex items-center justify-center relative">
 

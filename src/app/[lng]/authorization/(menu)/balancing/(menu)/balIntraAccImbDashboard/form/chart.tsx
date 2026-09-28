@@ -33,121 +33,125 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
     let findData = []
 
     const genarateData: any = loadData //real
+    const dataList = Array.isArray(genarateData?.data) ? genarateData.data : [];
 
-    for (let index = 0; index < genarateData?.data?.length; index++) {
+    for (let index = 0; index < dataList.length; index++) {
       const allowedHours = ['03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00', '24:00']
+      const currentItem = dataList[index];
+      const useData = Array.isArray(currentItem?.hour)
+        ? currentItem.hour.filter((f: any) => allowedHours.includes(f?.gas_hour_text))
+        : [];
 
-      const useData =
-        genarateData?.data?.length > 0
-          ? genarateData.data[index].hour.filter((f: any) =>
-              // !!f?.zone &&
-              allowedHours?.includes(f?.gas_hour_text)
-            )
-          : []
+      if (useData.length === 0) {
+        const dataNone: any = currentItem;
 
-      if (useData?.length == 0) {
-        let findIdx: any = genarateData?.data?.findIndex((item: any, indexof: any) => indexof == index)
-        const dataNone: any = genarateData?.data[findIdx]
+        const noneUse = allowedHours.map((item: any) => ({
+          gas_hour_text: item,
+          nonvalue: true
+        }));
 
-        const noneUse = allowedHours?.map((item: any) => {
-          return {
-            gas_hour_text: item,
-            nonvalue: true
-          }
-        })
+        findData.push(...noneUse);
 
-        findData.push(
-          ...noneUse?.map((item: any) => {
-            return item
-          })
-        ) //for chart data
-
-        if (genarateData?.data?.length == 1) {
+        if (dataList.length === 1) {
           findLabelx.push(
-            ...noneUse?.map((item: any) => {
-              return `${item?.gas_hour_text == '24:00' ? '00:00' : item?.gas_hour_text}`
-            })
-          ) //for chart label 1 day
-        } else if (genarateData?.data?.length > 1) {
+            ...noneUse.map((item: any) => `${item?.gas_hour_text === '24:00' ? '00:00' : item?.gas_hour_text}`)
+          );
+        } else if (dataList.length > 1) {
           findLabelx.push(
-            ...noneUse?.map((item: any) => {
-              return `${toDayjs(dataNone?.gas_day).format('DD/MM/YYYY')} ${item?.gas_hour_text == '24:00' ? '00:00' : item?.gas_hour_text}`
-            })
-          ) //for chart label many days
+            ...noneUse.map((item: any) => `${toDayjs(dataNone?.gas_day).format('DD/MM/YYYY')} ${item?.gas_hour_text === '24:00' ? '00:00' : item?.gas_hour_text}`)
+          );
         }
       } else {
-        findData.push(
-          ...useData?.map((item: any) => {
-            return item
-          })
-        ) //for chart data
+        findData.push(...useData);
 
-        if (genarateData?.data?.length == 1) {
+        if (dataList.length === 1) {
           findLabelx.push(
-            ...useData?.map((item: any) => {
-              return `${item?.gas_hour_text == '24:00' ? '00:00' : item?.gas_hour_text}`
-            })
-          ) //for chart label 1 day
-        } else if (genarateData?.data?.length > 1) {
+            ...useData.map((item: any) => `${item?.gas_hour_text === '24:00' ? '00:00' : item?.gas_hour_text}`)
+          );
+        } else if (dataList.length > 1) {
           findLabelx.push(
-            ...useData?.map((item: any) => {
-              return `${toDayjs(genarateData?.data[index]?.gas_day).format('DD/MM/YYYY')} ${item?.gas_hour_text == '24:00' ? '00:00' : item?.gas_hour_text}`
-            })
-          ) //for chart label many days
+            ...useData.map((item: any) => `${toDayjs(currentItem?.gas_day).format('DD/MM/YYYY')} ${item?.gas_hour_text === '24:00' ? '00:00' : item?.gas_hour_text}`)
+          );
         }
       }
     }
 
     const fnTemplate = (template: any) => {
-      const setDataTemplate = template?.map((e: any, ix: number) => {
+      const setDataTemplate = (template || [])?.map((e: any, ix: number) => {
         let styleChart = {}
 
         switch (e?.type) {
+          // case 'lineGraph':
+          //   styleChart = {
+          //     key: 'lineGraph',
+          //     label: e?.lebel,
+          //     data: findData?.map((eH: any) => {
+          //       return eH?.nonvalue == true ? null : eH?.value?.[e?.key] !== null ? eH?.value?.[e?.key] : eH?.value?.[e?.key] == 0 ? 0 : null
+          //     }),
+          //     backgroundColor: e?.color,
+          //     order: 1,
+          //     type: 'line', // ← บอกว่าเป็นเส้น line
+          //     borderColor: '#535353',
+          //     borderWidth: 2,
+          //     fill: false,
+          //     tension: 0.3,
+          //     pointBackgroundColor: '#535353',
+          //     yAxisID: 'y', // ← ใช้แกน y เดียวกัน ถ้าไม่อยากแยก
+          //     // ปิดจุด:
+          //     pointRadius: 0,
+          //     pointHoverRadius: 0,
+          //     z: 10, // ถ้าใช้ Chart.js v4+ ช่วยกำหนด z-index ได้เลย
+          //     spanGaps: true
+          //   }
+          //   break
           case 'lineGraph':
             styleChart = {
               key: 'lineGraph',
               label: e?.lebel,
-              data: findData?.map((eH: any) => {
-                return eH?.nonvalue == true ? null : eH?.value?.[e?.key] !== null ? eH?.value?.[e?.key] : eH?.value?.[e?.key] == 0 ? 0 : null
+
+              data: (findData || [])?.map((eH: any) => {
+                if (eH?.nonvalue === true) {
+                  return null
+                }
+
+                return eH?.value?.[e?.key] ?? null
               }),
+
               backgroundColor: e?.color,
-              order: 1,
-              type: 'line', // ← บอกว่าเป็นเส้น line
+
+              type: 'line',
               borderColor: '#535353',
               borderWidth: 2,
               fill: false,
               tension: 0.3,
+
               pointBackgroundColor: '#535353',
-              yAxisID: 'y', // ← ใช้แกน y เดียวกัน ถ้าไม่อยากแยก
-              // ปิดจุด:
+
+              // ไม่แสดงจุดปกติ
               pointRadius: 0,
-              pointHoverRadius: 0,
-              z: 10, // ถ้าใช้ Chart.js v4+ ช่วยกำหนด z-index ได้เลย
+
+              // ✅ เวลา hover ให้มีจุดเหมือน dataset อื่น
+              pointHoverRadius: 5,
+
+              // ✅ สำคัญ ขยายพื้นที่สำหรับจับ mouse
+              pointHitRadius: 15,
+
+              // optional
+              pointHoverBackgroundColor: '#535353',
+              pointHoverBorderColor: '#535353',
+              pointHoverBorderWidth: 2,
+
+              yAxisID: 'y',
+
+              stack: `lineGraph-${e?.key}`,
+
+              order: 1,
+
               spanGaps: true
             }
+
             break
 
-          // case "bar":
-          //   styleChart = {
-          //     key: "bar",
-          //     label: e?.lebel,
-          //     data: findData?.map((eH: any) => {
-          //       return eH?.nonvalue == true
-          //         ? null
-          //         : eH?.value?.[e?.key] !== null
-          //           ? eH?.value?.[e?.key]
-          //           : eH?.value?.[e?.key] == 0
-          //             ? 0
-          //             : null;
-          //     }),
-          //     backgroundColor: e?.color,
-          //     // order: 3 - ix,
-          //     // zIndex: 10 - ix,  // ตั้งค่า zIndex ให้ bar อยู่ด้านหลัง
-          //     order: 3,
-          //     zIndex: 10, // ตั้งค่า zIndex ให้ bar อยู่ด้านหลัง
-          //     yAxisID: "y",
-          //   };
-          //   break;
           case 'bar':
             styleChart = { // https://app.clickup.com/t/9018502823/86ey4naeg
               key: 'bar',
@@ -155,7 +159,7 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
 
               label: e?.lebel,
 
-              data: findData?.map((eH: any) => {
+              data: (findData || [])?.map((eH: any) => {
                 if (eH?.nonvalue === true) {
                   return null
                 }
@@ -181,43 +185,81 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
 
             break
 
+          // case 'line':
+          //   styleChart = {
+          //     key: 'line',
+          //     label: e?.lebel,
+          //     data: findData?.map((eH: any) => {
+          //       return eH?.nonvalue == true ? null : eH?.value?.[e?.key] || null
+          //     }),
+          //     backgroundColor: e?.color,
+          //     borderColor: e?.color,
+          //     fill: false,
+          //     tension: 0,
+          //     type: 'line', // ← บอกว่าเป็นเส้น line
+          //     yAxisID: 'y', // ← ใช้แกน y เดียวกัน ถ้าไม่อยากแยก
+          //     borderDash: [6, 3], // ← เพิ่มตรงนี้!
+          //     borderWidth: 2, // ความหนาเส้น (ถ้าอยากปรับ)
+          //     order: 0,
+          //     // stack: `StackLine ${ix}`,
+
+          //     // ปิดจุด:
+          //     pointRadius: 2,
+          //     pointHoverRadius: 5,
+          //     z: 10, // ถ้าใช้ Chart.js v4+ ช่วยกำหนด z-index ได้เลย
+          //     spanGaps: true
+          //   }
+          //   break
           case 'line':
             styleChart = {
               key: 'line',
               label: e?.lebel,
-              data: findData?.map((eH: any) => {
-                return eH?.nonvalue == true ? null : eH?.value?.[e?.key] || null
+
+              data: (findData || [])?.map((eH: any) => {
+                if (eH?.nonvalue === true) {
+                  return null
+                }
+
+                return eH?.value?.[e?.key] ?? null
               }),
+
               backgroundColor: e?.color,
               borderColor: e?.color,
+
               fill: false,
               tension: 0,
-              type: 'line', // ← บอกว่าเป็นเส้น line
-              yAxisID: 'y', // ← ใช้แกน y เดียวกัน ถ้าไม่อยากแยก
-              borderDash: [6, 3], // ← เพิ่มตรงนี้!
-              borderWidth: 2, // ความหนาเส้น (ถ้าอยากปรับ)
-              order: 0,
-              // stack: `StackLine ${ix}`,
 
-              // ปิดจุด:
+              type: 'line',
+              yAxisID: 'y',
+
+              // ✅ สำคัญมาก
+              // threshold แต่ละเส้นต้องอยู่คนละ stack
+              stack: `threshold-${e?.key}`,
+
+              borderDash: [6, 3],
+              borderWidth: 2,
+
+              order: 0,
+
               pointRadius: 2,
               pointHoverRadius: 5,
-              z: 10, // ถ้าใช้ Chart.js v4+ ช่วยกำหนด z-index ได้เลย
+              pointHitRadius: 10,
+
               spanGaps: true
             }
+
             break
         }
 
         return styleChart
       })
-      return setDataTemplate
+      return setDataTemplate || []
     }
 
-    const permission: any = userDT?.account_manage?.[0]?.user_type_id === 3 ? genarateData?.templateLabelKeys?.filter((item: any) => item?.key !== 'all') : genarateData?.templateLabelKeys
+    const permission: any = userDT?.account_manage?.[0]?.user_type_id === 3 ? (genarateData?.templateLabelKeys || [])?.filter((item: any) => item?.key !== 'all') : (genarateData?.templateLabelKeys || [])
 
     const templateLabel = fnTemplate(permission)
-    setlabelRender((pre: any) => findLabelx)
-    // setlabelRender((pre: any) => findHour);
+    setlabelRender(findLabelx)
     setdataRender(templateLabel)
     settk(!tk)
   }, [loadData])
@@ -228,8 +270,8 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
 
     dataArray.forEach((dayItem: any) => {
       const dataHours =
-        dayItem?.hour?.length > 0
-          ? dayItem?.hour.filter((f: any) =>
+        (dayItem?.hour?.length || 0) > 0
+          ? (dayItem?.hour || []).filter((f: any) =>
               // !!f?.zone &&
               allowedHours?.includes(f?.gas_hour_text)
             )
@@ -238,8 +280,8 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
       dataHours?.forEach((hourItem: any) => {
         if (hourItem?.value) {
           // ดึง keys ทั้งหมดจาก hourItem.value
-          Object.keys(hourItem.value).forEach((key) => {
-            const val: any = hourItem.value[key]
+          Object.keys(hourItem?.value || {}).forEach((key) => {
+            const val: any = hourItem?.value?.[key]
             // ตรวจสอบว่า value เป็นตัวเลขและไม่เป็น null
             if (typeof val === 'number' && !isNaN(val) && val !== null && key !== 'baseInv') {
               allValues.push(val)
@@ -313,19 +355,58 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
     const allValues: number[] = []
     const allowedHours = ['03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00', '24:00']
 
+    const generalKeys = [
+      'accImb_or_accImbInv',
+      'accImb_or_accImbInv_percentage',
+      'all',
+      'baseInv',
+      'high_alert',
+      'high_alert_percentage',
+      'high_dd',
+      'high_dd_percentage',
+      'high_max',
+      'high_max_percentage',
+      'high_orange',
+      'high_orange_percentage',
+      'high_red',
+      'high_red_percentage',
+      'low_alert',
+      'low_alert_percentage',
+      'low_dd',
+      'low_dd_percentage',
+      'low_max',
+      'low_max_percentage',
+      'low_orange',
+      'low_orange_percentage',
+      'low_red',
+      'low_red_percentage',
+    ]
+    
     dataArray.forEach((dayItem: any) => {
-      const dataHours = dayItem?.hour?.length > 0 ? dayItem.hour.filter((f: any) => allowedHours.includes(f?.gas_hour_text)) : []
+      const dataHours = (dayItem?.hour?.length || 0) > 0 ? (dayItem?.hour || []).filter((f: any) => allowedHours?.includes(f?.gas_hour_text)) : []
 
-      dataHours.forEach((hourItem: any) => {
+      dataHours?.forEach((hourItem: any) => {
+        let allShipperPositiveValues: number = 0
+        let allShipperNegativeValues: number = 0
         if (hourItem?.value) {
-          Object.keys(hourItem.value).forEach((key) => {
-            const val = hourItem.value[key]
+          Object.keys(hourItem?.value || {}).forEach((key) => {
+            const val = hourItem?.value?.[key]
 
             if (typeof val === 'number' && !Number.isNaN(val) && key !== 'baseInv') {
               allValues.push(val)
+              if(!generalKeys.includes(key)) {
+                if(val > 0) {
+                  allShipperPositiveValues += val
+                }
+                else{
+                  allShipperNegativeValues += val
+                }
+              }
             }
           })
         }
+        allValues.push(allShipperPositiveValues)
+        allValues.push(allShipperNegativeValues)
       })
     })
 
@@ -439,9 +520,92 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
 
   const yScaleOptions = getSmartDynamicYScale(loadData?.data || []) //<=== หาค่า max สุดของ value หากเกินค่า default 200 จะ min - max ตาม ค่ามากสุดทันที
 
+  function createTooltipSymbol(context: any) {
+    const dataset = context?.dataset
+    const key = dataset?.key
+
+    const canvas = document.createElement('canvas')
+    canvas.width = 18
+    canvas.height = 10
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return canvas
+
+    const color =
+      dataset?.borderColor ||
+      dataset?.backgroundColor ||
+      '#535353'
+
+    // =========================
+    // All = lineGraph = เส้นทึบ
+    // =========================
+    if (key === 'lineGraph') {
+      ctx.save()
+
+      ctx.beginPath()
+      ctx.moveTo(1, 5)
+      ctx.lineTo(17, 5)
+
+      ctx.strokeStyle = color
+      ctx.lineWidth = 2
+      ctx.setLineDash([])
+
+      ctx.stroke()
+      ctx.restore()
+
+      return canvas
+    }
+
+    // =========================
+    // High / Low = line = เส้นประ
+    // =========================
+    if (key === 'line') {
+      ctx.save()
+
+      ctx.beginPath()
+      ctx.moveTo(1, 5)
+      ctx.lineTo(17, 5)
+
+      ctx.strokeStyle = color
+      ctx.lineWidth = 2
+      ctx.setLineDash([4, 3])
+
+      ctx.stroke()
+      ctx.restore()
+
+      return canvas
+    }
+
+    // =========================
+    // bar = วงกลม
+    // =========================
+    ctx.save()
+
+    ctx.fillStyle = dataset?.backgroundColor || color
+
+    ctx.beginPath()
+    ctx.arc(9, 5, 3.5, 0, Math.PI * 2)
+    ctx.fill()
+
+    ctx.restore()
+
+    return canvas
+  }
+
   const options: any = {
     responsive: true,
     maintainAspectRatio: false,
+    // interaction: {
+    //   mode: 'nearest',
+    //   intersect: false,
+    //   axis: 'x'
+    // },
+    interaction: {
+      mode: 'index',
+      intersect: false,
+      axis: 'x'
+    },
+    
     plugins: {
       title: {
         display: false
@@ -549,15 +713,15 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
             family: 'Arial'
           },
           generateLabels: (chart: any) =>
-            chart?.data?.datasets
+            (chart?.data?.datasets || [])
               ?.map((item: any, i: any) => {
-                const backgroundColor = chart?.data?.datasets[i].backgroundColor
+                const backgroundColor = chart?.data?.datasets?.[i]?.backgroundColor
 
                 if (item?.key == 'lineGraph') {
                   return {
                     datasetIndex: i,
-                    text: `${item?.label}`,
-                    hidden: !chart.isDatasetVisible(i),
+                    text: `${item?.label ?? ''}`,
+                    hidden: !chart?.isDatasetVisible?.(i),
                     fillStyle: backgroundColor,
                     strokeStyle: backgroundColor,
                     fontColor: '#787486',
@@ -569,8 +733,8 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
                 } else if (item?.key == 'line') {
                   return {
                     datasetIndex: i,
-                    text: `${item?.label}`,
-                    hidden: !chart.isDatasetVisible(i),
+                    text: `${item?.label ?? ''}`,
+                    hidden: !chart?.isDatasetVisible?.(i),
                     fillStyle: backgroundColor,
                     strokeStyle: backgroundColor,
                     fontColor: '#787486',
@@ -582,8 +746,8 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
                 } else {
                   return {
                     datasetIndex: i,
-                    text: `${item?.label}`,
-                    hidden: !chart.isDatasetVisible(i),
+                    text: `${item?.label ?? ''}`,
+                    hidden: !chart?.isDatasetVisible?.(i),
                     fillStyle: backgroundColor,
                     strokeStyle: backgroundColor,
                     fontColor: '#787486',
@@ -599,55 +763,67 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
               .filter(Boolean)
         }
       },
+      // tooltip: {
+      //   usePointStyle: true,
+      //   callbacks: {
+      //     label: function (context: any) {
+      //       // const typeOf: any = context?.dataset?.type
+      //       return `${context.dataset.label}: ${formatNumberFourDecimal(context?.raw)}`
+      //     },
+      //     labelPointStyle: function (context: any) {
+      //       const canvas = document.createElement('canvas')
+      //       canvas.width = 10
+      //       canvas.height = 10
+      //       const ctx: any = canvas.getContext('2d')
+      //       ctx.fillStyle = context?.dataset?.backgroundColor
+      //       ctx.beginPath()
+      //       ctx.arc(5, 5, 3, 0, 2 * Math.PI)
+      //       ctx.fill()
+
+      //       return {
+      //         pointStyle: canvas,
+      //         rotation: 0
+      //       }
+      //     }
+      //   }
+      // }
       tooltip: {
+        mode: 'index',
+        intersect: false,
         usePointStyle: true,
+
         callbacks: {
           label: function (context: any) {
             // const typeOf: any = context?.dataset?.type
-            return `${context.dataset.label}: ${formatNumberFourDecimal(context?.raw)}`
+            return `${context?.dataset?.label || ''}: ${formatNumberFourDecimal(context?.raw)}`
           },
-          labelPointStyle: function (context: any) {
-            const canvas = document.createElement('canvas')
-            canvas.width = 10
-            canvas.height = 10
-            const ctx: any = canvas.getContext('2d')
-            ctx.fillStyle = context?.dataset?.backgroundColor
-            ctx.beginPath()
-            ctx.arc(5, 5, 3, 0, 2 * Math.PI)
-            ctx.fill()
+          // labelPointStyle: function (context: any) {
+          //   if (typeof document === 'undefined') return { pointStyle: 'circle', rotation: 0 }
+          //   const canvas = document.createElement('canvas')
+          //   canvas.width = 10
+          //   canvas.height = 10
+          //   const ctx: any = canvas.getContext('2d')
+          //   if (ctx) {
+          //     ctx.fillStyle = context?.dataset?.backgroundColor || '#535353'
+          //     ctx.beginPath()
+          //     ctx.arc(5, 5, 3, 0, 2 * Math.PI)
+          //     ctx.fill()
+          //   }
 
+          //   return {
+          //     pointStyle: canvas,
+          //     rotation: 0
+          //   }
+          // }
+          labelPointStyle: function (context: any) {
             return {
-              pointStyle: canvas,
+              pointStyle: createTooltipSymbol(context),
               rotation: 0
             }
           }
         }
       }
     },
-    // scales: {
-    //   x: {
-    //     stacked: false,
-    //   },
-    //   y: {
-    //     display: true,
-    //     stacked: false,
-    //     min: yScaleOptions.min,
-    //     max: yScaleOptions.max,
-    //     ticks: {
-    //       stepSize: yScaleOptions.stepSize,
-    //       callback: function (value: number) {
-    //         const absValue = Math.abs(value);
-    //         if (absValue >= 1_000_000) {
-    //           return (value / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
-    //         } else if (absValue >= 100_000) {
-    //           return (value / 1_000).toFixed(0) + "K";
-    //         } else {
-    //           return value.toLocaleString();
-    //         }
-    //       },
-    //     },
-    //   },
-    // },
     scales: { // https://app.clickup.com/t/9018502823/86ey4naeg
       x: {
         stacked: true
@@ -672,7 +848,7 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
               return (value / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'
             }
 
-            if (absValue >= 100_000) {
+            if (absValue >= 10_000) {
               return (value / 1_000).toFixed(0) + 'K'
             }
 
@@ -688,30 +864,29 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
 
   const dataSet = {
     labels: labelRender || [],
-    datasets: dataRender
+    datasets: dataRender || []
   }
 
   function formatSortedDates(dateArray: string[]) {
     // เรียงวันที่จากน้อยไปมาก
-    const sorted = dateArray
+    const sorted = (dateArray || [])
       .slice() // copy array เดิม
       .sort((a, b) => {
         // แปลงเป็น dayjs แล้วเปรียบเทียบ timestamp
         return toDayjs(a).valueOf() - toDayjs(b).valueOf()
       })
 
-    // map แปลง format และเติม comma ยกเว้นตัวสุดท้าย
-    return sorted.map((date, i) => {
-      const formatted = toDayjs(date).format('DD/MM/YYYY')
-      return i === sorted.length - 1 ? formatted : formatted
-    })
+    // map แปลง format
+    return sorted.map((date) => toDayjs(date).format('DD/MM/YYYY'))
   }
 
   function createDoubleLineSymbol(color: any) {
+    if (typeof document === 'undefined') return 'line'
     const canvas = document.createElement('canvas')
     canvas.width = 10
     canvas.height = 10
     const ctx: any = canvas.getContext('2d')
+    if (!ctx) return 'line'
 
     ctx.setLineDash([3, 3])
 
@@ -719,7 +894,7 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
     ctx.beginPath()
     ctx.moveTo(0, 5)
     ctx.lineTo(40, 5)
-    ctx.strokeStyle = color
+    ctx.strokeStyle = color || '#535353'
     ctx.lineWidth = 2
     ctx.stroke()
 
@@ -727,7 +902,7 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
     ctx.beginPath()
     ctx.moveTo(0, 15)
     ctx.lineTo(40, 15)
-    ctx.strokeStyle = color
+    ctx.strokeStyle = color || '#535353'
     ctx.lineWidth = 2
     ctx.stroke()
 
@@ -803,10 +978,10 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
   function getVisibleYScale(chart: any) {
     const values: number[] = []
 
-    chart.data.datasets.forEach((dataset: any, datasetIndex: number) => {
-      if (!chart.isDatasetVisible(datasetIndex)) return
+    chart?.data?.datasets?.forEach((dataset: any, datasetIndex: number) => {
+      if (!chart?.isDatasetVisible?.(datasetIndex)) return
 
-      dataset.data?.forEach((raw: any) => {
+      dataset?.data?.forEach((raw: any) => {
         if (raw === null || raw === undefined) return
 
         const val = typeof raw === 'number' ? raw : typeof raw?.y === 'number' ? raw.y : Number(raw)
@@ -821,11 +996,14 @@ const ChartSystem: React.FC<Props> = ({data, chartRef, containerRef, showDateArr
   }
 
   function applyVisibleYScale(chart: any) {
+    if (!chart?.options?.scales?.y) return
     const yScale = getVisibleYScale(chart)
 
     chart.options.scales.y.min = yScale.min
     chart.options.scales.y.max = yScale.max
-    chart.options.scales.y.ticks.stepSize = yScale.stepSize
+    if (chart.options.scales.y.ticks) {
+      chart.options.scales.y.ticks.stepSize = yScale.stepSize
+    }
 
     chart.update()
   }

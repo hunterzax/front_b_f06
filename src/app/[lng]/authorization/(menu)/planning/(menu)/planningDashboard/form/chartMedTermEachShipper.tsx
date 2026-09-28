@@ -68,26 +68,27 @@ const ChartMedEachShipper: React.FC<TableProps> = ({
       }
     >();
 
-    // ตรงนี้ใส่ originalData
-    dataAll?.forEach((entry: any) => {
-      entry?.data.forEach((item: any) => {
+    (dataAll || [])?.forEach((entry: any) => {
+      (entry?.data || [])?.forEach((item: any) => {
         const key = item?.area?.name;
 
-        if (!areaMap.has(key)) {
-          areaMap?.set(key, {
+        if (key && !areaMap.has(key)) {
+          areaMap.set(key, {
             ...item,
-            value: [...item?.value],
-            day: [...item?.month],
+            value: [...(item?.value || [])],
+            day: [...(item?.month || [])],
           });
-        } else {
-          const existing = areaMap.get(key)!;
-          existing.value = existing?.value?.map((v, i) => v + item?.value[i]);
+        } else if (key) {
+          const existing = areaMap.get(key);
+          if (existing) {
+            existing.value = (existing?.value || [])?.map((v: number, i: number) => v + (item?.value?.[i] || 0));
+          }
         }
       });
     });
 
     const reducedDataAll = {
-      ...dataAll[0],
+      ...dataAll?.[0],
       data: Array.from(areaMap.values()),
     };
 
@@ -154,10 +155,24 @@ const ChartMedEachShipper: React.FC<TableProps> = ({
               strokeStyle: dataset.borderColor,
               hidden: !chart.isDatasetVisible(index),
               pointStyle: dataset.isEntry ? "rect" : "circle",
+              datasetIndex: index,
             }));
           },
         },
-        onClick: null,
+        // onClick: null,
+        onClick: (_event: any, legendItem: any, legend: any) => {
+          console.log('object');
+          const chart = legend.chart
+          const datasetIndex = legendItem.datasetIndex
+
+          if (datasetIndex === undefined) return
+
+          const currentlyVisible = chart.isDatasetVisible(datasetIndex)
+
+          chart.setDatasetVisibility(datasetIndex, !currentlyVisible)
+
+          chart.update()
+        },
       },
       title: {
         display: true,
@@ -193,14 +208,12 @@ const ChartMedEachShipper: React.FC<TableProps> = ({
         enabled: true,
         intersect: false,
         backgroundColor: "white",
-        title: false,
-        titleColor: "#767676",
+        titleColor: "black",
         bodyColor: "#767676",
         padding: 5,
         boxPadding: 5,
         usePointStyle: true,
         callbacks: {
-          title: () => null,
           // label: function (tooltipItem: any, data: any) {
           //     return (tooltipItem?.raw === 0 ? null : tooltipItem?.dataset?.label)
           // },
@@ -208,10 +221,14 @@ const ChartMedEachShipper: React.FC<TableProps> = ({
           //     return (tooltipItem?.raw === 0 ? null : formatNumber(tooltipItem?.raw))
           // },
           label: (tooltipItem: any) => {
-            const labelName = tooltipItem?.dataset?.label;
-            const value = formatNumberThreeDecimal(tooltipItem.raw);
+            const labelName = tooltipItem?.dataset?.label ?? '';
+            const value = formatNumberThreeDecimal(tooltipItem?.raw);
             return `${labelName} : ${value}`;
           },
+          labelPointStyle: (context: any) => ({
+            pointStyle: context?.dataset?.isEntry ? "rect" : "circle",
+            rotation: 0,
+          }),
           labelColor: function (context: any) {
             return {
               borderColor: context?.dataset?.backgroundColor,
@@ -227,11 +244,11 @@ const ChartMedEachShipper: React.FC<TableProps> = ({
           family: "Tahoma", // Optional: Change font family
           weight: "normal", // Optional: Change font weight
         },
-        titleFont: {
-          size: 14, // Adjust title font size if you decide to enable title
-          family: "Tahoma",
-          weight: "bold",
-        },
+        // titleFont: {
+        //   size: 14, // Adjust title font size if you decide to enable title
+        //   family: "Tahoma",
+        //   weight: "bold",
+        // },
         cornerRadius: 10, // Make the corners of the tooltip rounded
         boxWidth: 50, // Increase box width of the tooltip icon
         borderColor: "rgba(0, 0, 0, 0.2)", // Set border color (a soft black)

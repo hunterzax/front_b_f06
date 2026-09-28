@@ -137,18 +137,20 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [dataHvMeter, setDataHvMeter] = useState<any>([]);
     const [dataHvConcept, setDataHvConcept] = useState<any>([]);
     const [dataTypeMC, setDataTypeMC] = useState<any>([]);
+    const [dataZone, setDataZone] = useState<any[]>([]);
     const fetchedRef = useRef(false);
 
     const fetchData = async () => {
         try {
 
-            const [response, res_shipper_name, res_hv_meter_point, res_hv_type, res_hv_concept_point, metering_concept_type] = await Promise.all([
+            const [response, res_shipper_name, res_hv_meter_point, res_hv_type, res_hv_concept_point, metering_concept_type, zone] = await Promise.all([
                 getService(`/master/hv-for-peration-flow-and-instructed-flow`),
                 getService(`/master/account-manage/group-master?user_type=3`),
                 getService(`/master/hv-for-peration-flow-and-instructed-flow/metering-point`),
                 getService(`/master/hv-for-peration-flow-and-instructed-flow/hv-type`),
                 getService(`/master/hv-for-peration-flow-and-instructed-flow/concept-point`),
                 getService(`/master/hv-for-peration-flow-and-instructed-flow/metering-concept-type`),
+                getService(`/master/asset/zone?entry_exit_id=1&onlyActive=true`),
             ]);
             let filtered_meter_point = res_hv_meter_point?.filter((items: any) => items?.entry_exit_id == 1)
 
@@ -157,6 +159,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             setDataHvConcept(res_hv_concept_point)
             setDataTypeMC(metering_concept_type)
             setDataShipper(res_shipper_name)
+            setDataZone(zone)
             setData(response);
             setFilteredDataTable(response);
             // setIsLoading(true);
@@ -788,6 +791,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 setResetForm={setResetForm}
                 dataHvConcept={dataHvConcept}
                 dataTypeMC={dataTypeMC}
+                dataZone={dataZone}
             />
 
             <ModalComponent

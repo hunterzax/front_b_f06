@@ -253,6 +253,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const fetchData = async () => {
         try {
+            // ถ้า user เป็น shipper
+            // https://app.clickup.com/t/86ert2k28 ตามที่คุยกัน หากเป็น shipper user ถ้ามี filter ชื่อ shipper ให้ค้างชื่อ shipper ตัวเองไว้เลย ไม่ต้องขึ้นเป็น dropdown ให้เลือก - ปรับทั้ง system
+            if (userDT?.account_manage?.[0]?.user_type_id == 3) {
+                setSrchShipper(userDT?.account_manage?.[0]?.group?.id)
+            }
+
             const response: any = await getService(`/master/release-uioli-summary-management`);
             const res_contract_point = await getService(`/master/asset/contract-point`);
             if (Array.isArray(res_contract_point)) {
@@ -529,7 +535,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         type="select-multi-checkbox"
                         value={srchShipper}
                         onChange={(e) => setSrchShipper(e.target.value)}
-                        options={shipperGroupData?.data?.map((item: any) => ({
+                        isDisabled={userDT?.account_manage?.[0]?.user_type_id == 3 ? true : false}
+                        options={shipperGroupData?.data
+                            ?.filter((item: any) => userDT?.account_manage?.[0]?.user_type_id == 3 ? item?.id === userDT?.account_manage?.[0]?.group?.id : true)
+                            ?.map((item: any) => ({
                             value: item.id,
                             label: item.name
                         }))}

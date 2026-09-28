@@ -93,17 +93,15 @@ const TableMtrMgn: React.FC<TableProps> = ({
     }
 
     const sortByGasDayAndMeteringPoint = (data: any[]) => {
-        return data?.sort((a, b) => {
-            // เปรียบเทียบ gasDay ก่อน
-            const gasDayA = new Date(a.gasDay);
-            const gasDayB = new Date(b.gasDay);
+        return (data || [])?.sort((a, b) => {
+            const gasDayA = a?.gasDay ? new Date(a.gasDay).getTime() : 0;
+            const gasDayB = b?.gasDay ? new Date(b.gasDay).getTime() : 0;
 
-            if (gasDayA.getTime() < gasDayB.getTime()) return -1;
-            if (gasDayA.getTime() > gasDayB.getTime()) return 1;
+            if (gasDayA < gasDayB) return -1;
+            if (gasDayA > gasDayB) return 1;
 
-            // ถ้า gasDay เท่ากัน ให้เปรียบเทียบ meteringPointId
-            const meteringA = a.meteringPointId?.toUpperCase() || '';
-            const meteringB = b.meteringPointId?.toUpperCase() || '';
+            const meteringA = (a?.meteringPointId ?? '').toString().toUpperCase();
+            const meteringB = (b?.meteringPointId ?? '').toString().toUpperCase();
 
             return meteringA.localeCompare(meteringB);
         });
@@ -181,6 +179,13 @@ const TableMtrMgn: React.FC<TableProps> = ({
                             <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSortFunc("gasDay")}>
                                 {`Gas Day`}
                                 {getArrowIcon("gasDay")}
+                            </th>
+                        )}
+                        {columnVisibility?.gas_hour && (
+                            // <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSort("gasDay", sortState, setSortState, setSortedData, tableData)}>
+                            <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSortFunc("gasHour")}>
+                                {`Gas Hour`}
+                                {getArrowIcon("gasHour")}
                             </th>
                         )}
                         {columnVisibility?.mtr_p_id && (
@@ -261,14 +266,15 @@ const TableMtrMgn: React.FC<TableProps> = ({
                                 {getArrowIcon("datasource")}
                             </th>
                         )}
-                        {columnVisibility.action && (
+                        {columnVisibility?.action && (
                             <th scope="col" className={`${table_header_style} text-center`}>
                                 {`Action`}
                             </th>
                         )}
                     </thead>
                     <tbody>
-                        {sortedData?.map((row: any, index: any) => {
+                        {(sortedData || [])?.map((row: any, index: any) => {
+                            if (!row) return null;
                             let heatingValue: any = row?.heatingValue;
                             if (typeof heatingValue === "string") {
                                 heatingValue = heatingValue.replaceAll(/,/g, '');
@@ -284,6 +290,11 @@ const TableMtrMgn: React.FC<TableProps> = ({
                                     {columnVisibility?.gas_day && (
                                         // <td className={`px-2 py-1 text-[#464255] min-w-[120px] `}>{row?.gasDay}</td>
                                         <td className={`px-2 py-1 text-[#464255]`}>{formatStringToDDMMYYYY(row?.gasDay)}</td>
+                                    )}
+
+                                    {columnVisibility?.gas_hour && (
+                                        // <td className={`px-2 py-1 text-[#464255] min-w-[120px] `}>{row?.gasDay}</td>
+                                        <td className={`px-2 py-1 text-[#464255]`}>{row?.gasHour}</td>
                                     )}
 
                                     {columnVisibility?.mtr_p_id && (
@@ -354,7 +365,7 @@ const TableMtrMgn: React.FC<TableProps> = ({
                                         </td>
                                     )}
 
-                                    {columnVisibility.action && (
+                                    {columnVisibility?.action && (
                                         <td className="px-2 py-1">
                                             <div className="relative inline-flex justify-center items-center w-full">
                                                 <BtnActionTable

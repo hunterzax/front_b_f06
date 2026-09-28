@@ -92,70 +92,70 @@ const TableMeteredPoint: React.FC<TableProps> = ({ openEditForm, openViewForm, o
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                {columnVisibility.meter_point && (
+                {columnVisibility?.meter_point && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("metered_id", sortState, setSortState, setSortedData, tableData)}>
                     {`Metered ID`}
                     {getArrowIcon("metered_id")}
                   </th>
                 )}
 
-                {columnVisibility.name && (
+                {columnVisibility?.name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("metered_point_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Metered Point Name`}
                     {getArrowIcon("metered_point_name")}
                   </th>
                 )}
 
-                {columnVisibility.desc && (
+                {columnVisibility?.desc && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("description", sortState, setSortState, setSortedData, tableData)}>
                     {`Description`}
                     {getArrowIcon("description")}
                   </th>
                 )}
 
-                {columnVisibility.entry_exit && (
+                {columnVisibility?.entry_exit && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("entry_exit.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Entry / Exit`}
                     {getArrowIcon("entry_exit.name")}
                   </th>
                 )}
 
-                {columnVisibility.zone && (
+                {columnVisibility?.zone && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("zone.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Zone`}
                     {getArrowIcon("zone.name")}
                   </th>
                 )}
 
-                {columnVisibility.area && (
+                {columnVisibility?.area && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("area.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Area`}
                     {getArrowIcon("area.name")}
                   </th>
                 )}
 
-                {columnVisibility.cust_type && (
+                {columnVisibility?.cust_type && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("customer_type.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Customer Type`}
                     {getArrowIcon("customer_type.name")}
                   </th>
                 )}
 
-                {columnVisibility.nom_point && (
+                {columnVisibility?.nom_point && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("nomination_point.nomination_point", sortState, setSortState, setSortedData, tableData)}>
                     {`Nomination Point / Non TPA Point`}
                     {getArrowIcon("nomination_point.nomination_point")}
                   </th>
                 )}
 
-                {columnVisibility.start_date && (
+                {columnVisibility?.start_date && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                     {`Start Date`}
                     {getArrowIcon("start_date")}
                   </th>
                 )}
 
-                {columnVisibility.end_date && (
+                {columnVisibility?.end_date && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}>
                     {`End Date`}
                     {getArrowIcon("end_date")}
@@ -164,7 +164,7 @@ const TableMeteredPoint: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                 {/* <th scope="col" className={`${table_sort_header_style}`}>
                   {`Created by`}
                 </th> */}
-                {columnVisibility.action && (
+                {columnVisibility?.action && (
                   <th scope="col" className={`${table_header_style} text-center`}>
                     {`Action`}
                   </th>
@@ -173,29 +173,29 @@ const TableMeteredPoint: React.FC<TableProps> = ({ openEditForm, openViewForm, o
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => (
+              {(sortedData || [])?.map((row: any, index: any) => (
                 <tr
                   key={row?.id}
                   className={`${table_row_style}`}
                 >
 
-                  {columnVisibility.meter_point && (
+                  {columnVisibility?.meter_point && (
                     <td className="px-2 py-1 text-[#464255]">{row?.metered_id}</td>
                   )}
 
-                  {columnVisibility.name && (
+                  {columnVisibility?.name && (
                     <td className="px-2 py-1 text-[#464255]">{row?.metered_point_name}</td>
                   )}
-                  {columnVisibility.desc && (
+                  {columnVisibility?.desc && (
                     <td className="px-2 py-1 text-[#464255]">{row?.description}</td>
                   )}
 
-                  {columnVisibility.entry_exit && (
+                  {columnVisibility?.entry_exit && (
                     <td className="px-2 py-1 justify-center ">{row?.entry_exit_id && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color }}>{`${row?.entry_exit?.name}`}</div>}</td>
                   )}
                   {/* <td className="px-2 py-1 justify-center ">{row?.zone && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone?.color }}>{`${row?.zone?.name}`}</div>}</td> */}
 
-                  {columnVisibility.zone && (
+                  {columnVisibility?.zone && (
                     <td className="px-2 py-1 h-[30px] justify-center">
                       {row?.zone && (
                         <div
@@ -214,7 +214,7 @@ const TableMeteredPoint: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                     </td>
                   )}
 
-                  {columnVisibility.entry_exit && (
+                  {columnVisibility?.entry_exit && (
                     <td className="px-2 py-1 justify-center ">
                       {
                         row?.area?.entry_exit_id == 2 ?
@@ -237,22 +237,22 @@ const TableMeteredPoint: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                     </td>
                   )}
 
-                  {columnVisibility.cust_type && (
+                  {columnVisibility?.cust_type && (
                     <td className="px-2 py-1 text-[#464255]">{row?.customer_type?.name}</td>
                   )}
 
-                  {columnVisibility.nom_point && (
+                  {columnVisibility?.nom_point && (
                     row?.point_type_id == 1 ?
                       <td className="px-2 py-1 text-[#464255]">{row?.nomination_point?.nomination_point}</td>
                       :
                       <td className="px-2 py-1 text-[#464255]">{row?.non_tpa_point?.non_tpa_point_name}</td>
                   )}
 
-                  {columnVisibility.start_date && (
+                  {columnVisibility?.start_date && (
                     <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                   )}
 
-                  {columnVisibility.end_date && (
+                  {columnVisibility?.end_date && (
                     <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                   )}
 
@@ -263,7 +263,7 @@ const TableMeteredPoint: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                     </div>
                   </td> */}
 
-                  {columnVisibility.action && (
+                  {columnVisibility?.action && (
                     <td className="px-2 py-1">
                       {/* <div className="relative inline-block text-left "> */}
                       <div className="relative inline-flex justify-center items-center w-full">

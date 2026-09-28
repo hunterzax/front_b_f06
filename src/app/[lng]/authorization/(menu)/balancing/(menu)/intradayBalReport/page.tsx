@@ -136,15 +136,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         const fromMinutes = srchGasHourFrom ? toMinutes(srchGasHourFrom) : null;
         const toMinutesLimit = srchGasHourTo ? toMinutes(srchGasHourTo) : null;
 
-        const filtered = dataTimestampMaster?.filter((item: any) => {
-            const timePart = item.timestamp.split(" ")[1];
-            const currentMinutes = toMinutes(timePart);
+        const filtered = (dataTimestampMaster || [])?.filter((item: any) => {
+            const timePart = item?.timestamp ? item.timestamp.split(" ")[1] : "";
+            const currentMinutes = timePart ? toMinutes(timePart) : null;
 
-            if (fromMinutes !== null && toMinutesLimit !== null) {
+            if (fromMinutes !== null && toMinutesLimit !== null && currentMinutes !== null) {
                 return currentMinutes >= fromMinutes && currentMinutes <= toMinutesLimit;
-            } else if (fromMinutes !== null) {
+            } else if (fromMinutes !== null && currentMinutes !== null) {
                 return currentMinutes >= fromMinutes;
-            } else if (toMinutesLimit !== null) {
+            } else if (toMinutesLimit !== null && currentMinutes !== null) {
                 return currentMinutes <= toMinutesLimit;
             } else {
                 return true; // ไม่กรองเลย
@@ -161,7 +161,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         const to = (srchGasHourTo !== undefined && srchGasHourTo !== '') ? hourStringToInt(srchGasHourTo) : 24;
 
         setFilteredDataTable([]) // clear ก่อนซักที
-        setShowTotal(watch('filter_show_total'))
+        setShowTotal(userDT?.account_manage?.[0]?.user_type_id !== 4 ? watch('filter_show_total') : false)
         setShowTotalAllShipper(watch('filter_show_total_all_shipper'))
 
         // body เดิมก่อนแก้ api 01/07/2025
@@ -182,7 +182,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             "latest_hourly_version": (userDT?.account_manage?.[0]?.user_type_id !== 3) ? watch('filter_last_hourly_version') : true, // Shipper จะเห็นเฉพาะ version ล่าสุดที่โดน public ของแต่ละ Gas Hour https://app.clickup.com/t/86eujrgh9
             "show_total": watch('filter_show_total'),
             "show_total_all_shipper": watch('filter_show_total_all_shipper'),
-            "only_public": (userDT?.account_manage?.[0]?.user_type_id !== 3) ? watch('filter_only_public') : true, // shipper เห็นแค่เฉพาะ public
+            "only_public": (userDT?.account_manage?.[0]?.user_type_id !== 3 && userDT?.account_manage?.[0]?.user_type_id !== 4) ? watch('filter_only_public') : true, // shipper เห็นแค่เฉพาะ public
             // "shipper": userDT?.account_manage?.[0]?.user_type_id !== 3 ? [] : [userDT?.account_manage?.[0]?.group?.id_name] // ["NGP-S01-002"]
             "shipper": (userDT?.account_manage?.[0]?.user_type_id !== 3) ? srchShipperName : [userDT?.account_manage?.[0]?.group?.id_name] // ["NGP-S01-002"]
         }
@@ -203,12 +203,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             const fromMinutes = srchGasHourFrom ? timeToMinutes(srchGasHourFrom) : null;
             const toMinutes = srchGasHourTo ? timeToMinutes(srchGasHourTo) : null;
 
-            let res_filtered = res_?.map((item: any) => {
-                if (!srchShipperName?.length && !srchTimeStamp?.length && !srchGasHourFrom && !srchGasHourTo && !watch('filter_only_public')) return item;
+            let res_filtered = (res_ || [])?.map((item: any) => {
+                if (!srchShipperName?.length && !srchTimeStamp?.length && !srchGasHourFrom && !srchGasHourTo && !body_main.only_public) return item;
 
-                const filteredShipperData = item.shipperData?.map((sd: any) => {
+                const filteredShipperData = (item?.shipperData || [])?.map((sd: any) => {
 
-                    const filteredContracts = sd?.contractData?.filter((cd: any) => {
+                    const filteredContracts = (sd?.contractData || [])?.filter((cd: any) => {
                         const actual = cd?.valueContractActual;
 
                         // actual = {
@@ -220,11 +220,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         //     "timestamp": "01/02/2025 21:20",
                         // }
 
-                        const matchShipper = srchShipperName?.length > 0 ? srchShipperName.includes(actual.shipper) : true;
-                        const matchTimestamp = srchTimeStamp ? srchTimeStamp == actual.timestamp : true;
-                        const matchPublicate = watch('filter_only_public') ? actual.publication == true : true;
+                        const matchShipper = srchShipperName?.length > 0 ? srchShipperName.includes(actual?.shipper) : true;
+                        const matchTimestamp = srchTimeStamp ? srchTimeStamp == actual?.timestamp : true;
+                        const matchPublicate = body_main.only_public ? actual?.publication == true : true;
 
-                        const gasHourMin = timeToMinutes(actual.gas_hour || "00:00");
+                        const gasHourMin = timeToMinutes(actual?.gas_hour || "00:00");
                         const matchGasHour = fromMinutes !== null && toMinutes !== null ? gasHourMin >= fromMinutes && gasHourMin <= toMinutes : true;
 
                         return matchShipper && matchTimestamp && matchGasHour && matchPublicate;
@@ -257,28 +257,41 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         setCurrentPage(1);
     };
+   
 
     const handleReset = async () => {
         setSrchStartDate(null)
         setSrchEndDate(null)
-        setSrchShipperName([])
-        setSrchGasHourFrom('')
-        setSrchGasHourTo('')
-        setDataTimestamp([])
 
-        setValue('filter_only_public', false)
-        setValue('filter_show_total', true)
+        if (userDT?.account_manage?.[0]?.user_type_id === 4) {
+        const shipperOptions = (dataShipper ?? [])
+            .map((item: any) => item?.id_name)
+            .filter(Boolean)
+
+        setSrchShipperName(shipperOptions)
+    } else {
+        setSrchShipperName([])
+        
+    }
+    
+    setSrchGasHourFrom('')
+    setSrchGasHourTo('')
+    setSrchTimeStamp('')
+    setDataTimestamp([])
+    
+        setValue('filter_only_public', true)
         setValue('filter_last_hourly_version', true)
+        setValue('filter_show_total', userDT?.account_manage?.[0]?.user_type_id !== 4)
+        setShowTotal(userDT?.account_manage?.[0]?.user_type_id !== 4)
 
         {/* v2.0.46 Shipper ต้องไม่มี checkboxes 'Show Total All Shippers' https://app.clickup.com/t/86etym1pq */ }
         if ((userDT?.account_manage?.[0]?.user_type_id !== 3)) {
             setValue('filter_show_total_all_shipper', true)
+            setShowTotalAllShipper(true)
         } else {
             setValue('filter_show_total_all_shipper', false)
+            setShowTotalAllShipper(false)
         }
-
-        setShowTotal(true)
-        setShowTotalAllShipper(true)
 
         // setFilteredDataTable(dataTable)
         setFilteredDataTable([])
@@ -401,14 +414,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 return;
             }
 
-            const filtered = filter_plan_actual?.map((entry: any) => {
-                const gasDayMatch = normalize(formatDateNoTime(entry.gas_day)).includes(queryLower);
+            const filtered = (filter_plan_actual || [])?.map((entry: any) => {
+                const gasDayMatch = normalize(formatDateNoTime(entry?.gas_day)).includes(queryLower);
                 const totalAllMatch = normalize(entry?.totalAllPlanning?.gas_day).includes(queryLower);
                 const totalAllMatchActual = normalize(entry?.totalAllActual?.gas_day).includes(queryLower);
                 const totalAllMatch2 = keyValues.some((key) => normalize(formatNumberFourDecimal(entry?.totalAllPlanning?.[key])).includes(queryLower));
                 const totalAllMatch2Actual = keyValues.some((key) => normalize(formatNumberFourDecimal(entry?.totalAllActual?.[key])).includes(queryLower));
 
-                const filteredShipperData = entry.shipperData?.map((shipperGroup: any) => { // --> row blue
+                const filteredShipperData = (entry?.shipperData || [])?.map((shipperGroup: any) => { // --> row blue
                     const totalShipperMatch = normalize(shipperGroup?.totalShipperPlanning?.gas_day).includes(queryLower);
                     const totalShipperMatchActual = normalize(shipperGroup?.totalShipperActual?.gas_day).includes(queryLower);
 
@@ -451,7 +464,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     // }) || [];
 
                     // ของใหม่กรองออก https://app.clickup.com/t/86eujrgh2
-                    const filteredContracts = shipperGroup?.contractData?.map((contract: any) => { // --> row white
+                    const filteredContracts = (shipperGroup?.contractData || [])?.map((contract: any) => { // --> row white
                         const planning = contract?.valueContractPlanning || {};
                         const actual = contract?.valueContractActual || {};
 
@@ -461,16 +474,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         // --- text match ---
                         const planningTextMatch = [
                             find_shipper?.name,
-                            planning.contract,
-                            planning.gas_hour,
-                            planning.timestamp,
+                            planning?.contract,
+                            planning?.gas_hour,
+                            planning?.timestamp,
                         ].some((val) => normalize(val).includes(queryLower));
 
                         const actualTextMatch = [
                             find_shipper_actual?.name,
-                            actual.contract,
-                            actual.gas_hour,
-                            actual.timestamp,
+                            actual?.contract,
+                            actual?.gas_hour,
+                            actual?.timestamp,
                         ].some((val) => normalize(val).includes(queryLower));
 
                         // --- value match (กัน undefined/null ให้เป็น "") ---
@@ -505,7 +518,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         totalShipperMatchActual ||
                         totalShipperMatch2 ||
                         totalShipperMatch2Actual ||
-                        filteredContracts.length > 0
+                        (filteredContracts?.length ?? 0) > 0
                     ) {
                         return {
                             ...shipperGroup,
@@ -522,7 +535,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     totalAllMatchActual ||
                     totalAllMatch2 ||
                     totalAllMatch2Actual ||
-                    filteredShipperData.length > 0
+                    (filteredShipperData?.length ?? 0) > 0
                 ) {
                     return {
                         ...entry,
@@ -549,23 +562,37 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [lastRetrieving, setLastRetrieving] = useState<any>('');
 
     const fetchData = async () => {
-        setValue('filter_show_total', true)
+        setValue('filter_show_total', userDT?.account_manage?.[0]?.user_type_id !== 4 ? true : false)
         setValue('filter_last_hourly_version', true)
-        if(userDT?.account_manage?.[0]?.user_type_id !== 3){
-            setValue('filter_only_public', true)
-        }
+        setValue('filter_only_public', true)
 
         {/* v2.0.46 Shipper ต้องไม่มี checkboxes 'Show Total All Shippers' https://app.clickup.com/t/86etym1pq */ }
         if ((userDT?.account_manage?.[0]?.user_type_id !== 3)) {
             setValue('filter_show_total_all_shipper', true)
+            setShowTotalAllShipper(true)
         } else {
             setValue('filter_show_total_all_shipper', false)
+            setShowTotalAllShipper(false)
         }
 
         try {
             // Group (2 = TSO, 3 = Shipper, 4 = Other)
             const res_shipper_name = await getService(`/master/account-manage/group-master?user_type=3`);
             setDataShipper(res_shipper_name)
+
+            // user_type_id !== 4 ให้ Select All และจะ disabled ที่ UI
+            if (userDT?.account_manage?.[0]?.user_type_id === 4) {
+                const shipperOptions = (res_shipper_name ?? [])
+                    .filter((item: any) =>
+                        userDT?.account_manage?.[0]?.user_type_id === 3
+                            ? item?.id === userDT?.account_manage?.[0]?.group?.id
+                            : true
+                    )
+                    .map((item: any) => item?.id_name)
+                    .filter(Boolean);
+
+                setSrchShipperName(shipperOptions);
+            }
 
             // DATA LAST EXECUTE
             // const res_last: any = await getService(`/master/metering-management/last-retrieving`);
@@ -584,7 +611,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 "latest_hourly_version": (userDT?.account_manage?.[0]?.user_type_id !== 3) ? watch('filter_last_hourly_version') : true, // Shipper จะเห็นเฉพาะ version ล่าสุดที่โดน public ของแต่ละ Gas Hour https://app.clickup.com/t/86eujrgh9
                 "show_total": watch('filter_show_total'),
                 "show_total_all_shipper": watch('filter_show_total_all_shipper'),
-                "only_public": (userDT?.account_manage?.[0]?.user_type_id !== 3) ? watch('filter_only_public') : true, // shipper เห็นแค่เฉพาะ public
+                "only_public": (userDT?.account_manage?.[0]?.user_type_id !== 3 && userDT?.account_manage?.[0]?.user_type_id !== 4) ? watch('filter_only_public') : true, // shipper เห็นแค่เฉพาะ public
                 "shipper": (userDT?.account_manage?.[0]?.user_type_id !== 3) ? [] : [userDT?.account_manage?.[0]?.group?.id_name] // ["NGP-S01-002"]
             }
             setBodyExport(body_main)
@@ -861,7 +888,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const [columnVisibilityNew, setColumnVisibilityNew] = useState<any>(
         Object.fromEntries(
-            initialColumns.map((column: any) => [column.key, column.visible])
+            (initialColumns || [])?.map((column: any) => [column.key, column.visible])
         )
     );
 
@@ -888,7 +915,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         };
 
         const getAncestors = (key: string): string[] => {
-            const column = dataFilter.find((col: any) => col.key === key);
+            const column = (dataFilter || [])?.find((col: any) => col.key === key);
             if (column?.parent_id) {
                 return [column.parent_id, ...getAncestors(column.parent_id)];
             }
@@ -950,10 +977,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             <div className="border-[#DFE4EA] border-[1px] p-4 rounded-xl  flex flex-col sm:flex-row gap-2">
                 <aside className="flex flex-wrap sm:flex-row gap-2 w-full">
 
-                    <InputSearch
+                    {/* <InputSearch
                         id="searchShipperName"
                         label="Shipper Name"
-                        // type="select"
                         type="select-multi-checkbox"
                         value={srchShipperName}
                         onChange={(e) => setSrchShipperName(e.target.value)}
@@ -969,6 +995,25 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 label: item.name,
                             }))
                         }
+                    /> */}
+                    <InputSearch
+                        id="searchShipperName"
+                        label="Shipper Name"
+                        type="select-multi-checkbox"
+                        value={srchShipperName}
+                        onChange={(e) => setSrchShipperName(e.target.value)}
+                        options={(dataShipper ?? [])
+                            .filter((item: any) =>
+                                userDT?.account_manage?.[0]?.user_type_id === 3
+                                    ? item?.id === userDT?.account_manage?.[0]?.group?.id
+                                    : true
+                            )
+                            .map((item: any) => ({
+                                value: item.id_name,
+                                label: item.name,
+                            }))
+                        }
+                        isDisabled={(userDT?.account_manage?.[0]?.user_type_id === 3 || userDT?.account_manage?.[0]?.user_type_id === 4)}
                     />
 
                     <DatePickaSearch
@@ -1060,32 +1105,37 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             onChange={(e: any) => setValue('filter_last_daily_version', e?.target?.checked)}
                         />
                     </div>
+                    {
+                        userDT?.account_manage?.[0]?.user_type_id !== 3 && 
                         <div className="-mb-2">
                             <CheckboxSearch2
                                 {...register('filter_last_hourly_version')}
                                 id="filter_last_hourly_version"
                                 label="Last Hourly Version"
                                 type="single-line"
-                                isDisable={userDT?.account_manage?.[0]?.user_type_id != 3 ? false : true} // v2.0.68 Role TSO ตรง Checkbox  Last Hourly Version ปลด Disable ออก https://app.clickup.com/t/86eu77v3k 
+                                isDisable={userDT?.account_manage?.[0]?.user_type_id == 3} // v2.0.68 Role TSO ตรง Checkbox  Last Hourly Version ปลด Disable ออก https://app.clickup.com/t/86eu77v3k 
                                 value={watch('filter_last_hourly_version') ? watch('filter_last_hourly_version') : false}
                                 onChange={(e: any) => setValue('filter_last_hourly_version', e?.target?.checked)}
                             />
                         </div>
-
-                    <div className="-mb-2">
-                        <CheckboxSearch2
-                            {...register('filter_show_total')}
-                            id="filter_show_total"
-                            label="Show Only Total"
-                            type="single-line"
-                            value={watch('filter_show_total') ? watch('filter_show_total') : false}
-                            onChange={(e: any) => setValue('filter_show_total', e?.target?.checked)}
-                        />
-                    </div>
+                    }
+                    {
+                        (userDT?.account_manage?.[0]?.user_type_id !== 4) && 
+                        <div className="-mb-2">
+                            <CheckboxSearch2
+                                {...register('filter_show_total')}
+                                id="filter_show_total"
+                                label="Show Only Total"
+                                type="single-line"
+                                value={watch('filter_show_total') ? watch('filter_show_total') : false}
+                                onChange={(e: any) => setValue('filter_show_total', e?.target?.checked)}
+                            />
+                        </div>
+                    }
 
                     {/* v2.0.46 Shipper ต้องไม่มี checkboxes 'Show Total All Shippers' https://app.clickup.com/t/86etym1pq */}
                     {
-                        userDT?.account_manage?.[0]?.user_type_id !== 3 && <div className="-mb-2">
+                        (userDT?.account_manage?.[0]?.user_type_id !== 3 && userDT?.account_manage?.[0]?.user_type_id !== 4) && <div className="-mb-2">
                             <CheckboxSearch2
                                 {...register('filter_show_total_all_shipper')}
                                 id="filter_show_total_all_shipper"
@@ -1097,7 +1147,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         </div>
                     }
                     {
-                        userDT?.account_manage?.[0]?.user_type_id !== 3 && 
+                        (userDT?.account_manage?.[0]?.user_type_id !== 3 && userDT?.account_manage?.[0]?.user_type_id !== 4) && 
                         <div className="-mb-2">
                             <CheckboxSearch2
                                 {...register('filter_only_public')}

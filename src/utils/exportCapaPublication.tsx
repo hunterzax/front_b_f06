@@ -390,12 +390,17 @@ export function exportAvailableCapacity(data: RowIn[], filename = "Available_Cap
 // ----------- ฟังชั่น export ใหม่
 
 export function epCapacityPublicationYear(payload: any) {
-    let { name, columnVisibility, specificData, resData } = payload;
+    let { name, columnVisibility, specificData, resData } = payload || {};
+    columnVisibility = columnVisibility || {};
+    specificData = specificData || { filter: [] };
+    if (!Array.isArray(specificData.filter)) {
+        specificData.filter = [];
+    }
 
     let filteredColumnVisibility = Object.keys(columnVisibility)
-            .filter(key => columnVisibility[key] === true)
+            .filter(key => columnVisibility?.[key] === true)
             .reduce((obj: any, key: any) => {
-                obj[key] = columnVisibility[key];
+                obj[key] = columnVisibility?.[key];
                 return obj;
             }, {});
 
@@ -406,24 +411,26 @@ export function epCapacityPublicationYear(payload: any) {
                 .map(key => key + " ") 
         ];
   
-    const formateData = resData.map((e: any) => {
-      const formattedData2 = e?.year_data.reduce((acc:any, item:any) => {
-        const [year, data]:any = Object.entries(item)[0];
+    const formateData = (resData || []).map((e: any) => {
+      const formattedData2 = (e?.year_data || []).reduce((acc:any, item:any) => {
+        const entries = Object.entries(item || {});
+        if (entries.length === 0) return acc;
+        const [year, data]:any = entries[0];
         acc[`${year} `] =
-          data['area_nominal_capacity'] !== null ? formatNumberThreeDecimal(data['area_nominal_capacity']) : "";
+          data?.['area_nominal_capacity'] !== null && data?.['area_nominal_capacity'] !== undefined ? formatNumberThreeDecimal(data['area_nominal_capacity']) : "";
         return acc;
       }, {});
 
       let setData:any = {
-        ['Zone']: e['zone']?.['name'],
-        ['Area']: e['name'],
+        ['Zone']: e?.['zone']?.['name'] || "",
+        ['Area']: e?.['name'] || "",
         ['Available Capacity (MMBTU/D)']: {
           ...formattedData2,
         },
       };
      
       let filteredData = Object.keys(setData)
-        .filter((key) => specificData.filter.includes(key))
+        .filter((key) => (specificData?.filter || []).includes(key))
         .reduce((obj:any, key:any) => {
           obj[key] = setData[key];
           return obj;
@@ -432,8 +439,8 @@ export function epCapacityPublicationYear(payload: any) {
       return filteredData;
     });
 
-    const filterHeader = specificData.filter || [];
-    const headerColorMap = specificData.filter.reduce((a:any, v:any) => ({ ...a, [v]: '1573A1'}), {}) 
+    const filterHeader = specificData?.filter || [];
+    const headerColorMap = (specificData?.filter || []).reduce((a:any, v:any) => ({ ...a, [v]: '1573A1'}), {}) 
     // const headerColorMap = {
     //   "Zone": '1573A1', // #1573A1
     //   "Area": '1573A1', // #1573A1
@@ -477,9 +484,9 @@ export function  epCapacityPublicationDay(payload: any) {
     let { name, columnVisibility, specificData, resData } = payload;
 
      let filteredColumnVisibility = Object.keys(columnVisibility)
-            .filter(key => columnVisibility[key] === true)
+            .filter(key => columnVisibility?.[key] === true)
             .reduce((obj: any, key: any) => {
-                obj[key] = columnVisibility[key];
+                obj[key] = columnVisibility?.[key];
                 return obj;
             }, {});
 
@@ -557,9 +564,9 @@ export function epCapacityPublicationMonth(payload: any) {
     let { name, columnVisibility, specificData, resData } = payload;
 
      let filteredColumnVisibility = Object.keys(columnVisibility)
-            .filter(key => columnVisibility[key] === true)
+            .filter(key => columnVisibility?.[key] === true)
             .reduce((obj: any, key: any) => {
-                obj[key] = columnVisibility[key];
+                obj[key] = columnVisibility?.[key];
                 return obj;
             }, {});
 

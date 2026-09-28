@@ -148,7 +148,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("process_type_id", e.target.value);
+                                                    setValue("process_type_id", e?.target?.value ?? "");
                                                     // fetchData(e?.target);
                                                 }}
                                                 displayEmpty
@@ -167,7 +167,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                             >
-                                                {processTypeMasterData?.length > 0 && processTypeMasterData?.map((item: any) => (
+                                                {(processTypeMasterData || [])?.map((item: any) => (
                                                     <MenuItem key={item.id} value={item.id}>
                                                         {item.name}
                                                     </MenuItem>
@@ -181,7 +181,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("process_type_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("process_type_id", e.target.value);
+                                                    setValue("process_type_id", e?.target?.value ?? "");
                                                     if (errors?.process_type_id) { clearErrors('process_type_id') }
                                                 }}
                                                 errors={errors?.process_type_id}
@@ -226,7 +226,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("user_type_id", e.target.value);
+                                                    setValue("user_type_id", e?.target?.value ?? "");
                                                     // fetchData(e?.target);
                                                 }}
                                                 displayEmpty
@@ -245,7 +245,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                             >
-                                                {userTypeMasterData?.length > 0 && userTypeMasterData?.map((item: any) => (
+                                                {(userTypeMasterData || [])?.map((item: any) => (
                                                     <MenuItem key={item.id} value={item.id}>
                                                         {item.name}
                                                     </MenuItem>
@@ -259,7 +259,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("user_type_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("user_type_id", e.target.value);
+                                                    setValue("user_type_id", e?.target?.value ?? "");
                                                     if (errors?.user_type_id) { clearErrors('user_type_id') }
                                                 }}
                                                 errors={errors?.user_type_id}
@@ -302,7 +302,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("nomination_type_id", e.target.value);
+                                                    setValue("nomination_type_id", e?.target?.value ?? "");
                                                     // fetchData(e?.target);
                                                 }}
                                                 displayEmpty
@@ -321,7 +321,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                             >
-                                                {nominationTypeMasterData?.length > 0 && nominationTypeMasterData?.map((item: any) => (
+                                                {(nominationTypeMasterData || [])?.map((item: any) => (
                                                     <MenuItem key={item.id} value={item.id}>
                                                         {item.name}
                                                     </MenuItem>
@@ -335,7 +335,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("nomination_type_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("nomination_type_id", e.target.value);
+                                                    setValue("nomination_type_id", e?.target?.value ?? "");
                                                     if (errors?.nomination_type_id) { clearErrors('nomination_type_id') }
                                                 }}
                                                 errors={errors?.nomination_type_id}
@@ -379,7 +379,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         },
                                                     }}
                                                     onChange={(e) => {
-                                                        setValue("hour", e.target.value);
+                                                        setValue("hour", e?.target?.value ?? "");
                                                     }}
                                                     displayEmpty
                                                     renderValue={(value: any) => {
@@ -426,7 +426,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         },
                                                     }}
                                                     onChange={(e) => {
-                                                        setValue("minute", e.target.value);
+                                                        setValue("minute", e?.target?.value ?? "");
                                                     }}
                                                     displayEmpty
                                                     renderValue={(value: any) => {

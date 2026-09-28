@@ -68,8 +68,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
-    let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-    // let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+    let user_permission: any = typeof window !== 'undefined' ? (localStorage?.getItem("k3a9r2b6m7t0x5w1s8j") || getCookieValue("k3a9r2b6m7t0x5w1s8j")) : null;
     user_permission = user_permission ? decryptData(user_permission) : null;
 
     // ############### REDUX DATA ###############
@@ -100,7 +99,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [srchTypeDocument, setSrchTypeDocument] = useState('');
     // const [srchStartDate, setSrchStartDate] = useState<Date | null>(null);
     // const [srchStartDate, setSrchStartDate] = useState<Date | null>(f_filter_gas_day ? dayjs(f_filter_gas_day).toDate() : toDayjs().add(1, 'day').toDate());
-    const [srchStartDate, setSrchStartDate] = useState<Date | null>(f_filter_gas_day ? dayjs(f_filter_gas_day).toDate() : (toDayjs().day() > 4 ? toDayjs().add(1 , 'week') : toDayjs()).startOf('week').toDate());
+    const [srchStartDate, setSrchStartDate] = useState<Date | null>(f_filter_gas_day ? dayjs(f_filter_gas_day).toDate() : (!!status_from_somewhere_else ? null : (toDayjs().day() > 4 ? toDayjs().add(1 , 'week') : toDayjs()).startOf('week').toDate()));
     
     const [logsrchDate, setlogsrcDate] = useState<any>();
     const [srchCheckbox, setSrchCheckbox] = useState(false);
@@ -195,14 +194,14 @@ useEffect(() => {
         limit?: any,
         contract_?: any
     ) => {
-        const gasDay = toDayjs(filter_gas_week_from_somewhere_else);
+        const gasDay = filter_gas_week_from_somewhere_else ? toDayjs(filter_gas_week_from_somewhere_else) : null;
 
         const searchDayjs = srchStartDate
             ? toDayjs(srchStartDate)
             : null;
 
         const searchDate =
-            searchDayjs?.isValid()
+            (searchDayjs && searchDayjs?.isValid())
                 ? searchDayjs.format("YYYY-MM-DD")
                 : null;
 
@@ -215,9 +214,9 @@ useEffect(() => {
         // วันที่ที่ส่งมาจากหน้า Dashboard
         else if (
             filter_gas_week_from_somewhere_else &&
-            gasDay.isValid()
+            gasDay?.isValid()
         ) {
-            selectdate = gasDay.format("YYYY-MM-DD");
+            selectdate = gasDay?.format ? gasDay.format("YYYY-MM-DD") : "";
         }
 
         const newOffset = Math.max(Number(offset ?? 1) - 1, 0);
@@ -292,7 +291,7 @@ useEffect(() => {
         // DATA GROUP
         // เอา List > Filter Shipper Name ให้กรองมาเฉพาะ Shipper ที่มีอยู่ในหน้านี้ https://app.clickup.com/t/86erwpj4q
         const uniqueGroups = Array.from(
-            new Map(response?.map((item: any) => [item.group.id, item.group])).values()
+            new Map((response || [])?.map((item: any) => [item?.group?.id, item?.group])).values()
         );
         if (logsrchDate !== srchStartDate || srchShipper?.length == 0) {
             setDataShipper(uniqueGroups);
@@ -325,7 +324,7 @@ useEffect(() => {
             setDataContractOriginal(uniqueContract)
         }
 
-        if (contractCodeId && uniqueContract?.some((item: any) => item.id == Number(contractCodeId))) {
+        if (contractCodeId && uniqueContract?.some((item: any) => item?.id == Number(contractCodeId))) {
             setSrchContractCode([contractCodeId])
         }
 
@@ -334,21 +333,16 @@ useEffect(() => {
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
-
-            // if (user_permission?.role_config) {
-            //     const updatedUserPermission = generateUserPermission(user_permission);
-            //     setUserPermission(updatedUserPermission);
-            // } else {
-            //     const permission = findRoleConfigByMenuName('Weekly Management', userDT)
-            //     setUserPermission(permission);
-            // }
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+            }
 
             const permission = findRoleConfigByMenuName('Weekly Management', userDT)
             if (permission) {
                 setUserPermission(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermission(updatedUserPermission);
             }
 
@@ -403,7 +397,7 @@ useEffect(() => {
             // process_type -> "Validity response of renomination" กับ "Management" 
             // process_type = "Validity response of renomination" ใช้กับ row ที่ renom = yes
             // process_type = "Management" ใช้กับ row ที่ renom = no
-            let filter_nom_deadline_3 = res_nom_deadline?.filter((item?: any) => (item?.process_type_id === 2 || item?.process_type_id === 4) && item?.nomination_type?.id === 2);
+            let filter_nom_deadline_3: any = [];
 
             // filter USER TYPE
             if (userDT?.account_manage?.[0]?.user_type_id !== 3) {
@@ -1134,7 +1128,7 @@ useEffect(() => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries(initialColumns?.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries((initialColumns || [])?.map((column: any) => [column?.key, column?.visible]))
     );
 
     const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
@@ -1149,12 +1143,12 @@ useEffect(() => {
     };
 
     const handleAcceptReject = async (id?: any, mode?: any) => {
-        id = id.map((item: any) => item.id);
+        id = Array.isArray(id) ? id.map((item: any) => item?.id ?? item) : [];
         if (id?.length > 1) {
             setMdStatType('all')
         } else {
             // const filter_data_x = dataTable?.filter((item: any) => item.id === id[0]);
-            const filter_data_x: any = paginatedData?.filter((item: any) => item.id === id[0]);
+            const filter_data_x: any = (paginatedData || [])?.filter((item: any) => item?.id === id?.[0]);
             setDataModalAcceptReject(filter_data_x)
             setMdStatType('one')
         }
@@ -1167,7 +1161,7 @@ useEffect(() => {
         let body_post = {
             id: idUpdateStat,
             status: modeUpdateStat == 'accept' ? 2 : 3,
-            comment: data.reason
+            comment: data?.reason
         }
 
         try {
@@ -1401,12 +1395,12 @@ useEffect(() => {
                             // }))}
                             // options={renderContractCodeFilter()}
                             // options={filter_contract_code_from_somewhere_else ? renderContractCodeFilterTwo() : renderContractCodeFilter()}
-                            options={filter_contract_code_from_somewhere_else ? dataContractOriginal?.filter((item: any) =>
-                                    srchShipper.length > 0
-                                        ? srchShipper.includes(String(item.group_id))
+                            options={filter_contract_code_from_somewhere_else ? (dataContractOriginal || [])?.filter((item: any) =>
+                                    Array.isArray(srchShipper) && srchShipper.length > 0
+                                        ? srchShipper.includes(String(item?.group_id))
                                         : true
                                 )
-                                    .map((item: any) => ({
+                                    ?.map((item: any) => ({
                                         // value: item?.id?.toString(),
                                         value: item?.contract_code,
                                         label: item?.contract_code
@@ -1420,9 +1414,9 @@ useEffect(() => {
                             type="select-multi-checkbox"
                             value={srchStatus}
                             onChange={(e) => setSrchStatus(e.target.value)}
-                            options={nominationStatMaster?.data?.map((item: any) => ({
+                            options={(nominationStatMaster?.data || [])?.map((item: any) => ({
                                 value: item?.id?.toString(),
-                                label: item.name
+                                label: item?.name
                             }))}
                         />
 

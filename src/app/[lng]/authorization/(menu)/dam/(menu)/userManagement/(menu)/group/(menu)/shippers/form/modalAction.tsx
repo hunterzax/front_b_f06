@@ -376,7 +376,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("role_default") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("role_default", e.target.value);
+                                                    setValue("role_default", e?.target?.value ?? "");
                                                     if (errors?.role_default) { clearErrors('role_default') }
                                                 }}
                                                 errors={errors?.role_default}
@@ -476,7 +476,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue('bank_master_id', e.target.value);
+                                                    setValue('bank_master_id', e?.target?.value ?? "");
                                                 }}
                                                 displayEmpty
                                                 renderValue={(value: any) => {
@@ -493,22 +493,27 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 }}
                                             >
                                                 {dataBank?.slice() // เพื่อไม่เปลี่ยนต้นฉบับ
-                                                    .sort((a: any, b: any) => {
+                                                    ?.sort((a: any, b: any) => {
                                                         const textA = (a?.name ?? '').toString().toLowerCase();
                                                         const textB = (b?.name ?? '').toString().toLowerCase();
                                                         return textA?.localeCompare(textB);
-                                                    })?.map((item: any) => (
-                                                        <MenuItem key={item.id} value={item.id}>
-                                                            <div className="flex items-center text-[14px]">
-                                                                <img
-                                                                    src={item.url}
-                                                                    alt={item?.name}
-                                                                    style={{ width: '24px', height: '24px', marginRight: '8px' }}
-                                                                />
-                                                                {item?.name}
-                                                            </div>
-                                                        </MenuItem>
-                                                    ))}
+                                                    })
+                                                    ?.filter((item: any) => item)
+                                                    ?.map((item: any) => {
+                                                        if (!item) return null;
+                                                        return (
+                                                            <MenuItem key={item.id} value={item.id}>
+                                                                <div className="flex items-center text-[14px]">
+                                                                    <img
+                                                                        src={item.url}
+                                                                        alt={item.name}
+                                                                        style={{ width: '24px', height: '24px', marginRight: '8px' }}
+                                                                    />
+                                                                    {item.name}
+                                                                </div>
+                                                            </MenuItem>
+                                                        );
+                                                    })}
                                             </Select>
                                             {errors.bank_master_id && <p className={`${textErrorClass}`}>{errors.bank_master_id.message}</p>}
                                         </div>

@@ -1,4 +1,3 @@
-"use client";
 import * as React from 'react';
 import {
     Dialog,
@@ -45,7 +44,7 @@ const ModalView: React.FC<ModalViewProps> = ({ open, handleClose, headData, view
     const id = openPopOver ? 'column-toggle-popover' : undefined;
 
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        initialColumns ? Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible])) : {}
+        initialColumns ? Object.fromEntries(initialColumns.map((column: any) => [column?.key, column?.visible])) : {}
     );
 
     useEffect(() => {
@@ -300,7 +299,7 @@ const ModalView: React.FC<ModalViewProps> = ({ open, handleClose, headData, view
                     "filter": [] // ใส่แค่ []
                 }
 
-                if (viewDetailData.tariff.tariff_type_ab_id == 1) { // A
+                if (viewDetailData?.tariff?.tariff_type_ab_id == 1) { // A
                     // exportTariffChargeReport(`tariff/tariff-charge-report/commodity-charge-a-external/${viewDetailData?.id}`, body);
                     // exportTariffChargeReport(`tariff/tariff-charge-report/commodity-charge-a-internal/${viewDetailData?.id}`, body);
 

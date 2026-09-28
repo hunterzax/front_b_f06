@@ -58,7 +58,7 @@ const generateHeaders = (data: { [key: string]: HeaderEntry }, prefix = '') => {
                     return { date: key, value: valueKey };
                 }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Sort by date
 
-            if (dates?.length > 0) {
+            if (dates.length > 0) {
                 let dates2 = []
                 for (let index = 0; index < dateKeyValuePairs.length; index++) {
                     dates2.push({ label: dateKeyValuePairs[index]?.date, key: dateKeyValuePairs[index]?.value, value: dateKeyValuePairs[index]?.date });
@@ -205,7 +205,7 @@ const FatherTable: React.FC<any> = ({
 
         if (convertDataArr?.length > 0) {
             // Iterate over the array once
-            for (let i = 0; i < convertDataArr.length; i++) {
+            for (let i = 0; i < (convertDataArr?.length ?? 0); i++) {
                 const dataArr = convertDataArr[i]?.data;
 
                 // Filter and reverse the array once
@@ -213,7 +213,7 @@ const FatherTable: React.FC<any> = ({
 
                 if (filteredData?.length > 0) {
                     // Iterate over the filtered and reversed array
-                    for (let ix = 0; ix < filteredData.length; ix++) {
+                    for (let ix = 0; ix < (filteredData?.length ?? 0); ix++) {
                         const item = filteredData[ix];
                         const key = item?.key;
                         const parentKey = convertDataArr[i]?.key;
@@ -406,40 +406,41 @@ const FatherTable: React.FC<any> = ({
     };
 
     const functionControlcolSpan = (header: any, mode: 'date' | 'sub_header') => {
+        if (header == null) return [];
         if (mode == 'date') {
-            let dataDate: any = header?.dates; //สำหรับเอา data ทั้งหมดของหัวข้อที่ map มา
-            let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header?.label); //หา parent ที่ถูกต้องของข้อมูล
+            let dataDate: any = header.dates; //สำหรับเอา data ทั้งหมดของหัวข้อที่ map มา
+            let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header.label); //หา parent ที่ถูกต้องของข้อมูล
             let checkDate: any = []; //สำหรับเอา data มาใช้ในการ hide column
 
             if (dataDate) {
-                for (let index = 0; index < dataDate?.length; index++) {
+                for (let index = 0; index < dataDate.length; index++) {
                     let pathKey: any = findKey?.key + "_" + formatDateToMonthYear(dataDate[index]); //กำหนด key ของ menu โดยใช้ parent id ของหัว table + กับวันที่
                     if (findKey?.key == "period") {
-                        if (columnVisibility[dataDate[index]] == false) {// กรณีถ้า data เป็น period
+                        if (columnVisibility?.[dataDate[index]] == false) {// กรณีถ้า data เป็น period
                             checkDate.push({
                                 key: formatDateToMonthYear(dataDate[index]),
                                 active: false,
-                                parent: header?.label
+                                parent: header.label
                             })
-                        } else if (columnVisibility[dataDate[index]] == true) {
+                        } else if (columnVisibility?.[dataDate[index]] == true) {
                             checkDate.push({
                                 key: formatDateToMonthYear(dataDate[index]),
                                 active: true,
-                                parent: header?.label
+                                parent: header.label
                             })
                         }
                     } else {
-                        if (columnVisibility[pathKey] == false) {// กรณีถ้า data เป็น date ปกติ
+                        if (columnVisibility?.[pathKey] == false) {// กรณีถ้า data เป็น date ปกติ
                             checkDate.push({
                                 key: formatDateToMonthYear(dataDate[index]),
                                 active: false,
-                                parent: header?.label
+                                parent: header.label
                             })
-                        } else if (columnVisibility[pathKey] == true) {
+                        } else if (columnVisibility?.[pathKey] == true) {
                             checkDate.push({
                                 key: formatDateToMonthYear(dataDate[index]),
                                 active: true,
-                                parent: header?.label
+                                parent: header.label
                             })
                         }
                     }
@@ -448,16 +449,16 @@ const FatherTable: React.FC<any> = ({
 
             return checkDate;
         } else if (mode == 'sub_header') {
-            let dataSub: any = header?.subHeaders; //สำหรับเอา data ทั้งหมดของหัวข้อที่ map มา
+            let dataSub: any = header.subHeaders; //สำหรับเอา data ทั้งหมดของหัวข้อที่ map มา
             let checkData: any = []; //สำหรับเอา data มาใช้ในการ hide column
             if (dataSub) {
-                for (let index = 0; index < dataSub?.length; index++) {
-                    if (columnVisibility[dataSub[index]?.key] == false) {
+                for (let index = 0; index < dataSub.length; index++) {
+                    if (columnVisibility?.[dataSub[index]?.key] == false) {
                         checkData.push({
                             ...dataSub[index],
                             active: false
                         })
-                    } else if (columnVisibility[dataSub[index]?.key] == true) {
+                    } else if (columnVisibility?.[dataSub[index]?.key] == true) {
                         checkData.push({
                             ...dataSub[index],
                             active: true
@@ -526,8 +527,9 @@ const FatherTable: React.FC<any> = ({
 
                                     {
                                         updatedHeaders?.map((header: any, index: any) => {
+                                            if (!header) return null;
                                             const visibilityKey = visibilityMap[header.label];
-                                            if (!columnVisibility[visibilityKey]) {
+                                            if (!columnVisibility?.[visibilityKey]) {
                                                 return null
                                             }
 
@@ -551,7 +553,7 @@ const FatherTable: React.FC<any> = ({
                                 </>
                                 :
                                 <>
-                                    {columnVisibility.zone && (
+                                    {columnVisibility?.zone && (
                                         <th
                                             scope="col"
                                             className={`${table_sort_header_style}  border-none text-center bg-[#1473A1]`}
@@ -562,7 +564,7 @@ const FatherTable: React.FC<any> = ({
                                         </th>
                                     )}
 
-                                    {columnVisibility.area && (
+                                    {columnVisibility?.area && (
                                         <th
                                             scope="col"
                                             className={`${table_sort_header_style}  border-none text-center bg-[#1473A1]`}
@@ -573,7 +575,7 @@ const FatherTable: React.FC<any> = ({
                                         </th>
                                     )}
 
-                                    {columnVisibility.contract_point && (
+                                    {columnVisibility?.contract_point && (
                                         <th
                                             scope="col"
                                             className={`${table_sort_header_style}  border-none text-center bg-[#1473A1]`}
@@ -588,7 +590,7 @@ const FatherTable: React.FC<any> = ({
                                     {
                                         updatedHeadersExit?.map((header: any, index: any) => {
                                             const visibilityKey = visibilityMap[header.label];
-                                            if (!columnVisibility[visibilityKey]) {
+                                            if (!columnVisibility?.[visibilityKey]) {
                                                 return null
                                             }
 
@@ -618,33 +620,34 @@ const FatherTable: React.FC<any> = ({
 
                     {/* SUB HEADER หรือ header row ที่สอง */}
                     <tr className="h-9">
-                        {columnVisibility.zone && (
+                        {columnVisibility?.zone && (
                             <th key={'10000'} className={`${table_header_style} border-none text-center bg-[#1473A1]`}></th>
                         )}
                         {/* <th key={'10001'} className={`${table_header_style} border-none text-center bg-[#1473A1]`}></th> */}
-                        {columnVisibility.area && (
+                        {columnVisibility?.area && (
                             <th key={'10002'} className={`${table_header_style} border-none text-center bg-[#1473A1]`}></th>
                         )}
-                        {columnVisibility.contract_point && (
+                        {columnVisibility?.contract_point && (
                             <th key={'10003'} className={`${table_header_style} border-none text-center bg-[#1473A1]`}></th>
                         )}
 
                         {mode == "entry" ?
                             updatedHeaders?.map((header: any, index: any) => {
+                                if (!header) return null;
                                 const visibilityKey = visibilityMap[header.label];
-                                if (!columnVisibility[visibilityKey]) {
+                                if (!columnVisibility?.[visibilityKey]) {
                                     return null
                                 }
 
-                                let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header?.label);
+                                let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header.label);
                                 const checkDate: any = functionControlcolSpan(header, 'date'); //example here only data == date
                                 const checkSubheader: any = functionControlcolSpan(header, 'sub_header'); //example here only data == sub_header
 
                                 return (
-                                    header?.dates ? (
+                                    header.dates ? (
                                         sortDatesAsc([...header.dates]).map((date: any, dateIndex: any, arr: any) => ( // Sort before rendering
                                             date == 'From' || date == 'To' ?
-                                                columnVisibility[formatDateToMonthYear(date)] && (
+                                                columnVisibility?.[formatDateToMonthYear(date)] && (
                                                     <th
                                                         key={`${index}-${dateIndex}`}
                                                         colSpan={
@@ -667,7 +670,7 @@ const FatherTable: React.FC<any> = ({
                                                         {getArrowIcon("entry_date" + dateIndex)}
                                                     </th>
                                                 )
-                                                : columnVisibility[findKey?.key + "_" + formatDateToMonthYear(date)] && (
+                                                : columnVisibility?.[findKey?.key + "_" + formatDateToMonthYear(date)] && (
                                                     <th
                                                         key={`${index}-${dateIndex}`}
                                                         // className={`${table_sort_header_style} text-center bg-[#00ADEF] ${dateIndex === arr.length - 1 ? "border-r-2 border-gray-300" : ""}`}
@@ -690,9 +693,10 @@ const FatherTable: React.FC<any> = ({
                                                     </th>
                                                 )
                                         ))
-                                    ) : header?.subHeaders && header?.subHeaders.length > 0 ? (
-                                        header?.subHeaders.map((subHeader: any, subIndex: any, arr: any) => (
-                                            columnVisibility[subHeader?.key] && (
+                                    ) : header.subHeaders && header.subHeaders.length > 0 ? (
+                                        header.subHeaders?.map((subHeader: any, subIndex: any, arr: any) => {
+                                            if (subHeader == null) return null;
+                                            return columnVisibility?.[subHeader.key] && (
                                                 <th
                                                     key={`${index}-${subIndex}`}
                                                     colSpan={
@@ -703,8 +707,8 @@ const FatherTable: React.FC<any> = ({
                                                     {subHeader.label}
                                                     {getArrowIcon("entry_sub_min_max" + subIndex)}
                                                 </th>
-                                            )
-                                        ))
+                                            );
+                                        })
                                     ) : (
                                         <th key={index}
                                             // className="px-4 py-2 border border-gray-300 text-center"
@@ -720,19 +724,20 @@ const FatherTable: React.FC<any> = ({
                             :
                             // headersExit.map((header: any, index: any) =>
                             updatedHeadersExit.map((header: any, index: any) => {
+                                if (!header) return null;
                                 const visibilityKey = visibilityMap[header.label];
-                                if (!columnVisibility[visibilityKey]) {
+                                if (!columnVisibility?.[visibilityKey]) {
                                     return null
                                 }
 
-                                let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header?.label);
+                                let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header.label);
                                 const checkDate: any = functionControlcolSpan(header, 'date'); //example here only data == date
                                 const checkSubheader: any = functionControlcolSpan(header, 'sub_header'); //example here only data == sub_header
                                 return (
                                     header.dates ? (
                                         sortDatesAsc([...header.dates]).map((date: any, dateIndex: any, arr: any) => ( // Sort before rendering
                                             date == 'From' || date == 'To' ?
-                                                columnVisibility[formatDateToMonthYear(date)] && (
+                                                columnVisibility?.[formatDateToMonthYear(date)] && (
                                                     <th
                                                         key={`${index}-${dateIndex}`}
                                                         colSpan={
@@ -756,7 +761,7 @@ const FatherTable: React.FC<any> = ({
                                                         {getArrowIcon("exit_date" + dateIndex)}
                                                     </th>
                                                 )
-                                                : columnVisibility[findKey?.key + "_" + formatDateToMonthYear(date)] && (
+                                                : columnVisibility?.[findKey?.key + "_" + formatDateToMonthYear(date)] && (
                                                     <th
                                                         key={`${index}-${dateIndex}`}
                                                         colSpan={
@@ -781,8 +786,9 @@ const FatherTable: React.FC<any> = ({
                                                 )
                                         ))
                                     ) : header.subHeaders && header.subHeaders.length > 0 ? (
-                                        header.subHeaders.map((subHeader: any, subIndex: any, arr: any) => (
-                                            columnVisibility[subHeader?.key] && (
+                                        header.subHeaders.map((subHeader: any, subIndex: any, arr: any) => {
+                                            if (subHeader == null) return null;
+                                            return columnVisibility?.[subHeader.key] && (
                                                 <th
                                                     key={`${index}-${subIndex}`}
                                                     colSpan={
@@ -793,8 +799,8 @@ const FatherTable: React.FC<any> = ({
                                                     {subHeader.label}
                                                     {getArrowIcon("exit_sub_min_max" + subIndex)}
                                                 </th>
-                                            )
-                                        ))
+                                            );
+                                        })
                                     ) : (
                                         <th key={index}
                                             className={`${table_header_style} border border-[#1473A1] text-center `}
@@ -813,7 +819,7 @@ const FatherTable: React.FC<any> = ({
                         mode == "entry" ? sortedDataEntry?.map((row: any, rowIndex: any) => (
                             <tr key={rowIndex} className="hover:bg-gray-50">
                                 {/* ZONE */}
-                                {columnVisibility.zone && (
+                                {columnVisibility?.zone && (
                                     <td
                                         key={`10000`}
                                         className="px-4 py-2 border-b border-gray-300 text-center text-[#464255]"
@@ -834,7 +840,7 @@ const FatherTable: React.FC<any> = ({
                                 )}
 
                                 {/* AREA */}
-                                {columnVisibility.area && (
+                                {columnVisibility?.area && (
                                     <td
                                         key={`10001`}
                                         className="px-4 py-2 border-b border-gray-300 text-center text-[#464255]"
@@ -855,7 +861,7 @@ const FatherTable: React.FC<any> = ({
                                 )}
 
                                 {/* CONTRACT POINT */}
-                                {columnVisibility.contract_point && (
+                                {columnVisibility?.contract_point && (
                                     <td
                                         key={`10002`}
                                         className="px-4 py-2 border-b border-gray-300 text-center text-[#464255]"
@@ -867,17 +873,19 @@ const FatherTable: React.FC<any> = ({
                                 )}
 
                                 {updatedHeaders?.map((header: any, colIndex: any) => {
+                                    if (!header) return null;
                                     const visibilityKey = visibilityMap[header.label];
 
                                     // Check if the header has dates
                                     if (header.dates && header.dates.length > 0) {
-                                        let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header?.label);
+                                        let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header.label);
                                         const checkDate: any = functionControlcolSpan(header, 'date'); //example here only data == date
 
-                                        return (header?.dates2?.map((date: any, dateIndex: any, arr: any) => {
+                                        return (header.dates2?.map((date: any, dateIndex: any, arr: any) => {
+                                            if (date == null) return null;
                                             return (
-                                                date?.value == 'From' || date?.value == 'To' ?
-                                                    (columnVisibility[formatDateToMonthYear(date?.value)] && (
+                                                date.value == 'From' || date.value == 'To' ?
+                                                    (columnVisibility?.[formatDateToMonthYear(date.value)] && (
                                                         <td
                                                             key={`${colIndex}-${dateIndex}`}
                                                             className={`
@@ -889,7 +897,7 @@ const FatherTable: React.FC<any> = ({
                                                             text-[#464255] 
                                                             ${dateIndex === arr.length - 1 ? "border-r-2 border-gray-300"
                                                                     : checkDate?.filter((item: any) => item?.active == false)?.length > 0 ?
-                                                                        checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date?.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
+                                                                        checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
                                                                         "border-r-2 border-gray-300" : ""}
                                                         `}
                                                         >
@@ -927,7 +935,7 @@ const FatherTable: React.FC<any> = ({
                                                             )}
                                                         </td>
                                                     ))
-                                                    : columnVisibility[findKey?.key + "_" + formatDateToMonthYear(date?.value)] && (
+                                                    : columnVisibility?.[findKey?.key + "_" + formatDateToMonthYear(date.value)] && (
                                                         <td
                                                             key={`${colIndex}-${dateIndex}`}
                                                             className={`
@@ -939,7 +947,7 @@ const FatherTable: React.FC<any> = ({
                                                             text-[#464255] 
                                                             ${dateIndex === arr.length - 1 ? "border-r-2 border-gray-300"
                                                                     : checkDate?.filter((item: any) => item?.active == false)?.length > 0 ?
-                                                                        checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date?.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
+                                                                        checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
                                                                         "border-r-2 border-gray-300" : ""}
                                                         `}
                                                         >
@@ -979,15 +987,15 @@ const FatherTable: React.FC<any> = ({
                                                     )
                                             )
                                         }));
-                                    } else if (header?.subHeaders && header.subHeaders.length > 0) {
+                                    } else if ((header.subHeaders?.length ?? 0) > 0) {
                                         // Render data for columns with subHeaders
                                         // ตรงนี้ render Min, Max
 
                                         const checkSubheader: any = functionControlcolSpan(header, 'sub_header'); //example here only data == sub_header
 
-                                        return header?.subHeaders.map((subHeader: any, subIndex: any, arr: any) => (
-
-                                            columnVisibility[subHeader?.key] && (
+                                        return header.subHeaders?.map((subHeader: any, subIndex: any, arr: any) => {
+                                            if (subHeader == null) return null;
+                                            return columnVisibility?.[subHeader.key] && (
                                                 <td
                                                     key={`${colIndex}-${subIndex}`}
                                                     colSpan={
@@ -1013,8 +1021,8 @@ const FatherTable: React.FC<any> = ({
                                                         formatNumberThreeDecimal(row[subHeader?.value]) || ''
                                                     )}
                                                 </td>
-                                            )
-                                        ));
+                                            );
+                                        });
                                     }
                                 })}
                             </tr>
@@ -1023,7 +1031,7 @@ const FatherTable: React.FC<any> = ({
                                 <tr key={rowIndex} className="hover:bg-gray-50">
 
                                     {/* ZONE */}
-                                    {columnVisibility.zone && (
+                                    {columnVisibility?.zone && (
                                         <td
                                             key={`20000` + rowIndex}
                                             className="px-4 py-2 border-b border-gray-300 text-center text-[#464255]"
@@ -1045,7 +1053,7 @@ const FatherTable: React.FC<any> = ({
 
 
                                     {/* AREA */}
-                                    {columnVisibility.area && (
+                                    {columnVisibility?.area && (
                                         <td
                                             key={`20002` + rowIndex}
                                             className="px-4 py-2 border-b border-gray-300 text-center text-[#464255]"
@@ -1066,7 +1074,7 @@ const FatherTable: React.FC<any> = ({
                                     )}
 
                                     {/* CONTRACT POINT */}
-                                    {columnVisibility.area && (
+                                    {columnVisibility?.area && (
                                         <td
                                             key={`20004` + rowIndex}
                                             className="px-4 py-2 border-b border-gray-300 text-center text-[#464255]"
@@ -1076,18 +1084,19 @@ const FatherTable: React.FC<any> = ({
                                     )}
 
                                     {updatedHeadersExit?.map((header: any, colIndex: any) => {
+                                        if (!header) return null;
                                         const visibilityKey = visibilityMap[header.label];
 
                                         // Check if the header has dates
                                         if (header.dates && header.dates.length > 0) {
-                                            let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header?.label);
+                                            let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header.label);
                                             const checkDate: any = functionControlcolSpan(header, 'date'); //example here only data == date
 
-                                            return (header?.dates2?.map((date: any, dateIndex: any, arr: any) => {
-
+                                            return (header.dates2?.map((date: any, dateIndex: any, arr: any) => {
+                                                if (!date) return null;
                                                 return (
-                                                    date?.value == 'From' || date?.value == 'To' ?
-                                                        (columnVisibility[formatDateToMonthYear(date?.value)] && (
+                                                    date.value == 'From' || date.value == 'To' ?
+                                                        (columnVisibility?.[formatDateToMonthYear(date.value)] && (
                                                             <td
                                                                 key={`${colIndex}-${dateIndex}`}
                                                                 className={`
@@ -1099,7 +1108,7 @@ const FatherTable: React.FC<any> = ({
                                                                     text-[#464255] 
                                                                     ${dateIndex === arr.length - 1 ? "border-r-2 border-gray-300"
                                                                         : checkDate?.filter((item: any) => item?.active == false)?.length > 0 ?
-                                                                            checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date?.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
+                                                                            checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
                                                                             "border-r-2 border-gray-300" : ""}
                                                                 `}
                                                             >
@@ -1137,7 +1146,7 @@ const FatherTable: React.FC<any> = ({
                                                                 )}
                                                             </td>
                                                         ))
-                                                        : columnVisibility[findKey?.key + "_" + formatDateToMonthYear(date?.value)] && (
+                                                        : columnVisibility?.[findKey?.key + "_" + formatDateToMonthYear(date.value)] && (
                                                             <td
                                                                 key={`${colIndex}-${dateIndex}`}
                                                                 className={`
@@ -1149,7 +1158,7 @@ const FatherTable: React.FC<any> = ({
                                                                 text-[#464255] 
                                                                 ${dateIndex === arr.length - 1 ? "border-r-2 border-gray-300"
                                                                         : checkDate?.filter((item: any) => item?.active == false)?.length > 0 ?
-                                                                            checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date?.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
+                                                                            checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
                                                                             "border-r-2 border-gray-300" : ""}
                                                             `}
                                                             >
@@ -1194,9 +1203,9 @@ const FatherTable: React.FC<any> = ({
                                             // ตรงนี้ render Min, Max
                                             const checkSubheader: any = functionControlcolSpan(header, 'sub_header'); //example here only data == sub_header
 
-                                            return header.subHeaders.map((subHeader: any, subIndex: any, arr: any) => (
-
-                                                columnVisibility[subHeader?.key] && (
+                                            return header.subHeaders.map((subHeader: any, subIndex: any, arr: any) => {
+                                                if (subHeader == null) return null;
+                                                return columnVisibility?.[subHeader.key] && (
                                                     <td
                                                         key={`${colIndex}-${subIndex}`}
                                                         colSpan={
@@ -1223,8 +1232,8 @@ const FatherTable: React.FC<any> = ({
                                                             formatNumberThreeDecimal(row[subHeader?.value]) || ''
                                                         )}
                                                     </td>
-                                                )
-                                            ));
+                                                );
+                                            });
                                         }
                                     })}
                                 </tr>
@@ -1238,7 +1247,7 @@ const FatherTable: React.FC<any> = ({
                     {/* ############### SUMMARY ENTRY ############### */}
                     {
                         // mode == "entry" ? outputEntry.map((entry: any, rowIndex: any) => {
-                        mode == "entry" && summedEntries?.length > 0 && summedEntries?.map((entry: any, rowIndex: any) => {
+                        mode == "entry" && (Array.isArray(summedEntries) ? summedEntries : []).map((entry: any, rowIndex: any) => {
 
                             return (
                                 <tr key={rowIndex} className='h-[50px]' style={{ backgroundColor: entry?.zone?.color ? entry?.zone?.color : '#ffffff' }}>
@@ -1259,13 +1268,13 @@ const FatherTable: React.FC<any> = ({
                                         // let resultMaster: any = false;
                                         if (checkParent) {
                                             let count: any = 0;
-                                            for (let index = 0; index < checkParent?.length; index++) {
-                                                if (columnVisibility[checkParent[index]?.key] == false) {
+                                            for (let index = 0; index < checkParent.length; index++) {
+                                                if (columnVisibility?.[checkParent[index]?.key] == false) {
                                                     count = count + 1;
                                                     resultParent = false;
                                                 }
 
-                                                if (count == checkParent?.length) {
+                                                if (count == checkParent.length) {
                                                     resultParent = true;
                                                 }
                                             }
@@ -1273,7 +1282,7 @@ const FatherTable: React.FC<any> = ({
 
                                         if (!checkParent) {
                                             if (findUse?.find((item: any, key: any) => key == index)?.key) {
-                                                return columnVisibility[findUse?.find((item: any, key: any) => key == index)?.key] == true && (
+                                                return columnVisibility?.[findUse?.find((item: any, key: any) => key == index)?.key] == true && (
                                                     <td
                                                         key={index}
                                                         className="px-4 py-2 text-center text-[#464255]"
@@ -1309,7 +1318,7 @@ const FatherTable: React.FC<any> = ({
                                                 ];
 
                                                 const visibilityKey = visibilityMap[columnOrder[Math.floor(col_order_num)]];
-                                                if (!columnVisibility[visibilityKey]) {
+                                                if (!columnVisibility?.[visibilityKey]) {
                                                     return null;
                                                 }
 
@@ -1332,7 +1341,7 @@ const FatherTable: React.FC<any> = ({
 
                     {/* ############### SUMMARY EXIT ############### */}
                     {
-                        mode == "exit" && summedExits?.length > 0 && summedExits?.map((exit: any, rowIndex: any) => {
+                        mode == "exit" && (Array.isArray(summedExits) ? summedExits : []).map((exit: any, rowIndex: any) => {
                             return (
                                 <tr key={rowIndex} className='h-[50px]' style={{ backgroundColor: exit?.zone?.color ? exit?.zone?.color : '#ffffff' }}>
                                     <td
@@ -1351,13 +1360,13 @@ const FatherTable: React.FC<any> = ({
                                         // let resultMaster: any = false;
                                         if (checkParent) {
                                             let count: any = 0;
-                                            for (let index = 0; index < checkParent?.length; index++) {
-                                                if (columnVisibility[checkParent[index]?.key] == false) {
+                                            for (let index = 0; index < checkParent.length; index++) {
+                                                if (columnVisibility?.[checkParent[index]?.key] == false) {
                                                     count = count + 1;
                                                     resultParent = false;
                                                 }
 
-                                                if (count == checkParent?.length) {
+                                                if (count == checkParent.length) {
                                                     resultParent = true;
                                                 }
                                             }
@@ -1365,7 +1374,7 @@ const FatherTable: React.FC<any> = ({
 
                                         if (!checkParent) {
                                             if (findUse?.find((item: any, key: any) => key == index)?.key) {
-                                                return columnVisibility[findUse?.find((item: any, key: any) => key == index)?.key] == true && (
+                                                return columnVisibility?.[findUse?.find((item: any, key: any) => key == index)?.key] == true && (
                                                     <td
                                                         key={index}
                                                         className="px-4 py-2 border-b border-gray-300 text-center text-[#464255]"
@@ -1403,7 +1412,7 @@ const FatherTable: React.FC<any> = ({
 
                                             const visibilityKey = visibilityMap[columnOrder[col_order_num]];
 
-                                            // if (!columnVisibility[visibilityKey]) {
+                                            // if (!columnVisibility?.[visibilityKey]) {
                                             //     return null;
                                             // }
                                             return (
@@ -1442,13 +1451,13 @@ const FatherTable: React.FC<any> = ({
                                 let resultParent: any = false;
                                 if (checkParent) {
                                     let count: any = 0;
-                                    for (let index = 0; index < checkParent?.length; index++) {
-                                        if (columnVisibility[checkParent[index]?.key] == false) {
+                                    for (let index = 0; index < checkParent.length; index++) {
+                                        if (columnVisibility?.[checkParent[index]?.key] == false) {
                                             count = count + 1;
                                             resultParent = false;
                                         }
 
-                                        if (count == checkParent?.length) {
+                                        if (count == checkParent.length) {
                                             resultParent = true;
                                         }
                                     }
@@ -1456,7 +1465,7 @@ const FatherTable: React.FC<any> = ({
 
                                 if (!checkParent) {
                                     if (findUse?.find((item: any, key: any) => key == index)?.key) {
-                                        return columnVisibility[findUse?.find((item: any, key: any) => key == index)?.key] == true && (
+                                        return columnVisibility?.[findUse?.find((item: any, key: any) => key == index)?.key] == true && (
                                             <td
                                                 key={index}
                                                 className="px-4 py-2 text-center text-[#464255]"
@@ -1499,7 +1508,7 @@ const FatherTable: React.FC<any> = ({
                                         ];
 
                                         const visibilityKey = visibilityMap[columnOrder[col_order_num]];
-                                        if (!columnVisibility[visibilityKey]) {
+                                        if (!columnVisibility?.[visibilityKey]) {
                                             return null;
                                         }
 
@@ -1538,13 +1547,13 @@ const FatherTable: React.FC<any> = ({
                                 let resultParent: any = false;
                                 if (checkParent) {
                                     let count: any = 0;
-                                    for (let index = 0; index < checkParent?.length; index++) {
-                                        if (columnVisibility[checkParent[index]?.key] == false) {
+                                    for (let index = 0; index < checkParent.length; index++) {
+                                        if (columnVisibility?.[checkParent[index]?.key] == false) {
                                             count = count + 1;
                                             resultParent = false;
                                         }
 
-                                        if (count == checkParent?.length) {
+                                        if (count == checkParent.length) {
                                             resultParent = true;
                                         }
                                     }
@@ -1552,7 +1561,7 @@ const FatherTable: React.FC<any> = ({
 
                                 if (!checkParent) {
                                     if (findUse?.find((item: any, key: any) => key == index)?.key) {
-                                        return columnVisibility[findUse?.find((item: any, key: any) => key == index)?.key] == true && (
+                                        return columnVisibility?.[findUse?.find((item: any, key: any) => key == index)?.key] == true && (
                                             <td
                                                 key={index}
                                                 className="px-4 py-2 text-center text-[#464255]"
@@ -1591,7 +1600,7 @@ const FatherTable: React.FC<any> = ({
                                         ];
 
                                         const visibilityKey = visibilityMap[columnOrder[col_order_num]];
-                                        // if (!columnVisibility[visibilityKey]) {
+                                        // if (!columnVisibility?.[visibilityKey]) {
                                         //     return null;
                                         // }
 

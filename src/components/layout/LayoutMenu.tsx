@@ -1,7 +1,6 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import React, { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import CustomerLogo from "@/components/other/CustomerLogo";
 import { motion } from "framer-motion";
 import {
   KBarProvider,
@@ -23,6 +22,12 @@ import BreadcrumbsMenu from "../headers/BreadcrumbsMenu";
 import tempMenu from "../headers/tempMenu";
 import NavMenu from "./NavMenu";
 import WaitingListAppMenu from "../headers/WaitingListAppMenu";
+import UserGuide from "../headers/UserGuide";
+import { getService } from "@/utils/postService";
+import getUserValue from "@/utils/getuserValue";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
+import { toast } from "react-toastify";
 
 function LayoutMenuContents({ children }: any) {
   const pathname = usePathname();
@@ -30,9 +35,109 @@ function LayoutMenuContents({ children }: any) {
   const { query } = useKBar();
   const [toggleNav, setToggleNav] = useState<boolean>(true);
   const [menu, setMenu] = useState<any>(null);
+  const [userGuide, setUserGuide] = useState<any[]>([]);
+  const isDownloadingUserGuide = useRef(false);
 
   const goToUrl = async (url: any) => {
     router.push("/en/authorization/" + url); // ถ้าจะสองภาษาเติม lng แทน /en
+  };
+
+  const getUserGuideZipFileName = (item: any, usedNames: Set<string>) => {
+    const fallbackName = `${item?.document_name || "user-guide"}`.trim() || "user-guide";
+    const fromUrl = item?.file
+      ? decodeURIComponent(String(item.file).substring(String(item.file).lastIndexOf("/") + 1))
+          .replace(/^\d+_/, "")
+      : "";
+    const rawName = fromUrl || fallbackName;
+    const hasExtension = /\.[a-zA-Z0-9]+$/.test(rawName);
+    const withExtension = hasExtension ? rawName : `${rawName}.pdf`;
+    const sanitized = withExtension.replace(/[\\/:*?"<>|]/g, "_");
+
+    if (!usedNames.has(sanitized)) {
+      usedNames.add(sanitized);
+      return sanitized;
+    }
+
+    const extensionIndex = sanitized.lastIndexOf(".");
+    const base = extensionIndex >= 0 ? sanitized.slice(0, extensionIndex) : sanitized;
+    const ext = extensionIndex >= 0 ? sanitized.slice(extensionIndex) : "";
+    let index = 1;
+    let candidate = `${base} (${index})${ext}`;
+    while (usedNames.has(candidate)) {
+      index += 1;
+      candidate = `${base} (${index})${ext}`;
+    }
+    usedNames.add(candidate);
+    return candidate;
+  };
+
+  const downloadUserGuide = async () => {
+    if (isDownloadingUserGuide.current) return;
+
+    const files = (userGuide || []).filter((item: any) => item?.file);
+    if (files.length === 0) {
+      toast.info("No user guide files available.", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    isDownloadingUserGuide.current = true;
+    const toastId = toast.loading("Downloading user guide...", {
+      position: "bottom-right",
+      closeOnClick: false,
+      draggable: false,
+    });
+
+    try {
+      const zip = new JSZip();
+      const usedNames = new Set<string>();
+      const filesWithName = files.map((item: any) => ({
+        item,
+        name: getUserGuideZipFileName(item, usedNames),
+      }));
+
+      const results = await Promise.all(
+        filesWithName.map(async ({ item, name }: any) => {
+          const response = await fetch(
+            `/api/user-guide-file?url=${encodeURIComponent(item.file)}`
+          );
+
+          if (!response.ok) {
+            throw new Error(`Failed to download ${item?.document_name || item.file}`);
+          }
+
+          const blob = await response.blob();
+          return { name, blob };
+        })
+      );
+
+      results.forEach((file) => {
+        zip.file(file.name, file.blob);
+      });
+
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      saveAs(zipBlob, "User Guide.zip");
+
+      toast.update(toastId, {
+        render: "Download completed.",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+        closeOnClick: true,
+      });
+    } catch (error) {
+      toast.update(toastId, {
+        render: "Failed to download user guide. Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+        closeOnClick: true,
+      });
+    } finally {
+      isDownloadingUserGuide.current = false;
+    }
   };
 
   useEffect(() => {
@@ -43,6 +148,32 @@ function LayoutMenuContents({ children }: any) {
       })
     );
     console.log('pathname : ', pathname);
+
+    try {
+        const userDT: any = getUserValue();
+
+        getService(`/master/parameter/user-guide`).then(response => {
+          const userRoleId = userDT?.account_manage?.[0]?.account_role?.[0]?.role_id;
+          if(Array.isArray(response)) {
+            // filter ให้เห็นเฉพาะ role ตัวเอง
+            let filteredDataUserGuide: any = response
+            // if (userRoleId !== 1) { // ไม่ใช่ super admin
+          
+            if (userDT?.account_manage?.[0]?.user_type_id !== 1) { // ไม่ใช่ super admin
+                filteredDataUserGuide = response.filter((item: any) => {
+                    return (
+                        item?.user_guide_match.some((match: any) => match.role_id === userRoleId) ||
+                        item?.create_by === userDT?.id // https://app.clickup.com/t/9018502823/86euzxxnn
+                    )
+                });
+            }
+            
+            setUserGuide(filteredDataUserGuide);
+          }
+        });
+    } catch (err) {
+      setUserGuide([])
+    }
   }, [pathname]);
 
   // เอาไว้ set bg
@@ -85,15 +216,13 @@ function LayoutMenuContents({ children }: any) {
     <div className="no-scrollbar overflow-y-auto scrollbar-hide h-screen"> 
       <header>
         <section className=" flex justify-between items-center h-[70px] px-2">
-          <Image
-            src={`/assets/icon/ptt-logo-2.svg`}
+          <CustomerLogo
             width={60}
             height={26.25}
-            alt={`/assets/icon/ptt-logo-2.svg`}
-            priority
             className="pl-4 w-[100px] h-auto"
           />
           <section className="pr-4 flex items-center gap-3 relative">
+            {userGuide.length > 0 && <UserGuide downloadUserGuide={downloadUserGuide}/>}
             <HomeBack goToUrl={goToUrl} />
             <Notifys />
             <AppMenu />
@@ -119,9 +248,7 @@ function LayoutMenuContents({ children }: any) {
         }
 
         <section
-          // className={` h-[calc(100vh-50px-40px-0.5rem)] overflow-y-auto w-[100%] pr-2`}
           className={`h-[calc(100vh-135px)] overflow-y-auto scrollbar-hide w-full pr-2 relative ${showBg ? 'bg-[url("/assets/image/bg_menu_04.png")] bg-cover bg-center' : ''}`}
-        // className={`h-[calc(100vh-50px-40px-0.5rem)] overflow-y-hidden w-full pr-2 ${showBg ? 'bg-[url("/assets/image/bg_menu_04.png")] bg-cover bg-center' : ''}`}
         >
           <motion.div
             key={pathname}

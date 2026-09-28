@@ -47,28 +47,28 @@ const TableNomQualityEvaluation: React.FC<TableProps> = ({ tableData, isLoading,
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                {columnVisibility.gas_day && (
+                {columnVisibility?.gas_day && (
                   <th scope="col" className={`${table_sort_header_style} text-center w-[100px]  !max-w-[120px] `} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, tableData)}>
                     {`${tabIndex == 0 ? 'Gas Day' : 'Gas Week'}`}
                     {getArrowIcon("gas_day")}
                   </th>
                 )}
 
-                {columnVisibility.zone && (
+                {columnVisibility?.zone && (
                   <th scope="col" className={`${table_sort_header_style} text-center  w-[100px] !max-w-[120px] `} onClick={() => handleSort("zone.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Zone`}
                     {getArrowIcon("zone.name")}
                   </th>
                 )}
 
-                {columnVisibility.area && (
+                {columnVisibility?.area && (
                   <th scope="col" className={`${table_sort_header_style} text-center w-[100px]  !max-w-[120px] `} onClick={() => handleSort("area.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Area`}
                     {getArrowIcon("area.name")}
                   </th>
                 )}
 
-                {columnVisibility.parameter && (
+                {columnVisibility?.parameter && (
                   <th scope="col" className={`${table_sort_header_style} text-center  w-[100px]  !max-w-[120px] `}
                     onClick={() => handleSort("parameter", sortState, setSortState, setSortedData, tableData)}
                   >
@@ -77,7 +77,7 @@ const TableNomQualityEvaluation: React.FC<TableProps> = ({ tableData, isLoading,
                   </th>
                 )}
 
-                {columnVisibility.value && (
+                {columnVisibility?.value && (
                   <th scope="col" className={`${table_sort_header_style} text-right`}
                     onClick={() => handleSort("group.name", sortState, setSortState, setSortedData, tableData)}
                   >
@@ -90,19 +90,19 @@ const TableNomQualityEvaluation: React.FC<TableProps> = ({ tableData, isLoading,
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => {
+              {(sortedData || [])?.map((row: any, index: any) => {
 
                 return (
                   <tr key={row?.id} className={`${table_row_style} `}>
 
-                    {columnVisibility.gas_day && (
+                    {columnVisibility?.gas_day && (
                       <td className="px-2 py-1 text-[#464255] !min-w-[60px] !max-w-[80px] text-center">
                         {/* {row?.gasday ? formatDateNoTime(row?.gasday) : ''} */}
                         {row?.gasday ? row?.gasday : ''}
                       </td>
                     )}
 
-                    {columnVisibility.zone && (
+                    {columnVisibility?.zone && (
                       <td className="flex px-2 py-1 justify-center">
                         {row?.zone?.name && (
                           <div
@@ -118,7 +118,7 @@ const TableNomQualityEvaluation: React.FC<TableProps> = ({ tableData, isLoading,
                       </td>
                     )}
 
-                    {columnVisibility.area && (
+                    {columnVisibility?.area && (
                       <td className="px-2 py-1 justify-center">
                         {row?.area?.name && (
                           <div
@@ -136,7 +136,7 @@ const TableNomQualityEvaluation: React.FC<TableProps> = ({ tableData, isLoading,
                       </td>
                     )}
 
-                    {columnVisibility.parameter && (
+                    {columnVisibility?.parameter && (
                       <td className="px-2 py-1 text-[#464255] text-center">{row?.parameter ? row?.parameter : ''}</td>
                     )}
 
@@ -150,11 +150,11 @@ const TableNomQualityEvaluation: React.FC<TableProps> = ({ tableData, isLoading,
                       if row?.valueBtuScf < min or row?.valueBtuScf > max then make text-[#ED1B24]
                   */}
 
-                    {/* {columnVisibility.value && (
+                    {/* {columnVisibility?.value && (
                     <td className="px-2 py-1 text-[#464255] text-right">{row?.valueBtuScf ? formatNumberThreeDecimal(row?.valueBtuScf) : ''}</td>
                   )} */}
 
-                    {columnVisibility.value && (
+                    {columnVisibility?.value && (
                       <td
                         className={`px-2 py-1 text-right ${(row?.parameter === "HV" &&
                           (row?.valueBtuScf < row?.zone?.zone_master_quality?.[0]?.v2_sat_heating_value_min ||

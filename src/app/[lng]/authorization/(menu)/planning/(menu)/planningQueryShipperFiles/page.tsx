@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Tune } from "@mui/icons-material"
-import { filterStartEndDate, filterStartEndDateNewLogic, formatDate, formatDateNoTime, formatDateTimeSecNoPlusSeven, formatTime, generateUserPermission } from '@/utils/generalFormatter';
+import { Tune } from "@mui/icons-material";
+import { filterStartEndDateNewLogic, findRoleConfigByMenuName, formatDate, formatDateNoTime, formatDateTimeSecNoPlusSeven, formatTime, generateUserPermission } from '@/utils/generalFormatter';
 import { InputSearch } from '@/components/other/SearchForm';
 import SearchInput from "@/components/other/searchInput";
 import { getService } from "@/utils/postService";
@@ -22,14 +22,10 @@ import useRestrictedPage from "@/utils/checkRestrictedPage";
 import { decryptData } from "@/utils/encryptionData";
 import getUserValue from "@/utils/getuserValue";
 
-interface ClientProps {
-  params: {
-    lng: string;
-  };
-}
-
-const ClientPage: React.FC<ClientProps> = (props) => {
+const ClientPage = () => {
   const userDT: any = getUserValue();
+  const isShipper = userDT?.account_manage?.[0]?.user_type_id === 3;
+  const userGroupId = userDT?.account_manage?.[0]?.group?.id;
 
   // ############### Check Authen ###############
   const token = getCookieValue("v4r2d9z5m3h0c1p0x7l");
@@ -37,41 +33,40 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   // ############### PERMISSION ###############
   const [userPermission, setUserPermission] = useState<any>();
-  let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-  // let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
-  user_permission = user_permission ? decryptData(user_permission) : null;
 
   const getPermission = () => {
-    if (user_permission) {
-      try {
-        user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
-        const updatedUserPermission = generateUserPermission(user_permission);
-        setUserPermission(updatedUserPermission);
-      } catch (error) {
-        // Failed to parse user_permission:
+    try {
+      let user_permission: any = typeof window !== 'undefined' ? (localStorage?.getItem("k3a9r2b6m7t0x5w1s8j") || getCookieValue("k3a9r2b6m7t0x5w1s8j")) : null;
+      user_permission = user_permission ? decryptData(user_permission) : null;
+      let parsed_permission = user_permission;
+      if (typeof parsed_permission === 'string') {
+        parsed_permission = JSON.parse(parsed_permission);
       }
-    } else {
-      // No user_permission found
+      const permission = findRoleConfigByMenuName('Query Shipper Files', userDT);
+      if (permission) {
+        setUserPermission(permission);
+      } else if (parsed_permission?.role_config) {
+        const updatedUserPermission = generateUserPermission(parsed_permission);
+        setUserPermission(updatedUserPermission);
+      }
+    } catch (error) {
+      // Failed to parse user_permission
     }
-  }
+  };
 
   // ############### REDUX DATA ###############
-  const { shipperGroupData, termTypeMaster, nominationPointData } = useFetchMasters();
-  const [forceRefetch, setForceRefetch] = useState(true);
+  const { shipperGroupData, termTypeMaster } = useFetchMasters();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (forceRefetch || !shipperGroupData?.data) {
+    if (!shipperGroupData?.data) {
       dispatch(fetchShipperGroup());
     }
-    if (forceRefetch || !termTypeMaster?.data) {
+    if (!termTypeMaster?.data) {
       dispatch(fetchTermType());
     }
-    if (forceRefetch) {
-      setForceRefetch(false); // Reset the flag after triggering the fetch
-    }
     getPermission();
-  }, [dispatch, nominationPointData, forceRefetch]); // Watch for forceRefetch changes
+  }, [dispatch]);
 
   // ############### FIELD SEARCH ###############
   const [filteredDataTable, setFilteredDataTable] = useState<any>([]);
@@ -83,138 +78,111 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [srchEndDate, setSrchEndDate] = useState<Date | null>(null);
 
   const handleFieldSearch = () => {
-    // const result = filterDataTableByDateRange(dataTable, srchStartDate, srchEndDate);
-    // const res_filtered_date: any = filterStartEndDate(dataTable, srchStartDate, srchEndDate); // เดิมโรงงาน
-    const res_filtered_date: any = filterStartEndDateNewLogic(dataTable, srchStartDate, srchEndDate); // v1.0.90 ปรับ logic filter start date และ end date https://app.clickup.com/t/86erqt8ed
-    const result_2 = res_filtered_date?.filter((item: any) => {
-      return (
-        (srchPlanningCode ? item?.planning_code.toLowerCase().includes(srchPlanningCode.toLowerCase()) : true) &&
-        // (srchShipper ? item?.group_id == srchShipper : true) &&
-        // (srchTermType ? item?.term_type_id == srchTermType : true)
+    const res_filtered_date: any = filterStartEndDateNewLogic(dataTable, srchStartDate, srchEndDate);
+    const result_2 = (Array.isArray(res_filtered_date) ? res_filtered_date : []).filter((item: any) => {
+      if (!item) return false;
+      const matchPlanningCode = srchPlanningCode
+        ? (item?.planning_code || '').toLowerCase().includes(srchPlanningCode.toLowerCase())
+        : true;
 
-        // ปรับ Filter ทุกเมนูให้เป็นแบบ Multi https://app.clickup.com/t/86eub6d11
-        (srchShipper?.length > 0 ? srchShipper.includes(item?.group_id) : true) &&
-        (srchTermType?.length > 0 ? srchTermType.includes(item?.term_type_id.toString()) : true)
-      );
+      const matchShipper = Array.isArray(srchShipper) && srchShipper.length > 0
+        ? srchShipper.includes(item?.group_id)
+        : true;
+
+      const matchTermType = Array.isArray(srchTermType) && srchTermType.length > 0
+        ? srchTermType.includes(String(item?.term_type_id ?? ''))
+        : true;
+
+      return matchPlanningCode && matchShipper && matchTermType;
     });
-    setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
+    setCurrentPage(1);
     setFilteredDataTable(result_2);
   };
 
   const handleReset = () => {
-    if (userDT?.account_manage?.[0]?.user_type_id !== 3) {
-      setSrchShipper([])
+    if (!isShipper) {
+      setSrchShipper([]);
+    } else {
+      setSrchShipper(userGroupId ? [userGroupId] : []);
     }
 
-    setSrchTermType([])
-    setSrchPlanningCode('')
+    setSrchTermType([]);
+    setSrchPlanningCode('');
     setSrchStartDate(null);
     setSrchEndDate(null);
-    setFilteredDataTable(dataTable);
+    setFilteredDataTable(Array.isArray(dataTable) ? dataTable : []);
     setKey((prevKey) => prevKey + 1);
   };
 
   // ############### LIKE SEARCH ###############
   const handleSearch = (query: string) => {
+    const queryLower = (query || '').toLowerCase().replace(/\s+/g, '')?.trim();
 
-    const filtered = dataTable?.filter(
+    if (!queryLower) {
+      setFilteredDataTable(Array.isArray(dataTable) ? dataTable : []);
+      return;
+    }
+
+    const filtered = (Array.isArray(dataTable) ? dataTable : []).filter(
       (item: any) => {
-        const queryLower = query.toLowerCase().replace(/\s+/g, '')?.trim();
+        if (!item) return false;
 
         return (
-          item?.planning_code?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.group?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.term_type?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+          (item?.planning_code ? item.planning_code.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) : false) ||
+          (item?.group?.name ? item.group.name.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) : false) ||
+          (item?.term_type?.name ? item.term_type.name.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) : false) ||
 
-          formatDate(item?.shipper_file_submission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatTime(item?.shipper_file_submission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatDateNoTime(item?.shipper_file_submission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatDateTimeSecNoPlusSeven(item?.shipper_file_submission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+          (item?.shipper_file_submission_date ? formatDate(item.shipper_file_submission_date)?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) : false) ||
+          (item?.shipper_file_submission_date ? formatTime(item.shipper_file_submission_date)?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) : false) ||
+          (item?.shipper_file_submission_date ? formatDateNoTime(item.shipper_file_submission_date)?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) : false) ||
+          (item?.shipper_file_submission_date ? formatDateTimeSecNoPlusSeven(item.shipper_file_submission_date)?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) : false) ||
 
-          formatDateNoTime(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatDateNoTime(item?.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)
-          // item?.create_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          // item?.create_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || // เผื่อ search นามสกุล
-          // item?.create_by_account?.first_name && item?.create_by_account?.last_name && (item?.create_by_account?.first_name + item?.create_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
-        )
+          (item?.start_date ? formatDateNoTime(item.start_date)?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) : false) ||
+          (item?.end_date ? formatDateNoTime(item.end_date)?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) : false)
+        );
       });
-    setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
+    setCurrentPage(1);
     setFilteredDataTable(filtered);
   };
 
   // ############### DATA TABLE ###############
   const [dataTable, setData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [resetForm, setResetForm] = useState<() => void | null>();
 
   const fetchData = async () => {
     try {
-
-      // ถ้า user เป็น shipper
-      // https://app.clickup.com/t/86ert2k28 ตามที่คุยกัน หากเป็น shipper user ถ้ามี filter ชื่อ shipper ให้ค้างชื่อ shipper ตัวเองไว้เลย ไม่ต้องขึ้นเป็น dropdown ให้เลือก - ปรับทั้ง system
-      if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-        setSrchShipper(userDT?.account_manage?.[0]?.group?.id)
+      if (isShipper && userGroupId) {
+        setSrchShipper([userGroupId]);
       }
 
       const response: any = await getService(`/master/query-shipper-planning-file`);
 
-      let filtered_res: any
-      if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-        filtered_res = response?.filter((item: any) => item?.group?.id === userDT?.account_manage?.[0]?.group?.id)
-      } else {
-        filtered_res = response
+      let filtered_res: any = Array.isArray(response) ? response : [];
+      if (isShipper && userGroupId) {
+        filtered_res = filtered_res.filter((item: any) => item && item?.group?.id === userGroupId);
       }
 
-      setData(response);
-      setFilteredDataTable(response);
+      setData(filtered_res);
+      setFilteredDataTable(filtered_res);
 
       setIsLoading(true);
     } catch (err) {
-      // setError(err.message);
-    } finally {
-      // setLoading(false);
+      // Error fetching data
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, [resetForm]);
-
-
-  // ############# NEW MODAL CREATE/EDIT/VIEW  #############
-  const [isModalSuccessOpen, setModalSuccessOpen] = useState(false);
-  const handleCloseModal = () => setModalSuccessOpen(false);
-
-  const [formOpen, setFormOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
-  const [formMode, setFormMode] = useState<'create' | 'edit' | 'view' | 'period'>();
-  const [formData, setFormData] = useState<any>();
-
-  const openEditForm = (id: any) => {
-    //  fetchDataDiv(id);
-    setSelectedId(id);
-    const filteredData = dataTable.find((item: any) => item.id === id);
-    setFormMode('edit');
-    setFormData(filteredData);
-    setFormOpen(true);
-  };
-
-  const openViewForm = (id: any) => {
-    const filteredData = dataTable.find((item: any) => item.id === id);
-    setFormMode('view');
-    setFormData(filteredData);
-    setFormOpen(true);
-  };
+  }, []);
 
   // ############### MODAL ALL FILES ###############
   const [mdFileView, setMdFileView] = useState<any>(false);
   const [dataFile, setDataFile] = useState<any>([]);
 
-  const openAllFileModal = (id?: any, data?: any) => {
-
-    const filtered = dataTable?.find((item: any) => item.id === id);
-    setDataFile(filtered)
-    setMdFileView(true)
+  const openAllFileModal = (id?: any) => {
+    const filtered = (Array.isArray(dataTable) ? dataTable : []).find((item: any) => item?.id === id);
+    setDataFile(filtered);
+    setMdFileView(true);
   };
 
   // ############### PAGINATION ###############
@@ -246,13 +214,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     { key: 'shipper_file_date', label: 'Shipper File Submission Date', visible: true },
     { key: 'start_date', label: 'Start Date', visible: true },
     { key: 'end_date', label: 'End Date', visible: true },
-    // { key: 'action', label: 'Action', visible: true }
   ];
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [columnVisibility, setColumnVisibility] = useState<any>(
-    Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+    Object.fromEntries(initialColumns.map((column: any) => [column?.key, column?.visible]))
   );
 
   const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
@@ -282,20 +249,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           <InputSearch
             id="searchShipper"
             label="Shipper Name"
-            // type="select"
             type="select-multi-checkbox"
             value={srchShipper}
             onChange={(e) => setSrchShipper(e.target.value)}
-            isDisabled={userDT?.account_manage?.[0]?.user_type_id == 3 ? true : false}
-            options={shipperGroupData?.data
-              ?.filter((item: any) =>
-                userDT?.account_manage?.[0]?.user_type_id == 3
-                  ? item?.id === userDT?.account_manage?.[0]?.group?.id
-                  : true
-              )
+            isDisabled={isShipper}
+            options={(Array.isArray(shipperGroupData?.data) ? shipperGroupData.data : [])
+              .filter((item: any) => (!isShipper || !userGroupId ? true : item?.id === userGroupId))
               .map((item: any) => ({
-                value: item.id,
-                label: item.name,
+                value: item?.id,
+                label: item?.name ?? '',
               }))
             }
           />
@@ -303,15 +265,17 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           <InputSearch
             id="searchTermType"
             label="Term"
-            // type="select"
             type="select-multi-checkbox"
             placeholder="Select Term"
             value={srchTermType}
             onChange={(e) => setSrchTermType(e.target.value)}
-            options={termTypeMaster?.data?.filter((f: any) => f?.id !== 4)?.map((item: any) => ({
-              value: item?.id?.toString(),
-              label: item.name
-            }))}
+            options={(Array.isArray(termTypeMaster?.data) ? termTypeMaster.data : [])
+              .filter((f: any) => f?.id !== 4)
+              .map((item: any) => ({
+                value: item?.id != null ? String(item.id) : '',
+                label: item?.name ?? ''
+              }))
+            }
           />
 
           <DatePickaSearch
@@ -350,7 +314,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 textRender={"Export"}
                 data={filteredDataTable}
                 path="planning/query-shippers-planning-files"
-                can_export={userPermission ? userPermission?.f_export : false}
+                can_export={Boolean(userPermission?.f_export)}
                 columnVisibility={columnVisibility}
                 initialColumns={initialColumns}
               />
@@ -358,10 +322,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           </div>
         </div>
         <TableQueryShipperFiles
-          openEditForm={openEditForm}
-          openViewForm={openViewForm}
           openAllFileModal={openAllFileModal}
-          // tableData={filteredDataTable}
           tableData={paginatedData}
           isLoading={isLoading}
           columnVisibility={columnVisibility}
@@ -379,10 +340,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
       <ModalFiles
         data={dataFile}
-        // dataGroup={dataGroup}
-        // setModalMsg={setModalMsg}
-        setModalSuccessOpen={setModalSuccessOpen}
-        // setModalSuccessMsg={setModalSuccessMsg}
         open={mdFileView}
         onClose={() => {
           setMdFileView(false);

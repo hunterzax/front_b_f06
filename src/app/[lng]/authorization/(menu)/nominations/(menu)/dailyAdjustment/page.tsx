@@ -51,12 +51,7 @@ interface ClientProps {
     };
 }
 
-const ClientPage: React.FC<ClientProps> = (props) => {
-    // const {
-    //     params: { lng },
-    // } = props;
-    // const { t } = useTranslation(lng, "mainPage");
-
+const ClientPage: React.FC<ClientProps> = () => {
     const searchParams = useSearchParams();
     const status_from_somewhere_else = searchParams.get("status");
 
@@ -78,7 +73,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             "name": "Rejected",
             "color": "#FFF1CE"
         }
-    ]
+    ];
 
     // ############### Check Authen ###############
     const userDT: any = getUserValue();
@@ -87,33 +82,27 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
-    let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-    // let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+    let user_permission: any = typeof window !== 'undefined' ? (localStorage?.getItem("k3a9r2b6m7t0x5w1s8j") || getCookieValue("k3a9r2b6m7t0x5w1s8j")) : null;
     user_permission = user_permission ? decryptData(user_permission) : null;
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+            }
 
-            // if (user_permission?.role_config) {
-            //     const updatedUserPermission = generateUserPermission(user_permission);
-            //     setUserPermission(updatedUserPermission);
-            // } else {
-            //     const permission = findRoleConfigByMenuName('Daily Adjustment', userDT)
-            //     setUserPermission(permission);
-            // }
-
-            const permission = findRoleConfigByMenuName('Daily Adjustment', userDT)
+            const permission = findRoleConfigByMenuName('Daily Adjustment', userDT);
             if (permission) {
                 setUserPermission(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermission(updatedUserPermission);
             }
         } catch (error) {
             // Failed to parse user_permission:
         }
-    }
+    };
 
     // ############### REDUX DATA ###############
     const { entryExitMaster, areaMaster, nominationPointData, nominationTypeMaster } = useFetchMasters();
@@ -145,31 +134,25 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [filteredDataTable, setFilteredDataTable] = useState<any>([]);
     const [key, setKey] = useState(0);
     const [srchShipper, setSrchShipper] = useState<any>([]);
-    // const [srchStartDate, setSrchStartDate] = useState<any>(null);
     const [srchStartDate, setSrchStartDate] = useState<any>(toDayjs().toDate());
     const [srchStatus, setSrchStatus] = useState<any>([]);
 
     const handleFieldSearch = async () => {
-        setIsLoading(false)
-        let _data: any = dataTable
+        setIsLoading(false);
+        let _data: any = dataTable;
         const searchDate = toDayjs(srchStartDate).tz("Asia/Bangkok").format("YYYY-MM-DD");
         let apiUrl = `/master/daily-adjustment`;
         if (searchDate && searchDate != 'Invalid Date') {
             apiUrl += `?gas_day=${searchDate}`;
         }
-        const res_ = await getService(apiUrl)
+        const res_ = await getService(apiUrl);
         const responseData = (res_ && Array.isArray(res_)) ? res_ : [];
-        // const filteredRes = responseData.filter((item: any) =>
-        //     item?.daily_adjustment_group?.some((group: any) => group.group_id === userDT?.account_manage?.[0]?.group_id)
-        // );
 
         if (Array.isArray(srchShipper) && srchShipper.length > 0) {
-            // let filtered_shipper = dataTable.filter((item: any) =>
-            // let filtered_shipper = filteredRes?.filter((item: any) =>
             let filtered_shipper = responseData.filter((item: any) =>
                 Array.isArray(item?.daily_adjustment_group) &&
-                item.daily_adjustment_group.some((group: any) =>
-                    srchShipper.includes(group.group_id)
+                item?.daily_adjustment_group?.some((group: any) =>
+                    srchShipper.includes(group?.group_id)
                 )
             );
             _data = filtered_shipper;
@@ -179,71 +162,68 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         }
 
 
-        const result_2 = _data.filter((item: any) => {
+        const result_2 = (_data || [])?.filter((item: any) => {
+            if (!item) return false;
             const gasDay = toDayjs(item?.gas_day).format("YYYY-MM-DD");
 
             return (
                 (srchStartDate ? searchDate == gasDay : true) &&
-                // (srchStatus ? item?.daily_adjustment_status_id.toString() == srchStatus : true)
-
-                // ปรับ Filter ทุกเมนูให้เป็นแบบ Multi https://app.clickup.com/t/86eub6d11
-                ((srchStatus && srchStatus.length > 0) ? srchStatus.includes(item?.daily_adjustment_status_id.toString()) : true)
+                (Array.isArray(srchStatus) && srchStatus.length > 0 ? srchStatus.includes(String(item?.daily_adjustment_status_id ?? '')) : true)
             );
         });
 
-        setCurrentPage(1)
-        setData(res_);
+        setCurrentPage(1);
+        setData(Array.isArray(res_) ? res_ : []);
         setFilteredDataTable(result_2);
 
         setTimeout(() => {
-            setIsLoading(true)
+            setIsLoading(true);
         }, 300);
     };
 
     const handleReset = async () => {
         setSrchShipper([]);
-        setSrchStatus([])
-        // setSrchStartDate(null)
-        setSrchStartDate(toDayjs().toDate())
-        fetchData(); // Daily Adjustment กดเข้ามา Filter Gas Day > Reset Filter > แล้วกด Filter อีกรอบเลย มัน Filter ไม่ได้
-        // setFilteredDataTable(dataTable);
+        setSrchStatus([]);
+        setSrchStartDate(toDayjs().toDate());
+        fetchData();
         setKey((prevKey) => prevKey + 1);
     };
 
     // ############### LIKE SEARCH ###############
     const handleSearch = (query: string) => {
-        const queryLower = query.replace(/\s+/g, '')?.toLowerCase().trim();
+        const queryLower = (query || '').replace(/\s+/g, '')?.toLowerCase().trim();
 
-        const filtered = dataTable.filter(
+        const filtered = (dataTable || [])?.filter(
             (item: any) => {
+                if (!item) return false;
+                const cFirst = item?.create_by_account?.first_name ? String(item.create_by_account.first_name).trim() : '';
+                const cLast = item?.create_by_account?.last_name ? String(item.create_by_account.last_name).trim() : '';
+                const uFirst = item?.update_by_account?.first_name ? String(item.update_by_account.first_name).trim() : '';
+                const uLast = item?.update_by_account?.last_name ? String(item.update_by_account.last_name).trim() : '';
+
                 return (
-                    // item?.group?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    item?.daily_code?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    item?.time?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    item?.daily_adjustment_status?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    formatDateNoTime(item?.gas_day)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
+                    (item?.daily_code ? item.daily_code.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (item?.time ? item.time.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (item?.daily_adjustment_status?.name ? item.daily_adjustment_status.name.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (item?.gas_day ? formatDateNoTime(item.gas_day)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
-                    // item?.contract_code?.contract_code?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    // item?.nomination_type?.document_type?.replace(/\s+/g, '')?.toLowerCase().trim().includes(queryLower) ||
+                    (item?.create_date ? formatDate(item.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (item?.update_date ? formatDate(item.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
-                    formatDate(item?.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
-                    formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
+                    (item?.create_date ? formatTime(item.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (item?.update_date ? formatTime(item.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
-                    formatTime(item?.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
-                    formatTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
+                    (item?.create_date ? formatDateNoTime(item.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (item?.update_date ? formatDateNoTime(item.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
-                    formatDateNoTime(item?.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
-                    formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
+                    (cFirst ? cFirst.replace(/\s+/g, '').toLowerCase().includes(queryLower) : false) ||
+                    (cLast ? cLast.replace(/\s+/g, '').toLowerCase().includes(queryLower) : false) ||
+                    ((cFirst + cLast).replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
 
-                    // item?.maximum_capacity?.toString().toLowerCase().includes(queryLower) ||
-                    (item?.create_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-                    (item?.create_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-                    (item?.create_by_account?.first_name && item?.create_by_account?.last_name && (item?.create_by_account?.first_name + item?.create_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
-
-                    (item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-                    (item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-                    (item?.update_by_account?.first_name && item?.update_by_account?.last_name && (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
-                )
+                    (uFirst ? uFirst.replace(/\s+/g, '').toLowerCase().includes(queryLower) : false) ||
+                    (uLast ? uLast.replace(/\s+/g, '').toLowerCase().includes(queryLower) : false) ||
+                    ((uFirst + uLast).replace(/\s+/g, '').toLowerCase().includes(queryLower))
+                );
             }
         );
         setFilteredDataTable(filtered);
@@ -274,16 +254,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             const res_ = await getService(apiUrl)
 
             const filteredRes = res_?.filter((item: any) =>
-                item?.daily_adjustment_group?.some((group: any) => group.group_id === userDT?.account_manage?.[0]?.group_id)
+                item?.daily_adjustment_group?.some((group: any) => group?.group_id === userDT?.account_manage?.[0]?.group_id)
             );
 
             const genFilterURL = (data: any) => {
                 if (!useParams) {
                     const status: any = status_from_somewhere_else;
                     const findStatusMaster: any = daily_adjust_stat?.find((item: any) => item?.name == status)?.id;
-                    const resultFilter = data?.filter((item: any) => {
+                    const resultFilter = (data || [])?.filter((item: any) => {
                         return (
-                            (findStatusMaster ? item?.daily_adjustment_status_id.toString() == findStatusMaster : true)
+                            (findStatusMaster ? item?.daily_adjustment_status_id?.toString() == findStatusMaster : true)
                         );
                     });
                     return resultFilter
@@ -297,8 +277,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             // case SHIPPER
             if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-                const filter_today = res_?.filter((item: any) => {
-                    const row_gas_day = toDayjs(item.gas_day).format("YYYY-MM-DD")
+                const filter_today = (res_ || [])?.filter((item: any) => {
+                    const row_gas_day = toDayjs(item?.gas_day).format("YYYY-MM-DD")
                     return row_gas_day == today
                 });
 
@@ -310,8 +290,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // setFilteredDataTable(filteredRes);
             } else {
                 // case TSO, OTHER, SUPER ADMIN
-                const filter_today = res_?.filter((item: any) => {
-                    const row_gas_day = toDayjs(item.gas_day).format("YYYY-MM-DD")
+                const filter_today = (res_ || [])?.filter((item: any) => {
+                    const row_gas_day = toDayjs(item?.gas_day).format("YYYY-MM-DD")
                     return row_gas_day == today
                 });
 
@@ -334,7 +314,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             if (userDT?.account_manage?.[0]?.user_type_id == 3) { // shipper
                 // เช็คว่า userDT?.account_manage?.[0]?.group?.id มีอยู่ใน data_group อ้ะป่าว
                 const targetGroupId = userDT?.account_manage?.[0]?.group?.id;
-                const existsInGroup = res_shipper_approve?.some((group: any) => group.id === targetGroupId);
+                const existsInGroup = res_shipper_approve?.some((group: any) => group?.id === targetGroupId);
                 setIsInclude(existsInGroup)
                 if(!existsInGroup && userDT?.account_manage?.[0]?.group?.id && userDT?.account_manage?.[0]?.group?.name ){
                     res_shipper_approve.push({ id: userDT?.account_manage?.[0]?.group?.id, name: userDT?.account_manage?.[0]?.group?.name })
@@ -365,7 +345,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [modalModalSuccessMsg, setModalSuccessMsg] = useState('');
     // const handleCloseModal = () => setModalSuccessOpen(false);
     const handleCloseModal = () => {
-        fetchData();
+        handleFieldSearch();
         setTimeout(() => {
             setModalSuccessOpen(false);
         }, 500);
@@ -382,11 +362,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [mdUpdateMode, setMdUpdateMode] = useState<any>();
 
     const handleFormSubmit = async (data: any) => {
+        if (!data) return;
 
         const currentTime = toDayjs().format("HH:mm");
         const today = toDayjs().format("YYYY-MM-DD");
-        const gasDay = data.gas_day; // Assuming gas_day is in "YYYY-MM-DD" format
-        const selectedTime = `${String(data.hour).padStart(2, '0')}:${String(data.minute).padStart(2, '0')}`;
+        const gasDay = data?.gas_day; // Assuming gas_day is in "YYYY-MM-DD" format
+        const selectedTime = `${String(data?.hour ?? 0).padStart(2, '0')}:${String(data?.minute ?? 0).padStart(2, '0')}`;
 
         // Check if gas_day is today and if the selected time has passed
         if ((userDT?.account_manage?.[0]?.user_type_id == 3) && gasDay === today && currentTime > selectedTime) {
@@ -397,13 +378,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         let body_post = {
             ...data, // Keep existing properties
-            time: `${String(data.hour).padStart(2, '0')}:${String(data.minute).padStart(2, '0')}`, // Convert hour and minute to "HH:MM"
-            nom: data?.rows?.map((row: any) => ({
-                nomination_point_id: row.nomination_point_id,
-                nomination_point: row.nomination_point, // Ensure this field exists in the original object
-                heating_value: row.heating_value,
-                valumeMMSCFD: row.unit2 == "MMBTU/D" ? `${row.volume}` : null, // ถ้าเลือก D ตัว H ต้องเป็น null
-                valumeMMSCFH: row.unit2 == "MMBTU/H" ? `${row.volume}` : null,  // ถ้าเลือก H ตัว D ต้องเป็น null
+            time: `${String(data?.hour ?? 0).padStart(2, '0')}:${String(data?.minute ?? 0).padStart(2, '0')}`, // Convert hour and minute to "HH:MM"
+            nom: (data?.rows || [])?.map((row: any) => ({
+                nomination_point_id: row?.nomination_point_id,
+                nomination_point: row?.nomination_point, // Ensure this field exists in the original object
+                heating_value: row?.heating_value,
+                valumeMMSCFD: row?.unit2 == "MMBTU/D" ? `${row?.volume}` : null, // ถ้าเลือก D ตัว H ต้องเป็น null
+                valumeMMSCFH: row?.unit2 == "MMBTU/H" ? `${row?.volume}` : null,  // ถ้าเลือก H ตัว D ต้องเป็น null
 
                 // valumeMMSCFD2: row.unit2 === "MMBTU/H" ? (row.volume * 24).toString() : row.volume,
                 // valumeMMSCFH2: row.unit2 === "MMBTU/D" ? (row.volume / 24).toString() : row.volume
@@ -411,8 +392,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // valumeMMSCFD2: row.unit2 == "MMBTU/D" ? formatNumberThreeDecimal(row.cal_volume).toString() : null,
                 // valumeMMSCFH2: row.unit2 == "MMBTU/H" ? formatNumberThreeDecimal(row.cal_volume).toString() : null
 
-                valumeMMSCFD2: row.unit2 == "MMBTU/D" ? row.cal_volume.toString() : null,
-                valumeMMSCFH2: row.unit2 == "MMBTU/H" ? row.cal_volume.toString() : null
+                valumeMMSCFD2: row?.unit2 == "MMBTU/D" ? row?.cal_volume?.toString() : null,
+                valumeMMSCFH2: row?.unit2 == "MMBTU/H" ? row?.cal_volume?.toString() : null
             }))
         };
 
@@ -439,11 +420,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 break;
         }
 
-        await fetchData();
-
-        setTimeout(async () => {
-            await handleFieldSearch();
-        }, 400);
+        await handleFieldSearch();
 
         if (resetForm) resetForm(); // reset form
     };
@@ -457,7 +434,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // update stat
     const openEditForm = (id: any) => {
         setSelectedId(id);
-        const filteredData = dataTable?.find((item: any) => item.id === id);
+        const filteredData = (dataTable || [])?.find((item: any) => item?.id === id);
         setMdUpdateMode('update');
         setFormData(filteredData);
         setMdUpdateOpen(true);
@@ -466,11 +443,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const handleFormSubmitUpdate = async (data: any) => {
 
         const dataPost = {
-            "status": Number(data.status),
-            "reason": data.reason
+            "status": Number(data?.status),
+            "reason": data?.reason
         }
         const res_update = await putService(`/master/daily-adjustment/update-status/${formData?.id}`, dataPost);
-        await fetchData();
+        await handleFieldSearch();
         setModalSuccessMsg('Status has been updated.')
         if (resetForm) resetForm();
         setMdUpdateOpen(false);
@@ -479,7 +456,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // view
     const openViewForm = (id: any) => {
-        const filteredData = dataTable?.find((item: any) => item.id === id);
+        const filteredData = (dataTable || [])?.find((item: any) => item?.id === id);
         setMdUpdateMode('view');
         setFormData(filteredData);
         setMdUpdateOpen(true);
@@ -501,7 +478,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         try {
             const response: any = await getService(`/master/account-manage/history?type=upload-template-for-shipper&method=all&id_value=${id}`);
 
-            const valuesArray = response?.map((item: any) => item.value);
+            const valuesArray = (response || [])?.map((item: any) => item?.value);
 
             let mappings = [
                 // { key: "entry_exit.name", title: "Entry/Exit" },
@@ -510,7 +487,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // { key: "description", title: "Description" },
             ];
             let result = mappings.map(({ key, title }) => {
-                const value = key.split('.').reduce((acc, part) => acc && acc[part], valuesArray[0]);
+                const value = key.split('.').reduce((acc: any, part: string) => (acc ? acc[part] : undefined), valuesArray?.[0]);
                 return {
                     title,
                     value: value || "",
@@ -547,7 +524,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // #region openShipperModal
     const openShipperModal = async (id?: any, group_data?: any, data?: any) => {
         const res_ = await getService(`/master/daily-adjustment`)
-        const filtered = res_?.find((item: any) => item.id === id);
+        const filtered = (res_ || [])?.find((item: any) => item?.id === id);
 
         setDataShipperModal(filtered)
         setMdShipperView(true)
@@ -662,30 +639,28 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     }, [popoverRef]);
 
     useEffect(() => {
-        // let apiUrl = `/master/daily-adjustment/shipper-data?excludeReverseBal=false`;
         let apiUrl = `/master/daily-adjustment/shipper-data`;
-        if(srchStartDate){
+        if (srchStartDate) {
             const gasDay = toDayjs(srchStartDate);
-            if(gasDay.isValid()){
+            if (gasDay && gasDay.isValid()) {
                 apiUrl += `?gas_day=${gasDay.format('YYYY-MM-DD')}`;
                 getService(apiUrl).then((res_shipper_approve: any) => {
-                    if(Array.isArray(res_shipper_approve)) {
+                    if (Array.isArray(res_shipper_approve)) {
                         if (userDT?.account_manage?.[0]?.user_type_id == 3) { // shipper
-                            // เช็คว่า userDT?.account_manage?.[0]?.group?.id มีอยู่ใน data_group อ้ะป่าว
                             const targetGroupId = userDT?.account_manage?.[0]?.group?.id;
-                            const existsInGroup = res_shipper_approve?.some((group: any) => group.id === targetGroupId);
-                            setIsInclude(existsInGroup)
-                            if(!existsInGroup && userDT?.account_manage?.[0]?.group?.id && userDT?.account_manage?.[0]?.group?.name ){
-                                res_shipper_approve.push({ id: userDT?.account_manage?.[0]?.group?.id, name: userDT?.account_manage?.[0]?.group?.name })
+                            const existsInGroup = res_shipper_approve?.some((group: any) => group?.id === targetGroupId);
+                            setIsInclude(existsInGroup);
+                            if (!existsInGroup && userDT?.account_manage?.[0]?.group?.id && userDT?.account_manage?.[0]?.group?.name) {
+                                res_shipper_approve.push({ id: userDT?.account_manage?.[0]?.group?.id, name: userDT?.account_manage?.[0]?.group?.name });
                             }
                         }
-                        else{
-                            if(Array.isArray(srchShipper)){
-                                const newFilterShipper = srchShipper.filter(id => res_shipper_approve.some((group: any) => group.id === id))
-                                setSrchShipper(newFilterShipper)
+                        else {
+                            if (Array.isArray(srchShipper)) {
+                                const newFilterShipper = srchShipper.filter(id => res_shipper_approve.some((group: any) => group?.id === id));
+                                setSrchShipper(newFilterShipper);
                             }
-                            else if (!res_shipper_approve.some((group: any) => group.id === srchShipper)){
-                                setSrchShipper([])
+                            else if (!res_shipper_approve.some((group: any) => group?.id === srchShipper)) {
+                                setSrchShipper([]);
                             }
                         }
                         setDataShipper(res_shipper_approve);
@@ -695,7 +670,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 });
             }
         }
-    }, [srchStartDate])
+    }, [srchStartDate]);
 
     const columns = useMemo<ColumnDef<any>[]>(
         () => [
@@ -705,15 +680,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => row?.daily_adjustment_status?.name || '',
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
                         <div
                             className="flex min-w-[130px] max-w-[190px] w-auto text-center justify-center rounded-full p-1 text-[#464255]"
-                            style={{ backgroundColor: String(row?.daily_adjustment_status?.color) }}
+                            style={{ backgroundColor: String(row?.daily_adjustment_status?.color || '#EFECEC') }}
                         >
-                            {row?.daily_adjustment_status?.name}
+                            {row?.daily_adjustment_status?.name ?? ''}
                         </div>
-                    )
+                    );
                 }
             },
             {
@@ -722,13 +698,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => formatDateNoTime(row?.gas_day) || '',
                 sortingFn: myCustomSortingByDateFn,
-                // sortingFn: 'datetime', // recommended for date columns 
-                // sortUndefined: -1,
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
                         <div>{row?.gas_day ? formatDateNoTime(row?.gas_day) : ''}</div>
-                    )
+                    );
                 }
             },
             {
@@ -737,10 +712,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => row?.time || '',
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
                         <div>{row?.time ? row?.time : ''}</div>
-                    )
+                    );
                 }
             },
             {
@@ -749,52 +725,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: true,
                 accessorFn: (row: any) => row?.daily_code || '',
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
                         <div>{row?.daily_code ? row?.daily_code : ''}</div>
-                    )
+                    );
                 }
             },
-            // {
-            //     accessorKey: "shipper_name",
-            //     header: "Shipper Name",
-            //     enableSorting: false,
-            //     accessorFn: (row: any) => '',
-            //     align: 'center',
-            //     cell: (info) => {
-            //         const row: any = info?.row?.original
-            //         return (
-            //             row?.daily_adjustment_group?.length == 1 ?
-            //                 row?.daily_adjustment_group[0]?.group?.company_name + " " + `(${row?.daily_adjustment_group[0]?.group?.name})`
-            //                 :
-            //                 <div className="inline-flex items-center justify-center relative">
-            //                     <button
-            //                         type="button"
-            //                         className="flex items-center justify-center px-[2px] py-[2px] bg-white rounded-md hover:bg-blue-600 border border-[#DFE4EA] relative"
-            //                         onClick={() => openShipperModal(row?.id, row?.daily_adjustment_group, row)}
-            //                         disabled={!userPermission?.f_view}
-            //                     >
-            //                         <PeopleAltRoundedIcon sx={{ fontSize: 18, color: '#1473A1', '&:hover': { color: '#ffffff' } }} />
-            //                     </button>
-            //                     <span className="px-2 text-[#464255]">
-            //                         {row?.daily_adjustment_group?.length}
-            //                     </span>
-            //                 </div>
-            //         )
-            //     }
-            // },
             {
                 id: 'shipper_name',
                 header: 'Shipper Name',
-                // ทำสตริงสำหรับค้นหา (single = "Company (Group)"; multi = "Company1 (G1) | Company2 (G2)")
                 accessorFn: (row: any) => {
-                    const groups = row?.daily_adjustment_group ?? [];
+                    const groups = Array.isArray(row?.daily_adjustment_group) ? row.daily_adjustment_group : [];
                     if (groups.length === 0) return '';
                     if (groups.length === 1) {
                         const g = groups[0]?.group ?? {};
-                        return g.name || ''
-                        // return [g.company_name, g.name ? `(${g.name})` : null]
-                        //     .filter(Boolean).join(' ');
+                        return g.name || '';
                     }
                     return groups
                         .map((x: any) => {
@@ -804,12 +750,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         })
                         .join(' | ');
                 },
-                // เรนเดอร์ UI ตามเดิม (ไม่กระทบ search)
                 cell: (info: any) => {
                     const row = info?.row?.original;
+                    if (!row) return null;
                     return (
-                        row?.daily_adjustment_group?.length == 1
-                            // ? `${row?.daily_adjustment_group?.[0]?.group?.company_name} (${row?.daily_adjustment_group?.[0]?.group?.name})`
+                        (row?.daily_adjustment_group?.length ?? 0) === 1
                             ? row?.daily_adjustment_group?.[0]?.group?.name || ''
                             : (
                                 <div className="inline-flex items-center justify-center relative">
@@ -822,13 +767,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                         <PeopleAltRoundedIcon sx={{ fontSize: 18, color: '#1473A1', '&:hover': { color: '#ffffff' } }} />
                                     </button>
                                     <span className="px-2 text-[#464255]">
-                                        {row?.daily_adjustment_group?.length}
+                                        {row?.daily_adjustment_group?.length ?? 0}
                                     </span>
                                 </div>
                             )
                     );
                 },
-                enableSorting: false, // คงเดิม
+                enableSorting: false,
                 filterFn: 'includesString',
                 enableGlobalFilter: true,
             },
@@ -838,18 +783,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: false,
                 accessorFn: (row: any) => '',
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
                         <div className="inline-flex items-center justify-center relative">
-                            {/* <button
-                                type="button"
-                                className="flex items-center justify-center px-[2px] py-[2px] bg-white rounded-md hover:bg-blue-600 border border-[#DFE4EA] relative"
-                                onClick={() => openReasonModal(row?.id, row?.daily_adjustment_reason, row)}
-                                disabled={!userPermission?.f_view}
-                            >
-                                <ChatBubbleOutlineOutlinedIcon sx={{ fontSize: 18, color: '#1473A1', '&:hover': { color: '#ffffff' } }} />
-                            </button> */}
-
                             <button
                                 type="button"
                                 className={iconButtonClass}
@@ -863,10 +800,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 />
                             </button>
                             <span className="px-2 text-[#464255]">
-                                {row?.daily_adjustment_reason?.length}
+                                {row?.daily_adjustment_reason?.length ?? 0}
                             </span>
                         </div>
-                    )
+                    );
                 }
             },
             {
@@ -874,15 +811,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 header: "Created by",
                 width: 250,
                 enableSorting: true,
-                accessorFn: (row) => `${`${row?.create_by_account?.first_name} ` || ''}${row?.create_by_account?.last_name} ${row?.create_date ? formatDate(row?.create_date) : ''}`,
+                accessorFn: (row: any) => `${row?.create_by_account?.first_name || ''} ${row?.create_by_account?.last_name || ''} ${row?.create_date ? formatDate(row?.create_date) : ''}`.trim(),
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
                         <div>
-                            <span className={`text-[#464255]`}>{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
+                            <span className={`text-[#464255]`}>{row?.create_by_account?.first_name ?? ''} {row?.create_by_account?.last_name ?? ''}</span>
                             <div className="text-gray-500 text-xs">{row?.create_date ? formatDate(row?.create_date) : ''}</div>
                         </div>
-                    )
+                    );
                 }
             },
             {
@@ -890,15 +828,16 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 header: "Updated by",
                 align: 'center',
                 enableSorting: true,
-                accessorFn: (row: any) => row?.update_by_account?.first_name || row?.update_by_account?.last_name || formatDateTimeSec(row?.update_date) || '',
+                accessorFn: (row: any) => row?.update_by_account?.first_name || row?.update_by_account?.last_name || (row?.update_date ? formatDateTimeSec(row.update_date) : '') || '',
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
                         <div>
-                            <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
+                            <span className="text-[#464255]">{row?.update_by_account?.first_name ?? ''} {row?.update_by_account?.last_name ?? ''}</span>
                             <div className="text-gray-500 text-xs">{row?.update_date ? formatDateTimeSec(row?.update_date) : ''}</div>
                         </div>
-                    )
+                    );
                 }
             },
             {
@@ -910,19 +849,19 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 size: 100,
                 cell: (info) => {
                     const row: any = info?.row?.original;
+                    if (!row) return null;
                     return (
                         <BtnActionTable
                             togglePopover={togglePopover}
                             row_id={row?.id}
-                            // disable={userPermission?.f_view == true && userPermission?.f_edit == true ? false : true}
                             disable={userPermission?.f_view ? false : true}
                         />
-                    )
+                    );
                 }
             },
         ],
         [userPermission, user_permission]
-    )
+    );
 
     const toggleMenu = (mode: any, id: any) => {
         switch (mode) {
@@ -942,19 +881,18 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 setAnchorPopover(null);
                 break;
         }
-    }
+    };
 
     const getRowdata: any = (id: any) => {
-        const findData: any = dataTable?.find((item: any) => item?.id == id);
-        return findData
-    }
+        const findData: any = (dataTable || [])?.find((item: any) => item?.id == id);
+        return findData;
+    };
 
     return (
         <div className=" space-y-2">
             <div className="border-[#DFE4EA] border-[1px] p-4 rounded-xl flex flex-col sm:flex-row gap-2">
                 <aside className="flex flex-wrap sm:flex-row gap-2 w-full">
 
-                    {/* เพิ่ม Default Filter Gas Day เป็น Today  https://app.clickup.com/t/86etzch94 */}
                     <DatePickaSearch
                         key={"start" + key}
                         label={"Gas Day"}
@@ -968,20 +906,18 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         id="searchShipper"
                         label="Shipper Name"
                         type="select-multi-checkbox"
-                        // value={srchShipper}
                         value={userDT?.account_manage?.[0]?.user_type_id == 3 ? [userDT?.account_manage?.[0]?.group?.id] : srchShipper}
                         isDisabled={userDT?.account_manage?.[0]?.user_type_id == 3? true : false}
                         onChange={(e) => {
-                            setSrchShipper(e.target.value)
-                            // findContractCode(e.target.value, dataShipper)
+                            setSrchShipper(e.target.value);
                         }}
-                        options={dataShipper
+                        options={(Array.isArray(dataShipper) ? dataShipper : [])
                             ?.filter((item: any) =>
-                                userDT?.account_manage?.[0]?.user_type_id == 3 ? item?.id === userDT?.account_manage?.[0]?.group?.id : true // ถ้าเป็น shipper เอาแค่ของตัวเอง
+                                userDT?.account_manage?.[0]?.user_type_id == 3 ? item?.id === userDT?.account_manage?.[0]?.group?.id : true
                             )
                             .map((item: any) => ({
-                                value: item.id,
-                                label: item.name,
+                                value: item?.id ?? '',
+                                label: item?.name ?? '',
                             }))
                         }
                     />
@@ -989,13 +925,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     <InputSearch
                         id="searchStatus"
                         label="Status"
-                        // type="select"
                         type="select-multi-checkbox"
                         value={srchStatus}
                         onChange={(e) => setSrchStatus(e.target.value)}
-                        options={daily_adjust_stat?.map((item: any) => ({
-                            value: item?.id?.toString(),
-                            label: item.name
+                        options={(daily_adjust_stat || []).map((item: any) => ({
+                            value: item?.id?.toString() ?? '',
+                            label: item?.name ?? ''
                         }))}
                     />
 
@@ -1090,11 +1025,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         can_export={userPermission ? userPermission?.f_export : false} columnVisibility={columnVisibility} initialColumns={initialColumns}
                     />
                 }
-                initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
+                initialColumns={Object.fromEntries((initialColumns || []).map((column: any) => [column?.key, column?.visible]))}
                 onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                 onFilteredDataChange={(filteredData: any) => {
                     const newData = filteredData || [];
-                    // Check if the filtered data is different from current dataExport
                     if (JSON.stringify(dataExport) !== JSON.stringify(newData)) {
                         setDataExport(newData);
                     }
@@ -1107,32 +1041,26 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 open={formOpen}
                 dataTable={dataTable}
                 dataShipper={dataShipper}
-                entryExitMasterData={entryExitMaster?.data}
-                nominationPointData={nominationPointData?.data?.filter((item: any) => {
-                    // Initialize flags to track start and end date validity
-                    let isStart = false
-                    let isEnd = false
-                    // Parse the start date using dayjs
-                    let startDate = toDayjs(item.start_date);
-                    // Check if start date is valid and if it's today or in the past
-                    if (startDate.isValid()) {
-                        startDate = startDate.startOf('day')
-                        isStart = startDate.isSameOrBefore(toDayjs().startOf('day'))
+                entryExitMasterData={(entryExitMaster?.data || []).filter((item: any) => !(process.env.NEXT_PUBLIC_DISABLE_ENTRY_EXIT_IN_NEW_DAILY_ADJUSTMENT || '').toLowerCase().includes(item?.name?.toLowerCase() || ''))}
+                nominationPointData={(nominationPointData?.data || [])?.filter((item: any) => {
+                    if (!item) return false;
+                    let isStart = false;
+                    let isEnd = false;
+                    let startDate = toDayjs(item?.start_date);
+                    if (startDate && startDate.isValid()) {
+                        startDate = startDate.startOf('day');
+                        isStart = startDate.isSameOrBefore(toDayjs().startOf('day'));
                     }
-                    // Check if end date exists and validate it
-                    if (item.end_date) {
+                    if (item?.end_date) {
                         let endDate = toDayjs(item.end_date);
-                        if (endDate.isValid()) {
-                            endDate = endDate.startOf('day')
-                            // Check if end date is today or in the past
+                        if (endDate && endDate.isValid()) {
+                            endDate = endDate.startOf('day');
                             isEnd = endDate.isSameOrBefore(toDayjs().startOf('day'));
                         }
                         else {
-                            // If end date is invalid, consider it as ended
-                            isEnd = true
+                            isEnd = true;
                         }
                     }
-                    // Return true if the item has started (isStart) but hasn't ended (!isEnd)
                     return isStart && !isEnd;
                 })}
                 areaMaster={areaMaster?.data}
@@ -1263,7 +1191,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
                         {
                             (getRowdata(openPopoverId)?.daily_adjustment_status_id !== 2 && getRowdata(openPopoverId)?.daily_adjustment_status_id !== 3) &&
-                            userDT?.account_manage?.[0]?.user_type_id !== 3 && userPermission?.f_edit && getRowdata(openPopoverId) && (
+                            userDT?.account_manage?.[0]?.user_type_id !== 3 && userPermission?.f_approved && getRowdata(openPopoverId) && (
                                 <li
                                     className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer"
                                     onClick={() => toggleMenu("edit", openPopoverId)}

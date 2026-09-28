@@ -1,4 +1,5 @@
 "use client";
+
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ArrowBackIos from '@mui/icons-material/ArrowBackIosOutlined';
@@ -214,7 +215,7 @@ const DocumentPage: React.FC<any> = () => {
         if (srchTypeCharge?.length > 0) {
             setDataTableTotal(result_2.length)
         } else {
-            setDataTableTotal(res_main_data.total)
+            setDataTableTotal(res_main_data?.total ?? 0)
         }
 
         setDataTable(result_2)
@@ -240,7 +241,7 @@ const DocumentPage: React.FC<any> = () => {
             );
         });
         const result_2_ex_ = result_2_ex?.map((e:any) => {
-                const { amount, ...nE } = e
+                const { amount, ...nE } = e ?? {}
 
                 const toNumber = (value: any) => {
                 const num = Number(String(value ?? 0).replace(/,/g, '').trim())
@@ -411,7 +412,7 @@ const DocumentPage: React.FC<any> = () => {
                 );
             });
             const result_2_ex_ = result_2_ex?.map((e:any) => {
-                const { amount, ...nE } = e
+                const { amount, ...nE } = e ?? {}
 
                 const toNumber = (value: any) => {
                 const num = Number(String(value ?? 0).replace(/,/g, '').trim())
@@ -474,14 +475,14 @@ const DocumentPage: React.FC<any> = () => {
         // 1. หาว่าใน shipper และเดือนนั้นมี .tariff_invoice_sent_id == 1 หรือเปล่า
         let url = `/master/tariff/tariffChargeReport/tariffChargeReportFindAll?limit=1000&offset=0`
         url += `&month_year_charge=${dayjs(month_year_charge).format("YYYY-MM-DD")}`
-
+        
         const res_main_data = await getService(url);
-        const result = res_main_data?.data
+        const result = (res_main_data?.data || [])
             // .filter((item: any) => item.tariff_invoice_sent?.id === 1)
-            .filter((item: any) => item.tariff_invoice_sent?.id === 1 && item?.shipper?.id == head_data?.shipper?.id)
-            .map((item: any) => ({
-                name: item.shipper.name,
-                month_year_charge: item.month_year_charge,
+            ?.filter((item: any) => item?.tariff_invoice_sent?.id === 1 && item?.shipper?.id == head_data?.shipper?.id)
+            ?.map((item: any) => ({
+                name: item?.shipper?.name ?? "",
+                month_year_charge: item?.month_year_charge ?? "",
             }));
 
         if (result?.length > 0) {
@@ -643,7 +644,7 @@ const DocumentPage: React.FC<any> = () => {
     useEffect(() => {
         if (filteredDataTable) {
             const filteredDataTable_ = filteredDataTable?.map((e:any) => {
-                const { amount, ...nE } = e
+                const { amount, ...nE } = e ?? {}
 
                 const toNumber = (value: any) => {
                 const num = Number(String(value ?? 0).replace(/,/g, '').trim())

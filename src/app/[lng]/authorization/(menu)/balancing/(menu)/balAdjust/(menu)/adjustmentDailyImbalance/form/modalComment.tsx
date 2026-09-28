@@ -55,14 +55,14 @@ const ModalComment: React.FC<FormExampleProps> = ({
                                 </div>
 
                                 <div className="grid grid-cols-4 text-sm font-light text-[#58585A]">
-                                    <p>{dataMain?.gas_day ? toDayjs(dataMain?.gas_day).format("DD/MM/YYYY") : ''}</p>
+                                    <p>{dataMain?.gas_day && toDayjs(dataMain?.gas_day).isValid() ? toDayjs(dataMain?.gas_day).format("DD/MM/YYYY") : ''}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className={`mb-1 w-[100%] ${comments?.length > 2 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
-                            {comments && comments?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                        <div className={`mb-1 w-[100%] ${(comments?.length || 0) > 2 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
+                            {(comments || [])?.map((item: any) => (
+                                <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
                                         <div className="mb-2 flex justify-between">
                                             <span className='font-light'>

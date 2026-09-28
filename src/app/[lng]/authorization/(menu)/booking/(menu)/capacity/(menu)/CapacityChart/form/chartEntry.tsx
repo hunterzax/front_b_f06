@@ -140,13 +140,24 @@ const ChartEntry: React.FC<any> = ({ }) => {
         });
         // let start_date = toDayjs().toDate()
         // let end_date = toDayjs().add(10, 'year').endOf('year').toDate()
-        let start_date = toDayjs()
-            .startOf("year")
+        // let start_date = toDayjs()
+        //     .startOf("year")
+        //     .toDate();
+
+        // let end_date = toDayjs()
+        //     .add(10, "year")
+        //     .endOf("year")
+        //     .toDate();
+        // Default API ตอนเข้าหน้า
+        // Start From = วันที่ 1 ของเดือนปัจจุบัน
+        const start_date = toDayjs()
+            .startOf("month")
             .toDate();
 
-        let end_date = toDayjs()
-            .add(10, "year")
-            .endOf("year")
+        // End Date = สิ้นเดือนของเดือนเดียวกันในอีก 20 ปี
+        const end_date = toDayjs()
+            .add(20, "year")
+            .endOf("month")
             .toDate();
           
         let filter_string = `${userDT?.account_manage?.[0]?.user_type_id == 1 || userDT?.account_manage?.[0]?.user_type_id == 2 ? idsArray : userDT?.account_manage?.[0]?.group_id}` // ถ้าเป็น TSO เอา id shipper ทั้งหมดมาแสดง ถ้าเป็น shipper เอาแค่ของตัวเอง
@@ -266,10 +277,10 @@ const ChartEntry: React.FC<any> = ({ }) => {
             const start = toDayjs(start_date);
             let end = toDayjs(end_date);
 
-            // ถ้าเลือกเดือนเดียวกัน
-            if (start.isSame(end, "month")) {
-                end = end.add(1, "month").startOf("month");
-            }
+            // // ถ้าเลือกเดือนเดียวกัน
+            // if (start.isSame(end, "month")) {
+            //     end = end.add(1, "month").startOf("month");
+            // }
 
             start_date = start
                 .startOf("month")
@@ -288,8 +299,8 @@ const ChartEntry: React.FC<any> = ({ }) => {
                 .format("DD/MM/YYYY");
 
             end_date = start
-                .add(10, "year")
-                .endOf("year")
+                .add(20, "year")
+                .endOf("month")
                 .format("DD/MM/YYYY");
 
         } else if (end_date) {
@@ -297,8 +308,8 @@ const ChartEntry: React.FC<any> = ({ }) => {
             const end = toDayjs(end_date);
 
             start_date = end
-                .subtract(10, "year")
-                .startOf("year")
+                .subtract(20, "year")
+                .startOf("month")
                 .format("DD/MM/YYYY");
 
             end_date = end
@@ -309,12 +320,12 @@ const ChartEntry: React.FC<any> = ({ }) => {
 
             // ไม่กรอก Start/End
             start_date = toDayjs()
-                .startOf("year")
+                .startOf("month")
                 .format("DD/MM/YYYY");
 
             end_date = toDayjs()
-                .add(10, "year")
-                .endOf("year")
+                .add(20, "year")
+                .endOf("month")
                 .format("DD/MM/YYYY");
         }
         console.log('srchStartDateMain : ', srchStartDateMain);
@@ -652,29 +663,26 @@ const ChartEntry: React.FC<any> = ({ }) => {
                     paddedData.push(null);
                 }
 
-                let lastNonNullIndex = -1;
-                for (let i = paddedData.length - 1; i >= 0; i--) {
-                    if (paddedData[i] !== null && paddedData[i] !== undefined) {
-                        lastNonNullIndex = i;
-                        break;
-                    }
-                }
+                // const isNonEmpty = (v: any) => v !== null && v !== undefined && v !== '';
 
-                const reachesEnd = sortedLabels.length > 0 && lastNonNullIndex === sortedLabels.length - 1;
+                // let firstNonNullIndex = paddedData.findIndex((v: any) => isNonEmpty(v));
+                // let lastNonNullIndex = paddedData.findLastIndex((v: any) => isNonEmpty(v));
 
-                // แสดงจุดเฉพาะจุดสุดท้ายของเส้นที่ไปไม่สุดแกน X
-                const pointRadius = reachesEnd
-                    ? 0
-                    : paddedData.map((_: any, i: number) => (i === lastNonNullIndex ? 4 : 0));
-                const pointHoverRadius = reachesEnd
-                    ? 0
-                    : paddedData.map((_: any, i: number) => (i === lastNonNullIndex ? 6 : 0));
+                // const reachesEnd = sortedLabels.length > 0 && lastNonNullIndex === sortedLabels.length - 1;
+
+                // // แสดงจุดเฉพาะจุดสุดท้ายของเส้นที่ไปไม่สุดแกน X
+                // const pointRadius = reachesEnd
+                //     ? 0
+                //     : paddedData.map((_: any, i: number) => (i === lastNonNullIndex ? 4 : 0));
+                // const pointHoverRadius = reachesEnd
+                //     ? 0
+                //     : paddedData.map((_: any, i: number) => (i === lastNonNullIndex ? 6 : 0));
 
                 return {
                     ...ds,
                     data: paddedData,
-                    pointRadius,
-                    pointHoverRadius,
+                    // pointRadius,
+                    // pointHoverRadius,
                     pointBackgroundColor: ds.borderColor,
                     pointBorderColor: ds.borderColor,
                 };

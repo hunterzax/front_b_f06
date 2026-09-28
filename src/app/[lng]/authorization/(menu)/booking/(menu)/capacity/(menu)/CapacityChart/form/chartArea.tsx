@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import React, { useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
-import { exportChartToExcel, filterDataChartByMonthRange, formatDateNoTime, formatNumber, generateUserPermission, hexToRgba, parseMonth } from "@/utils/generalFormatter";
+import { exportChartToExcel, filterDataChartByMonthRange, formatDateNoTime, formatNumber, generateUserPermission, hexToRgba, parseMonth, toDayjs } from "@/utils/generalFormatter";
 import { InputSearch } from "@/components/other/SearchForm";
 import { useFetchMasters } from "@/hook/fetchMaster";
 import BtnSearch from "@/components/other/btnSearch";
@@ -65,12 +65,27 @@ const ChartArea: React.FC<any> = ({ }) => {
     }, []);
 
     // ############### FETCH ###############
-    const startDateDefault = new Date();
-    // startDateDefault.setFullYear(startDateDefault.getFullYear() - 2);
-    const resStartDateDefault = formatDateNoTime(startDateDefault);
+    // const startDateDefault = new Date();
+    // // startDateDefault.setFullYear(startDateDefault.getFullYear() - 2);
+    // const resStartDateDefault = formatDateNoTime(startDateDefault);
 
-    const endDateDefault = new Date();
-    endDateDefault.setFullYear(endDateDefault.getFullYear() + 25, endDateDefault.getMonth() + 1, 0);
+    // const endDateDefault = new Date();
+    // endDateDefault.setFullYear(endDateDefault.getFullYear() + 25, endDateDefault.getMonth() + 1, 0);
+    // const resEndDateDefault = formatDateNoTime(endDateDefault);
+
+    const today = new Date();
+    const startDateDefault = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1
+    );
+    const endDateDefault = new Date(
+        today.getFullYear() + 20,
+        today.getMonth() + 1,
+        0
+    );
+
+    const resStartDateDefault = formatDateNoTime(startDateDefault);
     const resEndDateDefault = formatDateNoTime(endDateDefault);
 
     const [userData, setUserData] = useState<any>([]);
@@ -160,11 +175,71 @@ const ChartArea: React.FC<any> = ({ }) => {
         const idsArray = shipperGroupData?.data?.map((item: any) => item.id);
         let filter_string = `${userDT?.account_manage?.[0]?.user_type_id == 1 || userDT?.account_manage?.[0]?.user_type_id == 2 ? idsArray : userDT?.account_manage?.[0]?.group_id}` // ถ้าเป็น TSO เอา id shipper ทั้งหมดมาแสดง ถ้าเป็น shipper เอาแค่ของตัวเอง
 
-        // MonthYearPicker คืนวันที่ 1 ของเดือน → แปลงเป็นวันสิ้นเดือน
-        const endDate = srchEndDateMain
-            ? formatDateNoTime(new Date(srchEndDateMain.getFullYear(), srchEndDateMain.getMonth() + 1, 0))
-            : resEndDateDefault;
-        const response_area_chart: any = await getService(`/master/capacity-dashboard/area-data-graph?id=[${srchShipper?.length > 0 ? srchShipper : filter_string}]&start_date=${srchStartDateMain ? formatDateNoTime(srchStartDateMain) : resStartDateDefault}&end_date=${endDate}`);
+        // // MonthYearPicker คืนวันที่ 1 ของเดือน → แปลงเป็นวันสิ้นเดือน
+        // const endDate = srchEndDateMain
+        //     ? formatDateNoTime(new Date(srchEndDateMain.getFullYear(), srchEndDateMain.getMonth() + 1, 0))
+        //     : resEndDateDefault;
+        // const response_area_chart: any = await getService(`/master/capacity-dashboard/area-data-graph?id=[${srchShipper?.length > 0 ? srchShipper : filter_string}]&start_date=${srchStartDateMain ? formatDateNoTime(srchStartDateMain) : resStartDateDefault}&end_date=${endDate}`);
+
+        let start_date: any = srchStartDateMain
+        let end_date: any = srchEndDateMain
+        if (start_date && end_date) {
+
+            const start = toDayjs(start_date);
+            const end = toDayjs(end_date);
+
+            // // ถ้าเลือกเดือนเดียวกัน
+            // if (start.isSame(end, "month")) {
+            //     end = end.add(1, "month").startOf("month");
+            // }
+
+            start_date = !start.isValid() ? resStartDateDefault : start
+                .startOf("month")
+                .format("DD/MM/YYYY");
+
+            end_date = !end.isValid() ? resEndDateDefault : end
+                .endOf("month")
+                .format("DD/MM/YYYY");
+
+        } else if (start_date) {
+
+            const start = toDayjs(start_date);
+
+            if(start.isValid()) {
+                start_date = start.startOf("month").format("DD/MM/YYYY");
+                end_date = start.add(20, "year").endOf("month").format("DD/MM/YYYY");
+            }
+            else{
+                start_date = resStartDateDefault;
+                end_date = resEndDateDefault;
+            }
+
+        } else if (end_date) {
+
+            const end = toDayjs(end_date);
+
+            if(end.isValid()) {
+                start_date = end.subtract(20, "year").startOf("month").format("DD/MM/YYYY");
+                end_date = end.endOf("month").format("DD/MM/YYYY");
+            }
+            else{
+                start_date = resStartDateDefault;
+                end_date = resEndDateDefault;
+            }
+
+        } else {
+
+            // ไม่กรอก Start/End
+            start_date = toDayjs()
+                .startOf("month")
+                .format("DD/MM/YYYY");
+
+            end_date = toDayjs()
+                .add(20, "year")
+                .endOf("month")
+                .format("DD/MM/YYYY");
+        }
+        const response_area_chart: any = await getService(`/master/capacity-dashboard/area-data-graph?id=[${srchShipper?.length > 0 ? srchShipper : filter_string}]&start_date=${start_date}&end_date=${end_date}`);
 
         let filter_ = response_area_chart
             // .filter((entry: any) => (srchEntryMain !== '' && srchEntryMain !== undefined ? entry.id === Number(srchEntryMain) : true)) // Condition 4 // ปิดไปเมื่อ 20251013
@@ -211,7 +286,8 @@ const ChartArea: React.FC<any> = ({ }) => {
         setFilteredDataMainGraph(filter_)
 
         // เสิชแล้วปั้น data chart เลย
-        const { labels, datasets } = processChartData(filter_, (res_find_entry_exit?.entry_exit_id.toString() == '1' || res_find_entry_exit == undefined) ? false : true, srchArea == '' ? false : srchArea, srchStartDateMain ? formatDateNoTime(srchStartDateMain) : resStartDateDefault, endDate); // ถ้าเป็น entry ส่ง false, exit ส่ง true
+        // const { labels, datasets } = processChartData(filter_, (res_find_entry_exit?.entry_exit_id.toString() == '1' || res_find_entry_exit == undefined) ? false : true, srchArea == '' ? false : srchArea, srchStartDateMain ? formatDateNoTime(srchStartDateMain) : resStartDateDefault, endDate); // ถ้าเป็น entry ส่ง false, exit ส่ง true
+        const { labels, datasets } = processChartData(filter_, (res_find_entry_exit?.entry_exit_id.toString() == '1' || res_find_entry_exit == undefined) ? false : true, srchArea == '' ? false : srchArea, start_date, end_date); // ถ้าเป็น entry ส่ง false, exit ส่ง true
         setChartData({ labels, datasets });
 
         setTimeout(() => {
@@ -299,6 +375,17 @@ const ChartArea: React.FC<any> = ({ }) => {
 
         setAreaName(areaToProcess ? areaToProcess?.name : '')
 
+        const startDayjs = toDayjs(start_date, 'DD/MM/YYYY');
+        const endDayjs = toDayjs(end_date, 'DD/MM/YYYY');
+        let filteredMonthLabels: any[] = [];
+        if(startDayjs.isValid() && endDayjs.isValid() && startDayjs.isSameOrBefore(endDayjs, 'month')) {
+            let currentDate = startDayjs.clone();
+            do{
+                filteredMonthLabels.push(currentDate.format('MMM YYYY'));
+                currentDate = currentDate.add(1, 'month');
+            } while(currentDate.isSameOrBefore(endDayjs, 'month'));
+        }
+        else{
         let monthFullLabel1: any = areaToProcess?.term_type?.map((term: any) => {
             let test_label: any = []
             for (let ids = 0; ids < term.data.length; ids++) {
@@ -313,7 +400,7 @@ const ChartArea: React.FC<any> = ({ }) => {
         let monthFullLabel2: any = new Set((monthFullLabel1 || []).flatMap((fm: any) => fm))
         let monthFullLabelOk: any = [...monthFullLabel2].sort((a: any, b: any) => new Date(`01-${a}`).getTime() - new Date(`01-${b}`).getTime());
 
-        const filteredMonthLabels = monthFullLabelOk?.filter((label: any) => {
+        filteredMonthLabels = monthFullLabelOk?.filter((label: any) => {
             const monthDate: any = parseMonth(label);
 
             // If both start and end dates are provided
@@ -334,6 +421,7 @@ const ChartArea: React.FC<any> = ({ }) => {
             // If neither are provided, return all months (or adjust based on your requirements)
             return true;
         });
+        }
 
         areaToProcess?.term_type?.forEach((term: any) => {
             // Add term_type name and color to datasets
@@ -430,7 +518,7 @@ const ChartArea: React.FC<any> = ({ }) => {
                 usePointStyle: true,
                 callbacks: {
                     title: () => null,
-                    // headers: (tooltipItem: any) => `  ${formatNumber(tooltipItem.raw)} MMBTU`,
+                    // headers: (tooltipItem: any) => `  ${formatNumber(tooltipItem?.raw)} MMBTU`,
                     label: (tooltipItem: any, data: any) => tooltipItem?.dataset?.label,
                     afterLabel: function (tooltipItem: any, data: any) {
                         return `${formatNumber(tooltipItem?.raw)} MMBTU`;
@@ -631,9 +719,9 @@ const ChartArea: React.FC<any> = ({ }) => {
                                         setSrchArea(find_a1?.name)
                                     }
                                 }}
-                                options={entryExitMaster?.data?.map((item: any) => ({
+                                options={(entryExitMaster?.data || [])?.map((item: any) => ({
                                     value: item?.id?.toString(),
-                                    label: item.name
+                                    label: item?.name || ''
                                 }))}
                             />
 
@@ -742,7 +830,9 @@ const ChartArea: React.FC<any> = ({ }) => {
                     <div
                         className="h-[260px]"
                         style={{
-                            minWidth: `${Math.max((labels?.length || 0) * 20, 800)}px`,
+                            minWidth: chartData?.labels && chartData.labels.length > 10
+                                ? `${chartData.labels.length * 50}px`
+                                : "100%",
                         }}
                     >
                         {isLoading ? (

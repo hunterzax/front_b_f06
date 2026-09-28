@@ -86,7 +86,7 @@ const TableBookingTemplate: React.FC<TableProps> = ({ openEditForm, openViewForm
                         <thead className="text-xs h-[44px] text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.term && (
+                                {columnVisibility?.term && (
                                     <th
                                         scope="col"
                                         className={`${table_sort_header_style} text-center w-auto max-w-[300px]`}
@@ -97,70 +97,70 @@ const TableBookingTemplate: React.FC<TableProps> = ({ openEditForm, openViewForm
                                     </th>
                                 )}
 
-                                {columnVisibility.file_period && (
+                                {columnVisibility?.file_period && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("file_period", sortState, setSortState, setSortedData, tableData)}>
                                         {`File Period`}
                                         {getArrowIcon("file_period")}
                                     </th>
                                 )}
 
-                                {columnVisibility.min && (
+                                {columnVisibility?.min && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("min", sortState, setSortState, setSortedData, tableData)}>
                                         {`Period Min`}
                                         {getArrowIcon("min")}
                                     </th>
                                 )}
 
-                                {columnVisibility.max && (
+                                {columnVisibility?.max && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("max", sortState, setSortState, setSortedData, tableData)}>
                                         {`Period Max`}
                                         {getArrowIcon("max")}
                                     </th>
                                 )}
 
-                                {columnVisibility.file_start_date && (
+                                {columnVisibility?.file_start_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("file_start_date_mode", sortState, setSortState, setSortedData, tableData)}>
                                         {`File Recurring Start Date`}
                                         {getArrowIcon("file_start_date_mode")}
                                     </th>
                                 )}
 
-                                {columnVisibility.shadow_time && (
+                                {columnVisibility?.shadow_time && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("shadow_time", sortState, setSortState, setSortedData, tableData)}>
                                         {`Shadow Time`}
                                         {getArrowIcon("shadow_time")}
                                     </th>
                                 )}
 
-                                {/* {columnVisibility.shadow_period && (
+                                {/* {columnVisibility?.shadow_period && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("shadow_period", sortState, setSortState, setSortedData, tableData)}>
                                         {`Shadow Period`}
                                         {getArrowIcon("shadow_period")}
                                     </th>
                                 )} */}
 
-                                {columnVisibility.unit && (
+                                {columnVisibility?.unit && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("file_start_date_mode", sortState, setSortState, setSortedData, tableData)}>
                                         {`Unit`}
                                         {getArrowIcon("file_start_date_mode")}
                                     </th>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`Start Date`}
                                         {getArrowIcon("start_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`End Date`}
                                         {getArrowIcon("end_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -182,7 +182,7 @@ const TableBookingTemplate: React.FC<TableProps> = ({ openEditForm, openViewForm
                                             {row?.term_type && <div className="flex w-[140px] !text-[14px] items-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.term_type?.color }}>{`${row?.term_type?.name}`}</div>}
                                         </td> */}
 
-                                        {columnVisibility.term && (
+                                        {columnVisibility?.term && (
                                             <td className="h-full pl-2 py-1 text-center">
                                                 {row?.term_type && (
                                                     <div className="flex items-center justify-center">
@@ -197,7 +197,7 @@ const TableBookingTemplate: React.FC<TableProps> = ({ openEditForm, openViewForm
                                             </td>
                                         )}
 
-                                        {columnVisibility.file_period && (
+                                        {columnVisibility?.file_period && (
                                             <td className="px-2 py-1 text-[#464255]">
                                                 {
                                                     row?.file_period_mode == 1 ? // 1 = วัน
@@ -213,15 +213,15 @@ const TableBookingTemplate: React.FC<TableProps> = ({ openEditForm, openViewForm
                                             </td>
                                         )}
 
-                                        {columnVisibility.min && (
+                                        {columnVisibility?.min && (
                                             <td className="px-5 py-1 text-[#464255] text-start">{row?.min ? row?.min : ''}</td>
                                         )}
 
-                                        {columnVisibility.max && (
+                                        {columnVisibility?.max && (
                                             <td className="px-5 py-1 text-[#464255] text-start">{row?.max ? row?.max : ''}</td>
                                         )}
 
-                                        {columnVisibility.file_start_date && (
+                                        {columnVisibility?.file_start_date && (
                                             <td className="px-2 py-1 text-[#464255]">
                                                 {
                                                     row?.file_start_date_mode == 1 ? // 1 = every day
@@ -235,11 +235,11 @@ const TableBookingTemplate: React.FC<TableProps> = ({ openEditForm, openViewForm
                                             </td>
                                         )}
 
-                                        {columnVisibility.shadow_time && (
+                                        {columnVisibility?.shadow_time && (
                                             <td className="px-2 py-1 text-[#464255] text-right">{row?.shadow_time ? row?.shadow_time : '0'}</td>
                                         )}
 
-                                        {/* {columnVisibility.shadow_period && (
+                                        {/* {columnVisibility?.shadow_period && (
                                             <td className="px-2 py-1 text-[#464255] text-right">{row?.shadow_period ? row?.shadow_period : ''}</td>
                                         )} */}
 
@@ -248,21 +248,21 @@ const TableBookingTemplate: React.FC<TableProps> = ({ openEditForm, openViewForm
                                             file_start_date_mode: 1, 3 แสดง Days
                                             file_start_date_mode: 2 แสดง Months
                                         */}
-                                        {columnVisibility.unit && (
+                                        {columnVisibility?.unit && (
                                             <td className="pl-2 py-1 text-center text-[#464255] ">
                                                 {(row?.term_type_id === 4) ? <span>Days</span> : (row?.term_type_id < 4) ? <span>Months</span> : <span></span>}
                                             </td>
                                         )}
 
-                                        {columnVisibility.start_date && (
+                                        {columnVisibility?.start_date && (
                                             <td className="px-2 py-1 text-[#464255] text-center">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.end_date && (
+                                        {columnVisibility?.end_date && (
                                             <td className="px-2 py-1 text-[#0DA2A2] text-center">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 {/* <div className="relative inline-block text-left "> */}
                                                 <div className="relative inline-flex justify-center items-center w-full">

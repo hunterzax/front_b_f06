@@ -27,7 +27,7 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
       const col: any = sortState?.column;
       sortOnPagenationWithPaginate(col, sortState, setSortState, setSortedData, dataForSorting, itemsPerPage, currentPage)
     } else {
-      const flattened = tableData.map((item: any) => ({
+      const flattened = (tableData || [])?.map((item: any) => ({
         ...item,
         min_inventory_change_value: item?.minInven ?? item?.data?.find((d: any) => d.type === "Min_Inventory_Change")?.value ?? null,
         exchange_min_inventory: item?.exchangeMinInven ?? item?.data?.find((d: any) => (d.type === "Exchange_Mininventory" || d.type === "Exchange_Min_Inventory"))?.value ?? null
@@ -51,7 +51,7 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
 
   // useEffect(() => {
   //   // เอาออกมาข้างนอก
-  //   const flattened = tableData.map((item: any) => ({
+  //   const flattened = (tableData || [])?.map((item: any) => ({
   //     ...item,
   //     min_inventory_change_value: item?.minInven ?? item?.data?.find((d: any) => d.type === "Min_Inventory_Change")?.value ?? null,
   //     exchange_min_inventory: item?.exchangeMinInven ?? item?.data?.find((d: any) => (d.type === "Exchange_Mininventory" || d.type === "Exchange_Min_Inventory"))?.value ?? null
@@ -99,7 +99,7 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
             {/* #################################### TABLE CURRENT #################################### */}
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
-                {columnVisibility.gas_day && (
+                {columnVisibility?.gas_day && (
                   <th
                     className={`${table_sort_header_style} `}
                     // onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, dataMain)}
@@ -110,7 +110,7 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
                   </th>
                 )}
 
-                {columnVisibility.shipper_name && (
+                {columnVisibility?.shipper_name && (
                   <th
                     className={`${table_sort_header_style} !w-[150px] !max-w-[250px]`}
                     // onClick={() => handleSort("group", sortState, setSortState, setSortedData, dataMain)}
@@ -121,7 +121,7 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
                   </th>
                 )}
 
-                {columnVisibility.contract_code && (
+                {columnVisibility?.contract_code && (
                   <th
                     className={`${table_sort_header_style} `}
                     // onClick={() => handleSort("contract_code", sortState, setSortState, setSortedData, dataMain)}
@@ -132,7 +132,7 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
                   </th>
                 )}
 
-                {columnVisibility.zone && (
+                {columnVisibility?.zone && (
                   <th
                     className={`${table_sort_header_style} text-center`}
                     // onClick={() => handleSort("zoneObj.name", sortState, setSortState, setSortedData, dataMain)}
@@ -143,7 +143,7 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
                   </th>
                 )}
 
-                {columnVisibility.change_min_inventory && (
+                {columnVisibility?.change_min_inventory && (
                   <th
                     className={`${table_sort_header_style} `}
                     // onClick={() => handleSort("min_inventory_change_value", sortState, setSortState, setSortedData, dataMain)}
@@ -154,7 +154,7 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
                   </th>
                 )}
 
-                {columnVisibility.exchange_min_invent && (
+                {columnVisibility?.exchange_min_invent && (
                   <th
                     className={`${table_sort_header_style} `}
                     // onClick={() => handleSort("exchange_min_inventory", sortState, setSortState, setSortedData, dataMain)}
@@ -165,7 +165,7 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
                   </th>
                 )}
 
-                {columnVisibility.total && (
+                {columnVisibility?.total && (
                   <th
                     className={`${table_sort_header_style} text-center`}
                     // onClick={() => handleSort("total_row", sortState, setSortState, setSortedData, dataMain)}
@@ -179,7 +179,7 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => {
+              {(sortedData || [])?.map((row: any, index: any) => {
 
                 // let min = row?.minInven ?? (row?.data?.find((d: any) => d.type === "Min_Inventory_Change")?.value)
                 // let exchange = row?.exchangeMinInven ?? (row?.data?.find((d: any) => (d.type === "Exchange_Mininventory" || d.type === "Exchange_Min_Inventory"))?.value)
@@ -191,7 +191,7 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
                     className={`${table_row_style}`}
                   >
 
-                    {columnVisibility.gas_day && (
+                    {columnVisibility?.gas_day && (
                       <td className="px-2 py-1 text-[#464255]">{row?.gas_day ? row?.gas_day : ''}</td>
                     )}
 
@@ -246,7 +246,7 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
               {columnVisibility?.total && (
                 sortedData?.length > 0 && <tr className={`${table_row_style} text-[15px] font-semibold !bg-[#D1F2FF]`}>
 
-                  {columnVisibility.gas_day && (
+                  {columnVisibility?.gas_day && (
                     <td className="px-2 py-1 text-[#464255] text-left" >{`Total`}</td>
                   )}
 
@@ -263,13 +263,13 @@ const TableAll: React.FC<TableProps> = ({ tableData, isLoading, columnVisibility
                   )}
 
                   {columnVisibility?.change_min_inventory && (
-                    <td className={`px-2 py-1 ${!!totals.totalChangeMin && totals.totalChangeMin > 0 ? "text-[#ff4c4c]" : "text-[#464255]"} text-right`}>
+                    <td className={`px-2 py-1 ${!!totals.totalChangeMin && totals.totalChangeMin !== 0 ? "text-[#ff4c4c]" : "text-[#464255]"} text-right`}>
                       {formatNumberThreeDecimal(totals.totalChangeMin)}
                     </td>
                   )}
 
                   {columnVisibility?.exchange_min_invent && (
-                    <td className={`px-2 py-1 ${!!totals.totalExchangeMin && totals.totalExchangeMin > 0 ? "text-[#ff4c4c]" : "text-[#464255]"} text-right`}>
+                    <td className={`px-2 py-1 ${!!totals.totalExchangeMin && totals.totalExchangeMin !== 0 ? "text-[#ff4c4c]" : "text-[#464255]"} text-right`}>
                       {formatNumberThreeDecimal(totals.totalExchangeMin)}
                     </td>
                   )}

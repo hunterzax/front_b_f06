@@ -60,21 +60,21 @@ const TableAllocationHistory: React.FC<TableProps> = ({ tableData, isLoading, co
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-20">
 
-                        {columnVisibility.status && (
+                        {columnVisibility?.status && (
                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("allocation_status.name", sortState, setSortState, setSortedData, mainData)}>
                                 {`Status`}
                                 {getArrowIcon("allocation_status.name")}
                             </th>
                         )}
 
-                        {columnVisibility.system_allocation && (
+                        {columnVisibility?.system_allocation && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("systemAllocation", sortState, setSortState, setSortedData, mainData)}>
                                 {`System Allocation (MMBTU/D)`}
                                 {getArrowIcon("systemAllocation")}
                             </th>
                         )}
 
-                        {columnVisibility.previous_allocation_tpa_for_review && (
+                        {columnVisibility?.previous_allocation_tpa_for_review && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("previousAllocationTPAforReview", sortState, setSortState, setSortedData, mainData)}>
                                 <div>{`Previous Allocation TPA for`}</div>
                                 <div>{`Review (MMBTU/D)`}</div>
@@ -82,14 +82,14 @@ const TableAllocationHistory: React.FC<TableProps> = ({ tableData, isLoading, co
                             </th>
                         )}
 
-                        {columnVisibility.shipper_review_allocation && (
+                        {columnVisibility?.shipper_review_allocation && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("shipper_allocation_review", sortState, setSortState, setSortedData, mainData)}>
                                 {`Shipper Review Allocation (MMBTU/D)`}
                                 {getArrowIcon("shipper_allocation_review")}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th
                                 scope="col"
                                 className={`${table_sort_header_style}`}
@@ -111,7 +111,7 @@ const TableAllocationHistory: React.FC<TableProps> = ({ tableData, isLoading, co
                                 className={`${table_row_style}`}
                             >
 
-                                {columnVisibility.status && (
+                                {columnVisibility?.status && (
                                     <td className="px-4 py-1 justify-center">
                                         {
                                             <div className="flex min-w-[140px] max-w-[250px] w-auto text-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: String(row?.allocation_status?.color) }}>{row?.allocation_status?.name}</div>
@@ -119,22 +119,22 @@ const TableAllocationHistory: React.FC<TableProps> = ({ tableData, isLoading, co
                                     </td>
                                 )}
 
-                                {columnVisibility.system_allocation && (
+                                {columnVisibility?.system_allocation && (
                                     // <td className="px-4 py-1 text-[#464255] text-right">{row?.systemAllocation ? formatNumberFourDecimal(row?.systemAllocation) : '0.0000'}</td>
                                     <td className="px-4 py-1 text-[#464255] text-right">{row?.systemAllocation !== null && row?.systemAllocation !== undefined ? formatNumberFourDecimal(row?.systemAllocation) : '0.0000'}</td>
                                 )}
 
-                                {columnVisibility.previous_allocation_tpa_for_review && (
+                                {columnVisibility?.previous_allocation_tpa_for_review && (
                                     // <td className="px-4 py-1 text-[#464255] text-right">{row?.previousAllocationTPAforReview ? formatNumberFourDecimal(row?.previousAllocationTPAforReview) : '0.0000'}</td>
                                     <td className="px-4 py-1 text-[#464255] text-right">{row?.previousAllocationTPAforReview !== null && row?.previousAllocationTPAforReview !== undefined ? formatNumberFourDecimal(row?.previousAllocationTPAforReview) : '0.0000'}</td>
                                 )}
 
-                                {columnVisibility.shipper_review_allocation && (
+                                {columnVisibility?.shipper_review_allocation && (
                                     // <td className="px-4 py-1 text-[#464255] text-right">{row?.shipper_allocation_review ? formatNumberFourDecimal(row?.shipper_allocation_review) : '0.0000'}</td>
                                     <td className="px-4 py-1 text-[#464255] text-right">{row?.shipper_allocation_review !== null && row?.shipper_allocation_review !== undefined ? formatNumberFourDecimal(row?.shipper_allocation_review) : '0.0000'}</td>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div>
                                             <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>

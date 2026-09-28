@@ -24,7 +24,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
     };
 
     // เอาไว้ span column แบบ dynamic เคสเปิด ปิดไส้ใน
-    const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility[col.key]).length || 1;
+    const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility?.[col.key]).length || 1;
 
     // เอาไว้ใส่สี bg
     const getValidationColorClass = (validation?: string): string => {
@@ -143,7 +143,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-10">
 
-                                {columnVisibility.time && (
+                                {columnVisibility?.time && (
                                     <th
                                         className={`${table_header_style}  text-center min-w-[120px] w-[130px] max-w-[150px] sticky left-0 bg-[#1473A1] z-[10] border-r border-gray-400`} rowSpan={2} colSpan={2} scope="col"
                                     >
@@ -151,7 +151,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.entry_mmbtu && (
+                                {columnVisibility?.entry_mmbtu && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("entry_mmbtu")} scope="col"
                                     >
@@ -159,7 +159,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.exit_mmbtu && (
+                                {columnVisibility?.exit_mmbtu && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("exit_mmbtu")} scope="col"
                                     >
@@ -167,7 +167,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.balancing_gas && (
+                                {columnVisibility?.balancing_gas && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("balancing_gas")} scope="col"
                                     >
@@ -175,7 +175,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.park_unpark && (
+                                {columnVisibility?.park_unpark && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("park_unpark")} scope="col"
                                     >
@@ -183,7 +183,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.ra6 && (
+                                {columnVisibility?.ra6 && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("ra6")} scope="col"
                                     >
@@ -191,7 +191,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.bvw10 && (
+                                {columnVisibility?.bvw10 && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("bvw10")} scope="col"
                                     >
@@ -199,7 +199,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.shrinkage_gas_and_other && (
+                                {columnVisibility?.shrinkage_gas_and_other && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("shrinkage_gas_and_other")} scope="col"
                                     >
@@ -207,7 +207,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.change_min_inventory && (
+                                {columnVisibility?.change_min_inventory && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("change_min_inventory")} scope="col"
                                     >
@@ -215,7 +215,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.imbalance && (
+                                {columnVisibility?.imbalance && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("imbalance")} scope="col"
                                     >
@@ -223,7 +223,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.acc_imbalance_meter_mmbtu && (
+                                {columnVisibility?.acc_imbalance_meter_mmbtu && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[200px] max-w-[350px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("acc_imbalance_meter_mmbtu")} scope="col"
                                     >
@@ -231,7 +231,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.acc_imbalance_inventory_mmbtu && (
+                                {columnVisibility?.acc_imbalance_inventory_mmbtu && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[200px] max-w-[350px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("acc_imbalance_inventory_mmbtu")} scope="col"
                                     >
@@ -239,7 +239,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.total_imbalance && (
+                                {columnVisibility?.total_imbalance && (
                                     <th
                                         className={`${table_sort_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={2} scope="col"
                                         // default sort ด้วย plan แต่ถ้าหาก plan data เท่ากันทั้งหมด จะไปเช็คกับ actual ทันที
@@ -253,7 +253,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.percent_total_imbalance && (
+                                {columnVisibility?.percent_total_imbalance && (
                                     <th
                                         className={`${table_sort_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={2} scope="col"
                                         // default sort ด้วย plan แต่ถ้าหาก plan data เท่ากันทั้งหมด จะไปเช็คกับ actual ทันที
@@ -268,7 +268,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.system_level_east && (
+                                {columnVisibility?.system_level_east && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("system_level_east")} scope="col"
                                     >
@@ -276,7 +276,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.order_east && (
+                                {columnVisibility?.order_east && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("order_east")} scope="col"
                                     >
@@ -284,7 +284,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.system_level_west && (
+                                {columnVisibility?.system_level_west && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("system_level_west")} scope="col"
                                     >
@@ -292,7 +292,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.order_west && (
+                                {columnVisibility?.order_west && (
                                     <th
                                         className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={1} colSpan={getVisibleChildCount("order_west")} scope="col"
                                     >
@@ -300,7 +300,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.condition_east && (
+                                {columnVisibility?.condition_east && (
                                     <th
                                         className={`${table_sort_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={2} scope="col"
                                         onClick={() => handleSortIntradayDashboard(
@@ -313,7 +313,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                     </th>
                                 )}
 
-                                {columnVisibility.condition_west && (
+                                {columnVisibility?.condition_west && (
                                     <th
                                         className={`${table_sort_header_style} text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-400`} rowSpan={2} scope="col"
                                         onClick={() => handleSortIntradayDashboard(
@@ -330,8 +330,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                             <tr className="h-10">
 
                                 {/* ###### UNDER Entry (MMBTU) ###### */}
-                                {columnVisibility.entry_mmbtu && (<>
-                                    {columnVisibility.east_total_entry_mmbtud && (
+                                {columnVisibility?.entry_mmbtu && (<>
+                                    {columnVisibility?.east_total_entry_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_total_entry_mmbtud,
@@ -359,7 +359,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_total_entry_mmbtud && (
+                                    {columnVisibility?.west_total_entry_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.west_total_entry_mmbtud,
@@ -385,7 +385,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.east_west_total_entry_mmbtud && (
+                                    {columnVisibility?.east_west_total_entry_mmbtud && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#C8FFD7] hover:bg-[#a6f5bf] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_west_total_entry_mmbtud,
@@ -412,8 +412,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER Exit (MMBTU) ###### */}
-                                {columnVisibility.exit_mmbtu && (<>
-                                    {columnVisibility.east_total_exit_mmbtu && (
+                                {columnVisibility?.exit_mmbtu && (<>
+                                    {columnVisibility?.east_total_exit_mmbtu && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_total_exit_mmbtu,
@@ -440,7 +440,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_total_exit_mmbtu && (
+                                    {columnVisibility?.west_total_exit_mmbtu && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.west_total_exit_mmbtu,
@@ -466,7 +466,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.east_west_total_exit_mmbtu && (
+                                    {columnVisibility?.east_west_total_exit_mmbtu && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#C8FFD7] hover:bg-[#a6f5bf] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_west_total_exit_mmbtu,
@@ -492,8 +492,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER Balancing Gas ###### */}
-                                {columnVisibility.balancing_gas && (<>
-                                    {columnVisibility.east_total_balancing_gas && (
+                                {columnVisibility?.balancing_gas && (<>
+                                    {columnVisibility?.east_total_balancing_gas && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_total_balancing_gas,
@@ -517,7 +517,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_total_balancing_gas && (
+                                    {columnVisibility?.west_total_balancing_gas && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.west_total_balancing_gas,
@@ -540,7 +540,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.east_west_total_balancing_gas && (
+                                    {columnVisibility?.east_west_total_balancing_gas && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#C8FFD7] hover:bg-[#a6f5bf] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_west_total_balancing_gas,
@@ -564,8 +564,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER Park/Unpark ###### */}
-                                {columnVisibility.park_unpark && (<>
-                                    {columnVisibility.east_total_park_unpark && (
+                                {columnVisibility?.park_unpark && (<>
+                                    {columnVisibility?.east_total_park_unpark && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_total_park_unpark,
@@ -587,7 +587,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_total_park_unpark && (
+                                    {columnVisibility?.west_total_park_unpark && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.west_total_park_unpark,
@@ -610,8 +610,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER RA#6 ###### */}
-                                {columnVisibility.ra6 && (<>
-                                    {columnVisibility.ra6_ratio && (
+                                {columnVisibility?.ra6 && (<>
+                                    {columnVisibility?.ra6_ratio && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#F2F2F2] hover:bg-[#f2f2f2ad] text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-300`}
                                             rowSpan={1}
@@ -627,8 +627,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER BVW#10 ###### */}
-                                {columnVisibility.bvw10 && (<>
-                                    {columnVisibility.bvw10_ratio && (
+                                {columnVisibility?.bvw10 && (<>
+                                    {columnVisibility?.bvw10_ratio && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#F2F2F2] hover:bg-[#f2f2f2ad] text-center min-w-[120px] w-[130px] max-w-[150px] border-r border-gray-300`}
                                             rowSpan={1}
@@ -644,8 +644,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER Shrinkage Gas & Others ###### */}
-                                {columnVisibility.shrinkage_gas_and_other && (<>
-                                    {columnVisibility.east_total_shrinkage_gas_and_other && (
+                                {columnVisibility?.shrinkage_gas_and_other && (<>
+                                    {columnVisibility?.east_total_shrinkage_gas_and_other && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_total_shrinkage_gas_and_other,
@@ -664,7 +664,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_total_shrinkage_gas_and_other && (
+                                    {columnVisibility?.west_total_shrinkage_gas_and_other && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px] {isLastVisible(
                                                 columnVisibility?.west_total_shrinkage_gas_and_other,
@@ -682,7 +682,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.east_west_total_shrinkage_gas_and_other && (
+                                    {columnVisibility?.east_west_total_shrinkage_gas_and_other && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#C8FFD7] hover:bg-[#a6f5bf] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.west_total_shrinkage_gas_and_other,
@@ -701,8 +701,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER Change Min. Inventory ###### */}
-                                {columnVisibility.change_min_inventory && (<>
-                                    {columnVisibility.east_total_change_min_inventory && (
+                                {columnVisibility?.change_min_inventory && (<>
+                                    {columnVisibility?.east_total_change_min_inventory && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_total_change_min_inventory,
@@ -725,7 +725,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_total_change_min_inventory && (
+                                    {columnVisibility?.west_total_change_min_inventory && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_total_change_min_inventory,
@@ -747,7 +747,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.east_west_total_change_min_inventory && (
+                                    {columnVisibility?.east_west_total_change_min_inventory && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#C8FFD7] hover:bg-[#a6f5bf] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_west_total_change_min_inventory,
@@ -770,8 +770,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER Imbalance ###### */}
-                                {columnVisibility.imbalance && (<>
-                                    {columnVisibility.east_total_imbalance && (
+                                {columnVisibility?.imbalance && (<>
+                                    {columnVisibility?.east_total_imbalance && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_total_imbalance,
@@ -793,7 +793,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_total_imbalance && (
+                                    {columnVisibility?.west_total_imbalance && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_total_imbalance,
@@ -818,8 +818,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER Acc. Imbalance (Meter) (MMBTU) ###### */}
-                                {columnVisibility.acc_imbalance_meter_mmbtu && (<>
-                                    {columnVisibility.east_total_acc_imbalance_meter_mmbtu && (
+                                {columnVisibility?.acc_imbalance_meter_mmbtu && (<>
+                                    {columnVisibility?.east_total_acc_imbalance_meter_mmbtu && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_total_acc_imbalance_meter_mmbtu,
@@ -841,7 +841,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_total_acc_imbalance_meter_mmbtu && (
+                                    {columnVisibility?.west_total_acc_imbalance_meter_mmbtu && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.west_total_acc_imbalance_meter_mmbtu,
@@ -864,8 +864,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER Acc. Imbalance (Inventory) (MMBTU) ###### */}
-                                {columnVisibility.acc_imbalance_inventory_mmbtu && (<>
-                                    {columnVisibility.east_total_acc_imbalance_inventory_mmbtu && (
+                                {columnVisibility?.acc_imbalance_inventory_mmbtu && (<>
+                                    {columnVisibility?.east_total_acc_imbalance_inventory_mmbtu && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.east_total_acc_imbalance_inventory_mmbtu,
@@ -888,7 +888,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.west_total_acc_imbalance_inventory_mmbtu && (
+                                    {columnVisibility?.west_total_acc_imbalance_inventory_mmbtu && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.west_total_acc_imbalance_inventory_mmbtu,
@@ -912,8 +912,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER System Level (East) ###### */}
-                                {columnVisibility.system_level_east && (<>
-                                    {columnVisibility.level_system_level_east && (
+                                {columnVisibility?.system_level_east && (<>
+                                    {columnVisibility?.level_system_level_east && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#F2F2F2] hover:bg-[#f2f2f2ad] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.level_system_level_east,
@@ -931,7 +931,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.percent_system_level_east && (
+                                    {columnVisibility?.percent_system_level_east && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#f2f2f2ad] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.percent_system_level_east,
@@ -954,8 +954,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER Order (East) ###### */}
-                                {columnVisibility.order_east && (<>
-                                    {columnVisibility.order_east_mmbtu && (
+                                {columnVisibility?.order_east && (<>
+                                    {columnVisibility?.order_east_mmbtu && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#F2F2F2] hover:bg-[#f2f2f2ad] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.order_east_mmbtu,
@@ -977,7 +977,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.order_east_mmscf && (
+                                    {columnVisibility?.order_east_mmscf && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#f2f2f2ad] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.order_east_mmscf,
@@ -1000,8 +1000,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER System Level (West) ###### */}
-                                {columnVisibility.system_level_west && (<>
-                                    {columnVisibility.level_system_level_west && (
+                                {columnVisibility?.system_level_west && (<>
+                                    {columnVisibility?.level_system_level_west && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#F2F2F2] hover:bg-[#f2f2f2ad] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.level_system_level_west,
@@ -1021,7 +1021,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.percent_system_level_west && (
+                                    {columnVisibility?.percent_system_level_west && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#f2f2f2ad] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.percent_system_level_west,
@@ -1044,13 +1044,13 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                 )}
 
                                 {/* ###### UNDER Order (West) ###### */}
-                                {columnVisibility.order_west && (<>
-                                    {columnVisibility.order_west_mmbtu && (
+                                {columnVisibility?.order_west && (<>
+                                    {columnVisibility?.order_west_mmbtu && (
                                         <th
                                             className={`${table_sort_header_style}  text-[#58585A] bg-[#F2F2F2] hover:bg-[#f2f2f2ad] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.order_west_mmbtu,
                                                 [
-                                                    columnVisibility.order_west_mmscf,
+                                                    columnVisibility?.order_west_mmscf,
                                                 ]
                                             ) ? 'border-r border-gray-300' : ''}`}
                                             rowSpan={1}
@@ -1067,7 +1067,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                         </th>
                                     )}
 
-                                    {columnVisibility.order_west_mmscf && (
+                                    {columnVisibility?.order_west_mmscf && (
                                         <th
                                             className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#f2f2f2ad] text-center min-w-[120px] w-[130px] max-w-[150px] ${isLastVisible(
                                                 columnVisibility?.order_west_mmscf,
@@ -1093,7 +1093,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData?.map((row: any, index: any) => (
+                            {(sortedData || [])?.map((row: any, index: any) => (
                                 <>
                                     {/* Plan */}
                                     {row?.plan_ ?
@@ -1524,8 +1524,8 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                             {columnVisibility?.order_west && columnVisibility?.order_west_mmbtu && (
                                                 <td
                                                     className={`px-2 py-1 text-[#464255] text-right ${isLastVisible(
-                                                        columnVisibility?.level_system_level_west,
-                                                        [columnVisibility?.percent_system_level_west]
+                                                        columnVisibility?.order_west_mmbtu,
+                                                        [columnVisibility?.order_west_mmscf]
                                                     ) ? 'border-r border-gray-300' : ''}`}
                                                 >
                                                     {/* {row?.plan_?.energyAdjustIFOFO_west ? formatNumberFourDecimal(row?.plan_?.energyAdjustIFOFO_west?.value) : ''} */}
@@ -1536,7 +1536,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                             {columnVisibility?.order_west && columnVisibility?.order_west_mmscf && (
                                                 <td
                                                     className={`px-2 py-1 text-[#464255] text-right ${isLastVisible(
-                                                        columnVisibility?.percent_system_level_west,
+                                                        columnVisibility?.order_west_mmscf,
                                                         []
                                                     ) ? 'border-r border-gray-300' : ''}`}
                                                 >
@@ -2024,7 +2024,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                             {columnVisibility?.order_east && columnVisibility?.order_east_mmbtu && (
                                                 <td
                                                     // className={`px-2 py-1 text-[#464255] text-right ${getValidationColorClass(row?.actual_?.energyAdjustIFOFO_east?.validation?.toLowerCase())}`}
-                                                    className={`px-2 py-1 text-[#464255] text-right ${validateOrderEastWest(row?.actual_?.accImb_east?.validation, row?.actual_?.accImbInv_east?.validation, row?.actual_?.system_level_east)} ${isLastVisible(
+                                                    className={`px-2 py-1 text-[#464255] text-right ${row?.actual_?.energyAdjustIFOFO_east?.value ? validateOrderEastWest(row?.actual_?.accImb_east?.validation, row?.actual_?.accImbInv_east?.validation, row?.actual_?.system_level_east) : "bg-[#EAF5F9]"} ${isLastVisible(
                                                         columnVisibility?.order_east_mmbtu,
                                                         [columnVisibility?.order_east_mmscf]
                                                     ) ? 'border-r border-gray-300' : ''}`}>
@@ -2036,7 +2036,7 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                             {columnVisibility?.order_east && columnVisibility?.order_east_mmscf && (
                                                 <td
                                                     // className={`px-2 py-1 text-[#464255] text-right ${getValidationColorClass(row?.actual_?.volumeAdjustIFOFO_east?.validation?.toLowerCase())}`}
-                                                    className={`px-2 py-1 text-[#464255] text-right ${validateOrderEastWest(row?.actual_?.accImb_east?.validation, row?.actual_?.accImbInv_east?.validation, row?.actual_?.system_level_east)}
+                                                    className={`px-2 py-1 text-[#464255] text-right ${row?.actual_?.volumeAdjustIFOFO_east?.value ? validateOrderEastWest(row?.actual_?.accImb_east?.validation, row?.actual_?.accImbInv_east?.validation, row?.actual_?.system_level_east) : "bg-[#EAF5F9]"}
                                                     ${isLastVisible(
                                                         columnVisibility?.order_east_mmscf,
                                                         []
@@ -2101,31 +2101,25 @@ const TableMain: React.FC<any> = ({ uiFilter_, tableData, columnVisibility, init
                                             {/* UNDER Order (West) */}
                                             {columnVisibility?.order_west && columnVisibility?.order_west_mmbtu && (
                                                 <td
-                                                    // className={`px-2 py-1 text-[#464255] text-right ${getValidationColorClass(row?.actual_?.energyAdjustIFOFO_west?.validation?.toLowerCase())}`}
-                                                    className={`px-2 py-1 text-[#464255] text-right ${validateOrderEastWest(row?.actual_?.accImb_west?.validation, row?.actual_?.accImbInv_west?.validation, row?.actual_?.system_level_west)}
+                                                    className={`px-2 py-1 text-[#464255] text-right ${row?.actual_?.energyAdjustIFOFO_west?.value ? validateOrderEastWest(row?.actual_?.accImb_west?.validation, row?.actual_?.accImbInv_west?.validation, row?.actual_?.system_level_west) : "bg-[#EAF5F9]"}
                                                     ${isLastVisible(
                                                         columnVisibility?.order_west_mmbtu,
                                                         [columnVisibility?.order_west_mmscf]
                                                     ) ? 'border-r border-gray-300' : ''}`}
-                                                >
-                                                    {/* {row?.actual_?.energyAdjustIFOFO_west ? formatNumberFourDecimal(row?.actual_?.energyAdjustIFOFO_west?.value) : ''} */}
+                                                > 
+                                                    {/* {JSON.stringify(validateOrderEastWest(row?.actual_?.accImb_west?.validation, row?.actual_?.accImbInv_west?.validation, row?.actual_?.system_level_west))}| */}
                                                     {row?.actual_?.energyAdjustIFOFO_west !== null && row?.actual_?.energyAdjustIFOFO_west !== undefined ? formatNumberFourDecimal(row?.actual_?.energyAdjustIFOFO_west?.value) : ''}
-                                                </td>
+                                                </td> 
                                             )}
 
                                             {columnVisibility?.order_west && columnVisibility?.order_west_mmscf && (
                                                 <td
-                                                    // className={`px-2 py-1 text-[#464255] text-right ${getValidationColorClass(row?.actual_?.volumeAdjustIFOFO_west?.validation?.toLowerCase())}`}
-                                                    className={`px-2 py-1 text-[#464255] text-right ${validateOrderEastWest(row?.actual_?.accImb_west?.validation, row?.actual_?.accImbInv_west?.validation, row?.actual_?.system_level_west)}
+                                                    className={`px-2 py-1 text-[#464255] text-right ${row?.actual_?.volumeAdjustIFOFO_west?.value ? validateOrderEastWest(row?.actual_?.accImb_west?.validation, row?.actual_?.accImbInv_west?.validation, row?.actual_?.system_level_west) : "bg-[#EAF5F9]"}
                                                     ${isLastVisible(
                                                         columnVisibility?.order_west_mmscf,
                                                         []
                                                     ) ? 'border-r border-gray-300' : ''}`}
                                                 >
-                                                    {/* {row?.actual_?.volumeAdjustIFOFO_west ? formatNumberFourDecimal(row?.actual_?.volumeAdjustIFOFO_west?.value) : ''} */}
-
-                                                    {/* ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w */}
-                                                    {/* {row?.actual_?.volumeAdjustIFOFO_west !== null && row?.actual_?.volumeAdjustIFOFO_west !== undefined ? formatNumberFourDecimal(row?.actual_?.volumeAdjustIFOFO_west?.value) : ''} */}
                                                     {row?.actual_?.volumeAdjustIFOFO_west !== null && row?.actual_?.volumeAdjustIFOFO_west !== undefined ? formatNumberSixDecimalNom(row?.actual_?.volumeAdjustIFOFO_west?.value) : ''}
                                                 </td>
                                             )}

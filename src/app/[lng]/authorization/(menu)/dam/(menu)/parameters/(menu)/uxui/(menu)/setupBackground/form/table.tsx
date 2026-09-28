@@ -6,16 +6,19 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { table_col_arrow_sort_style, table_header_style, table_row_style, table_sort_header_style, table_sort_header_style_original } from "@/utils/styles";
 import { handleSort } from "@/utils/sortTable";
+import BtnActionTable from "@/components/other/btnActionInTable";
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 
 interface TableProps {
     openEditForm: (id: any) => void;
     openViewForm: (id: any) => void;
+    openDeleteForm: (id: any) => void;
     handleActive: (id: any, isActive: any) => void;
     tableData: any;
     isLoading: any;
     userPermission?: any;
 }
-const TableSetupBackground: React.FC<TableProps> = ({ openEditForm, openViewForm, handleActive, tableData, isLoading, userPermission }) => {
+const TableSetupBackground: React.FC<TableProps> = ({ openDeleteForm, openEditForm, openViewForm, handleActive, tableData, isLoading, userPermission }) => {
 
     const [sortState, setSortState] = useState({ column: null, direction: null });
     const [sortedData, setSortedData] = useState(tableData);
@@ -64,6 +67,23 @@ const TableSetupBackground: React.FC<TableProps> = ({ openEditForm, openViewForm
         setSelectedImage('');
     };
 
+      const togglePopover = (id: any) => {
+            if (openPopoverId === id) {
+            setOpenPopoverId(null);
+            } else {
+            setOpenPopoverId(id);
+            }
+        };
+
+      const toggleMenu = (mode: any, id: any) => {
+        switch (mode) {
+        case "delete":
+            openDeleteForm(id);
+            setOpenPopoverId(null); // close popover
+            break;
+        }
+    }
+
     return (
         <div className={`h-[calc(100vh-300px)] overflow-y-auto block  rounded-t-md relative z-1`}>
             {
@@ -90,9 +110,9 @@ const TableSetupBackground: React.FC<TableProps> = ({ openEditForm, openViewForm
                                     {`Updated by`}
                                     {getArrowIcon("update_by_account.first_name")}
                                 </th>
-                                {/* <th scope="col" className={`${table_header_style} text-center`}>
-                                    {`Action`}
-                                </th> */}
+                               <th scope="col" className={`${table_header_style} text-center`}>
+                                {`Action`}
+                                </th>
                             </tr>
                         </thead>
 
@@ -163,36 +183,23 @@ const TableSetupBackground: React.FC<TableProps> = ({ openEditForm, openViewForm
                                             </div>
                                         </td>
 
-                                        {/* <td className="px-2 py-1">
-                                            <div className="relative inline-block text-left ">
-                                                <BtnActionTable togglePopover={togglePopover} row_id={row?.id} />
-                                                {openPopoverId === row?.id && (
-                                                    <div ref={popoverRef}
-                                                        className="absolute left-[-12rem] top-[-10px] mt-2 !w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-50"
-                                                    >
-                                                        <ul className="py-2">
-                                                            <li className="flex items-center px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer">
-                                                                <label className="relative inline-block w-10 h-6">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={row?.active}
-                                                                        className="sr-only peer"
-                                                                        onChange={(e) => {
-                                                                            handleActive(row?.id, e.target.checked);
-                                                                        }}
-                                                                    />
-                                                                    <span className="slider absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 transition duration-400 rounded-full peer-checked:bg-[#1473A1]"></span>
-                                                                    <span className="dot absolute h-4 w-4 left-1 bottom-1 bg-white transition duration-400 rounded-full peer-checked:translate-x-full"></span>
-                                                                </label>
-                                                                <div className="pl-3">
-                                                                    {row?.active ? " Active" : " Inactive"}
-                                                                </div>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                )}
+                                        <td className="px-2 py-1">
+                                        <div className="relative inline-flex justify-center items-center">
+                                            <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view ? true : false} />
+                                            {openPopoverId === row?.id && (
+                                            <div ref={popoverRef}
+                                                className="absolute left-[-12rem] top-[-10px] mt-2 w-[200px] bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+                                                <ul className="py-2 w-[200px]">
+                                                {
+                                                    // userPermission?.f_view && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("view", row?.id) }}><RemoveRedEyeOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`View`}</li>
+                                                    <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("delete", row?.id) }}><DeleteOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`Delete`}</li>
+                                                }
+                                                </ul>
                                             </div>
-                                        </td> */}
+                                            )}
+                                        </div>
+                                        </td>
+                                        
                                     </tr>
                                 )
                             })}
@@ -205,7 +212,7 @@ const TableSetupBackground: React.FC<TableProps> = ({ openEditForm, openViewForm
 
             {isModalOpen == true && selectedImage !== '' && (
                 <div
-                    className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-25 transition-opacity duration-300 ease-in-out ${isModalOpen == true ? 'opacity-100' : 'opacity-0'}`}
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-25 transition-opacity duration-300 ease-in-out opacity-100"
                     onClick={closeModal}
                 >
                     <div className="relative">

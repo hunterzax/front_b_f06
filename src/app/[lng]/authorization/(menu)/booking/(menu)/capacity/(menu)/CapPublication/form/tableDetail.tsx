@@ -91,7 +91,7 @@ const TableCapPublicDetail: React.FC<TableProps> = ({ openEditForm, openViewForm
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             {/* First Row */}
                             <tr className="h-9">
-                                {columnVisibility.zone && (
+                                {columnVisibility?.zone && (
                                     <th
                                         scope="col"
                                         rowSpan={2}
@@ -105,7 +105,7 @@ const TableCapPublicDetail: React.FC<TableProps> = ({ openEditForm, openViewForm
                                     </th>
                                 )}
 
-                                {columnVisibility.area && (
+                                {columnVisibility?.area && (
                                     <th
                                         scope="col"
                                         rowSpan={2}
@@ -119,21 +119,21 @@ const TableCapPublicDetail: React.FC<TableProps> = ({ openEditForm, openViewForm
                                     </th>
                                 )}
 
-                                {columnVisibility.avaliable_capacity_mmbtu_d && (
+                                {columnVisibility?.avaliable_capacity_mmbtu_d && (
                                     <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSort("avaliable_capacity_mmbtu_d", sortState, setSortState, setSortedData, tableData)}>
                                         {`Available Capacity (MMBTU/D)`}
                                         {getArrowIcon("avaliable_capacity_mmbtu_d")}
                                     </th>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <th className={`${table_sort_header_style} text-center`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`Start Date`}
                                         {getArrowIcon("start_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <th className={`${table_sort_header_style} text-center`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`End Date`}
                                         {getArrowIcon("end_date")}
@@ -150,7 +150,7 @@ const TableCapPublicDetail: React.FC<TableProps> = ({ openEditForm, openViewForm
                                         key={row?.id}
                                         className={`${table_row_style}`}
                                     >
-                                        {columnVisibility.zone && (
+                                        {columnVisibility?.zone && (
                                             <td className="px-2 py-1 h-[30px] text-center align-middle">
                                                 {row?.area?.zone && (
                                                     <div
@@ -171,7 +171,7 @@ const TableCapPublicDetail: React.FC<TableProps> = ({ openEditForm, openViewForm
                                             </td>
                                         )}
 
-                                        {columnVisibility.area && (
+                                        {columnVisibility?.area && (
                                             <td className="px-2 py-1 text-center align-middle">
                                                 {
                                                     row?.area?.entry_exit_id == 2 ?
@@ -208,15 +208,15 @@ const TableCapPublicDetail: React.FC<TableProps> = ({ openEditForm, openViewForm
                                             </td>
                                         )}
 
-                                        {columnVisibility.avaliable_capacity_mmbtu_d && (
+                                        {columnVisibility?.avaliable_capacity_mmbtu_d && (
                                             <td className="px-2 py-1 text-[#464255] text-right">{row?.avaliable_capacity_mmbtu_d ? formatNumberThreeDecimal(row?.avaliable_capacity_mmbtu_d) : ''}</td>
                                         )}
 
-                                        {columnVisibility.start_date && (
+                                        {columnVisibility?.start_date && (
                                             <td className="px-2 py-1 text-[#464255] text-center">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.end_date && (
+                                        {columnVisibility?.end_date && (
                                             <td className="px-2 py-1 text-[#0DA2A2] text-center">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                         )}
 

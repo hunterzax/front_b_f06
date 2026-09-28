@@ -190,7 +190,7 @@ const ModalCalBac: React.FC<FormExampleProps> = ({
                                                     // disabled={mode == 'create' ? false : true || isReadOnly}
                                                     valueWatch={watch("tariff_id") || ""}
                                                     handleChange={(e) => {
-                                                        setValue("tariff_id", e.target.value);
+                                                        setValue("tariff_id", e?.target?.value ?? "");
                                                         clearErrors('tariff_id')
                                                         if (errors?.tariff_id) { clearErrors('tariff_id') }
                                                     }}

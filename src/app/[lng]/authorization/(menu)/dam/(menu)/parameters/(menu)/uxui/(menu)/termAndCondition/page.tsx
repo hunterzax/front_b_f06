@@ -44,18 +44,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
     // let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-    let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+    let user_permission: any = typeof window !== 'undefined' ? (getCookieValue("k3a9r2b6m7t0x5w1s8j") || localStorage?.getItem("k3a9r2b6m7t0x5w1s8j")) : null;
     user_permission = user_permission ? decryptData(user_permission) : null;
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+            }
 
             const permission = findRoleConfigByMenuName('Terms & Conditions', userDT)
             if (permission) {
                 setUserPermission(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermission(updatedUserPermission);
             }
         } catch (error) {
@@ -166,13 +169,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [formData, setFormData] = useState(fdInterface);
 
     const handleFormSubmit = async (data: any) => {
+        if (!data) return null;
         const newData = replaceEmptyStringsWithNull(data)
-        if (typeof data.end_date !== 'string' || data.end_date == 'Invalid Date') {
+        if (typeof data?.end_date !== 'string' || data?.end_date == 'Invalid Date') {
             data.end_date = null;
         }
 
         // เอาไว้ใช้เผื่อเส้น upload พังแล้วอยากจะเทส
-        if (!data?.url) {
+        if (data && !data?.url) {
             data.url = "https://www.sampledocs.in/DownloadFiles/SampleFile?filename=SampleDocs-sample-pdf-file&ext=pdf";
         }
 
@@ -180,7 +184,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             // overlap check
             // true = overlap
             // false = not
-            const res_check_overlap = hasAnyOpenOrOverlap(data, dataTable)
+            const res_check_overlap = hasAnyOpenOrOverlap(data, dataTable || [])
 
             if (res_check_overlap) {
                 setFormOpen(false);
@@ -217,6 +221,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             case "edit":
 
                 const removeFileFromData = (item: any) => {
+                    if (!item) return {};
                     const { file, ...rest } = item;  // Destructure เพื่อเอา `file` ออกไปจาก object
                     return rest;  // คืนค่า object ใหม่ที่ไม่มี `file`
                 };
@@ -252,13 +257,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const openEditForm = (id: any) => {
         //  fetchDataDiv(id);
         setSelectedId(id);
-        const filteredData = dataTable.find((item: any) => item.id === id);
+        const filteredData = (dataTable || []).find((item: any) => item?.id === id);
         if (filteredData) {
-            fdInterface.id = filteredData.id;
-            fdInterface.topic = filteredData.topic;
-            fdInterface.url = filteredData.url;
-            fdInterface.start_date = new Date(filteredData.start_date);
-            fdInterface.end_date = filteredData.end_date ? new Date(filteredData.end_date) : null;
+            fdInterface.id = filteredData?.id;
+            fdInterface.topic = filteredData?.topic;
+            fdInterface.url = filteredData?.url;
+            fdInterface.start_date = new Date(filteredData?.start_date);
+            fdInterface.end_date = filteredData?.end_date ? new Date(filteredData?.end_date) : null;
         }
         setFormMode('edit');
         setFormData(fdInterface);
@@ -266,13 +271,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     };
 
     const openViewForm = (id: any) => {
-        const filteredData = dataTable.find((item: any) => item.id === id);
+        const filteredData = (dataTable || []).find((item: any) => item?.id === id);
         if (filteredData) {
-            fdInterface.id = filteredData.id;
-            fdInterface.topic = filteredData.topic;
-            fdInterface.url = filteredData.url;
-            fdInterface.start_date = new Date(filteredData.start_date);
-            fdInterface.end_date = filteredData.end_date ? new Date(filteredData.end_date) : null;
+            fdInterface.id = filteredData?.id;
+            fdInterface.topic = filteredData?.topic;
+            fdInterface.url = filteredData?.url;
+            fdInterface.start_date = new Date(filteredData?.start_date);
+            fdInterface.end_date = filteredData?.end_date ? new Date(filteredData?.end_date) : null;
         }
         setFormMode('view');
         setFormData(fdInterface);
@@ -407,7 +412,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.topic || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
-                    return (<div >{row?.topic && row?.topic}</div>)
+                    return (<div >{row?.topic}</div>)
                 }
             },
             {

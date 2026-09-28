@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import CheckboxSearch2, { InputSearch } from '@/components/other/SearchForm';
 import { getService } from "@/utils/postService";
 import { Tab, Tabs } from '@mui/material';
@@ -11,10 +11,9 @@ import { useAppDispatch } from "@/utils/store/store";
 import { fetchAreaMaster } from "@/utils/store/slices/areaMasterSlice";
 import { fetchZoneMasterSlice } from "@/utils/store/slices/zoneMasterSlice";
 import { decryptData } from "@/utils/encryptionData";
-import { filterByDateRange, findRoleConfigByMenuName, formatNumberFourDecimal, formatNumberFourDecimalEpsilon, formatNumberFourDecimalNoComma, formatNumberThreeDecimal, formatNumberThreeDecimalEpsilon, generateUserPermission, getDateRangeForApi, removeComma, toDayjs } from "@/utils/generalFormatter";
+import { filterByDateRange, findRoleConfigByMenuName, formatNumberFourDecimal, formatNumberFourDecimalNoComma, formatNumberThreeDecimal, formatNumberThreeDecimalEpsilon, generateUserPermission, getDateRangeForApi, removeComma, sortAlloReport, toDayjs } from "@/utils/generalFormatter";
 import BtnExport from "@/components/other/btnExport";
 import ColumnVisibilityPopover from "@/components/other/popOverShowHideCol";
-import PaginationComponent from "@/components/other/globalPagination";
 import dayjs from "dayjs";
 import BtnSearch from "@/components/other/btnSearch";
 import BtnReset from "@/components/other/btnReset";
@@ -27,6 +26,9 @@ import AppTable, { myCustomSortingByDateFn, sortingByDateFn } from "@/components
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import equal from "fast-deep-equal";
+import { dcimal2, dcimal4, exportAllocationReportFromAlloQueryToExcel } from "@/utils/exportMiddleNew";
+import { Button } from "@material-tailwind/react";
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -421,7 +423,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     // setFilteredDataTableIntraDay([])
                 }
             }
-
+ 
             // DATA ZONE
             const data_zone_de_dup = Array.from(
                 new Map(
@@ -432,7 +434,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
 
             // DATA CONTRACT CODE
-            const res_contract_code: any = await getService(`/master/capacity/pure-contract`);
+            const res_contract_code_: any = await getService(`/master/capacity/pure-contract`);
+            console.log('res_contract_code_ : ', res_contract_code_); 
+            const res_contract_code = res_contract_code_?.filter((f:any) => f?.status_capacity_request_management_id !== 3)
+            // console.log('res_contract_code : ', res_contract_code);
             setDataContract(res_contract_code);
             setDataContractOriginal(res_contract_code)
 
@@ -528,7 +533,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                     <div
                                         className="w-[120px] p-1 text-center rounded-[50px]"
                                         style={{ background: row?.entry_exit_obj ? row?.entry_exit_obj?.color : '#FFF1CE' }}>
-                                        {row?.entry_exit_obj && row?.entry_exit_obj?.name}
+                                        {row?.entry_exit_obj?.name}
                                     </div>
                                     : null
                             }
@@ -551,7 +556,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                         className="w-[120px] p-1 text-left rounded-[50px]"
                                         // style={{ background: row?.zone_obj ? row?.zone_obj?.color : '#FFF1CE' }}
                                         >
-                                        {row?.zone_obj && row?.zone_obj?.name}
+                                        {row?.zone_obj?.name}
                                     </div>
                                     : null
                             }
@@ -691,7 +696,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // คืนค่าเป็น String ที่มีทั้งแบบ 'เลขดิบ' และ 'เลขมีคอมม่า'
                 // เพื่อให้ Global Filter มองเห็นทั้งสองร่าง
                 accessorFn: (row: any) => {
-                    const val = row?.nominationValue || '0';
+                    const val = row?.nominationValue;
                     if (val === null || val === undefined || val === '') return '';
 
                     const rawNumber = Number(val);
@@ -803,7 +808,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                     <div
                                         className="w-[120px] p-1 text-center rounded-[50px]"
                                         style={{ background: row?.entry_exit_obj ? row?.entry_exit_obj?.color : '#FFF1CE' }}>
-                                        {row?.entry_exit_obj && row?.entry_exit_obj?.name}
+                                        {row?.entry_exit_obj?.name}
                                     </div>
                                     : null
                             }
@@ -826,7 +831,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                         className="w-[120px] p-1 text-left rounded-[50px]"
                                         // style={{ background: row?.zone_obj ? row?.zone_obj?.color : '#FFF1CE' }}
                                         >
-                                        {row?.zone_obj && row?.zone_obj?.name}
+                                        {row?.zone_obj?.name}
                                     </div>
                                     : null
                             }
@@ -1169,7 +1174,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             const filteredContract = dataContract_?.filter((contract: any) => {
             if (!contract?.contract_start_date) return false;
 
-            const contractStart = dayjs(contract.contract_start_date);
+            const contractStart = dayjs(contract?.contract_start_date);
             const contractEndDate = contract?.terminate_date || contract?.extend_deadline || contract?.contract_end_date
             const contractEnd = contractEndDate
                 ? dayjs(contractEndDate).subtract(1, "day")
@@ -1238,6 +1243,223 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     useEffect(() => {
       console.log('_filteredDataTable : ', filteredDataTable);
     }, [filteredDataTable])
+
+    const addShipperToData = (data: any) => {
+        // ปั้น data add shipper
+        const updatedDataDaily = data?.map((item: any) => {
+            const find_shipper = dataShipper?.find((itemx: any) => itemx?.id_name == item?.shipper)
+            return {
+                ...item,
+                shipper: find_shipper,
+            };
+        });
+
+        return updatedDataDaily
+    }
+
+    async function epAllocationAllocationReport() {
+        const name = `allocationReport ${toDayjs().format('DD-MM-YYYY')}`
+        let from = srchGasDayFrom
+            ? dayjs(srchGasDayFrom)
+            : dayjs().startOf("month");
+
+        let to = srchGasDayTo
+            ? dayjs(srchGasDayTo)
+            : dayjs().endOf("month");
+
+
+        if (srchGasDayFrom && !srchGasDayTo) {
+            // ถ้าไม่มี to → set เป็นสิ้นปีเดียวกัน
+            to = from.endOf("month");
+        }
+
+        if (srchGasDayTo && !srchGasDayFrom) {
+            // ถ้าไม่มี from → set เป็นต้นปีเดียวกัน
+            from = to.startOf("month");
+        }
+        const { start_date, end_date } = getDateRangeForApi(srchGasDayFrom, srchGasDayTo);
+      
+        const headerColorMap = {
+            Publication: "1573A1", // #1573A1
+            Total: "1573A1", // #1573A1
+            Status: "1573A1", // #1573A1
+            "Gas Day": "1573A1", // #1573A1
+            "Gas Hour": "1573A1", // #1573A1
+            Timestamp: "1573A1", // #1573A1
+            "Shipper Name": "1573A1", // #1573A1
+            "Contract Code": "1573A1", // #1573A1
+            "Contract Point": "1573A1", // #1573A1
+            "Capacity Right (MMBTU/D)": "1573A1", // #1573A1
+            "Nomination Point /Concept Point": "1573A1", // #1573A1
+            "Entry / Exit": "1573A1", // #1573A1
+            "Nominated Value (MMBTU/D)": "1573A1", // #1573A1
+            "System Allocation (MMBTU/D)": "1573A1", // #1573A1
+            "Overusage (MMBTU/D)": "1573A1", // #1573A1
+            "Intraday System Allocation": "1573A1", // #1573A1
+            "Previous Allocation TPA for Review (MMBTU/D)": "b8e6ff", // #b8e6ff
+            "Shipper Allocation Review (MMBTU/D)": "b8e6ff", // #b8e6ff
+            "Metering Value (MMBTU/D)": "b8e6ff", // #b8e6ff
+            "Review Code": "b8e6ff", // #b8e6ff
+            Comment: "b8e6ff", // #b8e6ff
+        };
+        
+        function generateCellHighlightMapMultiple(
+            keys: string[],
+            data: any[],
+            color: string
+        ): Record<string, Record<number, string>> {
+            const result: Record<string, Record<number, string>> = {};
+        
+            for (const key of keys) {
+                result[key] = {};
+                for (let i = 0; i < data.length; i++) {
+                if (data[i]?.["tab"] === "green") {
+                    result[key][i] = "e8ffee"; //#e8ffee
+                }
+                }
+            }
+        
+            return result;
+        }
+
+
+        let resData = []
+        const response: any = await getService(`/master/allocation/allocation-report?start_date=${start_date}&end_date=${end_date}&skip=0&limit=0&tab=${tabIndex == 0 ? '1' : '2'}`);
+
+        if(response && Array.isArray(response) && response.length > 0) {
+            // ปั้น data add shipper
+            const updatedDataDaily = addShipperToData(response)
+    
+            // Tab Daily / Tab Intraday ปรับ Default Display ตอนเข้าครั้งแรกให้เรียงตาม Timestamp > Entry/Exit (เอา Entryก่อน) > Contract Point (เรียงตามตัวอักษร) https://app.clickup.com/t/86et8d4cb
+            const sorted = sortAlloReport(updatedDataDaily);
+    
+            // Tab Daily / Tab Intraday : Shipper จะต้องเห็นแค่ของตัวเอง https://app.clickup.com/t/86et8d2wt
+            if (userDT?.account_manage?.[0]?.user_type_id == 3) {
+                let filter_response_only_own_shipper = sorted?.filter((item: any) =>
+                    userDT?.account_manage?.[0]?.user_type_id == 3 ? item?.group?.id === userDT?.account_manage?.[0]?.group?.id : true
+                )
+                resData = filter_response_only_own_shipper;
+            } else {
+                resData = sorted;
+            }
+        }
+      
+        // tabIndex 1 daily 2 intraday
+      
+        const EXCLUDED_KEYS = new Set(["action"]);
+        const filter = initialColumns.filter((item: any) => !!columnVisibility?.[item.key] && !EXCLUDED_KEYS.has(item.key))
+          .map((item: any) => item.label);
+      
+        const filterHeader = filter?.filter((f: any) => {
+            return f !== "Comment";
+        }) || [];
+      
+        let url = `/master/allocation/allocation-report-view?skip=0&limit=0&tab=${tabIndex == 0 ? '1' : '2'}`
+        // หาวันที่ gas_day น้อยที่สุดและมากที่สุดของ resData
+        let minGasDay: string | null = null;
+        let maxGasDay: string | null = null;
+        if (resData.length > 0) {
+            // กรองที่มีค่า gas_day
+            const gasDays = resData
+                .map((d: any) => d?.gas_day)
+                .filter((v: any) => !!v);
+            if (gasDays.length > 0) {
+                // สมมติเป็น string format "YYYY-MM-DD" หรือ "YYYY/MM/DD"
+                minGasDay = gasDays.reduce((min: string, cur: string) =>
+                    cur < min ? cur : min, gasDays[0]
+                );
+                maxGasDay = gasDays.reduce((max: string, cur: string) =>
+                    cur > max ? cur : max, gasDays[0]
+                );
+            }
+        }
+      
+        if (minGasDay) {
+            url += `&start_date=${minGasDay}`
+        }
+      
+        if (maxGasDay) {
+            url += `&end_date=${maxGasDay}`
+        }
+      
+        let subSheetResData: any[] = []
+        try {
+            const response: any = await getService(url);
+            subSheetResData = Array.isArray(response) ? response : [];
+        } catch (error) {
+            subSheetResData = []
+        }
+
+
+        const mainResultM = Array.from(
+            new Set(resData.map((data: any) => data.group?.id_name || ''))
+        )
+        const mainResultC = Array.from(
+            new Set(resData.map((data: any) => data.contract))
+        )
+        const mainResultCP = Array.from(
+            new Set(resData.map((data: any) => data.contract_point))
+        )
+
+        const noverusageDetailRows_ = subSheetResData.filter((f: any) => mainResultM.includes(f.group?.id_name))
+        const noverusageDetailRows_2 = noverusageDetailRows_.filter((f: any) => mainResultC.includes(f.contract))
+        const noverusageDetailRows = noverusageDetailRows_2.filter((f: any) => mainResultCP.includes(f.relation_point))
+      
+        const overusageDetailRows: any[] = [];
+      
+        noverusageDetailRows.forEach((e: any) => {
+          if(e){
+            overusageDetailRows.push({
+                'Gas Day': e['gas_day'] ? dayjs(e['gas_day']).format('DD/MM/YYYY') : '',
+                ...(tabIndex === 0
+                    ? {}
+                    : {
+                        'Gas Hour':
+                        e['gas_hour'] !== undefined
+                            ? `${e.gas_hour >= 10 ? e.gas_hour : '0' + e.gas_hour}:00`
+                            : '',
+                    }
+                ),
+                'Shipper Code': e['group']?.['id_name'],
+                'Contract Code': e['contract'],
+                'Nomination Point ID': e['point'],
+                'Point Type': e['entry_exit_obj']?.['name'] || e['entry_exit'],
+                "Booked Cap. (MMBTU/D)": (e.contractCapacity || e.contractCapacity == 0) ? dcimal4(e.contractCapacity) : '',
+                "Nominated Value (MMBTU/D)": (e.nominationValue || e.nominationValue == 0) ? dcimal4(e.nominationValue) : '',
+                "Allocation TPA (MMBTU/D)": (e.allocatedValue || e.allocatedValue == 0) ? dcimal4(e.allocatedValue) : '',
+                // "Overusage (MMBTU/D)": dcimal4(e.[\"overusage\"]),
+                "Usage (%)": ((e.allocatedValue || e.allocatedValue == 0) && e.contractCapacity) ? dcimal2((e.allocatedValue/e.contractCapacity)*100) : '',
+                Timestamp: e['execute_timestamp'] && dayjs(e['execute_timestamp'] * 1000).format('DD/MM/YYYY HH:mm')
+            });
+          }
+        });
+      
+        let detailHeaderColorMap: {} = {}
+        let detailHighlightMap: Record<string, Record<number, string>> = {};
+        if (overusageDetailRows.length > 0) {
+          const detailHeaders = Object.keys(overusageDetailRows[0]);
+      
+          detailHeaderColorMap = detailHeaders.reduce(
+            (acc, k) => ({ ...acc, [k]: '1573A1' }),
+            {},
+          );
+      
+          detailHighlightMap = generateCellHighlightMapMultiple(
+            detailHeaders,
+            overusageDetailRows,
+            'EAF5F8',
+          );
+        }
+      
+      
+        return exportAllocationReportFromAlloQueryToExcel(
+          overusageDetailRows,
+          name,
+          true,
+          detailHeaderColorMap,
+          detailHighlightMap
+        )
+      }
     
 
     return (
@@ -1543,6 +1765,27 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
                         isLoading={isLoading}
                         exportBtn={
+                            <React.Fragment>
+                                {
+                                    (userPermission ? userPermission?.f_export : false) ? (
+                                        <Button
+                                            className={`flex items-center justify-center gap-3 px-4 h-[43px] w-[100px] bg-[#24AB6A] rounded-[6px] ${dataExport?.length <= 0 && 'bg-[#5e5e5e]'}`}
+                                            disabled={dataExport?.length <= 0}
+                                            onClick={() => epAllocationAllocationReport()}
+                                        >
+                                            {/* <Button className="flex items-center justify-center text-center gap-3 px-2 h-[46px] w-[141px] bg-[#24AB6A] "> */}
+                                            <span className="!font-extra-thin text-[16px] normal-case">Report</span>
+                                            <DescriptionOutlinedIcon
+                                                className={` text-[#ffffff]`}
+                                                style={{
+                                                    fontSize: "17px",
+                                                    // color: data.length <= 0 ? "#5e5e5e" : "#ffffff",
+                                                }}
+                                            />
+                                        </Button>
+                                    ) : null
+                                }
+
                             <BtnExport
                                 textRender={"Export"}
                                 data={dataExport}
@@ -1560,6 +1803,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 specificMenu='allocation-query'
                                 tabIndex={'1'}
                             />
+                            </React.Fragment>
                         }
                         initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
                         onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}

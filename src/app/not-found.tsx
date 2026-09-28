@@ -1,4 +1,6 @@
-"use client";
+// Next.js client boundary. Coverity flags this as unused_expr (NO_EFFECT).
+// coverity[unused_expr:SUPPRESS]
+'use client';
 
 import Error from "next/error";
 

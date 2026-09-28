@@ -123,20 +123,19 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### LIKE SEARCH ###############
     const handleSearch = (query: string) => {
-        const filtered = dataTable.filter(
+        const filtered = (dataTable || []).filter(
             (item: any) => {
                 return (
-                    item?.nomination_type?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-                    (item?.nomination_type?.name + 'Nomination')?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-                    item?.user_type?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-                    item?.process_type?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-                    item?.before_gas_day?.toString().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-                    item?.hour?.toString().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-                    item?.minute?.toString().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-                    // (item?.hour + ':' + item?.minute)?.toString().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-                    (`${item?.hour}:${String(item?.minute).padStart(2, '0')}`).toString().includes(query.replace(/\s+/g, '').toLowerCase()) ||
-                    formatDateNoTime(item?.start_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase()) ||
-                    formatDateNoTime(item?.end_date)?.toLowerCase().includes(query.replace(/\s+/g, '')?.toLowerCase())
+                    item?.nomination_type?.name?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(query?.replace(/\s+/g, '')?.toLowerCase()) ||
+                    (item?.nomination_type?.name ? (item?.nomination_type?.name + 'Nomination')?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(query?.replace(/\s+/g, '')?.toLowerCase()) : false) ||
+                    item?.user_type?.name?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(query?.replace(/\s+/g, '')?.toLowerCase()) ||
+                    item?.process_type?.name?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(query?.replace(/\s+/g, '')?.toLowerCase()) ||
+                    item?.before_gas_day?.toString()?.includes(query?.replace(/\s+/g, '')?.toLowerCase()) ||
+                    item?.hour?.toString()?.includes(query?.replace(/\s+/g, '')?.toLowerCase()) ||
+                    item?.minute?.toString()?.includes(query?.replace(/\s+/g, '')?.toLowerCase()) ||
+                    (item?.hour != null && item?.minute != null ? (`${item?.hour}:${String(item?.minute).padStart(2, '0')}`).toString().includes(query?.replace(/\s+/g, '').toLowerCase()) : false) ||
+                    (item?.start_date ? formatDateNoTime(item?.start_date)?.toLowerCase()?.includes(query?.replace(/\s+/g, '')?.toLowerCase()) : false) ||
+                    (item?.end_date ? formatDateNoTime(item?.end_date)?.toLowerCase()?.includes(query?.replace(/\s+/g, '')?.toLowerCase()) : false)
                 )
             }
         );
@@ -402,7 +401,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries((initialColumns || []).map((column: any) => [column?.key, column?.visible]))
     );
 
     const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
@@ -451,7 +450,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.process_type?.name || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
-                    return (<div>{row?.process_type && row?.process_type?.name}</div>)
+                    return (<div>{row?.process_type?.name}</div>)
                 }
             },
             {
@@ -485,14 +484,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.before_gas_day || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
-                    return (<div>{row?.before_gas_day && row?.before_gas_day}</div>)
+                    return (<div>{row?.before_gas_day}</div>)
                 }
             },
             {
                 accessorKey: "start_date",
                 header: "Start Date",
                 enableSorting: true,
-                accessorFn: (row: any) => formatDateNoTime(row?.start_date),
+                accessorFn: (row: any) => (row?.start_date ? formatDateNoTime(row?.start_date) : ''),
                 sortingFn: myCustomSortingByDateFn,
                 // sortingFn: 'datetime', // recommended for date columns 
                 // sortUndefined: -1,
@@ -507,7 +506,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorKey: "end_date",
                 header: "End Date",
                 enableSorting: true,
-                accessorFn: (row: any) => toDayjs(row?.end_date).isValid() ? formatDateNoTime(row?.end_date) : '',
+                accessorFn: (row: any) => (row?.end_date && toDayjs(row?.end_date)?.isValid() ? formatDateNoTime(row?.end_date) : ''),
                 sortingFn: myCustomSortingByDateFn,
                 // sortingFn: 'datetime', // recommended for date columns 
                 // sortUndefined: -1,
@@ -637,8 +636,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         customWidth={190}
                         onChange={(e) => setSrchNomiType(e.target.value)}
                         options={nominationTypeMaster?.data?.map((item: any) => ({
-                            value: item?.id?.toString(),
-                            label: item.name + ' Nomination'
+                            value: item?.id ? item?.id?.toString() : '',
+                            label: (item?.name || '') + ' Nomination'
                         }))}
                     />
 

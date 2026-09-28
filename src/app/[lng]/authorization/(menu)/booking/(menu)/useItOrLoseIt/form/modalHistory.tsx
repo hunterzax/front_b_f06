@@ -348,34 +348,36 @@ const ModalPathMgnHistory: React.FC<FormExampleProps> = ({
                                                                 {expandedRow === item.config_master_path_id && (
                                                                     <div className="ml-2 mt-2 bg-[#DFE4EA] border border-[#DFE4EA] rounded-[8px] p-2">
 
-                                                                        {item?.data?.map((configItem: any, configIndex: any) => {
-                                                                            const areaMap = configItem?.paths.revised_capacity_path.reduce((acc: any, pathItem: any) => {
+                                                                        {(item?.data || []).map((configItem: any, configIndex: any) => {
+                                                                            const areaMap = configItem?.paths?.revised_capacity_path?.reduce((acc: any, pathItem: any) => {
                                                                                 acc[pathItem.area_id] = pathItem;
                                                                                 return acc;
                                                                             }, {});
 
-                                                                            const sortedRevisedCapacityPath = configItem?.paths.revised_capacity_path_edges.map((edge: any) => areaMap[edge.source_id]).filter((pathItem: any) => pathItem !== undefined);
+                                                                            const sortedRevisedCapacityPath = (configItem?.paths.revised_capacity_path_edges || [])?.map((edge: any) => areaMap[edge.source_id]).filter((pathItem: any) => pathItem !== undefined);
                                                                             return (
                                                                                 <div key={configIndex} className="flex items-center gap-2 pt-2 pb-2">
 
-                                                                                    {sortedRevisedCapacityPath.map((pathItem: any, pathIndex: any) => (
+                                                                                    {(sortedRevisedCapacityPath || [])?.map((pathItem: any, pathIndex: any) => {
+                                                                                        if(pathItem){
+                                                                                            return (
                                                                                         <React.Fragment key={pathItem.id}>
                                                                                             <div
                                                                                                 className="flex justify-center items-center"
                                                                                                 style={{
-                                                                                                    backgroundColor: pathItem?.area?.color,
-                                                                                                    width: pathItem?.revised_capacity_path_type_id === 1 ? '30px' : '30px',
-                                                                                                    height: pathItem?.revised_capacity_path_type_id === 1 ? '30px' : '30px',
-                                                                                                    borderRadius: pathItem?.revised_capacity_path_type_id === 1 ? '4px' : '50%',
+                                                                                                    backgroundColor: pathItem.area?.color,
+                                                                                                    width: '30px',
+                                                                                                    height: '30px',
+                                                                                                    borderRadius: pathItem.revised_capacity_path_type_id === 1 ? '4px' : '50%',
                                                                                                 }}
                                                                                             >
                                                                                                 <span
-                                                                                                    className={`${pathItem?.revised_capacity_path_type_id === 1
+                                                                                                    className={`${pathItem.revised_capacity_path_type_id === 1
                                                                                                         ? 'text-white'
                                                                                                         : 'text-black'
                                                                                                         } text-[13px]`}
                                                                                                 >
-                                                                                                    {pathItem?.area?.name}
+                                                                                                    {pathItem.area?.name}
                                                                                                 </span>
                                                                                             </div>
 
@@ -383,7 +385,12 @@ const ModalPathMgnHistory: React.FC<FormExampleProps> = ({
                                                                                                 <span className="text-gray-500 -mr-2 -ml-2">{'→'}</span>
                                                                                             )}
                                                                                         </React.Fragment>
-                                                                                    ))}
+                                                                                            )
+                                                                                        }
+                                                                                        else{
+                                                                                            return <React.Fragment key={`sortedRevisedCapacityPath_${pathIndex}`}></React.Fragment>;
+                                                                                        }
+                                                                                    })}
                                                                                 </div>
                                                                             );
                                                                         })}

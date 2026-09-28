@@ -129,7 +129,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // ############### LIKE SEARCH ###############
     const handleSearch = (query: string) => {
 
-        const filtered = dataTable.filter(
+        const filtered = (dataTable || [])?.filter(
             (item: any) => {
                 const queryLower = query.replace(/\s+/g, '')?.toLowerCase().trim();
                 return (
@@ -312,14 +312,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const openEditForm = (id: any) => {
         setSelectedId(id);
-        const filteredData = dataTable.find((item: any) => item.id === id);
+        const filteredData = (dataTable || [])?.find((item: any) => item.id === id);
         setFormMode('edit');
         setFormData(filteredData);
         setFormOpen(true);
     };
 
     const openViewForm = (id: any) => {
-        const filteredData = dataTable.find((item: any) => item.id === id);
+        const filteredData = (dataTable || [])?.find((item: any) => item.id === id);
         setFormMode('view');
         setFormData(filteredData);
         setFormOpen(true);
@@ -341,7 +341,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         try {
             const response: any = await getService(`/master/account-manage/history?type=upload-template-for-shipper&method=all&id_value=${id}`);
 
-            let valuesArray = response.map((item: any) => item.value);
+            let valuesArray = (response || [])?.map((item: any) => item?.value);
             // ปั้น data ลบคีย์
             let cleanedData: any = []
             if (valuesArray && valuesArray.length > 0) {
@@ -355,7 +355,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // { key: "description", title: "Description" },
             ];
             let result = mappings.map(({ key, title }) => {
-                const value = key.split('.').reduce((acc, part) => acc && acc[part], valuesArray[0]);
+                const value = key.split('.').reduce((acc, part) => acc && acc[part], valuesArray?.[0]);
                 return {
                     title,
                     value: value || "",
@@ -499,7 +499,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const reGenerate = async (id?: any) => {
         setIsLoading(false);
-        let id_map = id.map((item: any) => item.id);
+        let id_map = (id || []).map((item: any) => item?.id);
         let body_regen = {
             id: id_map
         }
@@ -554,7 +554,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             )
                             .map((item: any) => ({
                                 value: item?.id?.toString(),
-                                label: item.name,
+                                label: item?.name,
                             }))
                         }
                     />
@@ -588,7 +588,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         //         }))
                         // }
                         options={
-                            dataContract?.map((item: any) => ({
+                            (dataContract || [])?.map((item: any) => ({
                                 value: item?.id?.toString(),
                                 label: item?.contract_code
                             }))
@@ -602,9 +602,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         type="select-multi-checkbox"
                         value={srchTypeDocument}
                         onChange={(e) => setSrchTypeDocument(e.target.value)}
-                        options={nominationTypeMaster?.data?.map((item: any) => ({
-                            value: item.name,
-                            label: item.document_type
+                        options={(nominationTypeMaster?.data || [])?.map((item: any) => ({
+                            value: item?.name,
+                            label: item?.document_type
                         }))}
                     />
 

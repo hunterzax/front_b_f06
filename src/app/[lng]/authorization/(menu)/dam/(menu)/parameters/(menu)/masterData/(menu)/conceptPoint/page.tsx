@@ -663,10 +663,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           <div className="flex gap-2">
             {
               userPermission?.f_create && <>
-                <Button className="flex items-center justify-center gap-3 px-2  h-[44px] w-[190px] bg-[#36B1AB] font-light normal-case" onClick={() => openLimitForm('create-period')}>
+                {/* <Button className="flex items-center justify-center gap-3 px-2  h-[44px] w-[190px] bg-[#36B1AB] font-light normal-case" onClick={() => openLimitForm('create-period')}>
                   <span>{`Concept Point Limit`}</span>
                   <AddCircleIcon style={{ fontSize: "16px" }} />
-                </Button>
+                </Button> */}
 
                 <Button className="flex items-center justify-center gap-3 px-2  h-[44px] w-[100px] bg-[#00ADEF]" onClick={() => openCreateForm('create')}>
                   <span className="font-light normal-case">{`New`}</span>

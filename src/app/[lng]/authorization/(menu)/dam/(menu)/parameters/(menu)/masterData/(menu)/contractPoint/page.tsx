@@ -49,19 +49,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   // ############### PERMISSION ###############
   const [userPermission, setUserPermission] = useState<any>();
-  // let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-  let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+  let user_permission: any = typeof window !== 'undefined' ? (getCookieValue("k3a9r2b6m7t0x5w1s8j") || localStorage?.getItem("k3a9r2b6m7t0x5w1s8j")) : null;
   user_permission = user_permission ? decryptData(user_permission) : null;
 
   const getPermission = () => {
     try {
-      user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
+      let parsed_permission = user_permission;
+      if (typeof parsed_permission === 'string') {
+        parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+      }
 
       const permission = findRoleConfigByMenuName('Contract Point', userDT)
       if (permission) {
         setUserPermission(permission);
-      } else if (user_permission?.role_config) {
-        const updatedUserPermission = generateUserPermission(user_permission);
+      } else if (parsed_permission?.role_config) {
+        const updatedUserPermission = generateUserPermission(parsed_permission);
         setUserPermission(updatedUserPermission);
       }
     } catch (error) {
@@ -252,15 +254,18 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [formData, setFormData] = useState(fdInterface);
 
   const handleFormSubmit = async (data: any) => {
+    if (!data) return;
 
     const newData = replaceEmptyStringsWithNull(data)
-    let newArray = data.contract_nomination_point?.length > 0 ? data.contract_nomination_point.map((item: any) => ({
-      id: item.id,
-      ref_id: item.ref_id,
-      nomination_point: item.nomination_point,
-      start_date: item.start_date,
-      end_date: item.end_date
-    })) : [];
+    let newArray = Array.isArray(data.contract_nomination_point) && data.contract_nomination_point.length > 0
+      ? data.contract_nomination_point.map((item: any) => ({
+          id: item?.id,
+          ref_id: item?.ref_id,
+          nomination_point: item?.nomination_point,
+          start_date: item?.start_date,
+          end_date: item?.end_date
+        }))
+      : [];
 
     data.contract_nomination_point = newArray
     const { id, nomination_point, ...updateData } = data
@@ -468,7 +473,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [columnVisibility, setColumnVisibility] = useState<any>(
-    Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+    Object.fromEntries((initialColumns || [])?.map((column: any) => [column?.key, column?.visible]))
   );
 
 
@@ -777,7 +782,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             //   value: item?.id?.toString(),
             //   label: item.name
             // }))}
-            options={zoneMaster?.data?.filter((item: any) => srchEntryExit?.length > 0 ? srchEntryExit.includes(item?.entry_exit?.id?.toString()) : item?.entry_exit?.id !== null)?.map((item: any) => ({
+            options={(zoneMaster?.data || [])?.filter((item: any) => srchEntryExit?.length > 0 ? srchEntryExit?.includes(item?.entry_exit?.id?.toString()) : item?.entry_exit?.id !== null)?.map((item: any) => ({
               value: item?.id?.toString(),
               label: item?.name + ' (' + item?.entry_exit?.name + ')'
             }))}
@@ -790,22 +795,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             type="select-multi-checkbox"
             value={srchArea}
             onChange={(e) => setSrchArea(e.target.value)}
-            // options={areaMasterFetch?.filter((item: any) => // R2 : Add > สร้าง Area มาใหม่ แล้วไม่ขึ้นใน Dropdown Area https://app.clickup.com/t/86erwzg48
-            //   srchEntryExit && srchZone ? item?.entry_exit?.id == srchEntryExit && item?.zone?.id == srchZone :
-            //     srchEntryExit || srchZone ? item?.entry_exit?.id == srchEntryExit || item?.zone?.id == srchZone :
-            //       item !== null)?.map((item: any) => (
-            //         {
-            //           value: item?.id?.toString(),
-            //           label: item.name
-            //         }))}
-
-            options={areaMasterFetch?.filter((item: any) => 
-              srchEntryExit?.length > 0 && srchZone?.length > 0 ? srchEntryExit.includes(item?.entry_exit?.id?.toString()) && srchZone.includes(item?.zone?.id?.toString()) :
-                srchEntryExit?.length > 0 || srchZone?.length > 0 ? srchEntryExit.includes(item?.entry_exit?.id?.toString()) || srchZone.includes(item?.zone?.id?.toString()) :
+            options={(areaMasterFetch || [])?.filter((item: any) => 
+              srchEntryExit?.length > 0 && srchZone?.length > 0 ? (srchEntryExit?.includes(item?.entry_exit?.id?.toString()) && srchZone?.includes(item?.zone?.id?.toString())) :
+                srchEntryExit?.length > 0 || srchZone?.length > 0 ? (srchEntryExit?.includes(item?.entry_exit?.id?.toString()) || srchZone?.includes(item?.zone?.id?.toString())) :
                   item !== null)?.map((item: any) => (
                     {
                       value: item?.id?.toString(),
-                      label: item.name
+                      label: item?.name
                     }))}
           />
 

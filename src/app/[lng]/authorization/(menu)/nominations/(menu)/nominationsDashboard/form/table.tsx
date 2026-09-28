@@ -216,7 +216,7 @@ const TableNominationDashboard: React.FC<TableProps> = ({ tableData, systemData,
                             </thead>
                             <tbody>
                                 {/* "true คือเกินให้ ✖ นอกนั้น ✔" */}
-                                {sortedData && sortedData?.map((row: any, key: any) => {
+                                {(sortedData || [])?.map((row: any, key: any) => {
                                     return (
                                         <tr
                                             key={'data-' + key}

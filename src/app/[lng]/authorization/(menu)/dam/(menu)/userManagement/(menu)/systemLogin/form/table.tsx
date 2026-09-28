@@ -91,41 +91,41 @@ const TableSystemLogin: React.FC<TableProps> = ({ openEditForm, openViewForm, op
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.login_mode && (
+                                {columnVisibility?.login_mode && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("mode_account_id", sortState, setSortState, setSortedData, tableData)}>
                                         {`Login Mode`}
                                         {getArrowIcon("mode_account_id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.role && (
+                                {columnVisibility?.role && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("role_id", sortState, setSortState, setSortedData, tableData)}>
                                         {`Role Name`}
                                         {getArrowIcon("role_id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.user && (
+                                {columnVisibility?.user && (
                                     <th scope="col" className={`${table_header_style}`} >
                                         {`Users`}
                                     </th>
                                 )}
 
-                                {columnVisibility.create_by && (
+                                {columnVisibility?.create_by && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Created by`}
                                         {getArrowIcon("create_by_account.first_name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Updated by`}
                                         {getArrowIcon("update_by_account.first_name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -140,16 +140,16 @@ const TableSystemLogin: React.FC<TableProps> = ({ openEditForm, openViewForm, op
                                     className={`${table_row_style}`}
                                 >
 
-                                    {columnVisibility.login_mode && (
+                                    {columnVisibility?.login_mode && (
                                         <td className="px-2 py-1 justify-center ">{row?.mode_account && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.mode_account?.color }}>{row?.mode_account?.name} Mode</div>}</td>
                                     )}
 
-                                    {columnVisibility.role && (
+                                    {columnVisibility?.role && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.role?.name}</td>
                                     )}
 
                                     {/* <td className="px-2 py-1 text-[#464255]">{row?.system_login_account?.length} User{row?.system_login_account?.length > 1 && 's'} </td> */}
-                                    {columnVisibility.user && (
+                                    {columnVisibility?.user && (
                                         <td className="px-2 py-1 text-center">
                                             <div className="inline-flex items-center justify-center relative">
                                                 <button
@@ -169,7 +169,7 @@ const TableSystemLogin: React.FC<TableProps> = ({ openEditForm, openViewForm, op
                                         </td>
                                     )}
 
-                                    {columnVisibility.create_by && (
+                                    {columnVisibility?.create_by && (
                                         <td className="px-2 py-1 ">
                                             <div>
                                                 <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -178,7 +178,7 @@ const TableSystemLogin: React.FC<TableProps> = ({ openEditForm, openViewForm, op
                                         </td>
                                     )}
 
-                                    {columnVisibility.updated_by && (
+                                    {columnVisibility?.updated_by && (
                                         <td className="px-2 py-1">
                                             <div>
                                                 <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
@@ -187,7 +187,7 @@ const TableSystemLogin: React.FC<TableProps> = ({ openEditForm, openViewForm, op
                                         </td>
                                     )}
 
-                                    {columnVisibility.action && (
+                                    {columnVisibility?.action && (
                                         <td className="px-2 py-1">
                                             {/* <div className="relative inline-block text-left"> */}
                                             <div className="relative inline-flex justify-center items-center w-full">

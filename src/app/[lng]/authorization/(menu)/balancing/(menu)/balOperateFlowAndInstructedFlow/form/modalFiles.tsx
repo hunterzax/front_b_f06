@@ -45,7 +45,7 @@ const ModalFiles: React.FC<FormExampleProps> = ({
 
     const handleFileChange = async (e: any) => {
         setIsLoading(true);
-        const file = e.target.files[0];
+        const file = e?.target?.files?.[0];
         if (file) {
             const validFileTypes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
             const maxSizeInMB = 10; // Maximum file size in MB
@@ -92,7 +92,7 @@ const ModalFiles: React.FC<FormExampleProps> = ({
                     // setModalErrorMsg(res_upload?.response?.data?.error ? res_upload?.response?.data?.error : "Something went wrong");
                     // setModalErrorOpen(true);
                 } else {
-                    setIsUploaded(true)
+                    if (setIsUploaded) setIsUploaded(true);
                     onClose()
                     setIsLoading(false);
                     setFileName('Maximum File 10 MB')
@@ -208,8 +208,8 @@ const ModalFiles: React.FC<FormExampleProps> = ({
                         <div
                             className={`mb-4 w-[100%] ${data?.file?.length > 3 ? 'max-h-[350px] overflow-y-auto' : ''}`}
                         >
-                            {data?.file?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                            {(data?.file || [])?.map((item: any, index: number) => (
+                                <div key={item?.id ?? index} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
 
                                         <div className="mb-2 flex justify-between items-center">

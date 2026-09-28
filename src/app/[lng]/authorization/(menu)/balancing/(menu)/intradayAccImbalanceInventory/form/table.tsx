@@ -62,8 +62,10 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
     data.forEach((row: any) => {
       const applyColor = (section: any[] = []) => {
         section.forEach((item: any) => {
-          const validation = item?.validation;
-          item.color = colorMap[validation] || colorMap.DEFAULT;
+          if(item){
+            const validation = item?.validation;
+            item.color = colorMap[validation] || colorMap.DEFAULT;
+          }
         });
       };
 
@@ -84,7 +86,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
   }, [tableData]);
 
   // เอาไว้ span column แบบ dynamic เคสเปิด ปิดไส้ใน
-  const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility[col.key]).length || 1;
+  const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility?.[col.key]).length || 1;
 
   const postPublicationCenter = async (data: any) => {
 
@@ -116,7 +118,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                 {columnVisibility.publicate && userDT?.account_manage?.[0]?.user_type_id !== 3 && (
+                 {columnVisibility?.publicate && userDT?.account_manage?.[0]?.user_type_id !== 3 && (
                   <th
                     className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={4} scope="col"
                   >
@@ -124,7 +126,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                   </th>
                 )}
 
-                {columnVisibility.gas_day && (
+                {columnVisibility?.gas_day && (
                   <th
                     className={`${table_sort_header_style} text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={4} scope="col" onClick={() => handleSort("gasHour", sortState, setSortState, setSortedData, tableData)}
                   >
@@ -133,7 +135,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                   </th>
                 )}
 
-                {columnVisibility.gas_hour && (
+                {columnVisibility?.gas_hour && (
                   <th
                     className={`${table_sort_header_style} text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={4} scope="col" onClick={() => handleSort("gasHour", sortState, setSortState, setSortedData, tableData)}
                   >
@@ -142,7 +144,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                   </th>
                 )}
 
-               {columnVisibility.timestamp && (
+               {columnVisibility?.timestamp && (
                   <th
                     className={`${table_sort_header_style} text-center min-w-[150px] w-[170px] max-w-[200px]`}
                     rowSpan={4}
@@ -154,7 +156,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                   </th>
                 )}
 
-                {columnVisibility.acc_total_inventory_mmbtu && (
+                {columnVisibility?.acc_total_inventory_mmbtu && (
                   <th
                     className={`${table_header_style} bg-[#1473A1] text-center`}
                     // colSpan={2}
@@ -165,7 +167,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                   </th>
                 )}
 
-                {columnVisibility.base_inventory && (
+                {columnVisibility?.base_inventory && (
                   <th
                     className={`${table_header_style} bg-[#1473A1] text-center`}
                     // colSpan={2} 
@@ -176,7 +178,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                   </th>
                 )}
 
-                {columnVisibility.total_acc_imb_inventory_mmbtu && (
+                {columnVisibility?.total_acc_imb_inventory_mmbtu && (
                   <th
                     className={`${table_header_style} bg-[#1473A1] text-center`}
                     // colSpan={2} 
@@ -187,7 +189,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                   </th>
                 )}
 
-                {columnVisibility.acc_imb_exclude_ptt_shipper_mmbtu && (
+                {columnVisibility?.acc_imb_exclude_ptt_shipper_mmbtu && (
                   <th
                     className={`${table_header_style} bg-[#1473A1] text-center`}
                     // colSpan={2} 
@@ -198,7 +200,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                   </th>
                 )}
 
-                {columnVisibility.other_mmbtu && (
+                {columnVisibility?.other_mmbtu && (
                   <th
                     className={`${table_header_style} bg-[#1473A1] text-center`}
                     // colSpan={2} 
@@ -209,7 +211,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                   </th>
                 )}
 
-                {columnVisibility.acc_imb_inventory_for_ptt_shipper_mmbtu && (
+                {columnVisibility?.acc_imb_inventory_for_ptt_shipper_mmbtu && (
                   <th
                     className={`${table_header_style} bg-[#1473A1] text-center`}
                     // colSpan={2}
@@ -220,7 +222,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                   </th>
                 )}
 
-                {columnVisibility.mode_zone && (
+                {columnVisibility?.mode_zone && (
                   <th
                     className={`${table_header_style} bg-[#1473A1] text-center`}
                     // colSpan={2}
@@ -234,8 +236,8 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
 
               <tr className="h-9">
 
-                {columnVisibility.acc_total_inventory_mmbtu && (<>
-                  {columnVisibility.east_acc_total_inventory_mmbtu && (
+                {columnVisibility?.acc_total_inventory_mmbtu && (<>
+                  {columnVisibility?.east_acc_total_inventory_mmbtu && (
                     <th
                       className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("east_totalInv", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -244,7 +246,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                     </th>
                   )}
 
-                  {columnVisibility.west_acc_total_inventory_mmbtu && (
+                  {columnVisibility?.west_acc_total_inventory_mmbtu && (
                     <th
                       className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("west_totalInv", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -255,8 +257,8 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                 </>)}
 
 
-                {columnVisibility.base_inventory && (<>
-                  {columnVisibility.east_base_inventory && (
+                {columnVisibility?.base_inventory && (<>
+                  {columnVisibility?.east_base_inventory && (
                     <th
                       className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("east_baseInv", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -265,7 +267,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                     </th>
                   )}
 
-                  {columnVisibility.west_base_inventory && (
+                  {columnVisibility?.west_base_inventory && (
                     <th
                       className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("west_baseInv", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -276,8 +278,8 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                 </>)}
 
 
-                {columnVisibility.total_acc_imb_inventory_mmbtu && (<>
-                  {columnVisibility.east_total_acc_imb_inventory_mmbtu && (
+                {columnVisibility?.total_acc_imb_inventory_mmbtu && (<>
+                  {columnVisibility?.east_total_acc_imb_inventory_mmbtu && (
                     <th
                       className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("east_totalAccImbInv", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -286,7 +288,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                     </th>
                   )}
 
-                  {columnVisibility.west_total_acc_imb_inventory_mmbtu && (
+                  {columnVisibility?.west_total_acc_imb_inventory_mmbtu && (
                     <th
                       className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("west_totalAccImbInv", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -297,8 +299,8 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                 </>)}
 
 
-                {columnVisibility.acc_imb_exclude_ptt_shipper_mmbtu && (<>
-                  {columnVisibility.east_acc_imb_exclude_ptt_shipper_mmbtu && (
+                {columnVisibility?.acc_imb_exclude_ptt_shipper_mmbtu && (<>
+                  {columnVisibility?.east_acc_imb_exclude_ptt_shipper_mmbtu && (
                     <th
                       className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("east_accImbExculdePTT", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -307,7 +309,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                     </th>
                   )}
 
-                  {columnVisibility.west_acc_imb_exclude_ptt_shipper_mmbtu && (
+                  {columnVisibility?.west_acc_imb_exclude_ptt_shipper_mmbtu && (
                     <th
                       className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("west_accImbExculdePTT", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -318,8 +320,8 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                 </>)}
 
 
-                {columnVisibility.other_mmbtu && (<>
-                  {columnVisibility.east_other_mmbtu && (
+                {columnVisibility?.other_mmbtu && (<>
+                  {columnVisibility?.east_other_mmbtu && (
                     <th
                       className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("east_other", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -328,7 +330,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                     </th>
                   )}
 
-                  {columnVisibility.west_other_mmbtu && (
+                  {columnVisibility?.west_other_mmbtu && (
                     <th
                       className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("west_other", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -339,8 +341,8 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                 </>)}
 
 
-                {columnVisibility.acc_imb_inventory_for_ptt_shipper_mmbtu && (<>
-                  {columnVisibility.east_acc_imb_inventory_for_ptt_shipper_mmbtu && (
+                {columnVisibility?.acc_imb_inventory_for_ptt_shipper_mmbtu && (<>
+                  {columnVisibility?.east_acc_imb_inventory_for_ptt_shipper_mmbtu && (
                     <th
                       className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("east_accImbInvPTT", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -349,7 +351,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                     </th>
                   )}
 
-                  {columnVisibility.west_acc_imb_inventory_for_ptt_shipper_mmbtu && (
+                  {columnVisibility?.west_acc_imb_inventory_for_ptt_shipper_mmbtu && (
                     <th
                       className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("west_accImbInvPTT", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -360,8 +362,8 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                 </>)}
 
 
-                {columnVisibility.mode_zone && (<>
-                  {columnVisibility.east_mode_zone && (
+                {columnVisibility?.mode_zone && (<>
+                  {columnVisibility?.east_mode_zone && (
                     <th
                       className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("east_mode_zone", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -370,7 +372,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                     </th>
                   )}
 
-                  {columnVisibility.west_mode_zone && (
+                  {columnVisibility?.west_mode_zone && (
                     <th
                       className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={1} scope="col" colSpan={1} onClick={() => handleSort("west_mode_zone", sortState, setSortState, setSortedData, tableData)}
                     >
@@ -384,7 +386,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => {
+              {(sortedData || [])?.map((row: any, index: any) => {
                 return (
                   <tr
                     key={row?.id}
@@ -394,7 +396,7 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
                     
 
 
-                    {columnVisibility.publicate && userDT?.account_manage?.[0]?.user_type_id !== 3 && (
+                    {columnVisibility?.publicate && userDT?.account_manage?.[0]?.user_type_id !== 3 && (
                       <td className="px-2 py-1 text-[#464255] max-w-[60px] text-center">
 
                         <input
@@ -411,109 +413,109 @@ const TableBalIntradayAccImbalanceInventory: React.FC<TableProps> = ({ tableData
 
                   
 
-                    {columnVisibility.gas_day && (
+                    {columnVisibility?.gas_day && (
                       <td className="px-2 py-1 text-[#464255] max-w-[60px] text-center">{row?.gas_day ? dayjs(row["gas_day"], "YYYY-MM-DD").format("DD/MM/YYYY") : ''}</td>
                     )}
                   
 
-                    {columnVisibility.gas_hour && (
+                    {columnVisibility?.gas_hour && (
                       <td className="px-2 py-1 text-[#464255] max-w-[60px] text-center">{row?.gasHour ? row?.gasHour : ''}</td>
                     )}
 
-                      {columnVisibility.timestamp && (
+                      {columnVisibility?.timestamp && (
                       <td className="px-2 py-1 text-[#464255] max-w-[60px] text-center">{row?.timestamp ? row?.timestamp : ''}</td>
                     )}
 
-                    {columnVisibility.east_acc_total_inventory_mmbtu && (
+                    {columnVisibility?.east_acc_total_inventory_mmbtu && (
                       <td className={`px-2 py-1 max-w-[60px] text-right`} style={{ color: row?.valiedateEast?.find((item: any) => item.tag === "totalInv")?.color, }}>
                         {/* {row?.east_totalInv ? formatNumberFourDecimal(row?.east_totalInv) : ''} */}
                         {row?.east_totalInv !== null && row?.east_totalInv !== undefined ? formatNumberFourDecimal(row?.east_totalInv) : ''}
                       </td>
                     )}
 
-                    {columnVisibility.west_acc_total_inventory_mmbtu && (
+                    {columnVisibility?.west_acc_total_inventory_mmbtu && (
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] text-right`} style={{ color: row?.valiedateWest?.find((item: any) => item.tag === "totalInv")?.color }}>
                         {/* {row?.west_totalInv ? formatNumberFourDecimal(row?.west_totalInv) : ''} */}
                         {row?.west_totalInv !== null && row?.west_totalInv !== undefined ? formatNumberFourDecimal(row?.west_totalInv) : ''}
                       </td>
                     )}
 
-                    {columnVisibility.east_base_inventory && (
+                    {columnVisibility?.east_base_inventory && (
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] text-right`} style={{ color: row?.valiedateEast?.find((item: any) => item.tag === "baseInv")?.color }}>
                         {/* {row?.east_baseInv ? formatNumberFourDecimal(row?.east_baseInv) : ''} */}
                         {row?.east_baseInv !== null && row?.east_baseInv !== undefined ? formatNumberFourDecimal(row?.east_baseInv) : ''}
                       </td>
                     )}
 
-                    {columnVisibility.west_base_inventory && (
+                    {columnVisibility?.west_base_inventory && (
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] text-right`} style={{ color: row?.valiedateWest?.find((item: any) => item.tag === "baseInv")?.color }}>
                         {/* {row?.west_baseInv ? formatNumberFourDecimal(row?.west_baseInv) : ''} */}
                         {row?.west_baseInv !== null && row?.west_baseInv !== undefined ? formatNumberFourDecimal(row?.west_baseInv) : ''}
                       </td>
                     )}
 
-                    {columnVisibility.east_total_acc_imb_inventory_mmbtu && (
+                    {columnVisibility?.east_total_acc_imb_inventory_mmbtu && (
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] text-right`} style={{ color: row?.valiedateEast?.find((item: any) => item.tag === "totalAccImbInv")?.color }}>
                         {/* {row?.east_totalAccImbInv ? formatNumberFourDecimal(row?.east_totalAccImbInv) : ''} */}
                         {row?.east_totalAccImbInv !== null && row?.east_totalAccImbInv !== undefined ? formatNumberFourDecimal(row?.east_totalAccImbInv) : ''}
                       </td>
                     )}
 
-                    {columnVisibility.west_total_acc_imb_inventory_mmbtu && (
+                    {columnVisibility?.west_total_acc_imb_inventory_mmbtu && (
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] text-right`} style={{ color: row?.valiedateWest?.find((item: any) => item.tag === "totalAccImbInv")?.color }}>
                         {/* {row?.west_totalAccImbInv ? formatNumberFourDecimal(row?.west_totalAccImbInv) : ''} */}
                         {row?.west_totalAccImbInv !== null && row?.west_totalAccImbInv !== undefined ? formatNumberFourDecimal(row?.west_totalAccImbInv) : ''}
                       </td>
                     )}
 
-                    {columnVisibility.east_acc_imb_exclude_ptt_shipper_mmbtu && (
+                    {columnVisibility?.east_acc_imb_exclude_ptt_shipper_mmbtu && (
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] text-right`} style={{ color: row?.valiedateEast?.find((item: any) => item.tag === "accImbExculdePTT")?.color }}>
                         {/* {row?.east_accImbExculdePTT ? formatNumberFourDecimal(row?.east_accImbExculdePTT) : ''} */}
                         {row?.east_accImbExculdePTT !== null && row?.east_accImbExculdePTT !== undefined ? formatNumberFourDecimal(row?.east_accImbExculdePTT) : ''}
                       </td>
                     )}
 
-                    {columnVisibility.west_acc_imb_exclude_ptt_shipper_mmbtu && (
+                    {columnVisibility?.west_acc_imb_exclude_ptt_shipper_mmbtu && (
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] text-right`} style={{ color: row?.valiedateWest?.find((item: any) => item.tag === "accImbExculdePTT")?.color }}>
                         {/* {row?.west_accImbExculdePTT ? formatNumberFourDecimal(row?.west_accImbExculdePTT) : ''} */}
                         {row?.west_accImbExculdePTT !== null && row?.west_accImbExculdePTT !== undefined ? formatNumberFourDecimal(row?.west_accImbExculdePTT) : ''}
                       </td>
                     )}
 
-                    {columnVisibility.east_other_mmbtu && (
+                    {columnVisibility?.east_other_mmbtu && (
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] text-right`} style={{ color: row?.valiedateEast?.find((item: any) => item.tag === "other")?.color }}>
                         {/* {row?.east_other ? formatNumberFourDecimal(row?.east_other) : ''} */}
                         {row?.east_other !== null && row?.east_other !== undefined ? formatNumberFourDecimal(row?.east_other) : ''}
                       </td>
                     )}
 
-                    {columnVisibility.west_other_mmbtu && (
+                    {columnVisibility?.west_other_mmbtu && (
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] text-right`} style={{ color: row?.valiedateWest?.find((item: any) => item.tag === "other")?.color }}>
                         {/* {row?.west_other ? formatNumberFourDecimal(row?.west_other) : ''} */}
                         {row?.west_other !== null && row?.west_other !== undefined ? formatNumberFourDecimal(row?.west_other) : ''}
                       </td>
                     )}
 
-                    {columnVisibility.east_acc_imb_inventory_for_ptt_shipper_mmbtu && (
+                    {columnVisibility?.east_acc_imb_inventory_for_ptt_shipper_mmbtu && (
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] text-right`} style={{ color: row?.valiedateEast?.find((item: any) => item.tag === "accImbInvPTT")?.color }}>
                         {/* {row?.east_accImbInvPTT ? formatNumberFourDecimal(row?.east_accImbInvPTT) : ''} */}
                         {row?.east_accImbInvPTT !== null && row?.east_accImbInvPTT !== undefined ? formatNumberFourDecimal(row?.east_accImbInvPTT) : ''}
                       </td>
                     )}
 
-                    {columnVisibility.west_acc_imb_inventory_for_ptt_shipper_mmbtu && (
+                    {columnVisibility?.west_acc_imb_inventory_for_ptt_shipper_mmbtu && (
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] text-right`} style={{ color: row?.valiedateWest?.find((item: any) => item.tag === "accImbInvPTT")?.color }}>
                         {/* {row?.west_accImbInvPTT ? formatNumberFourDecimal(row?.west_accImbInvPTT) : ''} */}
                         {row?.west_accImbInvPTT !== null && row?.west_accImbInvPTT !== undefined ? formatNumberFourDecimal(row?.west_accImbInvPTT) : ''}
                       </td>
                     )}
 
-                    {columnVisibility.east_mode_zone && (
+                    {columnVisibility?.east_mode_zone && (
                       // <td className={`px-2 py-1 text-[#464255] max-w-[60px] `}>{row?.east_mode_zone ? formatNumberFourDecimal(row?.east_mode_zone) : ''}</td>
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] `}>{row?.east_mode_zone ? row?.east_mode_zone : ''}</td>
                     )}
 
-                    {columnVisibility.west_mode_zone && (
+                    {columnVisibility?.west_mode_zone && (
                       <td className={`px-2 py-1 text-[#464255] max-w-[60px] `}>{row?.west_mode_zone ? row?.west_mode_zone : ''}</td>
                     )}
                   </tr>

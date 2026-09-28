@@ -168,8 +168,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const fetchData = async ({offset, limit, name, moduleList, actionDate, query}: {offset?: number, limit?: number, name?: string, moduleList?: string, actionDate?: string, query?: string}) => {
-        try {
+        const loadingTimer = setTimeout(() => {
             setIsLoading(false);
+        }, 300);
+        try {
             const lim = typeof limit === 'number' ? limit : pagination.pageSize;
             const off = typeof offset === 'number' ? offset : (pagination.pageIndex * lim);
 
@@ -209,11 +211,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 setData(rows);
                 setFilteredDataTable(rows);
             }
-            setIsLoading(true);
         } catch (err) {
             // setError(err.message);
         } finally {
-            // setLoading(false);
+            clearTimeout(loadingTimer);
+            setIsLoading(true);
         }
     };
 

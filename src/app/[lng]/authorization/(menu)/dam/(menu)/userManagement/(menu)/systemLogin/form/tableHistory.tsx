@@ -59,27 +59,27 @@ const TableSystemLoginHistory: React.FC<TableProps> = ({ tableData, isLoading, c
             <table className="table-auto min-w-full text-sm rtl:text-right text-gray-500 whitespace-nowrap">
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-9">
-                        {columnVisibility.login_mode && (
+                        {columnVisibility?.login_mode && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("mode_account.name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Login Mode`}
                                 {getArrowIcon("mode_account.name")}
                             </th>
                         )}
 
-                        {columnVisibility.role && (
+                        {columnVisibility?.role && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("role_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Role Name`}
                                 {getArrowIcon("role_id")}
                             </th>
                         )}
 
-                        {columnVisibility.user && (
+                        {columnVisibility?.user && (
                             <th scope="col" className={`${table_header_style} text-center`} >
                                 {`Users`}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -97,16 +97,16 @@ const TableSystemLoginHistory: React.FC<TableProps> = ({ tableData, isLoading, c
                                 key={row?.id}
                                 className={`${table_row_style}`}
                             >
-                                {columnVisibility.login_mode && (
+                                {columnVisibility?.login_mode && (
                                     <td className="px-2 py-1 justify-center ">{row?.mode_account && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.mode_account?.color }}>{row?.mode_account?.name} Mode</div>}</td>
                                 )}
 
-                                {columnVisibility.role && (
+                                {columnVisibility?.role && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.role?.name}</td>
                                 )}
 
                                 {/* <td className="px-2 py-1 text-[#464255]">{row?.system_login_account?.length} User{row?.system_login_account?.length > 1 && 's'} </td> */}
-                                {columnVisibility.user && (
+                                {columnVisibility?.user && (
                                     <td className="px-2 py-1 text-center">
                                         <div className="inline-flex items-center justify-center relative">
                                             {/* <button
@@ -138,7 +138,7 @@ const TableSystemLoginHistory: React.FC<TableProps> = ({ tableData, isLoading, c
                                     </td>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1">
                                         <div>
                                             <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

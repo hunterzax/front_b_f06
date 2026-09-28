@@ -89,7 +89,7 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-30">
               <tr className="h-9">
 
-                {columnVisibility.entry_exit && (
+                {columnVisibility?.entry_exit && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -100,7 +100,7 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                   </th>
                 )}
 
-                {columnVisibility.zone && (
+                {columnVisibility?.zone && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -111,7 +111,7 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                   </th>
                 )}
 
-                {columnVisibility.name && (
+                {columnVisibility?.name && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -122,7 +122,7 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                   </th>
                 )}
 
-                {columnVisibility.desc && (
+                {columnVisibility?.desc && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -133,7 +133,7 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                   </th>
                 )}
 
-                {columnVisibility.area_nom_cap && (
+                {columnVisibility?.area_nom_cap && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -144,7 +144,7 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                   </th>
                 )}
 
-                {columnVisibility.supply_ref_quality && (
+                {columnVisibility?.supply_ref_quality && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -157,7 +157,7 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
 
 
 
-                {columnVisibility.start_date && (
+                {columnVisibility?.start_date && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -168,7 +168,7 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                   </th>
                 )}
 
-                {columnVisibility.end_date && (
+                {columnVisibility?.end_date && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -179,7 +179,7 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                   </th>
                 )}
 
-                {columnVisibility.create_by && (
+                {columnVisibility?.create_by && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -190,7 +190,7 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                   </th>
                 )}
 
-                {columnVisibility.action && (
+                {columnVisibility?.action && (
                   <th scope="col" className={`${table_header_style} text-center`}>
                     {`Action`}
                   </th>
@@ -206,11 +206,11 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                     className={`${table_row_style}`}
                   >
 
-                    {columnVisibility.entry_exit && (
+                    {columnVisibility?.entry_exit && (
                       <td className="px-2 py-1  justify-center ">{row?.entry_exit && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color }}>{`${row?.entry_exit?.name}`}</div>}</td>
                     )}
 
-                    {columnVisibility.zone && (
+                    {columnVisibility?.zone && (
                       <td className="px-2 py-1 h-[30px] justify-center">
                         {row?.zone && (
                           <div
@@ -229,7 +229,7 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                       </td>
                     )}
 
-                    {columnVisibility.name && (
+                    {columnVisibility?.name && (
                       <td className="px-2 py-1 justify-center ">
                         {
                           row?.entry_exit_id == 2 ?
@@ -250,19 +250,19 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                       </td>
                     )}
 
-                    {columnVisibility.desc && (
+                    {columnVisibility?.desc && (
                       <td className="px-2 py-1 text-[#464255]">{row?.description}</td>
                     )}
 
-                    {columnVisibility.area_nom_cap && (
+                    {columnVisibility?.area_nom_cap && (
                       <td className="px-2 py-1 text-right text-[#464255]">{row?.area_nominal_capacity ? formatNumberThreeDecimal(row?.area_nominal_capacity) : ''}</td>
                     )}
 
-                    {/* {columnVisibility.supply_ref_quality && (
+                    {/* {columnVisibility?.supply_ref_quality && (
                       <td className="px-2 py-1 text-right text-[#464255]">{!!row?.supply_reference_quality_area && row?.supply_reference_quality_area_by?.name}</td>
                     )} */}
 
-                    {columnVisibility.supply_ref_quality && (
+                    {columnVisibility?.supply_ref_quality && (
                       <td className="flex justify-center items-center mt-2">
                         {row?.supply_reference_quality_area_by ? (
                           row?.supply_reference_quality_area_by?.entry_exit_id == 2 ? (
@@ -294,15 +294,15 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                       </td>
                     )}
 
-                    {columnVisibility.start_date && (
+                    {columnVisibility?.start_date && (
                       <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                     )}
 
-                    {columnVisibility.end_date && (
+                    {columnVisibility?.end_date && (
                       <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                     )}
 
-                    {columnVisibility.create_by && (
+                    {columnVisibility?.create_by && (
                       <td className="px-2 py-1 text-[#464255]">
                         <div>
                           <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -311,7 +311,7 @@ const TableArea: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                       </td>
                     )}
 
-                    {columnVisibility.action && (
+                    {columnVisibility?.action && (
                       <td className="px-2 py-1">
                         {/* <div className="relative inline-block text-left "> */}
                         <div className="relative inline-flex justify-center items-center w-full">

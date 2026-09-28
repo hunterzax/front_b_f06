@@ -1,4 +1,3 @@
-"use client";
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
@@ -50,12 +49,12 @@ const ConfirmModal: React.FC<ModalComponentProps> = ({ open, handleClose, handle
         </div>
         <div className="flex justify-center items-center font-light text-center text-[#637381] h-full">
           {
-            description?.split('<br/>')?.length > 1 ?
+            (description?.split?.('<br/>')?.length ?? 0) > 1 ?
               <ul className="text-start list-disc">
                   {
-                      description.split('<br/>').map((item: string) => {
+                      (description?.split?.('<br/>') || []).map((item: string, idx: number) => {
                           return (
-                              <li>{item}</li>
+                              <li key={idx}>{item}</li>
                           )
                       })
                   }

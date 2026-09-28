@@ -568,7 +568,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
       sortDescFirst: false,
       // ไม่ต้องมี accessorFn แล้ว (ปล่อยให้ table เก็บค่าจริงเป็น number)
       // cell: ({ row }) => {
-      //   const v = row.original?.valueBtuScf;
+      //   const v = row?.original?.valueBtuScf;
       //   return v == null ? '' : formatNumberThreeDecimal(v);
       // },
 
@@ -605,7 +605,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
       // ถ้าต้องการให้ค้นหาเจอรูปแบบทั้งมีคอมมา/ไม่มีคอมมา/เลขล้วน
       filterFn: (row, columnId, filterValue) => {
-        const v = row.original?.valueBtuScf;
+        const v = row?.original?.valueBtuScf;
         if (v == null) return false;
         const q = String(filterValue).replace(/\s+/g, '').toLowerCase();
 
@@ -616,7 +616,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         return fixed.includes(q) || noComma.includes(q) || plain.includes(q);
       }
     },
-    ...dayinWeek.map((day, index) => {
+    ...(dayinWeek || [])?.map((day, index) => {
       return {
         accessorKey: day,
         header: () => {
@@ -781,7 +781,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
       );
       setSrchStartDate(formattedGasDay);
       setDisplayGasDay(formattedGasDay);
-      if (dashboardObject.tab == "weekly") {
+      if (dashboardObject?.tab == "weekly") {
         setTabIndex(1);
       }
       localStorage.removeItem("nom_dashboard_route_mix_quality_obj");

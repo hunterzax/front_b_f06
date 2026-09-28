@@ -1,5 +1,3 @@
-"use client";
-import Image from "next/image";
 import {
   /* @ts-ignore */
   Menu,
@@ -19,6 +17,7 @@ import ModalProfile from "../other/modalProfile/modalProfile";
 import { useState } from "react";
 import ModalComponent from "../other/ResponseModal";
 import { useRouter } from "next/navigation";
+import DefaultProfileAvatar from "../other/DefaultProfileAvatar";
 
 function Profile({ mode }: any) {
 
@@ -48,11 +47,9 @@ function Profile({ mode }: any) {
         <MenuHandler>
           <Button variant="text" className="p-0 m-0 flex gap-[10px] items-center hover:bg-transparent focus:bg-transparent">
             {mode == "in" &&
-              <Image
-                src={`/assets/icon/account_icon_3.jpg`}
+              <DefaultProfileAvatar
                 width={50}
                 height={50}
-                alt="Profile picture"
                 className="w-[50px] h-[50px] bg-cover rounded-full"
               />
             }
@@ -78,11 +75,9 @@ function Profile({ mode }: any) {
               </li>
             </ul>
             {mode == "out" &&
-              <Image
-                src={`/assets/icon/account_icon_3.jpg`}
+              <DefaultProfileAvatar
                 width={50}
                 height={50}
-                alt="Profile picture"
                 className="w-[20px] h-[20px] sm:w-[30px] sm:h-[30px] md:w-[40px] md:h-[40px] lg:w-[40px] lg:h-[40px] xl:w-[50px] xl:h-[50px] bg-cover rounded-full"
               />
             }

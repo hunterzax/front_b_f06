@@ -460,7 +460,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         },
                                                     }}
                                                     onChange={(e) => {
-                                                        setValue('entry_exit_id', e.target.value);
+                                                        setValue('entry_exit_id', e?.target?.value ?? "");
                                                         // fetchData(e?.target);
                                                     }}
                                                     displayEmpty

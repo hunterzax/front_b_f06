@@ -182,7 +182,7 @@ const TableViewCommodityCharge: React.FC<TableProps> = ({ tableData, isLoading, 
                 </thead>
 
                 <tbody>
-                    {sortedData && sortedData?.map((row: any, index: number) => (
+                    {(sortedData || [])?.map((row: any, index: number) => (
                         <tr
                             key={index}
                             className={`${table_row_style} ${row.isSummary ? "bg-gray-200 font-bold" : ""}`}

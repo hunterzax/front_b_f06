@@ -320,7 +320,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     `}
                                                 >
                                                     {/* <div className={`truncate ${fileName == 'Maximum File 10 MB' ? 'text-[#9CA3AF]' : 'text-[#464255]'} ${isReadOnly ? 'opacity-0' : 'opacity-100'}`}>{fileName}</div> */}
-                                                    <Typography color="#9CA3AF" className={`truncate ${fileName == 'Maximum File 10 MB' ? 'text-[#9CA3AF]' : 'text-[#464255]'} ${isReadOnly ? 'opacity-100' : 'opacity-100'}`} fontSize={14}>{fileName}</Typography>
+                                                    <Typography color="#9CA3AF" className={`truncate ${fileName == 'Maximum File 10 MB' ? 'text-[#9CA3AF]' : 'text-[#464255]'} opacity-100`} fontSize={14}>{fileName}</Typography>
                                                     {fileName !== "Maximum File 10 MB" && !isReadOnly && (
                                                         <CloseOutlined
                                                             onClick={handleRemoveFile}
@@ -344,7 +344,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 value={watch('description') || ''}
                                                 onChange={(e) => {
                                                     if (e.target.value.length <= 255) {
-                                                        setValue('description', e.target.value);
+                                                        setValue('description', e?.target?.value ?? "");
                                                     }
                                                 }}
                                                 label=""

@@ -51,8 +51,8 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
     };
 
     useEffect(() => {
-        next10Years = next10Years?.filter((year: any) => columnVisibility[year]);
-        next12Months = next12Months?.filter((month: any) => columnVisibility[month]);
+        next10Years = next10Years?.filter((year: any) => columnVisibility?.[year]);
+        next12Months = next12Months?.filter((month: any) => columnVisibility?.[month]);
     }, [columnVisibility])
 
     return (
@@ -64,7 +64,7 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             {/* First Row */}
                             <tr className="h-9">
-                                {columnVisibility.zone && (
+                                {columnVisibility?.zone && (
                                     <th
                                         scope="col"
                                         rowSpan={2}
@@ -78,7 +78,7 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                     </th>
                                 )}
 
-                                {columnVisibility.area && (
+                                {columnVisibility?.area && (
                                     <th
                                         scope="col"
                                         rowSpan={2}
@@ -92,7 +92,7 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                     </th>
                                 )}
 
-                                {/* {columnVisibility.avaliable_capacity_mmbtu_d && ( */}
+                                {/* {columnVisibility?.avaliable_capacity_mmbtu_d && ( */}
                                     <th
                                         scope="col"
                                         colSpan={tabIndex === 0 ? 10 : tabIndex === 1 ? 12 : dayInMonth.length}
@@ -113,7 +113,7 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                     }}
                                 >
                                     {next10Years.map((year: any, index: any) => (
-                                        columnVisibility[year] && (
+                                        columnVisibility?.[year] && (
                                             <th
                                                 key={index}
                                                 scope="col"
@@ -148,7 +148,7 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                         const prevMonthKey = dayjs(formattedMonth, "YYYY-MM").subtract(1, "month").format("YYYY-MM");
 
                                         return (
-                                            columnVisibility[month] && (
+                                            columnVisibility?.[month] && (
                                                 <th
                                                     key={index}
                                                     scope="col"
@@ -179,7 +179,7 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                         let date_format = formatDateYearMonthDay(date)
 
                                         return (
-                                            columnVisibility[date] && (
+                                            columnVisibility?.[date] && (
                                                 <th
                                                     key={index}
                                                     scope="col"
@@ -203,14 +203,12 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData?.map((row: any, index: any) => {
+                            {(sortedData || [])?.map((row: any, index: any) => {
 
                                 return (
-                                    <tr
-                                        key={row?.id}
-                                        className={`${table_row_style}`}
+                                    <tr key={row?.id ?? index} className={`${table_row_style}`}
                                     >
-                                        {columnVisibility.zone && (
+                                        {columnVisibility?.zone && (
                                             <td className="px-2 py-1 h-[30px] text-center align-middle max-w-[200px]">
                                                 {row?.zone && (
                                                     <div
@@ -232,7 +230,7 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                             </td>
                                         )}
 
-                                        {columnVisibility.area && (
+                                        {columnVisibility?.area && (
                                             <td className="px-2 py-1 text-center align-middle max-w-[200px]">
                                                 {
                                                     row?.entry_exit_id == 2 ?
@@ -281,7 +279,7 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                                         const capacity: any = yearDataItem ? Object.values(yearDataItem)[0] : 0; // Set to 0 if no data
 
                                                         return (
-                                                            columnVisibility[year] && (
+                                                            columnVisibility?.[year] && (
                                                                 <td
                                                                     key={index}
                                                                     className="px-2 py-1 text-[#464255] text-right min-w-[100px] "
@@ -301,7 +299,8 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                                             gridTemplateColumns: `repeat(${next12Months.length}, minmax(0, 1fr))`, // Dynamically set grid columns
                                                         }}
                                                     >
-                                                        {next12Months?.map((month: any, index: any) => {
+                                                        {(next12Months || [])?.map((month: any, index: any) => {
+                                                            if (!month) return null;
                                                             const [monthName, year] = month.split(" ");
                                                             const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth() + 1;
                                                             const monthKey = `${year}-${monthIndex.toString().padStart(2, '0')}`;
@@ -310,13 +309,13 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                                             // const prevMonthKey = dayjs(monthKey, "YYYY-MM").subtract(1, "month").format("YYYY-MM");
                                                             const prevMonthKey = dayjs(monthKey, "YYYY-MM").format("YYYY-MM");
 
-                                                            // const yearDataItem = row?.month_data && row?.month_data.find((item: any) => Object.keys(item)[0] === monthKey);
-                                                            const yearDataItem = row?.month_data && row?.month_data.find((item: any) => Object.keys(item)[0] === prevMonthKey);
+                                                            // const yearDataItem = row?.month_data && (row?.month_data || [])?.find((item: any) => Object.keys(item)[0] === monthKey);
+                                                            const yearDataItem = row?.month_data && (row?.month_data || [])?.find((item: any) => Object.keys(item)[0] === prevMonthKey);
 
                                                             const capacity: any = yearDataItem ? Object.values(yearDataItem)[0] : 0;
 
                                                             return (
-                                                                columnVisibility[month] && (
+                                                                columnVisibility?.[month] && (
                                                                     <td
                                                                         key={index}
                                                                         className="px-2 py-1 text-[#464255] text-right w-full"
@@ -346,7 +345,7 @@ const TableCapPublic: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                                                 // const capacity = dayDataItem?.[formattedDay]?.area_nominal_capacity || null;
                                                                 const capacity = dayDataItem?.[formattedDay]?.area_nominal_capacity;
                                                                 return (
-                                                                    columnVisibility[day] && (
+                                                                    columnVisibility?.[day] && (
                                                                         <td
                                                                             key={index}
                                                                             className="px-2 py-1 text-[#464255] text-right flex items-center justify-end"

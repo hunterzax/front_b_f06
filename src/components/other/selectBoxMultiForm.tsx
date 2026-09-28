@@ -32,21 +32,21 @@ const CustomSelectMulti: React.FC<any> = ({
     }, [optionData])
 
     const handleSelectChange = (event: any) => {
-        const value = event.target.value;
-        if (value.includes("select-all")) {
-            onChange(selectedValues.length === optionData.length ? [] : optionData.map((item: any) => item.id));
+        const value = event?.target?.value ?? [];
+        if (Array.isArray(value) && value.includes("select-all")) {
+            onChange((selectedValues?.length ?? 0) === (optionData?.length ?? 0) ? [] : (optionData || [])?.map((item: any) => item?.id));
             return;
         }
         onChange(value);
     };
 
-    const isAllSelected = () => selectedValues.length === optionData.length;
+    const isAllSelected = () => (selectedValues?.length ?? 0) === (optionData?.length ?? 0);
 
     const onFilter = (string: any, mode: "search" | "clear") => {
 
         if (mode == "search") {
-            const queryLower = string.toLowerCase().replace(/\s+/g, '')?.trim();
-            let filterItems: any = optionData?.filter((f: any) => f?.nomination_point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower));
+            const queryLower = string ? String(string).toLowerCase().replace(/\s+/g, '')?.trim() : "";
+            let filterItems: any = (optionData || [])?.filter((f: any) => f?.nomination_point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower));
             setdisplayedOptions(filterItems);
         } else if (mode == "clear") {
             let filterItems: any = optionData;
@@ -70,12 +70,12 @@ const CustomSelectMulti: React.FC<any> = ({
                     <Select
                         {...field}
                         // id="nomination_point"
-                        {...register(name, { required: errorMsg })}
+                        {...(register && typeof register === 'function' ? register(name, { required: errorMsg }) : {})}
                         id={name}
                         IconComponent={(props) => <ExpandMoreIcon {...props} fontSize="medium" />}
                         multiple
                         disabled={isReadOnly}
-                        value={selectedValues}
+                        value={selectedValues || []}
                         onChange={handleSelectChange}
                         onClose={(e: any) => onFilter(undefined, 'clear')}
 
@@ -94,10 +94,10 @@ const CustomSelectMulti: React.FC<any> = ({
                         }}
                         displayEmpty
                         renderValue={(selected: any) =>
-                            selected.length === 0 ? (
+                            (!selected || selected?.length === 0) ? (
                                 <span className="text-[#9CA3AF] !text-[15px] placeholder-txt">{placeHolder}</span>
                             ) : (
-                                <span>{`${selected.length} Selected`}</span>
+                                <span>{`${selected?.length ?? 0} Selected`}</span>
                             )
                         }
                         MenuProps={{
@@ -162,48 +162,16 @@ const CustomSelectMulti: React.FC<any> = ({
 
 
                         {/* Filtered Options */}
-                        {displayedOptions
-                            .filter((item: any) => item.nomination_point.toLowerCase().includes(searchTerm.toLowerCase()))
-                            .map((item: any) => (
-                                <MenuItem key={item.id} value={item.id}>
-                                    <Checkbox checked={selectedValues.includes(item.id)} />
-                                    <ListItemText primary={item.nomination_point} />
+                        {(displayedOptions || [])
+                            ?.filter((item: any) => (item?.nomination_point || '').toLowerCase().includes((searchTerm || '').toLowerCase()))
+                            ?.map((item: any) => (
+                                <MenuItem key={item?.id} value={item?.id}>
+                                    <Checkbox checked={Array.isArray(selectedValues) && selectedValues.includes(item?.id)} />
+                                    <ListItemText primary={item?.nomination_point || ''} />
                                 </MenuItem>
                             ))}
-
-
-
-
-
-                        {/* 'Select All' Option */}
-                        {/* {optionData?.length > 0 && (
-                            <MenuItem value="select-all">
-                                <Checkbox checked={isAllSelected()} />
-                                <ListItemText primary={<Typography sx={{ fontWeight: "bold" }}>All</Typography>} />
-                            </MenuItem>
-                        )} */}
-
-                        {/* Filtered Options */}
-                        {/* {displayedOptions?.length > 0 && displayedOptions?.map((item: any) => (
-                            <MenuItem key={item.value} value={item.value}>
-                                <ListItemText primary={item.nomination_point} />
-                            </MenuItem>
-                        ))} */}
-
-
-                        {/* Filtered Options */}
-                        {/* {optionData
-                            .filter((item: any) => item.nomination_point.toLowerCase().includes(searchTerm.toLowerCase()))
-                            .map((item: any) => (
-                                <MenuItem key={item.id} value={item.id}>
-                                    <Checkbox checked={selectedValues.includes(item.id)} />
-                                    <ListItemText primary={item.nomination_point} />
-                                </MenuItem>
-                            ))} */}
                     </Select>
-
-                )
-                }
+                )}
             />
 
             {error && <p className="text-red-500 text-[16px]">{`Select Nomination Point`}</p>}

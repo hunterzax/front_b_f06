@@ -2,7 +2,7 @@
 
 import {useEffect, useMemo, useRef, useState} from 'react'
 import ModalComponent from '@/components/other/ResponseModal'
-import {InputSearch} from '@/components/other/SearchForm'
+import CheckboxSearch2, {InputSearch} from '@/components/other/SearchForm'
 import {Tune} from '@mui/icons-material'
 import {getService} from '@/utils/postService'
 import SearchInput from '@/components/other/searchInput'
@@ -30,6 +30,8 @@ import 'dayjs/locale/en' // หรือ 'th' ถ้าอยากใช้ภ�
 import {fetchNominationPoint} from '@/utils/store/slices/nominationPointSlice'
 import {TableReport} from './form/tableReport'
 import Spinloading from '@/components/other/spinLoading'
+import { CustomTooltip } from '@/components/other/customToolTip'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 dayjs.locale('en') // หรือ 'th' ก็ได้ตามต้องการ
 
 dayjs.extend(isSameOrAfter)
@@ -48,6 +50,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
   const [paginatedDataDownload, setPaginatedDataDownload] = useState<any[]>([])
+
+  const [shareState, setShareState] = useState(false)
 
   // ############### Check Authen ###############
   const userDT: any = getUserValue()
@@ -103,17 +107,41 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [srchGasDay, setSrchGasDay] = useState<any>(null)
   const srchGasDayRef = useRef<string | null>(null)
 
-  const [srchShipperName, setSrchShipperName] = useState<any>('')
+  // const [srchShipperName, setSrchShipperName] = useState<any>('')
+  const [srchShipperName, setSrchShipperName] = useState<any>([])
+  const getShipperIds = (value: any): string[] => {
+    if (Array.isArray(value)) {
+      return value.filter(Boolean)
+    }
+
+    if (value) {
+      return [value]
+    }
+
+    return []
+  }
+
+  const buildShipperIdParam = (value: any) => {
+    const shipperIds = getShipperIds(value)
+
+    if (shipperIds.length === 0) {
+      return ''
+    }
+
+    return `[${shipperIds.map((id) => `"${id}"`).join(',')}]`
+  }
+  
   const [srchShipperName_, setSrchShipperName_] = useState<any>([])
   const [srchContractCode, setSrchContractCode] = useState('')
   const [srchContractCodeTabDownload, setSrchContractCodeTabDownload] = useState<any>([])
   const [srchVersion, setSrchVersion] = useState('')
+  const [srchNomPoint, setSrchNomPoint] = useState<any>([])
   const [urlForApprove, setUrlForApprove] = useState('')
   const [month, setMonth] = useState('')
   const [year, setYear] = useState('')
   const [disableApprove, setDisableApprove] = useState(true)
   const [lastedExecuteTimestamp, setLastedExecuteTimestamp] = useState<any>({}) // v2.0.33 ข้อมูลที่แสดงใน allocation monthly report เมื่อเลือก filter gas day แล้ว แต่ไม่ทำการ filter เลือก version ข้อมูล Default จะเป็นข้อมูลล่าสุด last version จาก allocation report tab Daily ของ Gas Day ที่เลือก โดย user สามารถเลือกแสดงผลข้อมูลตาม version ที่เลือกได้ (ไม่มีการเลือก publication ที่ Daily ของ allocation report) https://app.clickup.com/t/86etetax3
-  const [sNomPointId, setSNomPointId] = useState<any>([])
+  
 
   const [dataTabDownloadOriginal, setDataTabDownloadOriginal] = useState<any>([])
   const [dataTabDownload, setDataTabDownload] = useState<any>([])
@@ -141,8 +169,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         const endDate = selectedGasDay.endOf('month').format('YYYY-MM-DD')
         const skip = (currentPage - 1) * itemsPerPage
 
-        let url = `/master/allocation/allocation-monthly-report?start_date=${startDate}&end_date=${endDate}&skip=${skip}&limit=${itemsPerPage}&contractCode=${srchContractCode !== '' && srchContractCode !== undefined ? srchContractCode : 'Summary'}`
-        url += srchShipperName && `&shipperId=${srchShipperName}`
+        let url = `/master/allocation/allocation-monthly-report?share=${shareState ? "on" : "off"}&nomPoint=${srchNomPoint}&start_date=${startDate}&end_date=${endDate}&skip=${skip}&limit=${itemsPerPage}&contractCode=${srchContractCode !== '' && srchContractCode !== undefined ? srchContractCode : 'Summary'}`
+        // url += srchShipperName && `&shipperId=${srchShipperName}`
+        const shipperIdParam = buildShipperIdParam(srchShipperName)
+        if (shipperIdParam) {
+          url += `&shipperId=${encodeURIComponent(shipperIdParam)}`
+        }
+
         url += srchGasDay !== null && `&month=${month}&year=${year}`
         if (srchVersion) {
           url += `&version=${srchVersion}`
@@ -152,14 +185,18 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         // URL FOR APPROVE
         let url_approve = `/master/allocation/allocation-monthly-report-approved?start_date=${startDate}&end_date=${endDate}&skip=${skip}&limit=${itemsPerPage}&contractCode=${srchContractCode !== '' && srchContractCode !== undefined ? srchContractCode : 'Summary'}`
-        url_approve += srchShipperName && `&shipperId=${srchShipperName}`
+        // url_approve += srchShipperName && `&shipperId=${srchShipperName}`
+        if (shipperIdParam) {
+          url_approve += `&shipperId=${encodeURIComponent(shipperIdParam)}`
+        }
         url_approve += srchGasDay !== null && `&month=${month}&year=${year}`
         if (srchVersion) {
           url_approve += `&version=${srchVersion}`
         }
 
         setUrlForApprove(url_approve)
-
+        console.log('srchNomPoint : ', srchNomPoint);
+       
         // if (srchContractCode == '' || srchContractCode == undefined) {
         //     // case no contract
         //     let filter_summary = res_data?.data?.filter((item: any) => item.contract == "Summary")
@@ -174,7 +211,17 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setFilteredDataTable(res_data)
         setData(res_data)
 
-        if (srchGasDay == null || srchShipperName == '' || res_data?.data?.length <= 0) {
+        // if (srchGasDay == null || srchShipperName == '' || res_data?.data?.length <= 0) {
+        //   setDisableApprove(true)
+        // } else {
+        //   setDisableApprove(false)
+        // }
+        if (
+          srchGasDay == null ||
+          getShipperIds(srchShipperName).length != 1 ||
+          res_data?.data?.length <= 0 ||
+          srchNomPoint?.length > 0
+        ) {
           setDisableApprove(true)
         } else {
           setDisableApprove(false)
@@ -255,7 +302,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     setSrchVersion('')
     setUrlForApprove('')
     setDisableApprove(true)
-    setDataVersion([])
 
     if (userDT?.account_manage?.[0]?.user_type_id !== 3) {
       setSrchShipperName('')
@@ -357,102 +403,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     })
   }
 
-  // const handleSearch = (query: string) => {
-  //     const queryLower = query?.replace(/\s+/g, '')?.toLowerCase().trim();
-
-  //     if (tabIndex == 0) {
-  //         if (!queryLower) {
-  //             setFilteredDataTable(dataTable);
-  //             return;
-  //         }
-
-  //         const filtered = dataTable
-  //             .map((group: any) => {
-  //                 const filteredData = (group.data || [])
-  //                     .map((areaEntry: any) => {
-  //                         // เจอคำค้นที่ชื่อ area -> คืนทั้งก้อน ไม่กรอง .data
-  //                         const areaMatch = (areaEntry?.area ?? '').toLowerCase().includes(queryLower);
-  //                         if (areaMatch) return areaEntry;
-
-  //                         // ----- กรณีไม่แมตช์ชื่อ area: เช็ค total และกรอง point ด้านใน -----
-  //                         const totalValueMatch = (areaEntry?.total ?? []).some((t: any) => {
-  //                             const raw = t?.value;
-  //                             if (raw == null) return false;
-  //                             const searchPool = [
-  //                                 String(raw),
-  //                                 formatNumberFourDecimal(raw),
-  //                                 formatNumberFourDecimalNoComma(raw),
-  //                             ].filter(Boolean);
-  //                             return searchPool.some(str => str.includes(queryLower));
-  //                         });
-
-  //                         const filteredPointData = (areaEntry?.data ?? []).filter((pt: any) => {
-  //                             const pointMatch = (pt?.point ?? '').toLowerCase().includes(queryLower);
-  //                             const customerTypeMatch = (pt?.customer_type ?? '').toLowerCase().includes(queryLower);
-
-  //                             const valueMatch = (pt?.data ?? []).some((d: any) => {
-  //                                 const raw = d?.value;
-  //                                 if (raw == null) return false;
-  //                                 const searchPool = [
-  //                                     String(raw),
-  //                                     formatNumberFourDecimal(raw),
-  //                                     formatNumberFourDecimalNoComma(raw),
-  //                                 ].filter(Boolean);
-  //                                 return searchPool.some(str => str.includes(queryLower));
-  //                             });
-
-  //                             return pointMatch || customerTypeMatch || valueMatch;
-  //                         });
-
-  //                         if (totalValueMatch || filteredPointData.length > 0) {
-  //                             return { ...areaEntry, data: filteredPointData };
-  //                         }
-  //                         return null; // ไม่แมตช์อะไรเลย -> ตัดทิ้ง
-  //                     })
-  //                     .filter(Boolean);
-
-  //                 /* ---------- กรองระดับ contract ---------- */
-  //                 const contractMatch = group.contract?.toLowerCase().includes(queryLower);
-
-  //                 /* ถ้ามีสัก area เหลือ หรือ contract ชื่อตรง ก็เก็บ group */
-  //                 if (contractMatch || filteredData.length > 0) {
-  //                     return {
-  //                         ...group,
-  //                         data: filteredData
-  //                     };
-  //                 }
-
-  //                 return null;
-  //             })
-  //             .filter(Boolean);
-
-  //         setFilteredDataTable(filtered);
-  //     } else {
-  //         if (!queryLower) {
-  //             setDataTabDownload(dataTabDownloadOriginal);
-  //             return;
-  //         }
-
-  //         const filtered = dataTabDownloadOriginal.filter(
-  //             (item: any) => {
-  //                 return (
-  //                     item?.monthText?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-  //                     item?.contractCode?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-  //                     item?.file?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-  //                     item?.version?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-  //                     item?.typeReport?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-  //                     item?.create_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower.trim()) ||
-  //                     item?.create_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower.trim()) || // เผื่อ search นามสกุล
-  //                     item?.create_by_account?.first_name && item?.create_by_account?.last_name && (item?.create_by_account?.first_name + item?.create_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower.trim()) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
-  //                     formatTime(item?.create_date)?.toLowerCase().includes(queryLower) ||
-  //                     formatDate(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)
-  //                 )
-  //             }
-  //         );
-  //         setDataTabDownload(filtered)
-  //     }
-  // };
-
   const handleSearch = (query: string) => {
     const q = norm(query)
 
@@ -481,16 +431,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
               // match ที่ total ของ shipper
               const shipTotalMatch = matchValueArray(q, ship?.total)
-
-              // กรอง point rows (detail ใต้ shipper)
-              // const filteredPoints =
-              //     (ship?.data ?? [])
-              //         .filter((pt: any) => {
-              //             const pointMatch = includesQ(q, pt?.point);
-              //             const typeMatch = includesQ(q, pt?.customer_type);
-              //             const valueMatch = matchValueArray(q, pt?.data);
-              //             return pointMatch || typeMatch || valueMatch;
-              //         });
 
               const filteredPoints = (ship?.data ?? []).filter((pt: any) => {
                 const pointMatch = includesQ(q, pt?.point)
@@ -612,6 +552,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [dataContract, setDataContract] = useState<any>([])
   const [dataContractFiltered, setDataContractFiltered] = useState<any[]>([])
   const [dataShipper, setDataShipper] = useState<any>([])
+  const [dataNomPoint, setDataNomPoint] = useState<any[]>([])
 
   const [dataShipperMapWithVersion, setDataShipperMapWithVersion] = useState<any[]>([])
   const [dataVersion, setDataVersion] = useState<any>([])
@@ -625,9 +566,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     try {
       // ถ้า user เป็น shipper
       // https://app.clickup.com/t/86ert2k28 ตามที่คุยกัน หากเป็น shipper user ถ้ามี filter ชื่อ shipper ให้ค้างชื่อ shipper ตัวเองไว้เลย ไม่ต้องขึ้นเป็น dropdown ให้เลือก - ปรับทั้ง system
+      // if (userDT?.account_manage?.[0]?.user_type_id == 3) {
+      //   setSrchShipperName(userDT?.account_manage?.[0]?.group?.id_name)
+      //   setSrchShipperName_([userDT?.account_manage?.[0]?.group?.id_name])
+      // }
       if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-        setSrchShipperName(userDT?.account_manage?.[0]?.group?.id_name)
-        setSrchShipperName_([userDT?.account_manage?.[0]?.group?.id_name])
+        const ownShipperId =
+          userDT?.account_manage?.[0]?.group?.id_name
+
+        setSrchShipperName(
+          ownShipperId ? [ownShipperId] : []
+        )
+
+        setSrchShipperName_(
+          ownShipperId ? [ownShipperId] : []
+        )
       }
 
       fetchShipperAndContract()
@@ -674,6 +627,57 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     }
   }
   const [loadVersion, setloadVersion] = useState(false)
+
+
+  const fetchNomPoint = async (selectedMonth?: any) => {
+    // selectedMonth มีค่า ให้ใช้เดือนที่เพิ่งเลือก
+    // ไม่มีค่า ให้ใช้ srchGasDay
+    // ถ้ายังไม่ได้เลือก Gas Month ให้ใช้เดือนปัจจุบัน
+    const selectedGasDay = selectedMonth ? toDayjs(selectedMonth) : srchGasDay ? toDayjs(srchGasDay) : toDayjs()
+
+    // จำเดือนที่ request นี้ดึงมา ใช้เช็คหลัง await ว่า srchGasDay เปลี่ยนหรือยัง
+    const requestedGasMonth = selectedGasDay.format('YYYY-MM')
+
+    const startDate = selectedGasDay.startOf('month').format('YYYY-MM-DD')
+
+    const endDate = selectedGasDay.endOf('month').format('YYYY-MM-DD')
+
+    let url = `/master/asset/nomination-point-by-shipper-or-contract` + `?start_date=${startDate}` + `&end_date=${endDate}`
+
+    const shipperIdParam = buildShipperIdParam(srchShipperName)
+
+    if (shipperIdParam) {
+      url += `&shipper_id=${encodeURIComponent(shipperIdParam)}`
+    }
+
+    if(srchContractCode){
+      url += `&contract_code=${encodeURIComponent(srchContractCode)}`
+    }
+    try {
+      const res: any = await getService(url)
+
+      // srchGasDay เปลี่ยนระหว่างรอ API → ทิ้ง response นี้
+      if (srchGasDayRef.current !== requestedGasMonth) return
+
+      if (Array.isArray(res)) {
+        setDataNomPoint(res)
+      }
+      else{
+        setSrchNomPoint([])
+        setDataNomPoint([])
+      }
+      
+    } catch (error) {
+      // srchGasDay เปลี่ยนระหว่างรอ API → ทิ้ง error handling ของ request เก่า
+      if (srchGasDayRef.current !== requestedGasMonth) return
+
+      console.error('Failed to fetch monthly report nom point:', error)
+
+      setSrchNomPoint([])
+      setDataNomPoint([])
+    }
+  }
+
   const filterVersion = async (selectedMonth?: any) => {
     // selectedMonth มีค่า ให้ใช้เดือนที่เพิ่งเลือก
     // ไม่มีค่า ให้ใช้ srchGasDay
@@ -699,8 +703,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     let url = `/master/allocation/monthly-report-version-exe` + `?start_date=${startDate}` + `&end_date=${endDate}` + `&skip=0` + `&limit=${itemsPerPage}` + `&month=${month}` + `&year=${year}`
 
-    if (srchShipperName) {
-      url += `&shipperId=${encodeURIComponent(srchShipperName)}`
+    // if (srchShipperName) {
+    //   url += `&shipperId=${encodeURIComponent(srchShipperName)}`
+    // }
+    const shipperIdParam = buildShipperIdParam(srchShipperName)
+
+    if (shipperIdParam) {
+      url += `&shipperId=${encodeURIComponent(shipperIdParam)}`
     }
 
     try {
@@ -778,26 +787,94 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     srchGasDayRef.current = srchGasDay ? toDayjs(srchGasDay).format('YYYY-MM') : null
     if (srchGasDay) {
+      if(tabIndex == 0){
       filterVersion(srchGasDay)
+        setSrchNomPoint([])
+        fetchNomPoint(srchGasDay)
+      }
+      else{
+        setSrchNomPoint([])
+        setDataNomPoint([])
+      }
     }
   }, [srchGasDay, itemsPerPage])
 
   useEffect(() => {
-    let versionDataOfShipper = []
-    if (srchShipperName) {
-      versionDataOfShipper = dataShipperMapWithVersion.filter((item: any) => item.shipper == srchShipperName)
+    if(tabIndex == 0){
+      setSrchNomPoint([])
+      fetchNomPoint(srchGasDay)
+    }
+    else{
+      setSrchNomPoint([])
+      setDataNomPoint([])
+    }
+  }, [srchShipperName, srchContractCode])
+
+  // useEffect(() => {
+  //   let versionDataOfShipper = []
+  //   if (srchShipperName) {
+  //     versionDataOfShipper = dataShipperMapWithVersion.filter((item: any) => item.shipper == srchShipperName)
+  //   } else {
+  //     versionDataOfShipper = dataShipperMapWithVersion
+  //   }
+
+  //   const timestampMap = new Map<number, {request_number: number; execute_timestamp: number}>()
+
+  //   versionDataOfShipper.forEach((item) => {
+  //     if (item.data && Array.isArray(item.data)) {
+  //       item.data.forEach((dataItem: any) => {
+  //         if (dataItem.execute_timestamp && dataItem.request_number) {
+  //           // Use execute_timestamp as key to ensure uniqueness
+  //           // If duplicate timestamp exists, keep the first one (or you can modify this logic)
+  //           if (!timestampMap.has(dataItem.execute_timestamp)) {
+  //             timestampMap.set(dataItem.execute_timestamp, {
+  //               request_number: dataItem.request_number,
+  //               execute_timestamp: dataItem.execute_timestamp
+  //             })
+  //           }
+  //         }
+  //       })
+  //     }
+  //   })
+
+  //   const result = Array.from(timestampMap.values()).sort((a, b) => a.execute_timestamp - b.execute_timestamp) // Sort ascending (oldest first)
+
+  //   if (!result.some((item: any) => item.execute_timestamp == srchVersion)) {
+  //     setSrchVersion('')
+  //   }
+
+  //   setDataVersion(result)
+  // }, [srchShipperName, dataShipperMapWithVersion])
+
+  useEffect(() => {
+    const selectedShippers = getShipperIds(srchShipperName)
+
+    let versionDataOfShipper: any[] = []
+
+    if (selectedShippers.length > 0) {
+      versionDataOfShipper =
+        dataShipperMapWithVersion.filter((item: any) =>
+          selectedShippers.includes(item?.shipper)
+        )
     } else {
       versionDataOfShipper = dataShipperMapWithVersion
     }
 
-    const timestampMap = new Map<number, {request_number: number; execute_timestamp: number}>()
+    const timestampMap = new Map<
+      number,
+      {
+        request_number: number
+        execute_timestamp: number
+      }
+    >()
 
-    versionDataOfShipper.forEach((item) => {
-      if (item.data && Array.isArray(item.data)) {
+    versionDataOfShipper.forEach((item: any) => {
+      if (item?.data && Array.isArray(item.data)) {
         item.data.forEach((dataItem: any) => {
-          if (dataItem.execute_timestamp && dataItem.request_number) {
-            // Use execute_timestamp as key to ensure uniqueness
-            // If duplicate timestamp exists, keep the first one (or you can modify this logic)
+          if (
+            dataItem?.execute_timestamp &&
+            dataItem?.request_number
+          ) {
             if (!timestampMap.has(dataItem.execute_timestamp)) {
               timestampMap.set(dataItem.execute_timestamp, {
                 request_number: dataItem.request_number,
@@ -809,42 +886,101 @@ const ClientPage: React.FC<ClientProps> = (props) => {
       }
     })
 
-    const result = Array.from(timestampMap.values()).sort((a, b) => a.execute_timestamp - b.execute_timestamp) // Sort ascending (oldest first)
+    const result = Array.from(timestampMap.values()).sort(
+      (a, b) => a.execute_timestamp - b.execute_timestamp
+    )
 
-    if (!result.some((item: any) => item.execute_timestamp == srchVersion)) {
+    if (
+      !result.some(
+        (item: any) =>
+          item.execute_timestamp == srchVersion
+      )
+    ) {
       setSrchVersion('')
     }
 
     setDataVersion(result)
-  }, [srchShipperName, dataShipperMapWithVersion])
+  }, [
+    srchShipperName,
+    dataShipperMapWithVersion
+  ])
 
   useEffect(() => {
+    if (!srchGasDay) {
+      setDataContractFiltered([])
+      return
+    }
+
+    // const dataContract_ =
+    //   tabIndex === 0
+    //     ? (Array.isArray(dataContract) ? dataContract : [])?.filter((item: any) => (srchShipperName ? item?.group?.id_name === srchShipperName : true)) || []
+    //     : (Array.isArray(dataContract) ? dataContract : [])?.filter((item: any) => (Array.isArray(srchShipperName_) && srchShipperName_?.length > 0 ? srchShipperName_.includes(item?.group?.id_name) : true)) || []
+
+
+    const selectedReportShippers =
+      getShipperIds(srchShipperName)
+
     const dataContract_ =
-      tabIndex == 0 ? dataContract?.filter((item: any) => (srchShipperName?.length > 0 ? srchShipperName?.includes(item?.group?.id_name) : true)) || [] : dataContract?.filter((item: any) => (srchShipperName_?.length > 0 ? srchShipperName_?.includes(item?.group?.id_name) : true)) || []
+      tabIndex === 0
+        ? (Array.isArray(dataContract) ? dataContract : []).filter(
+            (item: any) =>
+              selectedReportShippers.length > 0
+                ? selectedReportShippers.includes(
+                    item?.group?.id_name
+                  )
+                : true
+          )
+        : (Array.isArray(dataContract) ? dataContract : []).filter(
+            (item: any) =>
+              Array.isArray(srchShipperName_) &&
+              srchShipperName_.length > 0
+                ? srchShipperName_.includes(
+                    item?.group?.id_name
+                  )
+                : true
+          )
 
-    const fromDate = dayjs(srchGasDay).startOf('month')
+    // ✅ ใช้ช่วงทั้งเดือน
+    const gasDayJs = toDayjs(srchGasDay)
+    if (!gasDayJs || !gasDayJs.isValid()) {
+      setDataContractFiltered([])
+      return
+    }
+    const monthStart = gasDayJs.startOf('month')
+    const monthEnd = gasDayJs.endOf('month')
 
-    const toDate = dayjs(srchGasDay).endOf('month')
+    const filteredContract = dataContract_.filter((contract: any) => {
+      if (!contract?.contract_start_date) return false
 
-    const filteredContract =
-      dataContract_?.filter((contract: any) => {
-        if (!contract?.contract_start_date) return false
+      const contractStart = toDayjs(contract.contract_start_date)?.startOf('day')
 
-        const contractStart = dayjs(contract.contract_start_date)
-        const contractEndDate = contract?.terminate_date || contract?.extend_deadline || contract?.contract_end_date
-        const contractEnd = contractEndDate ? dayjs(contractEndDate).subtract(1, 'day') : null
+      /**
+       * ถ้ามี extend_deadline ให้ใช้ก่อน
+       * แล้วค่อย terminate_date
+       * แล้วค่อย contract_end_date
+       */
+      const contractEndDate = contract?.extend_deadline || contract?.terminate_date || contract?.contract_end_date
 
-        if (!contractStart.isValid()) return false
+      const contractEnd = contractEndDate ? toDayjs(contractEndDate)?.subtract(1, 'day')?.endOf('day') : null
 
-        // contract_start_date <= วันที่สิ้นสุดที่ค้นหา
-        const startIsValid = !contractStart.isAfter(toDate)
+      if (!contractStart || !contractStart.isValid()) return false
 
-        // contract_end_date >= วันที่เริ่มต้นที่ค้นหา
-        // ถ้า contract_end_date เป็น null ให้ถือว่าสัญญายังไม่สิ้นสุด
-        const endIsValid = !contractEnd || !contractEnd.isBefore(fromDate)
+      /**
+       * Contract ต้อง overlap กับเดือนที่เลือก
+       *
+       * contractStart <= สิ้นเดือน
+       * AND
+       * contractEnd >= ต้นเดือน
+       *
+       * เช่น July 2026:
+       * 01/07/2026 - 31/07/2026
+       */
+      const startIsValid = contractStart.isSameOrBefore(monthEnd)
 
-        return startIsValid && endIsValid
-      }) || []
+      const endIsValid = !contractEnd || !contractEnd.isValid() || contractEnd.isSameOrAfter(monthStart)
+
+      return startIsValid && endIsValid
+    })
 
     setDataContractFiltered(filteredContract)
   }, [srchGasDay, tabIndex, srchShipperName, srchShipperName_, dataContract])
@@ -856,8 +992,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // setDataTabDownload(res_tab_download)
 
     // map shipper เข้า
-    let updatedData = res_tab_download?.map((item: any) => {
-      const matchContract = dataContractOriginal?.find((itemx: any) => itemx.contract_code === item.contractCode)
+    let updatedData = (Array.isArray(res_tab_download) ? res_tab_download : [])?.map((item: any) => {
+      const matchContract = (Array.isArray(dataContractOriginal) ? dataContractOriginal : [])?.find((itemx: any) => itemx?.contract_code === item?.contractCode)
       if (matchContract) {
         return {
           ...item,
@@ -1011,36 +1147,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     }
   }, [filteredDataTable, currentPage, itemsPerPage, dataTabDownload])
 
-  // const filterVersion = (mode?: any, date?: any) => {
-  //     const from = srchGenerateFrom ? toDayjs(watch('generate_from')).startOf('day') : null;
-  //     const to = srchGenerateTo ? toDayjs(watch('generate_to')).startOf('day') : null;
-
-  //     const result = dataVersion?.filter((item: any) => {
-  //         const gasDate = toDayjs(item.gas_day).startOf('day');
-
-  //         /* ── เงื่อนไขกรอง ──────────────────────────
-  //            1. ไม่มี from และ to  →  ไม่ต้องกรอง
-  //            2. มี from อย่างเดียว  →  ≥ from
-  //            3. มี to   อย่างเดียว  →  ≤ to
-  //            4. มีทั้งสอง           →  ≥ from AND ≤ to
-  //         */
-  //         if (!from && !to) return true;
-
-  //         if (from && to) return gasDate.isSameOrAfter(from) && gasDate.isSameOrBefore(to);
-  //         if (from) return gasDate.isSameOrAfter(from);
-  //         /* เหลือแค่กรณีมี to อย่างเดียว */
-  //         return gasDate.isSameOrBefore(to);
-  //     });
-
-  //     setValue('data_version_filter', result)
-  //     setDataVerSionFilter(result);
-  // };
-
-  // ใช้กับตอน approve แล้ว fetch ใหม่
-  // useEffect(() => {
-  //     setDataTabDownload(dataTabDownloadOriginal)
-  // }, [dataTabDownload])
-
   const contractIndexByShipperAreaPoint = useMemo(() => {
     const m = new Map<string, string[]>()
     ;(dataTable?.data ?? []).forEach((g: any) => {
@@ -1062,6 +1168,82 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     })
     return m
   }, [dataTable])
+
+  // https://app.clickup.com/t/9018502823/86eujrg7a
+const downloadContractOptions = useMemo(() => {
+  if (!srchGasDay) {
+    return []
+  }
+
+  const gasDayJs = toDayjs(srchGasDay)
+
+  if (!gasDayJs || !gasDayJs.isValid()) {
+    return []
+  }
+
+  const monthStart = gasDayJs.startOf('month')
+  const monthEnd = gasDayJs.endOf('month')
+
+  // Filter ตาม Shipper
+  const contractsByShipper = (Array.isArray(dataContract) ? dataContract : []).filter((item: any) => {
+    if (userDT?.account_manage?.[0]?.user_type_id === 3) {
+      return srchShipperName
+        ? item?.group?.id_name === srchShipperName
+        : true
+    }
+
+    return Array.isArray(srchShipperName_) && srchShipperName_.length > 0
+      ? srchShipperName_.includes(item?.group?.id_name)
+      : true
+  })
+
+  // Filter ตามช่วง Contract
+  const activeContracts = contractsByShipper.filter((contract: any) => {
+    if (!contract || !contract?.contract_start_date) return false
+
+    const contractStart = toDayjs(contract.contract_start_date)?.startOf('day')
+
+    if (!contractStart || !contractStart.isValid()) {
+      return false
+    }
+
+    const contractEndDate = contract.extend_deadline || contract.terminate_date || contract.contract_end_date
+
+    const contractEnd = contractEndDate ? toDayjs(contractEndDate).subtract(1, 'day')?.endOf('day') : null;
+
+    const startIsValid = contractStart.isSameOrBefore(monthEnd)
+
+    const endIsValid =
+      !contractEnd ||
+      !contractEnd.isValid() ||
+      contractEnd.isSameOrAfter(monthStart)
+
+    return startIsValid && endIsValid
+  })
+
+  // unique Contract Code
+  const uniqueContractCodes = Array.from(
+    new Set(
+      activeContracts
+        .map((item: any) => item?.contract_code)
+        .filter(Boolean)
+    )
+  )
+
+  return uniqueContractCodes
+    .sort((a: any, b: any) =>
+      String(a).localeCompare(String(b))
+    )
+    .map((contractCode: any) => ({
+      value: contractCode,
+      label: contractCode
+    }))
+}, [
+  srchGasDay,
+  srchShipperName,
+  srchShipperName_,
+  dataContract
+])
 
   return (
     <div className=" space-y-2">
@@ -1090,6 +1272,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 setSrchVersion('')
                 setDataVersion([])
                 setDataShipperMapWithVersion([])
+                setSrchNomPoint([])
+                setDataNomPoint([])
               }
 
               setSrchGasDay(newGasMonth)
@@ -1099,7 +1283,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             }}
           />
 
-          {tabIndex == 0 || userDT?.account_manage?.[0]?.user_type_id == 3 ? (
+          {/* {tabIndex == 0 || userDT?.account_manage?.[0]?.user_type_id == 3 ? (
             <InputSearch
               id="searchShipper"
               label="Shipper Name"
@@ -1139,10 +1323,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
               type="select-multi-checkbox"
               value={srchShipperName_}
               onChange={(e: any) => {
-                if (e.target.value.length != srchShipperName_.length) {
+                if ((e?.target?.value?.length ?? 0) != srchShipperName_.length) {
                   setSrchContractCodeTabDownload([])
                 }
-                setSrchShipperName_(e.target.value)
+                setSrchShipperName_(e?.target?.value)
               }}
               options={dataShipper
                 ?.filter((item: any) => {
@@ -1155,25 +1339,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
                   if (srchGasDay) {
                     const gasDayjs = toDayjs(srchGasDay)
-                    if (item.start_date) {
-                      isActive = isActive && gasDayjs.isSameOrAfter(toDayjs(item.start_date))
+                    if (item?.start_date) {
+                      isActive = isActive && gasDayjs.isSameOrAfter(toDayjs(item?.start_date))
                     }
 
-                    if (item.end_date) {
-                      isActive = isActive && gasDayjs.isBefore(toDayjs(item.end_date))
+                    if (item?.end_date) {
+                      isActive = isActive && gasDayjs.isBefore(toDayjs(item?.end_date))
                     }
                   }
 
-                  // if (srchGasDayTabDownlaod) {
-                  //     const gasDayjs = toDayjs(srchGasDayTabDownlaod)
-                  //     if (item.start_date) {
-                  //         isActive = isActive && gasDayjs.isSameOrAfter(toDayjs(item.start_date))
-                  //     }
-
-                  //     if (item.end_date) {
-                  //         isActive = isActive && gasDayjs.isBefore(toDayjs(item.end_date))
-                  //     }
-                  // }
 
                   return isShipper && isActive
                 })
@@ -1182,49 +1356,133 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                   label: item.name
                 }))}
             />
-          )}
-
-          {/* {
-                        tabIndex == 0 && <InputSearch
-                            id="searchNomPoint"
-                            label="Nomination Point"
-                            type="select-multi-checkbox"
-                            value={sNomPointId}
-                            onChange={(e) => setSNomPointId(e.target.value)}
-                            options={nominationPointData?.data
-                                ?.map((item: any) => ({
-                                    value: item?.id?.toString(),
-                                    label: item.nomination_point,
-                                }))
-                            }
-                        />
-                    } */}
-
-          {/* {tabIndex == 0 && ( // loadVersion true load
-            <InputSearch
-              id="searchVersion"
-              label="Version"
-              type="select"
-              sortOptionBy="none"
-              value={srchVersion || ''}
-              onChange={(e) => setSrchVersion(e.target.value)}
-              options={
-                dataVersion?.length > 0
-                  ? dataVersion?.map((item: any) => ({
-                      value: item?.execute_timestamp,
-                      label: toDayjs(item?.execute_timestamp * 1000).format('DD/MM/YYYY HH:mm')
-                    }))
-                  : []
-              }
-            />
           )} */}
+
+          {tabIndex === 0 ? (
+          <InputSearch
+            id="searchShipper"
+            label="Shipper Name"
+            type="select-multi-checkbox"
+            value={srchShipperName}
+            isDisabled={
+              userDT?.account_manage?.[0]?.user_type_id === 3
+            }
+            onChange={(e: any) => {
+              const newValue = Array.isArray(e?.target?.value)
+                ? e.target.value
+                : []
+
+              const oldValue = getShipperIds(srchShipperName)
+
+              const isChanged =
+                oldValue.length !== newValue.length ||
+                oldValue.some((id) => !newValue.includes(id))
+
+              if (isChanged) {
+                setSrchContractCode('')
+              }
+
+              setSrchShipperName(newValue)
+            }}
+            options={dataShipper
+              ?.filter((item: any) =>
+                userDT?.account_manage?.[0]?.user_type_id === 3
+                  ? item?.id ===
+                    userDT?.account_manage?.[0]?.group?.id
+                  : true
+              )
+              .map((item: any) => ({
+                value: item?.id_name,
+                label: item?.name
+              }))}
+          />
+        ) : userDT?.account_manage?.[0]?.user_type_id === 3 ? (
+          <InputSearch
+            id="searchShipper"
+            label="Shipper Name"
+            type="select"
+            value={srchShipperName_?.[0] ?? ''}
+            isDisabled={true}
+            options={dataShipper
+              ?.filter(
+                (item: any) =>
+                  item?.id ===
+                  userDT?.account_manage?.[0]?.group?.id
+              )
+              .map((item: any) => ({
+                value: item?.id_name,
+                label: item?.name
+              }))}
+            onChange={(e: any) => {}}
+          />
+        ) : (
+          <InputSearch
+            id="searchShipper"
+            label="Shipper Name"
+            type="select-multi-checkbox"
+            value={srchShipperName_}
+            onChange={(e: any) => {
+              if (
+                (e?.target?.value?.length ?? 0) !==
+                srchShipperName_.length
+              ) {
+                setSrchContractCodeTabDownload([])
+              }
+
+              setSrchShipperName_(
+                e?.target?.value ?? []
+              )
+            }}
+            options={dataShipper
+              ?.filter((item: any) => {
+                let isShipper = true
+                let isActive = true
+
+                if (
+                  userDT?.account_manage?.[0]?.user_type_id === 3
+                ) {
+                  isShipper =
+                    item?.id ===
+                    userDT?.account_manage?.[0]?.group?.id
+                }
+
+                if (srchGasDay) {
+                  const gasDayjs = toDayjs(srchGasDay)
+
+                  if (item?.start_date) {
+                    isActive =
+                      isActive &&
+                      gasDayjs.isSameOrAfter(
+                        toDayjs(item.start_date)
+                      )
+                  }
+
+                  if (item?.end_date) {
+                    isActive =
+                      isActive &&
+                      gasDayjs.isBefore(
+                        toDayjs(item.end_date)
+                      )
+                  }
+                }
+
+                return isShipper && isActive
+              })
+              .map((item: any) => ({
+                value: item?.id_name,
+                label: item?.name
+              }))}
+          />
+        )}
+
+        
           {tabIndex == 0 && (
             <div className="relative">
               <InputSearch
                 id="searchVersion"
                 label="Version"
                 type="select"
-                sortOptionBy="none"
+                sortOptionBy="dateMax"
                 value={srchVersion || ''}
                 onChange={(e) => setSrchVersion(e.target.value)}
                 isDisabled={loadVersion}
@@ -1253,29 +1511,46 @@ const ClientPage: React.FC<ClientProps> = (props) => {
               // type="select-multi-checkbox"
               value={srchContractCode}
               onChange={(e) => setSrchContractCode(e.target.value)}
-              // options={dataContract?.map((item: any) => ({
-              //     value: item?.contract_code,
-              //     label: item?.contract_code
-              // }))}
+            
               options={dataContractFiltered?.map((item: any) => ({
                 value: item?.contract_code,
                 label: item?.contract_code
               }))}
             />
           ) : (
+            <InputSearch id="searchContractCode" label="Contract Code" type="select-multi-checkbox" value={srchContractCodeTabDownload} onChange={(e) => setSrchContractCodeTabDownload(e.target.value)} options={downloadContractOptions} />
+          )}
+
+        
+          {tabIndex == 0 && (
             <InputSearch
-              id="searchContractCode"
-              label="Contract Code"
-              // type="select"
-              type="select-multi-checkbox" // 140725 : Tab Download ปรับ Filter Contract Code ให้เป็น Multi Select https://app.clickup.com/t/86eu5erzb
-              value={srchContractCodeTabDownload}
-              onChange={(e) => setSrchContractCodeTabDownload(e.target.value)}
-              options={dataContractFiltered?.map((item: any) => ({
-                value: item?.contract_code,
-                label: item?.contract_code
-              }))}
+              id="searchNomPoint"
+              label="Nomination Point"
+              type="select-multi-checkbox"
+              // sortOptionBy="none"
+              value={srchNomPoint || []}
+              onChange={(e) => setSrchNomPoint(e.target.value)}
+              placeholder={'Select Nomination Point'}
+              options={
+                dataNomPoint.map((item: any) => ({
+                  value: item.nomination_point,
+                  label: item.nomination_point,
+                }))
+              }
             />
           )}
+          {tabIndex == 0 && (
+              <div className="w-auto relative">
+                  <CheckboxSearch2
+                      id="sharing_meterFilter"
+                      label="Sharing Meter"
+                      type="single-line"
+                      value={shareState}
+                      onChange={(e: any) => setShareState(e?.target?.checked)}
+                  />
+              </div>
+          )}
+
 
           <BtnSearch handleFieldSearch={handleFieldSearch} />
           <BtnReset handleReset={handleReset} />
@@ -1338,8 +1613,26 @@ const ClientPage: React.FC<ClientProps> = (props) => {
       <div className="border-[#DFE4EA] border-[1px] p-2 rounded-tl-none rounded-tr-lg shadow-sm">
         <div>
           <div className=" text-sm flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
+            <div className="flex items-center space-x-2">
+              <CustomTooltip
+                  title={
+                      <div>
+                          <p className="text-[#464255] font-light">The report can be generated only by Shipper or Contract Code. Filtering by Nomination Point or selecting the Sharing Meter checkbox will disable the Approve button.</p>
+                      </div>
+                  }
+                  placement="top-end"
+                  arrow
+              >
+                  <div className="w-[20px] h-[20px] flex items-center justify-center rounded-lg cursor-pointer">
+                      <InfoOutlinedIcon
+                          // sx={{ fontSize: 14 }}
+                          style={{ fontSize: "11px", color: '#747474', borderRadius: '4px', width: '22px', height: '22px', border: '1px solid rgba(43, 42, 135, 0.4)' }}
+                      />
+                  </div>
+              </CustomTooltip>
             <div onClick={handleTogglePopover}>
               <Tune className="cursor-pointer rounded-lg" style={{fontSize: '18px', color: '#2B2A87', borderRadius: '4px', width: '22px', height: '22px', border: '1px solid rgba(43, 42, 135, 0.4)'}} />
+            </div>
             </div>
 
             <div className="flex flex-wrap gap-2 justify-end">

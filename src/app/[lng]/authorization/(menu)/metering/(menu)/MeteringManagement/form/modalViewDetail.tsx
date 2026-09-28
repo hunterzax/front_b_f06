@@ -29,7 +29,7 @@ const ModalViewDetail: React.FC<FormExampleProps> = ({
     isReadOnly = mode === "view" ? true : false;
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    let dataQuality = [
+    const dataQuality = [
         {
             id: 'pressure',
             name: "Pressure (psig)"
@@ -246,32 +246,16 @@ const ModalViewDetail: React.FC<FormExampleProps> = ({
                                                 <div className="font-semibold text-[#464255]">Value</div>
 
                                                 {
-                                                    dataQuality?.map((item, index) => {
+                                                    dataQuality.map((item, index: number) => {
                                                         return (
-                                                            <>
-                                                                <div key={"detail_label_" + index} className="font-light text-sm pt-4 px-4 flex items-center">
+                                                            <React.Fragment key={item.id ?? index}>
+                                                                <div className="font-light text-sm pt-4 px-4 flex items-center">
                                                                     {item.name}
                                                                 </div>
 
-                                                                <div key={item.id} className="pt-4">
-                                                                    {/* {
-                                                                        item?.name !== "" && <NumericFormat
-                                                                            id={`${item.id}`}
-                                                                            placeholder="0.000"
-                                                                            value={watch(`${item.id}`)}
-                                                                            readOnly={true}
-                                                                            disabled={true}
-                                                                            {...register(`${item.id}`)}
-                                                                            className={`inputSearchk border rounded-lg p-1 w-[120px] h-[40px] text-center ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
-                                                                            thousandSeparator={true}
-                                                                            decimalScale={3}
-                                                                            fixedDecimalScale={true}
-                                                                            allowNegative={false}
-                                                                            displayType="input"
-                                                                        />
-                                                                    } */}
+                                                                <div className="pt-4">
                                                                     {
-                                                                        item?.name !== "" && <NumericFormat
+                                                                        item.name !== "" && <NumericFormat
                                                                             id={`${item.id}`}
                                                                             placeholder="0.000"
                                                                             value={watch(`${item.id}`)}
@@ -281,7 +265,7 @@ const ModalViewDetail: React.FC<FormExampleProps> = ({
                                                                             className={`border rounded-lg p-1 w-[120px] h-[40px] text-center ${isReadOnly && '!bg-[#EFECEC]'} text-right !hover:bg-transparent !hover:border-gray-300 !hover:shadow-none cursor-default hover:!p-1 focus:!p-1`}
                                                                             thousandSeparator={true}
                                                                             // decimalScale={3}
-                                                                            decimalScale={item?.id == 'sg' ? 4 : 3} // V.106 ปรับค่า SG เป็นแสดงทศนิยม 4 ตำแหน่ง ถ้าส่งมาเกิน 4 ตำแหน่งก็ให้ระบบ round ค่าปกติ https://app.clickup.com/t/86euzxxrh
+                                                                            decimalScale={item.id == 'sg' ? 4 : 3} // V.106 ปรับค่า SG เป็นแสดงทศนิยม 4 ตำแหน่ง ถ้าส่งมาเกิน 4 ตำแหน่งก็ให้ระบบ round ค่าปกติ https://app.clickup.com/t/86euzxxrh
                                                                             fixedDecimalScale={true}
                                                                             allowNegative={false}
                                                                             displayType="input"
@@ -291,7 +275,7 @@ const ModalViewDetail: React.FC<FormExampleProps> = ({
                                                                         />
                                                                     }
                                                                 </div>
-                                                            </>
+                                                            </React.Fragment>
                                                         )
                                                     }
                                                     )

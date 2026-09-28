@@ -90,10 +90,10 @@ const TransferListDialog: React.FC<TransferProps> = ({
 
         // Check if 'all' is included in the selected value
         if (value.includes('all')) {
-            const isAllSelected = selectedOptions.length === area_name.length;
+            const isAllSelected = selectedOptions.length === (area_name || []).length;
 
             // If "Select All" is checked, select all options; otherwise, clear all
-            const allSelectedIds = area_name?.map((item: any) => item.id);
+            const allSelectedIds = (area_name || []).map((item: any) => item?.id);
 
             setSelectedOptions(isAllSelected ? [] : allSelectedIds);
 
@@ -101,7 +101,7 @@ const TransferListDialog: React.FC<TransferProps> = ({
             const allContractPoints = isAllSelected
                 ? []
                 : dataAreaContract?.flatMap((area: any) =>
-                    area.contract_point.map((point: any) => ({
+                    (area.contract_point || [])?.map((point: any) => ({
                         id: point.id,
                         name: point.contract_point,
                     }))

@@ -192,7 +192,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     {...register("topic", { required: "Type Topic" })}
                                                     onChange={(e) => {
                                                         if (e.target.value.length <= 75) {
-                                                            setValue('topic', e.target.value);
+                                                            setValue('topic', e?.target?.value ?? "");
                                                         }
                                                     }}
                                                     maxLength={75}

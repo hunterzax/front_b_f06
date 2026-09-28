@@ -84,7 +84,7 @@ const ChartArea: React.FC<any> = ({ }) => {
     // create line chart using chartjs with this data
     // axis X using area_data.value.date format MMM YYYY
     // axis Y using area_data.value.value
-    let area_data = [
+    const area_data = [
         {
             "id": 23,
             "name": "B2",
@@ -175,7 +175,7 @@ const ChartArea: React.FC<any> = ({ }) => {
     // Step 1: Aggregate all unique dates across all datasets
     const allDates = Array.from(
         new Set(
-            area_data.flatMap(area => area.value.map(item => item.date))
+            area_data.flatMap(area => (area.value || []).map(item => item.date))
         )
     ).sort((a: string, b: string) => new Date(a).getTime() - new Date(b).getTime()); // Sort dates
 
@@ -186,7 +186,7 @@ const ChartArea: React.FC<any> = ({ }) => {
     const datasets = area_data.map((area, index) => {
         const data = labels.map(label => {
             // Find the value for the current label
-            const found = area.value.find(item => format(new Date(item.date), 'MMM yyyy') === label);
+            const found = (area.value || []).find(item => format(new Date(item.date), 'MMM yyyy') === label);
             return found ? found.value : null; // If no value, return null
         });
 
@@ -315,8 +315,8 @@ const ChartArea: React.FC<any> = ({ }) => {
                     value={srchEntry}
                     onChange={(e) => setSrchEntry(e.target.value)}
                     options={entryExitMaster?.data?.map((item: any) => ({
-                        value: item?.id?.toString(),
-                        label: item.name
+                        value: item?.id ? item?.id?.toString() : '',
+                        label: item?.name || ''
                     }))}
                 />
 
@@ -327,8 +327,8 @@ const ChartArea: React.FC<any> = ({ }) => {
                     value={srchArea}
                     onChange={(e) => setSrchArea(e.target.value)}
                     options={areaMaster?.data?.map((item: any) => ({
-                        value: item?.id?.toString(),
-                        label: item.name
+                        value: item?.id ? item?.id?.toString() : '',
+                        label: item?.name || ''
                     }))}
                 />
 
@@ -340,8 +340,8 @@ const ChartArea: React.FC<any> = ({ }) => {
                     onChange={(e) => setSrchShipper(e.target.value)}
                     isDisabled={userDT?.account_manage?.[0]?.user_type_id == 3 ? true : false}
                     options={shipperGroupData?.data?.map((item: any) => ({
-                        value: item.id,
-                        label: item.name
+                        value: item?.id ? item?.id?.toString() : '',
+                        label: item?.name || ''
                     }))}
                 />
 
@@ -352,8 +352,8 @@ const ChartArea: React.FC<any> = ({ }) => {
                     value={srchType}
                     onChange={(e) => setSrchType(e.target.value)}
                     options={termTypeMaster?.data?.map((item: any) => ({
-                        value: item?.id?.toString(),
-                        label: item.name
+                        value: item?.id ? item?.id?.toString() : '',
+                        label: item?.name || ''
                     }))}
                 />
 

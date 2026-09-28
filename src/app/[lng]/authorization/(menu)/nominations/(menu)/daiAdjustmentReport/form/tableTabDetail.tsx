@@ -64,7 +64,7 @@ const TableTabDetail: React.FC<any> = ({ tableDataCurrent, tableDataAll, tableDa
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.current_time && tableType == 'current' && (
+                                {columnVisibility?.current_time && tableType == 'current' && (
                                     // <th scope="col" className={`${table_sort_header_style} w-[150px] max-w-[200px]`} onClick={() => handleSort("time", sortState, setSortState, setSortedData, tableDataRender)}>
                                     // <th scope="col" className={`${table_sort_header_style} w-[150px] max-w-[200px]`} onClick={() => handleSort("time", sortState, setSortState, setSortedData, originalData)}>
                                     <th scope="col" className={`${table_sort_header_style} w-[150px] max-w-[200px]`} onClick={() => handleSort("time", sortState, setSortState, setSortedData, dataForSorting)}>
@@ -73,7 +73,7 @@ const TableTabDetail: React.FC<any> = ({ tableDataCurrent, tableDataAll, tableDa
                                     </th>
                                 )}
 
-                                {columnVisibility.time && tableType == 'all' && (
+                                {columnVisibility?.time && tableType == 'all' && (
                                     // <th scope="col" className={`${table_sort_header_style} w-[150px] max-w-[200px]`} onClick={() => handleSort("time", sortState, setSortState, setSortedData, tableDataRender)}>
                                     // <th scope="col" className={`${table_sort_header_style} w-[150px] max-w-[200px]`} onClick={() => handleSort("time", sortState, setSortState, setSortedData, originalData)}>
                                     <th scope="col" className={`${table_sort_header_style} w-[150px] max-w-[200px]`} onClick={() => handleSort("time", sortState, setSortState, setSortedData, dataForSorting)}>
@@ -82,7 +82,7 @@ const TableTabDetail: React.FC<any> = ({ tableDataCurrent, tableDataAll, tableDa
                                     </th>
                                 )}
 
-                                {columnVisibility.shipper_name && (
+                                {columnVisibility?.shipper_name && (
                                     // <th scope="col" className={`${table_sort_header_style} !min-w-[120px] w-[300px] max-w-[450px]`} onClick={() => handleSort("shipper_name", sortState, setSortState, setSortedData, tableDataRender)}>
                                     // <th scope="col" className={`${table_sort_header_style} !min-w-[120px] w-[300px] max-w-[450px]`} onClick={() => handleSort("shipper_name", sortState, setSortState, setSortedData, originalData)}>
                                     <th scope="col" className={`${table_sort_header_style} !min-w-[120px] w-[300px] max-w-[450px]`} onClick={() => handleSort("shipper_name", sortState, setSortState, setSortedData, dataForSorting)}>
@@ -91,7 +91,7 @@ const TableTabDetail: React.FC<any> = ({ tableDataCurrent, tableDataAll, tableDa
                                     </th>
                                 )}
 
-                                {columnVisibility.nomination_point && (
+                                {columnVisibility?.nomination_point && (
                                     // <th scope="col" className={`${table_sort_header_style}  !min-w-[120px] w-[300px] max-w-[450px]`} onClick={() => handleSort("point", sortState, setSortState, setSortedData, tableDataRender)}>
                                     // <th scope="col" className={`${table_sort_header_style}  !min-w-[120px] w-[300px] max-w-[450px]`} onClick={() => handleSort("point", sortState, setSortState, setSortedData, originalData)}>
                                     <th scope="col" className={`${table_sort_header_style}  !min-w-[120px] w-[300px] max-w-[450px]`} onClick={() => handleSort("point", sortState, setSortState, setSortedData, dataForSorting)}>
@@ -100,7 +100,7 @@ const TableTabDetail: React.FC<any> = ({ tableDataCurrent, tableDataAll, tableDa
                                     </th>
                                 )}
 
-                                {columnVisibility.nomination_value && (
+                                {columnVisibility?.nomination_value && (
                                     // <th scope="col" className={`${table_sort_header_style} text-right !min-w-[120px] !max-w-[300px]`} onClick={() => handleSort("value", sortState, setSortState, setSortedData, tableDataRender)}>
                                     // <th scope="col" className={`${table_sort_header_style} text-right !min-w-[120px] !max-w-[300px]`} onClick={() => handleSort("value", sortState, setSortState, setSortedData, originalData)}>
                                     <th scope="col" className={`${table_sort_header_style} text-right !min-w-[120px] !max-w-[300px]`} onClick={() => handleSort(displayUnit == 'MMBTUD' ? "value" : "valueMmscfd", sortState, setSortState, setSortedData, dataForSorting)}>
@@ -118,25 +118,25 @@ const TableTabDetail: React.FC<any> = ({ tableDataCurrent, tableDataAll, tableDa
                             {tableType === 'all' && sortedData?.map((row: any, index: any) => {
                                 return (
                                     <tr key={`${row.shipper_name}-${row.time}-${index}`} className={table_row_style}>
-                                        {columnVisibility.time && (
+                                        {columnVisibility?.time && (
                                             <td className="px-2 py-1 text-[#464255] font-semibold w-[150px] max-w-[200px]">
                                                 {row.time}
                                             </td>
                                         )}
 
-                                        {columnVisibility.shipper_name && (
+                                        {columnVisibility?.shipper_name && (
                                             <td className="px-2 py-1 text-[#464255] !min-w-[120px] w-[300px] max-w-[450px]">
                                                 {row.shipper_name}
                                             </td>
                                         )}
 
-                                        {columnVisibility.nomination_point && (
+                                        {columnVisibility?.nomination_point && (
                                             <td className="px-4 py-1 text-[#464255] !min-w-[120px] w-[200px] max-w-[250px]">
                                                 {row.point}
                                             </td>
                                         )}
 
-                                        {columnVisibility.nomination_value && (
+                                        {columnVisibility?.nomination_value && (
                                             <td className="px-4 py-1 text-[#464255] max-w-[300px] text-right">
                                                 {/* {row.value ? formatNumberThreeDecimal(row.value) : '0.000'} */}
                                                 {/* {row.value !== null && row.value !== undefined ? formatNumberThreeDecimal(row.value) : '0.000'} */}

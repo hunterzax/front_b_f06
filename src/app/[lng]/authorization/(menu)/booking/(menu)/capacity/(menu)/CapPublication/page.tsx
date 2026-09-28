@@ -558,6 +558,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   // ############### UPDATE Remarks ###############
   const handleRemarkSubmit = async (data: any) => {
+    if (!data) return;
 
     switch (userMode) {
       case "edit":
@@ -1122,7 +1123,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
       case 3:
         setBodyExport({
           filter: initialColumns
-            .filter((item: any) => columnVisibility[item.key])
+            .filter((item: any) => columnVisibility?.[item.key])
             .map((item: any) => item.label),
           id: filteredDataTableDetail?.map((item: any) => item.id),
         });

@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ModalComponent from "@/components/other/ResponseModal";
 import { InputSearch } from '@/components/other/SearchForm';
@@ -16,7 +16,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import BtnExport from "@/components/other/btnExport";
 import ModalHistory from "@/components/other/modalHistory";
-import { fillMissingUpdateByAccount, findRoleConfigByMenuName, formatDateNoTime, formatNumberFourDecimal, formatNumberFourDecimalNoComma, generateUserPermission, getDateRangeForApi, groupDataAlloManage, toDayjs } from "@/utils/generalFormatter";
+import { fillMissingUpdateByAccount, findRoleConfigByMenuName, formatDate, formatDateNoTime, formatNumberFourDecimal, formatNumberFourDecimalNoComma, generateUserPermission, getDateRangeForApi, groupDataAlloManage, toDayjs } from "@/utils/generalFormatter";
 import ModalComment from "./form/modalComment";
 import ModalRejectAllocReview from "./form/modalRejectAllocReview";
 import PaginationComponent from "@/components/other/globalPagination";
@@ -60,6 +60,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
+    const [haveAllocationModePermission, setHaveAllocationModePermission] = useState<boolean>(true);
     let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
     // let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
     user_permission = user_permission ? decryptData(user_permission) : null;
@@ -85,6 +86,19 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 const updatedUserPermission = generateUserPermission(user_permission);
                 setUserPermission(updatedUserPermission);
             }
+
+            const allocationModePermission = findRoleConfigByMenuName('Allocation Mode', userDT)
+            if (allocationModePermission) {
+                console.log('allocationModePermission', allocationModePermission);
+                setHaveAllocationModePermission(allocationModePermission.b_manage);
+            }
+            else{
+                let authorize_url = localStorage.getItem("o8g4z3q9f1v5e2n7k6t");
+                authorize_url = authorize_url ? decryptData(authorize_url) : null;
+                if(authorize_url?.includes('/en/authorization/allocation/alloManage')){
+                    setHaveAllocationModePermission(false);
+                }
+            }
         } catch (error) {
             // Failed to parse user_permission:
         }
@@ -97,10 +111,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // const [srchGasDayFrom, setSrchGasDayFrom] = useState<Date | null>(dayjs().add(1, 'day').toDate());
     const [srchGasDayFrom, setSrchGasDayFrom] = useState<Date | null>(dayjs().subtract(1, 'day').toDate());
     const [srchGasDayTo, setSrchGasDayTo] = useState<Date | null>(dayjs().subtract(1, 'day').toDate());
+    const srchGasDayFromRef = useRef<string | null>(null);
+    const srchGasDayToRef = useRef<string | null>(null);
 
     const [srchShipperName, setSrchShipperName] = useState<any>([]);
     const [srchContractCode, setSrchContractCode] = useState<any>([]);
     const [srchNomPoint, setSrchNomPoint] = useState<any>([]);
+    const [srchPriorityStatus, setSrchPriorityStatus] = useState<any>([]);
     const [srchStatus, setSrchStatus] = useState<any>([]);
     const [srchReviewCode, setSrchReviewCode] = useState('');
 
@@ -109,6 +126,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // ค่าแดง หมายถึง ค่าของ Shipper Allocation Review และ ค่าของ Metering Value ไม่เท่ากัน มันจะแดงทั้งคู่ 
     // const [srchShipperAlloc, setSrchShipperAlloc] = useState("");
     const [srchShipperAlloc, setSrchShipperAlloc] = useState<any>([]);
+
+
+    const [lastRetrieving, setLastRetrieving] = useState<any>(null);
+
+
+    
+    const getLastRetrieving = async () =>{
+        const res_last: any = await getService(`/master/balancing/last-retrieving-new`);
+        setLastRetrieving(res_last?.execute_timestamp)
+    }
+
+    useEffect(() => {
+      getLastRetrieving()
+    }, [])
+    
 
     const [checkedData, setcheckedData] = useState<any>([])
 
@@ -196,89 +228,146 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             if(res_alloc_mgn && Array.isArray(res_alloc_mgn)) {
             setDataBeforeGroup(res_alloc_mgn)
 
-            // DATA CONTRACT CODE
-            funcSetDataContractCode(res_alloc_mgn);
+            // // DATA CONTRACT CODE
+            // funcSetDataContractCode(res_alloc_mgn);
 
-            // DATA NOM POINT / CONCEPT POINT
-            funcSetDataNomPoint(res_alloc_mgn);
+            // // DATA NOM POINT / CONCEPT POINT
+            // funcSetDataNomPoint(res_alloc_mgn);
 
-            filteredResult = res_alloc_mgn?.filter((item: any) => {
+            // filteredResult = res_alloc_mgn?.filter((item: any) => {
 
-                const shipperAllocValue = parseFloat(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review);
-                const isCorrect = shipperAllocValue === item?.meteringValue;
-                const hasReview = !!item?.allocation_management_shipper_review;
+            //     const shipperAllocValue = parseFloat(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review);
+            //     const isCorrect = shipperAllocValue === item?.meteringValue;
+            //     const hasReview = !!item?.allocation_management_shipper_review;
 
-                return (
-                    (srchShipperName?.length > 0 ? srchShipperName.includes(item?.shipper) : true) &&
-                    (srchContractCode?.length > 0 ? srchContractCode.includes(item?.contract) : true) &&
-                    (srchNomPoint?.length > 0 ? srchNomPoint.includes(item?.point) : true) &&
-                    (srchStatus?.length > 0 ? srchStatus.includes(item?.allocation_status?.id.toString()) : true) && // Filter Status ปรับเป็น Multi Select https://app.clickup.com/t/86eu498k6
-                    // (srchShipperAlloc.includes('correct') ? parseFloat(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review) === item?.meteringValue : true) &&
+            //     return (
+            //         (srchShipperName?.length > 0 ? srchShipperName.includes(item?.shipper) : true) &&
+            //         (srchContractCode?.length > 0 ? srchContractCode.includes(item?.contract) : true) &&
+            //         (srchNomPoint?.length > 0 ? srchNomPoint.includes(item?.point) : true) &&
+            //         (srchStatus?.length > 0 ? srchStatus.includes(item?.allocation_status?.id.toString()) : true) && // Filter Status ปรับเป็น Multi Select https://app.clickup.com/t/86eu498k6
+            //         // (srchShipperAlloc.includes('correct') ? parseFloat(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review) === item?.meteringValue : true) &&
 
-                    // ถ้า item?.allocation_management_shipper_review เป็น null เป็น false 
-                    // List : Filter Shipper Allocation เป็น Incorrect แล้วข้อมูลขึ้นไม่ถูก https://app.clickup.com/t/86eub6d0z
-                    // (
-                    //     srchShipperAlloc.includes('incorrect') ?
-                    //         item?.allocation_management_shipper_review ? parseFloat(item.allocation_management_shipper_review[0]?.shipper_allocation_review) !== item?.meteringValue : false
-                    //         : true
-                    // ) &&
+            //         // ถ้า item?.allocation_management_shipper_review เป็น null เป็น false 
+            //         // List : Filter Shipper Allocation เป็น Incorrect แล้วข้อมูลขึ้นไม่ถูก https://app.clickup.com/t/86eub6d0z
+            //         // (
+            //         //     srchShipperAlloc.includes('incorrect') ?
+            //         //         item?.allocation_management_shipper_review ? parseFloat(item.allocation_management_shipper_review[0]?.shipper_allocation_review) !== item?.meteringValue : false
+            //         //         : true
+            //         // ) &&
 
-                    // --- ยุบเงื่อนไข ShipperAlloc รวมกันตรงนี้ ---
-                    (() => {
-                        if (srchShipperAlloc.length === 0) return true;
+            //         // --- ยุบเงื่อนไข ShipperAlloc รวมกันตรงนี้ ---
+            //         (() => {
+            //             if (srchShipperAlloc.length === 0) return true;
 
-                        let matchCorrect = false;
-                        let matchIncorrect = false;
+            //             let matchCorrect = false;
+            //             let matchIncorrect = false;
 
-                        if (srchShipperAlloc.includes('correct')) {
-                            matchCorrect = hasReview && isCorrect;
-                        }
+            //             if (srchShipperAlloc.includes('correct')) {
+            //                 matchCorrect = hasReview && isCorrect;
+            //             }
 
-                        if (srchShipperAlloc.includes('incorrect')) {
-                            matchIncorrect = hasReview && !isCorrect;
-                        }
+            //             if (srchShipperAlloc.includes('incorrect')) {
+            //                 matchIncorrect = hasReview && !isCorrect;
+            //             }
 
-                        return matchCorrect || matchIncorrect;
-                    })() &&
+            //             return matchCorrect || matchIncorrect;
+            //         })() &&
 
-                    (srchReviewCode ? item?.review_code?.replace(/\s+/g, '').toLowerCase().includes(srchReviewCode.replace(/\s+/g, '').toLowerCase()) : true)
-                );
-            });
+            //         (srchReviewCode ? item?.review_code?.replace(/\s+/g, '').toLowerCase().includes(srchReviewCode.replace(/\s+/g, '').toLowerCase()) : true)
+            //     );
+            // });
 
+
+            filteredResult = res_alloc_mgn;
             // เตรียมไว้ ---> concept point ให้ขึ้นแค่ point ของ East_to_RA6, West_to_RA6, East_to_BVW10, West_to_BVW10 https://app.clickup.com/t/86euz2wqw
             dataOnlyTargetPoint = filterConcept(filteredResult)
             }
             else {
                 setDataBeforeGroup([])
-                funcSetDataContractCode([])
-                funcSetDataNomPoint([])
+                // funcSetDataContractCode([])
+                // funcSetDataNomPoint([])
                 filteredResult = []
             }
         } else {
 
-            filteredResult = dataTable?.filter((item: any) => {
-                return (
-                    (srchShipperName?.length > 0 ? srchShipperName.includes(item?.shipper) : true) &&
-                    (srchContractCode?.length > 0 ? srchContractCode.includes(item?.contract) : true) &&
-                    (srchNomPoint?.length > 0 ? srchNomPoint.includes(item?.point) : true) &&
-                    // (srchStatus ? item?.allocation_status?.id.toString() === srchStatus : true) &&
-                    (srchStatus?.length > 0 ? srchStatus.includes(item?.allocation_status?.id.toString()) : true) && // Filter Status ปรับเป็น Multi Select https://app.clickup.com/t/86eu498k6
-                    // (srchShipperAlloc === 'correct' ? parseFloat(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review || "0") === item?.meteringValue : true) &&
-                    // (srchShipperAlloc === 'incorrect' ? parseFloat(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review || "0") !== item?.meteringValue : true) &&
-                    (srchShipperAlloc === 'correct' ? parseFloat(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review) === item?.meteringValue : true) &&
-                    (srchShipperAlloc === 'incorrect' ? parseFloat(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review) !== item?.meteringValue : true) &&
-                    (srchReviewCode ? item?.review_code?.replace(/\s+/g, '').toLowerCase().includes(srchReviewCode.replace(/\s+/g, '').toLowerCase()) : true)
-                );
-            });
+            // filteredResult = dataTable?.filter((item: any) => {
+            //     return (
+            //         (srchShipperName?.length > 0 ? srchShipperName.includes(item?.shipper) : true) &&
+            //         (srchContractCode?.length > 0 ? srchContractCode.includes(item?.contract) : true) &&
+            //         (srchNomPoint?.length > 0 ? srchNomPoint.includes(item?.point) : true) &&
+            //         // (srchStatus ? item?.allocation_status?.id.toString() === srchStatus : true) &&
+            //         (srchStatus?.length > 0 ? srchStatus.includes(item?.allocation_status?.id.toString()) : true) && // Filter Status ปรับเป็น Multi Select https://app.clickup.com/t/86eu498k6
+            //         // (srchShipperAlloc === 'correct' ? parseFloat(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review || "0") === item?.meteringValue : true) &&
+            //         // (srchShipperAlloc === 'incorrect' ? parseFloat(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review || "0") !== item?.meteringValue : true) &&
+            //         (srchShipperAlloc === 'correct' ? parseFloat(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review) === item?.meteringValue : true) &&
+            //         (srchShipperAlloc === 'incorrect' ? parseFloat(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review) !== item?.meteringValue : true) &&
+            //         (srchReviewCode ? item?.review_code?.replace(/\s+/g, '').toLowerCase().includes(srchReviewCode.replace(/\s+/g, '').toLowerCase()) : true)
+            //     );
+            // });
 
+
+            filteredResult = dataTable
             // เตรียมไว้ ---> concept point ให้ขึ้นแค่ point ของ East_to_RA6, West_to_RA6, East_to_BVW10, West_to_BVW10 https://app.clickup.com/t/86euz2wqw
             dataOnlyTargetPoint = filterConcept(filteredResult)
         }
 
         setData(dataOnlyTargetPoint)
         setCurrentPage(1)
-        const groupedByGasDayAndNominationPoint = groupDataAlloManage(dataOnlyTargetPoint);
-        setFilteredDataTable(groupedByGasDayAndNominationPoint);
+        const groupedByGasDayAndNominationPoint = groupDataAlloManage(dataOnlyTargetPoint, true);
+        const filteredGrouped = groupedByGasDayAndNominationPoint
+            .map((greenItem: any) => {
+                if(srchPriorityStatus?.length > 0){
+                    if(!srchPriorityStatus.includes(greenItem.priorityStatus.toString())){
+                        return null;
+                    }
+                }
+
+                const data = greenItem.data.filter((item: any) => {
+                    if(!item) return false;
+                    const hasReview = Array.isArray(item.allocation_management_shipper_review) && item.allocation_management_shipper_review.length > 0;
+                    return (
+                        (srchShipperName?.length > 0 ? srchShipperName.includes(item.shipper) : true) &&
+                        (srchContractCode?.length > 0 ? srchContractCode.includes(item.contract) : true) &&
+                        (srchNomPoint?.length > 0 ? srchNomPoint.includes(item.point) : true) &&
+                        (srchStatus?.length > 0 ? srchStatus.includes(item.allocation_status?.id.toString()) : true) && // Filter Status ปรับเป็น Multi Select https://app.clickup.com/t/86eu498k6
+                        (() => {
+                            if (srchShipperAlloc.length === 0) return true;
+
+                            let matchCorrect = false;
+                            let matchIncorrect = false;
+
+                            if(hasReview){
+                                const shipperAllocValue = parseFloat(item.allocation_management_shipper_review[0].shipper_allocation_review);
+                                const isCorrect = shipperAllocValue === item.meteringValue;
+                                if (srchShipperAlloc.includes('correct')) {
+                                    matchCorrect = isCorrect;
+                                }
+        
+                                if (srchShipperAlloc.includes('incorrect')) {
+                                    matchIncorrect = !isCorrect;
+                                }
+                            }
+
+
+                            return matchCorrect || matchIncorrect;
+                        })() &&
+                        (srchReviewCode ? item.review_code?.replace(/\s+/g, '').toLowerCase().includes(srchReviewCode.replace(/\s+/g, '').toLowerCase()) : true)
+                    );
+                });
+
+                if(data.length == 0){
+                    return null;
+                }
+                else{
+                    const {priorityStatus, ...rest} = greenItem;
+                    return {
+                        ...rest,
+                        data: data
+                    }
+                }
+            })
+            .filter((greenItem: any) => greenItem !== null);
+        setFilteredDataTable(filteredGrouped);
 
         setTimeout(() => {
             setIsLoading(true);
@@ -295,6 +384,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setSrchShipperName([]);
         setSrchContractCode([]);
         setSrchNomPoint([]);
+        setSrchPriorityStatus([]);
         setSrchStatus([]);
         setSrchReviewCode('');
         // setSrchShipperAlloc("");
@@ -305,6 +395,97 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         // const groupedByGasDayAndNominationPoint = groupDataAlloManage(dataTable);
         // setFilteredDataTable(groupedByGasDayAndNominationPoint);
     };
+
+    const getShipperIds = (value: any): string[] => {
+      if (Array.isArray(value)) {
+        return value.filter(Boolean)
+      }
+  
+      if (value) {
+        return [value]
+      }
+  
+      return []
+    }
+
+    const buildShipperIdParam = (value: any) => {
+      const shipperIds = getShipperIds(value)
+  
+      if (shipperIds.length === 0) {
+        return ''
+      }
+  
+      return `[${shipperIds.map((id) => `"${id}"`).join(',')}]`
+    }
+
+    const fetchShipperAndContract = async () => {
+        const startDate = srchGasDayFrom
+            ? dayjs(srchGasDayFrom).format('YYYY-MM-DD')
+            : dayjs().format('YYYY-MM-DD');
+
+        const endDate = srchGasDayTo
+            ? dayjs(srchGasDayTo).format('YYYY-MM-DD')
+            : dayjs().format('YYYY-MM-DD');
+      let apiUrl = `/master/daily-adjustment/shipper-data?start_date=${startDate}&end_date=${endDate}`
+
+      const res_: any = await getService(apiUrl)
+  
+      if (res_ && Array.isArray(res_)) {
+        setDataShipper(res_)
+        if (userDT?.account_manage?.[0]?.user_type_id == 3) {
+          const uniqueContract = res_.filter((f: any) => f?.id === userDT?.account_manage?.[0]?.group?.id)?.flatMap((fm: any) => fm?.contract_code)
+          setDataContract(uniqueContract)
+        } else {
+          const uniqueContract = res_.flatMap((fm: any) => fm?.contract_code)
+          setDataContract(uniqueContract)
+        }
+      }
+    }
+    
+    const fetchNomPoint = async (selectedGasDayFrom?: any, selectedGasDayTo?: any) => {
+        const gasDayFrom = selectedGasDayFrom ? toDayjs(selectedGasDayFrom) : srchGasDayFrom ? toDayjs(srchGasDayFrom) : toDayjs()
+        const gasDayTo = selectedGasDayTo ? toDayjs(selectedGasDayTo) : srchGasDayTo ? toDayjs(srchGasDayTo) : toDayjs()
+
+        // จำวันที่ request นี้ดึงมา ใช้เช็คหลัง await ว่า srchGasDay เปลี่ยนหรือยัง
+        const startDate = gasDayFrom.format('YYYY-MM-DD')
+        const endDate = gasDayTo.format('YYYY-MM-DD')
+
+        let url = `/master/asset/nomination-point-by-shipper-or-contract?start_date=${startDate}&end_date=${endDate}&is_include_concept_point=true&is_only_RA6_and_BVW10_concept_point=true`
+
+        const shipperIdParam = buildShipperIdParam(srchShipperName)
+        const contractCodeParam = buildShipperIdParam(srchContractCode)
+
+        if (shipperIdParam) {
+            url += `&shipper_id=${encodeURIComponent(shipperIdParam)}`
+        }
+  
+        if(contractCodeParam){
+            url += `&contract_code=${encodeURIComponent(contractCodeParam)}`
+        }
+        try {
+            const res: any = await getService(url)
+    
+            // srchGasDay เปลี่ยนระหว่างรอ API → ทิ้ง response นี้
+            if (srchGasDayFromRef.current !== startDate || srchGasDayToRef.current !== endDate) return
+    
+            if (Array.isArray(res)) {
+                setDataNomConcept(res)
+            }
+            else{
+                setSrchNomPoint([])
+                setDataNomConcept([])
+            }
+            
+        } catch (error) {
+            // srchGasDay เปลี่ยนระหว่างรอ API → ทิ้ง error handling ของ request เก่า
+            if (srchGasDayFromRef.current !== startDate || srchGasDayToRef.current !== endDate) return
+
+            console.error('Failed to fetch nom point:', error)
+
+            setSrchNomPoint([])
+            setDataNomConcept([])
+        }
+    }
 
     // ############### LIKE SEARCH ###############
     const [filteredDataTable, setFilteredDataTable] = useState<any>([]);
@@ -319,6 +500,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     formatDateNoTime(item?.gas_day)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     item?.shipper?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     item?.contract?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+                    item?.zone?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+                    item?.area?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     item?.point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     item?.entry_exit?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     item?.group?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
@@ -419,10 +602,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             // GET CLOSE BALANCE DATA
             const res_ = await getService(`/master/balancing/closed-balancing-report`)
             setCloseBalanceData(res_)
-
-            // Group (2 = TSO, 3 = Shipper, 4 = Other)
-            const res_shipper_name = await getService(`/master/account-manage/group-master?user_type=3`);
-            setDataShipper(res_shipper_name)
 
             // GET SEND EMAIL DATA
             const res_send_email_data = await getService(`/master/allocation/allocation-management/send-email`)
@@ -659,6 +838,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 : null;
 
             if (statusId !== null && statusId !== undefined) {
+                setSrchPriorityStatus([String(statusId)]);
                 setSrchStatus([String(statusId)]);
             } else if (!status_from_somewhere_else) {
                 defaultSelectStatus();
@@ -720,8 +900,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             setCurrentPage(1);
 
-            funcSetDataContractCode(res_API);
-            funcSetDataNomPoint(res_API);
+            // funcSetDataContractCode(res_API);
+            // funcSetDataNomPoint(res_API);
 
             setIsLoading(true);
         } catch (error) {
@@ -742,6 +922,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             return result.push(itemf?.id.toString());
         })
 
+        setSrchPriorityStatus(result);
         setSrchStatus(result);
     }
 
@@ -754,6 +935,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     useEffect(() => {
         getPermission();
         fetchMaster();
+        fetchShipperAndContract();
     }, []);
 
     useEffect(() => {
@@ -978,6 +1160,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     };
 
     const handleSendEmail = async (data?: any) => {
+        if(data){
         setIsLoading(false)
         // .......
         //  initialColumns: initialColumns,
@@ -985,12 +1168,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         // resData: sortedData,
 
         const res_user_type = await getService(`/master/balancing/balance-intraday-dashboard/user-type`);
-        const filter_type = res_user_type?.filter((item: any) => item?.id == data?.user_type)
-        const filter_group = filter_type[0]?.group?.filter((item: any) => data.group.includes(item?.id))
+        const filter_type = (Array.isArray(res_user_type) ? res_user_type : []).filter((item: any) => item.id == data.user_type)
+        const first_filter_type = filter_type.length > 0 ? filter_type[0] : {};
+        const filter_group = (first_filter_type.group || []).filter((item: any) => data.group.includes(item.id))
 
         // ลบข้อมูล filter_groupx.account.email ที่ email ไม่มีใน data.user_mail
         const userEmails = data.user_mail;
-        const cleaned_group = filter_group.map((group: any) => ({
+        const cleaned_group = (filter_group || []).map((group: any) => ({
             ...group,
             account: group.account.filter((acc: any) => userEmails.includes(acc.email))
         }));
@@ -999,14 +1183,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         if (start_date && end_date) {
             const body_post = {
-                "subject": data?.subject,
-                "detail": data?.detail,
-                "userType": data?.user_type,
+                "subject": data.subject,
+                "detail": data.detail,
+                "userType": data.user_type,
                 "sendEmailGroup": cleaned_group,
                 // sortedDataId: sortedData?.flatMap((eId: any) => eId?.data?.map((eId_: any) => eId_?.id)), //  // https://app.clickup.com/t/86extxcvv
                 sortedDataId: filteredDataTable?.flatMap((group: any) =>
                     Array.isArray(group?.data)
-                        ? group.data.map((item: any) => item?.id)
+                        ? (group.data || [])?.map((item: any) => item?.id)
                         : []
                 )?.filter((id: any) => id !== null && id !== undefined),
                 "exportFile": {
@@ -1023,7 +1207,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         "Shipper Name",
                         "Contract Code",
                         "Nomination Point /Concept Point",
-                        "Entry / Exit",
+                        // "Entry / Exit",
                         "Nominated Value (MMBTU/D)",
                         "System Allocation (MMBTU/D)",
                         "Intraday System Allocation",
@@ -1059,6 +1243,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             setModalErrorMsg('Please select Gas Day From and Gas Day To before send email.');
             setModalErrorOpen(true)
         }
+        }
     }
 
     //state use
@@ -1077,8 +1262,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         { key: 'gas_day', label: 'Gas Day', visible: true },
         { key: 'shipper', label: 'Shipper Name', visible: true },
         { key: 'contract', label: 'Contract Code', visible: true },
+        { key: 'zone', label: 'Zone', visible: true },
+        { key: 'area', label: 'Area', visible: true },
         { key: 'nompoint', label: 'Nomination Point /Concept Point', visible: true },
-        { key: 'entryexit', label: 'Entry / Exit', visible: true },
+        // { key: 'entryexit', label: 'Entry / Exit', visible: true }, // https://app.clickup.com/t/9018502823/86eub6dbb
         { key: 'nominatedval', label: 'Nominated Value (MMBTU/D)', visible: true },
         { key: 'system_allo', label: 'System Allocation (MMBTU/D)', visible: true },
         { key: 'intraday_allo', label: 'Intraday System Allocation (MMBTU/D)', visible: true },
@@ -1131,6 +1318,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             // setPaginatedData(filteredDataTable)
         }
     }, [filteredDataTable, currentPage, itemsPerPage])
+
+    useEffect(() => {
+      fetchShipperAndContract()
+  
+      srchGasDayFromRef.current = srchGasDayFrom ? toDayjs(srchGasDayFrom).format('YYYY-MM-DD') : null
+      srchGasDayToRef.current = srchGasDayTo ? toDayjs(srchGasDayTo).format('YYYY-MM-DD') : null
+      setSrchShipperName([])
+      setSrchContractCode([])
+      setSrchNomPoint([])
+      fetchNomPoint(srchGasDayFrom, srchGasDayTo)
+    }, [srchGasDayFrom, srchGasDayTo])
+
+    useEffect(() => {
+        setSrchNomPoint([])
+        fetchNomPoint(srchGasDayFrom, srchGasDayTo)
+    }, [srchShipperName, srchContractCode])
 
     const [selectedItem, setselectedItem] = useState<any>([]);
 
@@ -1386,9 +1589,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         type="select-multi-checkbox"
                         value={srchNomPoint}
                         onChange={(e) => setSrchNomPoint(e.target.value)}
-                        options={dataNomConcept?.map((item: any) => ({
-                            value: item.concept_point,
-                            label: item.concept_point
+                        options={(dataNomConcept || []).map((item: any) => ({
+                            value: item.nomination_point || item.concept_point,
+                            label: item.nomination_point || item.concept_point
                         }))}
                         placeholder="Search Nomination Point / Concept Point"
                     />
@@ -1408,7 +1611,19 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
                     <InputSearch
                         id="searchStatus"
-                        label="Status"
+                        label="Status (Total Row)"
+                        type="select-multi-checkbox"
+                        value={srchPriorityStatus}
+                        onChange={(e) => setSrchPriorityStatus(e.target.value)}
+                        options={allocationStatusMaster?.data?.map((item: any) => ({
+                            value: item?.id?.toString(),
+                            label: item.name
+                        }))}
+                    />
+
+                    <InputSearch
+                        id="searchStatus"
+                        label="Status (Detail Row)"
                         type="select-multi-checkbox"
                         value={srchStatus}
                         onChange={(e) => setSrchStatus(e.target.value)}
@@ -1453,15 +1668,31 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 </aside>
                 <aside className="mt-auto ml-1 w-full sm:w-auto">
                     <div className="flex gap-2">
-                        <Button className="flex items-center justify-center px-2 h-[44px] bg-[#1473A1] font-light w-[120px] text-center" onClick={() => openSendEmail()}>
+                        {
+                            userDT?.account_manage?.[0]?.user_type_id !== 3 &&
+                            <Button
+                                className="flex items-center justify-center px-2 h-[44px] bg-[#1473A1] font-light w-[120px] text-center"
+                                onClick={() => openSendEmail()}
+                                disabled={!(userPermission?.f_approved || false)}
+                            >
                             <span className="capitalize">{`Send Email`}</span>
                         </Button>
+                        }
+                        {
+                            haveAllocationModePermission &&
                         <Button className="flex items-center justify-center px-2 h-[44px] bg-[#3582D5] font-light w-[155px] text-center" onClick={() => gotoPageChangeAllocMode()}>
                             <span className="capitalize">{`Change Alloc Mode`}</span>
                         </Button>
-                        <Button className="flex items-center justify-center px-2 h-[44px] bg-[#00ADEF] font-light w-[130px] text-center" onClick={() => openExecuteForm()}>
+                        }
+                        {
+                            userDT?.account_manage?.[0]?.user_type_id !== 3 &&
+                            <Button
+                                className="flex items-center justify-center px-2 h-[44px] bg-[#00ADEF] font-light w-[130px] text-center"
+                                onClick={() => openExecuteForm()}
+                            >
                             <span className="capitalize">{`Alloc & Bal`}</span>
                         </Button>
+                        }
                     </div>
                 </aside>
             </div>
@@ -1527,7 +1758,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 textRender={"Export"}
                                 generalFunc={() => {
                                     epAllocationAllocationManagement({
-                                        name: 'Allocation Management',
+                                        name: `Allocation Management`,
                                         initialColumns: initialColumns,
                                         columnVisibility: columnVisibility,
                                         // resData: sortedData,
@@ -1557,6 +1788,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     </div>
                 </div>
                 <TableAlloManage
+                    lastRetrieving={lastRetrieving}
                     openEditForm={openEditForm}
                     openViewForm={openViewForm}
                     tableData={paginatedData}

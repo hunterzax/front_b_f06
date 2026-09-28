@@ -153,7 +153,7 @@ const ModalSelShipper: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                             >
-                                                {shipperGroupData?.length > 0 && shipperGroupData?.map((item: any) => (
+                                                {(shipperGroupData || [])?.map((item: any) => (
                                                     <MenuItem key={item.id} value={item.id}>
                                                         {item.name}
                                                     </MenuItem>

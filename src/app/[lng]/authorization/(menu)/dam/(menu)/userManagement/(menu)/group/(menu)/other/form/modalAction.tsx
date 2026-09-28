@@ -358,7 +358,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("role_default") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("role_default", e.target.value);
+                                                    setValue("role_default", e?.target?.value ?? "");
                                                     if (errors?.role_default) { clearErrors('role_default') }
                                                 }}
                                                 errors={errors?.role_default}

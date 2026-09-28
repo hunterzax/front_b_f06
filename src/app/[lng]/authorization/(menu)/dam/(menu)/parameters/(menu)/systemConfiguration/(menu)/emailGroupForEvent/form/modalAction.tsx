@@ -226,7 +226,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("user_type_id", e.target.value);
+                                                    setValue("user_type_id", e?.target?.value ?? "");
                                                     setValue("group_id", null); // clear ที่เลือก group ไว้ถ้ากดเลือก user type ใหม่
                                                     setValue("email", null); // clear ที่เลือก email ไว้ถ้ากดเลือก user type ใหม่
                                                     getGroupByType(e.target.value)
@@ -284,7 +284,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("group_id", e.target.value);
+                                                    setValue("group_id", e?.target?.value ?? "");
                                                     setValue("email", null); // clear ที่เลือก email ไว้ถ้ากดเลือก shipper ใหม่
                                                     getUserUnderGroup(e.target.value)
                                                     clearErrors('group_id');
@@ -305,7 +305,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                             >
-                                                {dataGroup?.length > 0 && dataGroup?.map((item: any) => (
+                                                {(dataGroup || [])?.map((item: any) => (
                                                     <MenuItem key={item.id} value={item.id}>
                                                         {item.name}
                                                     </MenuItem>
@@ -478,7 +478,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
 
                                     {/* <div className="flex flex-wrap gap-2 pt-3 mt-3 w-full max-h-[120px] overflow-y-auto">
                                         {
-                                            emailGroup && emailGroup?.map((item: any, index: number) => (
+                                            (emailGroup || [])?.map((item: any, index: number) => (
                                                 <div
                                                     key={index}
                                                     className="relative w-fit h-[35px] p-2 text-[13px] bg-[#F3F2F2] border-[#DFE4EA] rounded-[6px] text-[#58585A] break-all"
@@ -498,7 +498,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
 
                                     <div className="flex flex-wrap gap-2 pt-3 mt-3 w-full max-h-[120px] overflow-y-auto">
                                         {
-                                            selectedUserMail && selectedUserMail?.map((item: any, index: number) => (
+                                            (selectedUserMail || [])?.map((item: any, index: number) => (
                                                 <div
                                                     key={index}
                                                     className="relative w-fit h-[35px] p-2 text-[13px] bg-[#F3F2F2] border-[#DFE4EA] rounded-[6px] text-[#58585A] break-all"

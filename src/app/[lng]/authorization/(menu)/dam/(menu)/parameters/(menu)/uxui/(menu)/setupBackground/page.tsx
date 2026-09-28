@@ -1,8 +1,8 @@
 "use client";
 import "@/app/globals.css";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ModalComponent from "@/components/other/ResponseModal";
-import { getService, patchService, postService } from "@/utils/postService";
+import { deleteService, getService, patchService, postService } from "@/utils/postService";
 import ModalAction from "./form/modalAction";
 import BtnAddNew from "@/components/other/btnAddNew";
 import PaginationComponent from "@/components/other/globalPagination";
@@ -13,6 +13,12 @@ import { decryptData } from "@/utils/encryptionData";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import AppTable from "@/components/table/AppTable";
 import getUserValue from "@/utils/getuserValue";
+import BtnActionTable from "@/components/other/btnActionInTable";
+import { Popover } from "@mui/material";
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import ModalDelete from "./form/modalDelete";
+
+
 interface ClientProps {
     params: {
         lng: string;
@@ -323,8 +329,90 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     )
                 }
             },
+            {
+                accessorKey: "action",
+                id: 'actions',
+                header: "Action",
+                align: 'center',
+                enableSorting: false,
+                size: 100,
+                cell: (info) => {
+                    const row: any = info?.row?.original;
+                    // const getPermission_: any = getPermission();
+                    return (
+                        <BtnActionTable
+                            togglePopover={togglePopover}
+                            row_id={row?.id}
+                            // disable={getPermission_?.f_edit == true ? false : true}
+                        />
+                    )
+                }
+            },
         ],
         [dataTable])
+
+    const [openPopoverId, setOpenPopoverId] = useState(null);
+    const popoverRef = useRef<HTMLDivElement>(null);
+    const [anchorPopover, setAnchorPopover] = useState<null | HTMLElement>(null);
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [deleteData, setDeleteData] = useState<any>();
+    const [modalModalSuccessMsg, setModalSuccessMsg] = useState('');
+
+
+    const togglePopover = (id: any, anchor: any) => {
+        console.log('id : ', id);
+        console.log('anchor : ', anchor);
+        console.log('openPopoverId : ', openPopoverId);
+        if (openPopoverId === id) {
+            setOpenPopoverId(null); // Close the popover if it's already open
+            setAnchorPopover(null)
+        } else {
+            setOpenPopoverId(id); // Open the popover for the clicked row
+            if (anchor) {
+                setAnchorPopover(anchor)
+            }
+            else {
+                setAnchorPopover(null)
+            }
+        }
+    };
+
+    const toggleMenu = (mode: any, id: any) => {
+        switch (mode) {
+        case "delete":
+            openDeleteForm(id);
+            setOpenPopoverId(null); // close popover
+            break;
+        }
+    }
+
+        const openDeleteForm = async (id: any) => {
+            console.log('id : ', id);
+            // filteredDataTable
+            const filteredData = filteredDataTable.find((item: any) => item.id === id);
+            setDeleteData(filteredData);
+            setDeleteOpen(true);
+            // fetchData();
+        }
+    
+        const handleDelete = async (data: any) => {
+            console.log('deleteData : ', deleteData);
+            const res_del: any = await deleteService(`/master/parameter/setup-background-delete/${deleteData?.id}`);
+            if (res_del?.response?.data?.status === 400) {
+                setFormOpen(false);
+                setModalErrorMsg(res_del?.response?.data?.error);
+                setModalErrorOpen(true)
+            } else {
+                setFormOpen(false);
+                setModalSuccessMsg('Data has been deleted.')
+                setModalSuccessOpen(true);
+                setTimeout(() => {
+                    setDeleteOpen(false)
+                }, 200);
+            }
+    
+            await fetchData();
+        }
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -427,7 +515,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             {isModalOpen && selectedImage && (
                 <div
-                    className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-25 transition-opacity duration-300 ease-in-out ${isModalOpen ? 'opacity-100' : 'opacity-0'}`}
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-25 transition-opacity duration-300 ease-in-out opacity-100"
                     onClick={closeModal}
                 >
                     <div className="relative">
@@ -445,6 +533,70 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     </div>
                 </div>
             )}
+            <Popover
+                id="action-menu-popover"
+                open={!!anchorPopover}
+                anchorEl={anchorPopover}
+                onClose={() => setAnchorPopover(null)}
+                // anchorOrigin={{
+                //     vertical: 'top',
+                //     horizontal: 'right',
+                // }}
+                // transformOrigin={{
+                //     vertical: 'top',
+                //     horizontal: 'left',
+                // }}
+                // sx={{
+                //     overflow: 'hidden',
+                //     "& .MuiPopover-paper": {
+                //         borderRadius: '10px', // Transfer border
+                //     },
+                // }}
+                anchorOrigin={{
+                    vertical: 'center', // เดิม top
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'center', // เดิม top
+                    horizontal: 'right', // เดิม left
+                }}
+                sx={{
+                    zIndex: 1300,
+                    '& .MuiPaper-root': {
+                        borderRadius: '16px',
+                        overflow: 'hidden',
+                        boxShadow: '0 8px 24px rgba(0,0,0,.14)',
+                        // ขยับออกจากปุ่มไปทางซ้ายอีกเล็กน้อย (ไม่ทับขอบ)
+                        transform: 'translateX(-8px)'
+                    }
+                }}
+                className="z-50"
+            >
+                <div ref={popoverRef} className="w-50 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+                    <ul className="py-2">
+                        {
+                            userPermission?.f_edit && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("delete", openPopoverId) }}><DeleteOutlineOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`Delete`}</li>
+                        }
+                    </ul>
+                </div>
+            </Popover>
+
+            <ModalComponent
+                open={isModalSuccessOpen}
+                handleClose={handleCloseModal}
+                title="Success"
+                description={`${modalModalSuccessMsg}`}
+            />
+          
+            <ModalDelete
+                data={deleteData}
+                open={deleteOpen}
+                onClose={() => {
+                    setDeleteOpen(false);
+                }}
+                onSubmit={handleDelete}
+                setResetForm={setResetForm}
+            />
         </div>
     );
 };

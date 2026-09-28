@@ -19,6 +19,7 @@ type FormExampleProps = {
 };
 
 const ModalImport: React.FC<FormExampleProps> = ({
+    // safe props
     open,
     onClose,
     data,
@@ -36,7 +37,7 @@ const ModalImport: React.FC<FormExampleProps> = ({
     const { register, setValue, reset, setError, formState: { errors }, watch, clearErrors } = useForm<any>();
 
     const handleFileChange = async (e: any) => {
-        const file = e.target.files[0];
+        const file = e?.target?.files?.[0];
         const setvalError = (text: any) => {
             setFileName('Maximum File 10 MB')
             setError('upload_file', { type: "custom", message: text });
@@ -49,19 +50,19 @@ const ModalImport: React.FC<FormExampleProps> = ({
             const maxSizeInMB = 10; // Maximum file size in MB
             const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
 
-            if (!validFileTypes.includes(file.type)) {
+            if (!validFileTypes.includes(file?.type)) {
                 setvalError('Invalid file type. Please upload an Excel file.')
                 return;
             }
 
-            if (file.size > maxSizeInBytes) {
+            if (file?.size > maxSizeInBytes) {
                 setvalError('The file is larger than 10 MB.')
                 return;
             }
 
-            setFileName(file.name);
+            setFileName(file?.name || '');
             setFileUpload(file);
-            setMdAmendOpen(false);
+            if (setMdAmendOpen) setMdAmendOpen(false);
             if (errors?.upload_file) {
                 clearErrors('upload_file');
             }
@@ -90,22 +91,22 @@ const ModalImport: React.FC<FormExampleProps> = ({
                 const status = response?.response?.status ?? response?.status ?? response?.response?.data?.status;
                 const code = response?.code;
                 if (status === 400) {
-                    setModalErrorMsg(response?.response?.data?.error);
-                    setModalErrorOpen(true)
+                    setModalErrorMsg?.(response?.response?.data?.error);
+                    setModalErrorOpen?.(true)
                 } else if (response?.status === 504) {
                     // 504 Gateway Timeout หรือ client timeout
-                    setModalErrorMsg('This is taking longer than expected. The process is still in progress.');
-                    setModalErrorOpen(true);
+                    setModalErrorMsg?.('This is taking longer than expected. The process is still in progress.');
+                    setModalErrorOpen?.(true);
                 } else if (status === 500 || code === "ERR_BAD_RESPONSE" || code === "ERR_NETWORK") {
-                    setModalErrorMsg('Invalid template format. Please use the correct system-generated template.');
-                    setModalErrorOpen(true)
+                    setModalErrorMsg?.('Invalid template format. Please use the correct system-generated template.');
+                    setModalErrorOpen?.(true)
                 } else {
                     if (response?.response?.type) {
-                        setModalSuccessMsg(response?.response?.type == 1 ? 'File has been uploaded.' : 'Invalid template format. Please use the correct system-generated template.')
+                        setModalSuccessMsg?.(response?.response?.type == 1 ? 'File has been uploaded.' : 'Invalid template format. Please use the correct system-generated template.')
                     } else {
-                        setModalSuccessMsg('File has been uploaded.')
+                        setModalSuccessMsg?.('File has been uploaded.')
                     }
-                    setModalSuccessOpen(true);
+                    setModalSuccessOpen?.(true);
                 }
 
                 // [Pims Env 107] Import ระบบไม่เคลียร์ File Name ที่เคยเอาเข้าก่อนหน้าให้ https://app.clickup.com/t/86euyguxj
@@ -141,6 +142,7 @@ const ModalImport: React.FC<FormExampleProps> = ({
         // data?.contract_code อยากให้เช็คว่า มันมี _Amdxxx หรือเปล่า
         // ถ้ามี เปลี่ยนเลขเป็น + 1
         // ถ้าไม่มี เติม _AmdXXX(xxx คือเลข สามหลัก 001, 002)
+        if (!code) return "_Amd001";
 
         const match = code.match(/_Amd(\d{3})$/);
 
@@ -175,7 +177,7 @@ const ModalImport: React.FC<FormExampleProps> = ({
                                 <span className="text-red-500">*</span>{`File`}
                             </label>
 
-                            <div className={`flex w-full rounded-lg ${errors.upload_file && 'border border-red-500'}`}>
+                            <div className={`flex w-full rounded-lg ${errors?.upload_file && 'border border-red-500'}`}>
                                 {/* "Choose File" button */}
                                 <label className={`bg-[#00ADEF] text-white flex items-center justify-center font-light rounded-l-[6px] text-sm text-justify w-[30%] !h-[40px] px-5 py-2 cursor-pointer `}> {/* ${isReadOnly && "!bg-[#B6B6B6] !text-[#828282]"} */}
                                     {`Choose File`}
@@ -206,7 +208,7 @@ const ModalImport: React.FC<FormExampleProps> = ({
                                 </div>
                             </div>
                             <span className='w-full flex text-left justify-start text-[#1473A1] text-[14px]'>Required :  .xls, .xlsx</span>
-                            <div className={`text-[14px] text-red-500 col-span-2 -mt-1 flex justify-start w-full ${!errors.upload_file ? 'hidden' : 'block'}`}>
+                            <div className={`text-[14px] text-red-500 col-span-2 -mt-1 flex justify-start w-full ${!errors?.upload_file ? 'hidden' : 'block'}`}>
                                 <span>{errors?.upload_file && String(errors?.upload_file?.message)}</span>
                             </div>
 

@@ -240,16 +240,18 @@ const ModalAction: React.FC<FormExampleProps> = ({
                     const uniqueAreas = new Map(); // Use Map to prevent duplicates
 
                     version.booking_row_json.forEach((row: any) => {
-                        if (row.areaId && !uniqueAreas.has(row?.areaId)) {
-                            uniqueAreas.set(row?.areaId, {
-                                id: row?.areaId,
-                                name: row?.area_text,
-                                entry_exit_id: row?.entry_exit_id,
+                        if(row){
+                            if (row.areaId && !uniqueAreas.has(row.areaId)) {
+                                uniqueAreas.set(row.areaId, {
+                                    id: row.areaId,
+                                    name: row.area_text,
+                                    entry_exit_id: row.entry_exit_id,
                                 group: {
                                     id: resItem?.id,
                                     name: resItem?.name
                                 }
                             });
+                        }
                         }
                     });
 
@@ -276,6 +278,49 @@ const ModalAction: React.FC<FormExampleProps> = ({
     const [btnEnable, setBtnEnable] = useState<any>(false)
     const [dataSubmit, setDataSubmit] = useState<any>()
     const [lastInputForHvChange, setLastInputForHvChange] = useState<string>("")
+    const pendingNumericFocusRef = React.useRef<string | null>(null)
+    const numericFieldOrder = ["heating_value", "volume", "cal_volume"] as const
+
+    const getNumericFieldId = (fieldName: string, index: number) => `${fieldName}-${index}`
+
+    const handleNumericFormatTab = (
+        e: React.KeyboardEvent<HTMLInputElement>,
+        index: number,
+        fieldName: (typeof numericFieldOrder)[number]
+    ) => {
+        if (e.key !== "Tab") return
+
+        const currentFieldIndex = numericFieldOrder.indexOf(fieldName)
+        const direction = e.shiftKey ? -1 : 1
+        let nextFieldIndex = currentFieldIndex + direction
+        let nextRowIndex = index
+
+        if (nextFieldIndex >= numericFieldOrder.length) {
+            nextFieldIndex = 0
+            nextRowIndex = index + 1
+        } else if (nextFieldIndex < 0) {
+            nextFieldIndex = numericFieldOrder.length - 1
+            nextRowIndex = index - 1
+        }
+
+        if (nextRowIndex < 0 || nextRowIndex >= fields.length) return
+
+        e.preventDefault()
+        pendingNumericFocusRef.current = getNumericFieldId(numericFieldOrder[nextFieldIndex], nextRowIndex)
+        ;(e.currentTarget as HTMLInputElement).blur()
+    }
+
+    const applyPendingNumericFocus = () => {
+        const nextId = pendingNumericFocusRef.current
+        if (!nextId) return
+        pendingNumericFocusRef.current = null
+        setTimeout(() => {
+            const el = document.getElementById(nextId) as HTMLInputElement | null
+            if (!el) return
+            el.focus()
+            el.select()
+        }, 0)
+    }
 
     const fetchNomData = async () => {
         try {
@@ -326,7 +371,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
     };
 
     useEffect(() => {
-        clearErrors
+        clearErrors();
         clearErrors(`rows.${fields.length}`);
     }, [fields])
 
@@ -496,7 +541,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#d2d4d8' },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("entry_exit_id", e.target.value);
+                                                    setValue("entry_exit_id", e?.target?.value ?? "");
                                                     setValue('area_id', null)
                                                     clearErrors('entry_exit_id')
 
@@ -547,7 +592,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 // valueWatch={watch("area_id") || ""}
                                                 valueWatch={watch("area_id") ? Array.isArray(watch("area_id")) ? watch("area_id") : [watch("area_id")] : []}
                                                 handleChange={(e) => {
-                                                    // setValue("area_id", e.target.value);
+                                                    // setValue("area_id", e?.target?.value ?? "");
                                                     const value = watch("area_id") ? Array.isArray(watch("area_id")) ? watch("area_id") : [watch("area_id")] : []
                                                     const selectedValues = e.target.value as string[];
                                                     let newValues;
@@ -666,7 +711,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             },
                                                         }}
                                                         onChange={(e) => {
-                                                            setValue("minute", e.target.value);
+                                                            setValue("minute", e?.target?.value ?? "");
                                                             clearErrors('minute')
                                                         }}
                                                         displayEmpty
@@ -707,6 +752,13 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                     {fields.map((field: any, index: any) => {
                                         const row = watch(`rows.${index}`); // Get current row state
                                         const errorRows: any = errors?.rows;
+                                        const selectedNominationPointList: any[] = [];
+                                        fields.map((tmpField: any, tmpIndex: any) => {
+                                            const selectedNominationPoint = watch(`rows.${tmpIndex}.nomination_point`)
+                                            if(tmpIndex != index && selectedNominationPoint){
+                                                selectedNominationPointList.push(selectedNominationPoint);
+                                            }
+                                        })
                                         return (
                                             // <div key={field.id} className="flex gap-2 items-center pt-2">
                                             <div key={field.id} className="grid grid-cols-[20%_18%_13%_15%_12%_13%_5%] gap-2 items-center pt-2">
@@ -743,7 +795,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             },
                                                         }}
                                                         onChange={(e) => {
-                                                            // setValue(`rows.${index}.nomination_point_id`, e.target.value);
+                                                            // setValue(`rows.${index}.nomination_point_id`, e?.target?.value ?? "");
                                                             update(index, { ...row, nomination_point_id: e.target.value });
 
                                                             let filter_nom = nomDataMain?.filter((item: any) => item?.id == e.target.value)
@@ -817,7 +869,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         </MenuItem>
                                                     ))} */}
 
-                                                        {/* {nomDataMain?.length > 0 && nomDataMain?.map((item: any) => (
+                                                        {/* {(nomDataMain || [])?.map((item: any) => (
                                                             <MenuItem key={item?.id} value={item?.id}>
                                                                 <ListItemText primary={<Typography fontSize={14}>{item?.nomination_point}</Typography>} />
                                                             </MenuItem>
@@ -858,6 +910,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                         )
                                                                             &&
                                                                             (item?.entry_exit_id == watch("entry_exit_id"))
+                                                                            &&
+                                                                            !selectedNominationPointList.includes(item?.nomination_point)
                                                                         )
                                                                         .sort((a: any, b: any) =>
                                                                             a.nomination_point?.localeCompare(b.nomination_point)
@@ -877,13 +931,13 @@ const ModalAction: React.FC<FormExampleProps> = ({
 
                                                 {/* Heating Value */}
                                                 <div>
-                                                    <label htmlFor="heating_value" className="block mb-2 text-sm font-light">
+                                                    <label htmlFor={getNumericFieldId("heating_value", index)} className="block mb-2 text-sm font-light">
                                                         <span className="text-red-500">*</span>
                                                         {`Heating Value (BTU/SCF)`}
                                                     </label>
                                                     <NumericFormat
-                                                        id="heating_value"
-                                                        placeholder="0.000000"
+                                                        id={getNumericFieldId("heating_value", index)}
+                                                        placeholder="0.000"
                                                         // value={watch(`rows.${index}.heating_value`)}
                                                         value={row?.heating_value || ""}
                                                         readOnly={isReadOnly}
@@ -893,10 +947,11 @@ const ModalAction: React.FC<FormExampleProps> = ({
 
                                                         className={`${inputClass} !pe-2 hover:!pe-2 focus:!pe-2 ${errorRows ? errorRows[index]?.heating_value && "border-red-500" : ''}  ${isReadOnly && '!bg-[#EFECEC]'} text-right`}
                                                         thousandSeparator={true}
-                                                        decimalScale={6}
+                                                        decimalScale={3}
                                                         fixedDecimalScale={true}
                                                         allowNegative={false}
                                                         displayType="input"
+                                                        onKeyDown={(e) => handleNumericFormatTab(e, index, "heating_value")}
                                                         onValueChange={(values) => {
                                                             const { value } = values;
                                                             // setValue(`rows.${index}.heating_value`, value, { shouldValidate: true, shouldDirty: true });
@@ -925,6 +980,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 }
                                                                 update(index, updatedRowVol2);
                                                             }
+                                                            applyPendingNumericFocus();
                                                         }}
                                                     />
                                                     {/* {errors.heating_value && (<p className="text-red-500 text-sm">{`Type Heating Value`}</p>)} */}
@@ -933,12 +989,12 @@ const ModalAction: React.FC<FormExampleProps> = ({
 
                                                 {/* Volume */}
                                                 <div>
-                                                    <label htmlFor="volume" className="block mb-2 text-sm font-light">
+                                                    <label htmlFor={getNumericFieldId("volume", index)} className="block mb-2 text-sm font-light">
                                                         <span className="text-red-500">*</span>
                                                         {`Volume `}
                                                     </label>
                                                     <NumericFormat
-                                                        id="volume"
+                                                        id={getNumericFieldId("volume", index)}
                                                         placeholder="0.000000"
                                                         // value={watch(`rows.${index}.volume`)}
                                                         value={(row?.volume || row?.volume == 0) ? row?.volume : ""}
@@ -953,6 +1009,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         fixedDecimalScale={true}
                                                         allowNegative={false}
                                                         displayType="input"
+                                                        onKeyDown={(e) => handleNumericFormatTab(e, index, "volume")}
                                                         onValueChange={(values) => {
                                                             const { value } = values;
                                                             // setValue(`rows.${index}.volume`, value, { shouldValidate: true, shouldDirty: true });
@@ -971,6 +1028,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             }
                                                             update(index, updatedRowVol2);
                                                             setLastInputForHvChange('volume')
+                                                            applyPendingNumericFocus();
                                                         }}
                                                     />
                                                     {/* {errors.volume && (<p className="text-red-500 text-sm">{`Type Heating Value`}</p>)} */}
@@ -1007,7 +1065,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             },
                                                         }}
                                                         onChange={(e) => {
-                                                            // setValue(`rows.${index}.unit`, e.target.value);
+                                                            // setValue(`rows.${index}.unit`, e?.target?.value ?? "");
                                                             update(index, { ...row, unit: e.target.value });
 
                                                             // if unit == 1 (MMSCFD ) show MMBTU/D
@@ -1046,12 +1104,12 @@ const ModalAction: React.FC<FormExampleProps> = ({
 
                                                 {/* Calculated Volume */}
                                                 <div>
-                                                    <label htmlFor="unit" className="block mb-2 text-sm font-light">
+                                                    <label htmlFor={getNumericFieldId("cal_volume", index)} className="block mb-2 text-sm font-light">
                                                         <span className="text-red-500">*</span>
                                                         {`Energy`}
                                                     </label>
                                                     <NumericFormat
-                                                        id="cal_volume"
+                                                        id={getNumericFieldId("cal_volume", index)}
                                                         placeholder="0.000"
                                                         // value={watch(`rows.${index}.cal_volume`)}
                                                         value={(row?.cal_volume || row?.cal_volume == 0) ? row?.cal_volume : ""}
@@ -1064,6 +1122,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         fixedDecimalScale={true}
                                                         allowNegative={false}
                                                         displayType="input"
+                                                        onKeyDown={(e) => handleNumericFormatTab(e, index, "cal_volume")}
                                                         onValueChange={(values) => {
                                                             const { value } = values;
                                                             // setValue(`rows.${index}.cal_volume`, value, { shouldValidate: true, shouldDirty: true });
@@ -1085,6 +1144,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 update(index, updatedRowVol2);
                                                             }
                                                             setLastInputForHvChange('energy')
+                                                            applyPendingNumericFocus();
                                                         }}
                                                     />
                                                     {/* {errors.cal_volume && (<p className="text-red-500 text-sm">{`Type Heating Value`}</p>)} */}

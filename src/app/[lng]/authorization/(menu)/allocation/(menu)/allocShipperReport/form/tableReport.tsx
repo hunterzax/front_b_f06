@@ -24,7 +24,7 @@ const TableReport: React.FC<TableProps> = ({ tableData, isLoading, columnVisibil
     const [headerMap, setHeaderMap] = useState<any>([]);
     const [hideTable, setHideTable] = useState<any>(false);
 
-    const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility[col.key]).length || 1;
+    const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility?.[col.key]).length || 1;
 
     useEffect(() => {
         if (tableData && tableData.length > 0) {
@@ -105,7 +105,7 @@ const TableReport: React.FC<TableProps> = ({ tableData, isLoading, columnVisibil
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.gas_day && (
+                                {columnVisibility?.gas_day && (
                                     <th
                                         scope="col"
                                         rowSpan={2}
@@ -117,10 +117,10 @@ const TableReport: React.FC<TableProps> = ({ tableData, isLoading, columnVisibil
                                     </th>
                                 )}
 
-                                {headerMap?.map((p: any) => (
-                                    columnVisibility[p?.point] && (
+                                {(headerMap || [])?.map((p: any) => (
+                                    columnVisibility?.[p?.point] && (
                                         <th
-                                            key={p.point}
+                                            key={p?.point}
                                             scope="col"
                                             colSpan={getVisibleChildCount(p?.point)}
                                             className={`${table_header_style} border-r-[1px] border-[#195774] text-center `} // v2.0.40 ปรับหัว column ให้มีกรอบแบ่งข้อมูล nom point ชัดเจน https://app.clickup.com/t/86etnehpp
@@ -153,7 +153,7 @@ const TableReport: React.FC<TableProps> = ({ tableData, isLoading, columnVisibil
                                                     ? `${p.point}-meter`
                                                     : `${p.point}-${name}`;
 
-                                        if (!columnVisibility[sortKey]) return null;
+                                        if (!columnVisibility?.[sortKey]) return null;
 
                                         return (
                                             <th
@@ -186,12 +186,12 @@ const TableReport: React.FC<TableProps> = ({ tableData, isLoading, columnVisibil
                         </thead>
 
                         <tbody>
-                            {sortedData?.length > 0 && sortedData?.map((day: any) => (
+                            {(sortedData || [])?.map((day: any) => (
                                 <tr
                                     key={day.gas_day}
                                     className={`${table_row_style} text-[#464255] z-0 `}
                                 >
-                                    {columnVisibility.gas_day && (
+                                    {columnVisibility?.gas_day && (
                                         <td className="px-4 py-2 bg-white sticky left-0 z-0">
                                             {day.gas_day ? formatDateNoTime(day.gas_day) : ''}
                                         </td>
@@ -225,7 +225,7 @@ const TableReport: React.FC<TableProps> = ({ tableData, isLoading, columnVisibil
 
                                         const shipperCells = hp.shippers.map((name: any) => {
                                             const key = `${hp.point}-${name}`;
-                                            if (!columnVisibility[key]) return null;
+                                            if (!columnVisibility?.[key]) return null;
 
                                             const shipper = pointData?.data.find((d: any) => d.shipper_name === name);
                                             return (
@@ -250,7 +250,7 @@ const TableReport: React.FC<TableProps> = ({ tableData, isLoading, columnVisibil
                                             <>
                                                 {shipperCells}
 
-                                                {columnVisibility[totalKey] && (
+                                                {columnVisibility?.[totalKey] && (
                                                     <td
                                                         key={`${day.gas_day}-${hp.point}-total`}
                                                         className="px-4 py-2 text-right font-semibold"
@@ -260,7 +260,7 @@ const TableReport: React.FC<TableProps> = ({ tableData, isLoading, columnVisibil
                                                     </td>
                                                 )}
 
-                                                {columnVisibility[meterKey] && (
+                                                {columnVisibility?.[meterKey] && (
                                                     <td
                                                         key={`${day.gas_day}-${hp.point}-meter`}
                                                         className="px-4 py-2 text-right "

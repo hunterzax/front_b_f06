@@ -40,7 +40,7 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
       // setSortedData(tableData);
 
       // ปั้น data
-      const updatedDataDaily = tableData.map((item: any) => ({
+      const updatedDataDaily = (tableData || [])?.map((item: any) => ({
         ...item,
         version: item.nomination_version?.[0]?.version || null
       }));
@@ -99,7 +99,7 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
   //         }
   //       });
 
-  //       return !shouldDisableByDeadline(row.gas_day, dl, { tzOffsetHours })
+  //       return !shouldDisableByDeadline(row?.gas_day, dl, { tzOffsetHours })
   //     }
   //     );
   //     sort_data_filtered = sort_data_filtered?.filter((item: any) => item.query_shipper_nomination_status_id == 1) // กรองเอาแต่ status Waiting For Response
@@ -126,7 +126,7 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
 
   const handleSelectRow = (id: any) => {
 
-    const existingRole = selectedRoles.find((role: any) => role.id === id);
+    const existingRole = (selectedRoles || [])?.find((role: any) => role.id === id);
     if (existingRole) {
       // Deselect the role
       setSelectedRoles(selectedRoles.filter((role: any) => role.id !== id));
@@ -191,7 +191,7 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
         return !isRowDisabled(row, dataNomDeadline, today);
       });
 
-      const allRoles = selectableRows.map((role: any) => ({ id: role.id }));
+      const allRoles = (selectableRows || [])?.map((role: any) => ({ id: role.id }));
       setSelectedRoles(allRoles);
     } else {
       setSelectedRoles([]);
@@ -236,75 +236,75 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
                   )
                 }
 
-                {columnVisibility.gas_week && (
+                {columnVisibility?.gas_week && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, originalData)}>
                     {`Gas Week`}
                     {getArrowIcon("gas_day")}
                   </th>
                 )}
 
-                {columnVisibility.nominations_code && (
+                {columnVisibility?.nominations_code && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSortNomCode("nomination_code", sortState, setSortState, setSortedData, originalData)}>
                     {`Nominations Code`}
                     {getArrowIcon("nomination_code")}
                   </th>
                 )}
 
-                {columnVisibility.renominations && (
+                {columnVisibility?.renominations && (
                   <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("query_shipper_nomination_file_renom.name", sortState, setSortState, setSortedData, originalData)}>
                     {`Renominations`}
                     {getArrowIcon("query_shipper_nomination_file_renom.name")}
                   </th>
                 )}
 
-                {columnVisibility.status && (
+                {columnVisibility?.status && (
                   <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("query_shipper_nomination_status.name", sortState, setSortState, setSortedData, originalData)}>
                     {`Status`}
                     {getArrowIcon("query_shipper_nomination_status.name")}
                   </th>
                 )}
 
-                {columnVisibility.version && (
+                {columnVisibility?.version && (
                   <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("version", sortState, setSortState, setSortedData, originalData)}>
                     {`Version`}
                     {getArrowIcon("version")}
                   </th>
                 )}
 
-                {columnVisibility.contract_code && (
+                {columnVisibility?.contract_code && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("contract_code.contract_code", sortState, setSortState, setSortedData, originalData)}>
                     {`Contract Code`}
                     {getArrowIcon("contract_code.contract_code")}
                   </th>
                 )}
 
-                {columnVisibility.shipper_name && (
+                {columnVisibility?.shipper_name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("group.name", sortState, setSortState, setSortedData, originalData)}>
                     {`Shipper Name`}
                     {getArrowIcon("group.name")}
                   </th>
                 )}
 
-                {columnVisibility.submitted_timestamp && (
+                {columnVisibility?.submitted_timestamp && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("latestSubmittedTimestamp", sortState, setSortState, setSortedData, originalData)}>
                     {`Submitted Timestamp`}
                     {getArrowIcon("latestSubmittedTimestamp")}
                   </th>
                 )}
 
-                {columnVisibility.submission_comment && (
+                {columnVisibility?.submission_comment && (
                   <th scope="col" className={`${table_header_style} text-center`} >
                     {`Submission Comment`}
                   </th>
                 )}
 
-                {columnVisibility.comment && (
+                {columnVisibility?.comment && (
                   <th scope="col" className={`${table_header_style} text-center`} >
                     {`Comment`}
                   </th>
                 )}
 
-                {columnVisibility.shipper_file && (
+                {columnVisibility?.shipper_file && (
                   <th scope="col" className={`${table_header_style} text-center`} >
                     {`Shipper File`}
                   </th>
@@ -314,7 +314,7 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
 
             <tbody>
               {
-                sortedData && sortedData?.map((row: any, index: any) => {
+                (sortedData || [])?.map((row: any, index: any) => {
                   let isRenom = row?.query_shipper_nomination_file_renom?.name
                   let rowGassDay = row?.gas_day
                   let disable_checkbox = false
@@ -383,16 +383,14 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
                         return item?.process_type_id == 4 // 4 = "Validity response of renomination"
                       }
                     });
-                    isDisable = shouldDisableByDeadline(row.gas_day, dl, { tzOffsetHours: 7 });
+                    isDisable = shouldDisableByDeadline(row?.gas_day, dl, { tzOffsetHours: 7 });
                   }
 
-                  // const disabled = row.query_shipper_nomination_status_id !== 1 || disable_checkbox || row.disabledFlag == true || isDisable
-                  const disabled = row.query_shipper_nomination_status_id !== 1 || disable_checkbox || isDisable
+                  // const disabled = row?.query_shipper_nomination_status_id !== 1 || disable_checkbox || row.disabledFlag == true || isDisable
+                  const disabled = row?.query_shipper_nomination_status_id !== 1 || disable_checkbox || isDisable
 
                   return (
-                    <tr
-                      key={row?.id}
-                      className={`${table_row_style}`}
+                    <tr key={row?.id ?? index} className={`${table_row_style}`}
                     >
                       {/* {
                         // ในกรณี Shipper เข้ามาจะต้องไม่เห็น Column Check Box https://app.clickup.com/t/86et682z1
@@ -421,7 +419,7 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
                             <input
                               type="checkbox"
                               checked={selectedRoles.some((role: any) => role.id === row.id)}
-                              disabled={disabled}
+                              disabled={(row?.query_shipper_nomination_status_id === 2 || row?.query_shipper_nomination_status_id === 5) ? isDisable : disabled} // https://app.clickup.com/t/86euzxxn6
                               onChange={() => handleSelectRow(row.id)}
                               // className="form-checkbox w-5 h-5 border rounded-[8px] accent-[#1473A1] focus:ring-[#1473A1]"
                               className="form-checkbox w-5 h-5 border rounded-[8px] accent-[#1473A1] focus:ring-[#1473A1] disabled:opacity-100 disabled:cursor-not-allowed "
@@ -430,11 +428,11 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
                         )
                       }
 
-                      {columnVisibility.gas_week && (
+                      {columnVisibility?.gas_week && (
                         <td className="px-2 py-1 text-[#464255]">{row?.gas_day ? formatDateNoTime(row?.gas_day) : ''}</td>
                       )}
 
-                      {columnVisibility.nominations_code && (
+                      {columnVisibility?.nominations_code && (
                         <td
                           className="px-2 py-1 text-[#464255] "
                         >
@@ -447,7 +445,7 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
                         </td>
                       )}
 
-                      {columnVisibility.renominations && (
+                      {columnVisibility?.renominations && (
                         <td className="px-2 py-1 justify-center">
                           {
                             <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: String(row?.query_shipper_nomination_file_renom?.color) }}>{row?.query_shipper_nomination_file_renom?.name}</div>
@@ -455,7 +453,7 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
                         </td>
                       )}
 
-                      {columnVisibility.status && (
+                      {columnVisibility?.status && (
                         <td className="px-2 py-1 justify-center">
                           {
                             <div className="flex min-w-[180px] max-w-[250px] w-auto text-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: String(row?.query_shipper_nomination_status?.color) }}>{row?.query_shipper_nomination_status?.name}</div>
@@ -463,25 +461,25 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
                         </td>
                       )}
 
-                      {columnVisibility.version && (
+                      {columnVisibility?.version && (
                         // <td className="px-2 py-1 text-[#464255] text-center">{row?.nomination_version ? row?.nomination_version?.[0]?.version : ''}</td>
                         <td className="px-2 py-1 text-[#464255] text-center">{row?.nomination_version ? row?.version : ''}</td>
                       )}
 
-                      {columnVisibility.contract_code && (
+                      {columnVisibility?.contract_code && (
                         // <td className="px-2 py-1 text-[#464255]">{row?.contract_code ? row?.contract_code?.contract_code : ''}</td>
                         <td className="px-2 py-1 text-[#464255]">{row?.reserve_balancing_gas_contract ? row?.reserve_balancing_gas_contract?.res_bal_gas_contract : row?.contract_code?.contract_code || ''}</td>
                       )}
 
-                      {columnVisibility.shipper_name && (
+                      {columnVisibility?.shipper_name && (
                         <td className="px-2 py-1 text-[#464255]">{row?.group?.name}</td>
                       )}
 
-                      {columnVisibility.submitted_timestamp && (
+                      {columnVisibility?.submitted_timestamp && (
                         <td className="px-2 py-1 text-[#464255]">{row?.latestSubmittedTimestamp ? formatDate(row?.latestSubmittedTimestamp) : ''}</td>
                       )}
 
-                      {columnVisibility.submission_comment && (
+                      {columnVisibility?.submission_comment && (
                         <td className="px-2 py-1 text-center">
                           <div className="inline-flex items-center justify-between relative w-[60px] gap-1">
                             <button
@@ -506,7 +504,7 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
                         </td>
                       )}
 
-                      {columnVisibility.comment && (
+                      {columnVisibility?.comment && (
                         <td className="px-2 py-1 text-center">
                           <div className="inline-flex items-center justify-center relative">
 
@@ -522,11 +520,14 @@ const TableNomDailyMgn: React.FC<TableProps> = ({ openEditForm, openViewForm, ta
                                 sx={{ color: 'currentColor', fontSize: 18 }}
                               />
                             </button>
+                            <span className={`px-2 w-5 text-[#464255] `}>
+                              {row?.query_shipper_nomination_file_comment?.length}
+                            </span>
                           </div>
                         </td>
                       )}
 
-                      {columnVisibility.shipper_file && (
+                      {columnVisibility?.shipper_file && (
                         <td className="px-2 py-1 text-center">
                           <div className="inline-flex items-center justify-center relative">
 

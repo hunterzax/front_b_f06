@@ -104,15 +104,15 @@ const ModalComment: React.FC<FormExampleProps> = ({
 
                         <div className={`mb-1 w-[100%] ${comments?.length > 2 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
                             {/* {data?.booking_version_comment?.map((item: any) => ( */}
-                            {comments && comments?.map((item: any) => (
+                            {(comments || [])?.map((item: any) => (
 
                                 // v1.0.77 comment ไม่อยู่กรอบ https://app.clickup.com/t/86ereut0q
-                                <div key={item.id} className="w-full mb-2 p-2 border rounded-lg">
+                                <div key={item?.id} className="w-full mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
                                         <div className="mb-2 flex justify-between">
                                             <span className="font-light">
                                                 By <span className="font-bold text-[#58585A]">
-                                                    {item?.create_by_account?.first_name} {" "} {item?.create_by_account?.last_name}
+                                                    {item?.create_by_account ? `${item?.create_by_account?.first_name || ''} ${item?.create_by_account?.last_name || ''}` : ''}
                                                 </span>
                                             </span>
                                             <span className="text-[#9CA3AF] font-light">{formatDate(item?.create_date)}</span>

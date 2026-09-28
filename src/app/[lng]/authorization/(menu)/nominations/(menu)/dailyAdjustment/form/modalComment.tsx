@@ -44,15 +44,15 @@ const ModalComment: React.FC<FormExampleProps> = ({
                         </div>
 
                         <div className={`mb-1 w-[100%] ${data?.length > 2 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
-                            {data?.length > 0 && data?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                            {(data || [])?.map((item: any) => (
+                                <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
                                         <div className="mb-2 flex justify-between items-center">
                                             <div className="flex items-baseline gap-2">
                                                 <span className='rounded-[20px] px-1 '>
                                                     <div className="flex min-w-[130px] max-w-[250px] w-auto text-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: String(item?.daily_adjustment_status?.color) }}>{item?.daily_adjustment_status?.name}</div>
                                                 </span>
-                                                <span className='font-light'>By <span className="font-bold !text-[#58585A]">{item?.create_by_account && item?.create_by_account?.first_name + ' ' + item?.create_by_account?.last_name}</span></span>
+                                                <span className='font-light'>By <span className="font-bold !text-[#58585A]">{item?.create_by_account ? `${item?.create_by_account?.first_name || ''} ${item?.create_by_account?.last_name || ''}` : ''}</span></span>
                                             </div>
                                             <span className="text-gray-500">{formatDate(item?.create_date)}</span>
                                         </div>

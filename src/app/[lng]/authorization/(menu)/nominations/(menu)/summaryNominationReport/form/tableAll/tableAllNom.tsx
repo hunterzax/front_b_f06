@@ -313,6 +313,11 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
         setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
     }
 
+    useEffect(() => {
+      console.log('paginatedData : ', paginatedData);
+    }, [paginatedData])
+    
+
     return (
         // <div className={`relative h-[calc(100vh-340px)] overflow-y-auto block  rounded-t-md z-1`}>
         <div className={`relative h-[calc(100vh-240px)] overflow-y-hidden  block  rounded-t-md z-1`}>
@@ -397,14 +402,14 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
 
                 <div className="overflow-y-auto overflow-x-auto w-full h-[54dvh]">
                     {
-                        isLoading ? <>
+                        !isLoading ? <>
                             <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
                                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                     <tr className="h-20">
 
                                         {/* ที่ handleSort ส่ง paginatedData แทน dataTable เพราะข้อนี้ */}
                                         {/* All > Weekly > Nomination > MMSCF > Smart Sear แล้ว Sort Column ทำให้ Smart Search หลุด https://app.clickup.com/t/86euy05du */}
-                                        {columnVisibility.gas_day && (
+                                        {columnVisibility?.gas_day && (
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Gas Day`}
@@ -412,7 +417,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.total_cap && (
+                                        {columnVisibility?.total_cap && (
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalCap", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("totalCap", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Total`}
@@ -420,7 +425,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.nomination_point && (
+                                        {columnVisibility?.nomination_point && (
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px] `} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} min-w-[120px] `} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Nomination Point`}
@@ -428,7 +433,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                             </th>
                                         )}
 
-                                        {columnVisibility.utilization && (
+                                        {columnVisibility?.utilization && (
                                             <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("utilization", sortState, setSortState, setSortedData, dataTable)}>
                                             {/* <th scope="col" className={`${table_sort_header_style} min-w-[120px]`} onClick={() => handleSort("utilization", sortState, setSortState, setSortedData, paginatedData)}> */}
                                                 {`Utilization (%)`}
@@ -437,7 +442,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                         )}
 
                                         {getVisibleHours().map(({ key, label, timeRange }) =>
-                                            columnVisibility[key] && (
+                                            columnVisibility?.[key] && (
                                                 <th
                                                     key={key}
                                                     scope="col"
@@ -456,8 +461,8 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
 
                                 <tbody>
                                     {
-                                        // sortedData?.length > 0 && sortedData?.map((row: any, index: any) => {
-                                        paginatedData?.length > 0 && paginatedData?.map((row: any, index: any) => {
+                                        // (sortedData || [])?.map((row: any, index: any) => {
+                                        (paginatedData || [])?.map((row: any, index: any) => {
 
                                             let find_validate = nomData?.find((item: any) => item?.nomination_point === row?.nomination_point)
 
@@ -523,26 +528,26 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                     className={`${table_row_style}`}
                                                 >
 
-                                                    {columnVisibility.gas_day && (
+                                                    {columnVisibility?.gas_day && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">{row?.gas_day_text ? row?.gas_day_text : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.total_cap && (
+                                                    {columnVisibility?.total_cap && (
                                                         // <td className="px-2 py-1 text-[#464255] text-right font-bold">{row?.totalCap ? formatNumberThreeDecimal(row?.totalCap) : ''}</td>
                                                         // <td className={`px-2 py-1 ${total_cap_validate ? 'text-[#464255]' : 'text-red-600'} text-right font-bold`}>{row?.totalCap ? formatNumberThreeDecimalNom(row?.totalCap) : ''}</td>
                                                         <td className={`px-2 py-1 ${total_cap_validate ? 'text-[#464255]' : 'text-red-600'} text-right font-bold`}>{row?.totalCap !== null && row?.totalCap !== undefined ? tabIndex2ndTab == 0 ? formatNumberSixDecimalNom(row?.totalCap) : formatNumberThreeDecimalNom(row?.totalCap) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.nomination_point && (
+                                                    {columnVisibility?.nomination_point && (
                                                         <td className="px-2 py-1 text-[#464255] text-center">{row?.nomination_point ? row?.nomination_point : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.utilization && (
+                                                    {columnVisibility?.utilization && (
                                                         // <td className={`px-2 py-1 text-[#464255] ${row?.utilization > 100 && 'text-red-600'} text-right`}>{typeof row?.utilization === 'number' ? formatNumberTwoDecimalNom(row?.utilization) : ''}</td>
                                                         <td className={`px-2 py-1 text-[#464255] ${row?.utilization > 100 && 'text-red-600'} text-right`}>{row?.utilization !== null && row?.utilization !== undefined && row?.utilization !== '' ? formatNumberTwoDecimalNom(row?.utilization) : ''}</td>
                                                     )}
 
-                                                    {columnVisibility.h1 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h1 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h1_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {/* {row?.H1} | {Number(String(row?.H1).replace(/,/g, '').trim())} | */}
                                                             {
@@ -553,7 +558,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h2 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h2 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h2_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -563,7 +568,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h3 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h3 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h3_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -573,7 +578,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h4 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h4 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h4_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -583,7 +588,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h5 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h5 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h5_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -593,7 +598,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h6 && (tabIndexHour == 1 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h6 && (tabIndexHour == 1 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h6_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -603,7 +608,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h7 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h7 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h7_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -613,7 +618,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h8 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h8 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h8_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -623,7 +628,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h9 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h9 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h9_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -633,7 +638,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h10 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h10 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h10_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -643,7 +648,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h11 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h11 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h11_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -653,7 +658,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h12 && (tabIndexHour == 2 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h12 && (tabIndexHour == 2 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h12_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -663,7 +668,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h13 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h13 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h13_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -673,7 +678,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h14 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h14 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h14_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -683,7 +688,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h15 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h15 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h15_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -693,7 +698,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h16 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h16 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h16_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -703,7 +708,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h17 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h17 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h17_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -713,7 +718,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h18 && (tabIndexHour == 3 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h18 && (tabIndexHour == 3 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h18_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -723,7 +728,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h19 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h19 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h19_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -733,7 +738,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h20 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h20 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h20_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -743,7 +748,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h21 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h21 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h21_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -753,7 +758,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h22 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h22 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h22_validate ? 'text-[#464255]' : 'text-red-600'} text-right `}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -763,7 +768,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h23 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h23 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h23_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -773,7 +778,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                                                         </td>
                                                     )}
 
-                                                    {columnVisibility.h24 && (tabIndexHour == 4 || tabIndexHour == 0) && (
+                                                    {columnVisibility?.h24 && (tabIndexHour == 4 || tabIndexHour == 0) && (
                                                         <td className={`px-2 py-1 ${h24_validate ? 'text-[#464255]' : 'text-red-600'} text-right`}>
                                                             {
                                                                 // ทุกค่าที่มีหน่วยเป็น MMSCF ให้แสดงทศนิยม 6 ตำแหน่ง https://app.clickup.com/t/86eub6d1w
@@ -794,7 +799,7 @@ const TableAllNomination: React.FC<any> = ({ openWarning, tableData, isLoading, 
                     }
 
                     {
-                        isLoading && sortedData?.length == 0 && <NodataTable />
+                        !isLoading && (sortedData?.length ?? 0) == 0 && <NodataTable />
                     }
                 </div>
 

@@ -871,7 +871,7 @@ const ModalFullView: React.FC<FormExampleProps> = ({
           // },
           label: (tooltipItem: any) => {
             const labelName = tooltipItem?.dataset?.label;
-            const value = formatNumberThreeDecimal(tooltipItem.raw);
+            const value = formatNumberThreeDecimal(tooltipItem?.raw);
             return `${labelName} : ${value}`;
           },
           labelColor: function (context: any) {
@@ -980,8 +980,8 @@ const ModalFullView: React.FC<FormExampleProps> = ({
         borderWidth: 1,
         callbacks: {
           label: (tooltipItem: any) => {
-            const labelName = tooltipItem.dataset.label;
-            const value = formatNumber(tooltipItem.raw);
+            const labelName = tooltipItem?.dataset.label;
+            const value = formatNumber(tooltipItem?.raw);
             return `${labelName} : ${value}`;
           },
         },
@@ -1067,8 +1067,8 @@ const ModalFullView: React.FC<FormExampleProps> = ({
         borderWidth: 1,
         callbacks: {
           label: (tooltipItem: any) => {
-            const labelName = tooltipItem.dataset.label;
-            const value = formatNumber(tooltipItem.raw);
+            const labelName = tooltipItem?.dataset.label;
+            const value = formatNumber(tooltipItem?.raw);
             return `${labelName} : ${value}`;
           },
         },

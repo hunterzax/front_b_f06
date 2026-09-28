@@ -21,7 +21,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const exportFunc = async (path: any, data: any) => {
   try {
-    const ids = data.map((item: any) => item.id);
+    const ids = (data || [])?.map((item: any) => item.id);
     let url = `${API_URL}/master/export-files/${path}?id=[${ids}]`;
     // window.open(`${API_URL}/master/export-files/${path}?id=[${ids}]`, '_blank');
     const link = document.createElement("a");
@@ -44,12 +44,12 @@ export const newExportFunc = async (
   // capacity/capacity-publication-detail
 
   let output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   let maxDay: dayjs.Dayjs | undefined;
   let minDay: dayjs.Dayjs | undefined;
-  output = output.map((item: any) =>
+  output = (output || [])?.map((item: any) =>
     item === "Area Nominal Capacity (MMBTU/D)"
       ? "Area Nominal Capacity (MMBTH/D)"
       : item
@@ -68,7 +68,7 @@ export const newExportFunc = async (
   });
 
   try {
-    const ids = data.map((item: any) => item.id);
+    const ids = (data || [])?.map((item: any) => item.id);
     const body = {
       id: ids,
       filter: output,
@@ -92,10 +92,10 @@ export const exportNomiEvaluaAndPlanning = async (
   gasday?: any
 ) => {
   let output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
   try {
-    // const ids = data.map((item: any) => item.id);
+    // const ids = (data || [])?.map((item: any) => item.id);
     const daysOfWeek = [
       "Sunday",
       "Monday",
@@ -129,8 +129,8 @@ export const exportNomiEvaluaAndPlanning = async (
       data: data,
     };
 
-    if (type == 2) {
-      // type = 2 weekly
+    if (type == 3) {
+      // type = 3 weekly
       // gasday = "21/09/2025"
       // เอาวันที่ gasday ไปต่อท้ายแบบ body ที่ส่งให้ดู
       const baseDate = dayjs(gasday, "DD/MM/YYYY"); // parse string -> dayjs
@@ -195,11 +195,11 @@ export const exportAllocReview = async (
   let flat_map_id = seletedId?.flatMap((item: any) => item?.id);
 
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   try {
-    // const ids = data.map((item: any) => item.id);
+    // const ids = (data || [])?.map((item: any) => item.id);
     const body = {
       bodys: {
         start_date: data2?.start_date,
@@ -229,15 +229,15 @@ export const exportAllocMgn = async (
 ) => {
   // let flat_map_id = data.flatMap((item: any) => item?.id)
   const flat_map_id = data
-    .map((item: any) => item.data.map((d: any) => d.id))
+    .map((item: any) => (item.data || [])?.map((d: any) => d.id))
     .flat();
 
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   try {
-    // const ids = data.map((item: any) => item.id);
+    // const ids = (data || [])?.map((item: any) => item.id);
     const body = {
       bodys: {
         start_date: data2?.start_date,
@@ -266,11 +266,11 @@ export const exportAllocQuery = async (
   tabIndex?: any
 ) => {
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   try {
-    const ids = data.map((item: any) => item.id);
+    const ids = (data || [])?.map((item: any) => item.id);
     const body = {
       bodys: {
         start_date: data2?.date?.start_date,
@@ -283,7 +283,7 @@ export const exportAllocQuery = async (
       },
       filter: output,
     };
-
+    // specificMenu == 'allocation-query'
     postExport(path, body);
   } catch (error) {
     // Export error occurred
@@ -309,7 +309,7 @@ export const exportAllocReport = async (
     .map((item: any) => item.label);
 
   try {
-    const ids = data.map((item: any) => item.id);
+    const ids = (data || [])?.map((item: any) => item.id);
     const body = {
       bodys: {
         ...data2,
@@ -340,7 +340,7 @@ export const exportAdjustDailyImbalance = async (
   seletedId?: any
 ) => {
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const body = {
@@ -366,23 +366,23 @@ export const exportAdjustAccumulateImbalance = async (
   seletedId?: any
 ) => {
   const output = initialColumns
-    ?.filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    ?.filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     ?.map((item: any) => item.label);
 
   let filterx: string[] = [];
-  columnVisibility.gas_day && filterx.push("Gas Day");
-  columnVisibility.shipper_name && filterx.push("Shipper Name");
-  columnVisibility.zone && filterx.push("Zone");
-  columnVisibility.adjust_imbalance && filterx.push("Adjust Imbalance");
-  columnVisibility.daily_initial_imbalance &&
+  columnVisibility?.gas_day && filterx.push("Gas Day");
+  columnVisibility?.shipper_name && filterx.push("Shipper Name");
+  columnVisibility?.zone && filterx.push("Zone");
+  columnVisibility?.adjust_imbalance && filterx.push("Adjust Imbalance");
+  columnVisibility?.daily_initial_imbalance &&
     filterx.push("Daily Initial Imbalance");
-  columnVisibility.daily_final_imbalance &&
+  columnVisibility?.daily_final_imbalance &&
     filterx.push("Daily Final Imbalance");
-  columnVisibility.intraday_initial_imbalance &&
+  columnVisibility?.intraday_initial_imbalance &&
     filterx.push("Intraday Initial Imbalance");
-  columnVisibility.intraday_final_imbalance &&
+  columnVisibility?.intraday_final_imbalance &&
     filterx.push("Intraday Final Imbalance");
-  columnVisibility.updated_by && filterx.push("Updated by");
+  columnVisibility?.updated_by && filterx.push("Updated by");
 
   const body = {
     bodys: {
@@ -408,7 +408,7 @@ export const exportNomDashboard = async (
   specificData?: any
 ) => {
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   try {
@@ -436,7 +436,7 @@ export const exportParkingAllocation = async (
 ) => {
   const formattedDate = dayjs(specificData).format("YYYY-MM-DD");
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const body = {
@@ -510,7 +510,7 @@ export const exportShipperNominationReport = async (
   }
 
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const body = {
@@ -535,7 +535,7 @@ export const exportCurtailsmentAlloc = async (
 ) => {
   let flat_map_id = data?.flatMap((item: any) => item?.id);
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const body = {
@@ -558,7 +558,7 @@ export const exportHvForOperationFlow = async (
   let flat_map_id = data?.flatMap((item: any) => item?.id);
 
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const body = {
@@ -578,7 +578,7 @@ export const exportIntradayAccImbalanceInventoryOriginal = async (
   specificData?: any
 ) => {
   const output = initialColumns
-    ?.filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    ?.filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     ?.map((item: any) => item.label);
 
   const body = {
@@ -597,7 +597,7 @@ export const exportIntradayBaseInventory = async (
   specificData?: any
 ) => {
   const output = initialColumns
-    ?.filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    ?.filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     ?.map((item: any) => item.label);
 
   const body = {
@@ -634,7 +634,7 @@ export const exportIntradayBalancingReport = async (
   initialColumns?: any,
   specificData?: any
 ) => {
-  // const output = initialColumns?.filter((item: any) => columnVisibility[item.key] && item.key !== "action")?.map((item: any) => item.label);
+  // const output = initialColumns?.filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")?.map((item: any) => item.label);
 
   // เก็บไว้ดูนะ
   let xxx = {
@@ -687,146 +687,146 @@ export const exportIntradayBalancingReport = async (
   let filterx: string[] = [];
 
   // ฝั่ง summary
-  columnVisibility.publicate && filterx.push("Publicate");
-  columnVisibility.gas_day && filterx.push("Gas Day");
-  columnVisibility.gas_hour && filterx.push("Gas Hour");
-  columnVisibility.timestamp && filterx.push("Timestamp");
-  columnVisibility.shipper_name && filterx.push("Summary Pane.Shipper Name");
-  columnVisibility.plan_actual && filterx.push("Summary Pane.Plan / Actual");
-  columnVisibility.contract_code && filterx.push("Summary Pane.Contract Code");
-  columnVisibility.east_total_entry_mmbtud &&
+  columnVisibility?.publicate && filterx.push("Publicate");
+  columnVisibility?.gas_day && filterx.push("Gas Day");
+  columnVisibility?.gas_hour && filterx.push("Gas Hour");
+  columnVisibility?.timestamp && filterx.push("Timestamp");
+  columnVisibility?.shipper_name && filterx.push("Summary Pane.Shipper Name");
+  columnVisibility?.plan_actual && filterx.push("Summary Pane.Plan / Actual");
+  columnVisibility?.contract_code && filterx.push("Summary Pane.Contract Code");
+  columnVisibility?.east_total_entry_mmbtud &&
     filterx.push("Summary Pane.Total Entry (MMBTU/D).East");
-  columnVisibility.west_total_entry_mmbtud &&
+  columnVisibility?.west_total_entry_mmbtud &&
     filterx.push("Summary Pane.Total Entry (MMBTU/D).West");
-  columnVisibility.east_west_total_entry_mmbtud &&
+  columnVisibility?.east_west_total_entry_mmbtud &&
     filterx.push("Summary Pane.Total Entry (MMBTU/D).East-West");
-  columnVisibility.east_total_exit_mmbtud &&
+  columnVisibility?.east_total_exit_mmbtud &&
     filterx.push("Summary Pane.Total Exit (MMBTU/D).East");
-  columnVisibility.west_total_exit_mmbtud &&
+  columnVisibility?.west_total_exit_mmbtud &&
     filterx.push("Summary Pane.Total Exit (MMBTU/D).West");
-  columnVisibility.east_west_total_exit_mmbtud &&
+  columnVisibility?.east_west_total_exit_mmbtud &&
     filterx.push("Summary Pane.Total Exit (MMBTU/D).East-West");
-  columnVisibility.east_imbalance_zone_mmbtud &&
+  columnVisibility?.east_imbalance_zone_mmbtud &&
     filterx.push("Summary Pane.Imbalance Zone (MMBTU/D).East");
-  columnVisibility.west_imbalance_zone_mmbtud &&
+  columnVisibility?.west_imbalance_zone_mmbtud &&
     filterx.push("Summary Pane.Imbalance Zone (MMBTU/D).West");
-  columnVisibility.total_imbalance_zone_mmbtud &&
+  columnVisibility?.total_imbalance_zone_mmbtud &&
     filterx.push("Summary Pane.Imbalance Zone (MMBTU/D).Total");
-  columnVisibility.east_instructed_flow_mmbtud &&
+  columnVisibility?.east_instructed_flow_mmbtud &&
     filterx.push("Summary Pane.Instructed Flow (MMBTU/D).East");
-  columnVisibility.west_instructed_flow_mmbtud &&
+  columnVisibility?.west_instructed_flow_mmbtud &&
     filterx.push("Summary Pane.Instructed Flow (MMBTU/D).West");
-  columnVisibility.east_west_instructed_flow_mmbtud &&
+  columnVisibility?.east_west_instructed_flow_mmbtud &&
     filterx.push("Summary Pane.Instructed Flow (MMBTU/D).East-West");
-  columnVisibility.east_shrinkage_volume_mmbtud &&
+  columnVisibility?.east_shrinkage_volume_mmbtud &&
     filterx.push("Summary Pane.Shrinkage Volume (MMBTU/D).East");
-  columnVisibility.west_shrinkage_volume_mmbtud &&
+  columnVisibility?.west_shrinkage_volume_mmbtud &&
     filterx.push("Summary Pane.Shrinkage Volume (MMBTU/D).West");
-  columnVisibility.east_park_mmbtud &&
+  columnVisibility?.east_park_mmbtud &&
     filterx.push("Summary Pane.Park (MMBTU/D).East");
-  columnVisibility.west_park_mmbtud &&
+  columnVisibility?.west_park_mmbtud &&
     filterx.push("Summary Pane.Park (MMBTU/D).West");
-  columnVisibility.east_unpark_mmbtud &&
+  columnVisibility?.east_unpark_mmbtud &&
     filterx.push("Summary Pane.Unpark (MMBTU/D).East");
-  columnVisibility.west_unpark_mmbtud &&
+  columnVisibility?.west_unpark_mmbtud &&
     filterx.push("Summary Pane.Unpark (MMBTU/D).West");
-  columnVisibility.east_sod_park_mmbtud &&
+  columnVisibility?.east_sod_park_mmbtud &&
     filterx.push("Summary Pane.SOD Park (MMBTU/D).East");
-  columnVisibility.west_sod_park_mmbtud &&
+  columnVisibility?.west_sod_park_mmbtud &&
     filterx.push("Summary Pane.SOD Park (MMBTU/D).West");
-  columnVisibility.east_eod_park_mmbtud &&
+  columnVisibility?.east_eod_park_mmbtud &&
     filterx.push("Summary Pane.EOD Park (MMBTU/D).East");
-  columnVisibility.west_eod_park_mmbtud &&
+  columnVisibility?.west_eod_park_mmbtud &&
     filterx.push("Summary Pane.EOD Park (MMBTU/D).West");
-  columnVisibility.east_min_inventory_change_mmbtud &&
+  columnVisibility?.east_min_inventory_change_mmbtud &&
     filterx.push("Summary Pane.Change Min Inventory (MMBTU/D).East");
-  columnVisibility.west_min_inventory_change_mmbtud &&
+  columnVisibility?.west_min_inventory_change_mmbtud &&
     filterx.push("Summary Pane.Change Min Inventory (MMBTU/D).West");
-  columnVisibility.east_reserve_bal_mmbtud &&
+  columnVisibility?.east_reserve_bal_mmbtud &&
     filterx.push("Summary Pane.Reserve Bal. (MMBTU/D).East");
-  columnVisibility.west_reserve_bal_mmbtud &&
+  columnVisibility?.west_reserve_bal_mmbtud &&
     filterx.push("Summary Pane.Reserve Bal. (MMBTU/D).West");
-  columnVisibility.east_adjust_imbalance_mmbtud &&
+  columnVisibility?.east_adjust_imbalance_mmbtud &&
     filterx.push("Summary Pane.Adjust Imbalance (MMBTU/D).East");
-  columnVisibility.west_adjust_imbalance_mmbtud &&
+  columnVisibility?.west_adjust_imbalance_mmbtud &&
     filterx.push("Summary Pane.Adjust Imbalance (MMBTU/D).West");
-  columnVisibility.east_vent_gas && filterx.push("Summary Pane.Vent Gas.East");
-  columnVisibility.west_vent_gas && filterx.push("Summary Pane.Vent Gas.West");
-  columnVisibility.east_commissioning_gas &&
+  columnVisibility?.east_vent_gas && filterx.push("Summary Pane.Vent Gas.East");
+  columnVisibility?.west_vent_gas && filterx.push("Summary Pane.Vent Gas.West");
+  columnVisibility?.east_commissioning_gas &&
     filterx.push("Summary Pane.Commissioning Gas.East");
-  columnVisibility.west_commissioning_gas &&
+  columnVisibility?.west_commissioning_gas &&
     filterx.push("Summary Pane.Commissioning Gas.West");
-  columnVisibility.east_other_gas &&
+  columnVisibility?.east_other_gas &&
     filterx.push("Summary Pane.Other Gas.East");
-  columnVisibility.west_other_gas &&
+  columnVisibility?.west_other_gas &&
     filterx.push("Summary Pane.Other Gas.West");
-  columnVisibility.east_daily_imb_mmbtud &&
+  columnVisibility?.east_daily_imb_mmbtud &&
     filterx.push("Summary Pane.Daily IMB (MMBTU/D).East");
-  columnVisibility.west_daily_imb_mmbtud &&
+  columnVisibility?.west_daily_imb_mmbtud &&
     filterx.push("Summary Pane.Daily IMB (MMBTU/D).West");
-  columnVisibility.total_aip_mmbtud &&
+  columnVisibility?.total_aip_mmbtud &&
     filterx.push("Summary Pane.AIP (MMBTU/D).Total");
-  columnVisibility.total_ain_mmbtud &&
+  columnVisibility?.total_ain_mmbtud &&
     filterx.push("Summary Pane.AIN (MMBTU/D).Total");
-  columnVisibility.total_percentage_imb &&
+  columnVisibility?.total_percentage_imb &&
     filterx.push("Summary Pane.%Imb.Total");
-  columnVisibility.total_percentage_abslmb &&
+  columnVisibility?.total_percentage_abslmb &&
     filterx.push("Summary Pane.%Absimb.Total");
-  columnVisibility.total_percentage_abslmb &&
+  columnVisibility?.total_percentage_abslmb &&
     filterx.push("Summary Pane.%Absimb.Total");
-  columnVisibility.east_acc_imb_month_mmbtud &&
+  columnVisibility?.east_acc_imb_month_mmbtud &&
     filterx.push("Summary Pane.Acc. IMB. (MONTH) (MMBTU/D).East");
-  columnVisibility.west_acc_imb_month_mmbtud &&
+  columnVisibility?.west_acc_imb_month_mmbtud &&
     filterx.push("Summary Pane.Acc. IMB. (MONTH) (MMBTU/D).West");
-  columnVisibility.east_acc_imb_mmbtud &&
+  columnVisibility?.east_acc_imb_mmbtud &&
     filterx.push("Summary Pane.Acc. IMB. (MMBTU/D).East");
-  columnVisibility.west_acc_imb_mmbtud &&
+  columnVisibility?.west_acc_imb_mmbtud &&
     filterx.push("Summary Pane.Acc. IMB. (MMBTU/D).West");
-  columnVisibility.east_acc_imb_inventory_mmbtud &&
+  columnVisibility?.east_acc_imb_inventory_mmbtud &&
     filterx.push("Summary Pane.Min. Inventory (MMBTU/D).East");
   // ตรงนี้มีคีย์หาย ของ summary
 
-  columnVisibility.east_min_inventory_mmbtud &&
+  columnVisibility?.east_min_inventory_mmbtud &&
     filterx.push("Summary Pane.Min. Inventory (MMBTU/D).East");
-  columnVisibility.west_min_inventory_mmbtud &&
+  columnVisibility?.west_min_inventory_mmbtud &&
     filterx.push("Summary Pane.Min. Inventory (MMBTU/D).West");
 
   // ฝั่ง detail
-  columnVisibility.gsp && filterx.push("Detail Pane.Entry.East.GSP");
-  columnVisibility.bypass_gas &&
+  columnVisibility?.gsp && filterx.push("Detail Pane.Entry.East.GSP");
+  columnVisibility?.bypass_gas &&
     filterx.push("Detail Pane.Entry.East.Bypass Gas");
-  columnVisibility.lng && filterx.push("Detail Pane.Entry.East.LNG");
-  columnVisibility.others_east && filterx.push("Detail Pane.Entry.East.Others");
-  columnVisibility.ydn && filterx.push("Detail Pane.Entry.West.YDN");
-  columnVisibility.ytg && filterx.push("Detail Pane.Entry.West.YTG");
-  columnVisibility.ztk && filterx.push("Detail Pane.Entry.West.ZTK");
-  columnVisibility.others_west && filterx.push("Detail Pane.Entry.West.Others");
-  columnVisibility.ra6_east &&
+  columnVisibility?.lng && filterx.push("Detail Pane.Entry.East.LNG");
+  columnVisibility?.others_east && filterx.push("Detail Pane.Entry.East.Others");
+  columnVisibility?.ydn && filterx.push("Detail Pane.Entry.West.YDN");
+  columnVisibility?.ytg && filterx.push("Detail Pane.Entry.West.YTG");
+  columnVisibility?.ztk && filterx.push("Detail Pane.Entry.West.ZTK");
+  columnVisibility?.others_west && filterx.push("Detail Pane.Entry.West.Others");
+  columnVisibility?.ra6_east &&
     filterx.push("Detail Pane.Entry.East-West.RA6 East");
-  columnVisibility.ra6_west &&
+  columnVisibility?.ra6_west &&
     filterx.push("Detail Pane.Entry.East-West.RA6 West");
-  columnVisibility.bvw10_east &&
+  columnVisibility?.bvw10_east &&
     filterx.push("Detail Pane.Entry.East-West.BVW10 East");
-  columnVisibility.bvw10_West &&
+  columnVisibility?.bvw10_West &&
     filterx.push("Detail Pane.Entry.East-West.BVW10 West");
-  columnVisibility.egat && filterx.push("Detail Pane.Exit.East.EGAT");
-  columnVisibility.ipp && filterx.push("Detail Pane.Exit.East.IPP");
-  columnVisibility.others_east_exit &&
+  columnVisibility?.egat && filterx.push("Detail Pane.Exit.East.EGAT");
+  columnVisibility?.ipp && filterx.push("Detail Pane.Exit.East.IPP");
+  columnVisibility?.others_east_exit &&
     filterx.push("Detail Pane.Exit.East.Others");
-  columnVisibility.egat_west && filterx.push("Detail Pane.Exit.West.EGAT");
-  columnVisibility.ipp_west && filterx.push("Detail Pane.Exit.West.IPP");
-  columnVisibility.others_west_exit &&
+  columnVisibility?.egat_west && filterx.push("Detail Pane.Exit.West.EGAT");
+  columnVisibility?.ipp_west && filterx.push("Detail Pane.Exit.West.IPP");
+  columnVisibility?.others_west_exit &&
     filterx.push("Detail Pane.Exit.West.Others");
-  columnVisibility.egat_east_west &&
+  columnVisibility?.egat_east_west &&
     filterx.push("Detail Pane.Exit.East-West.EGAT");
-  columnVisibility.ipp_east_west &&
+  columnVisibility?.ipp_east_west &&
     filterx.push("Detail Pane.Exit.East-West.IPP");
-  columnVisibility.others_east_west_exit &&
+  columnVisibility?.others_east_west_exit &&
     filterx.push("Detail Pane.Exit.East-West.Others");
-  columnVisibility.east_f2andg && filterx.push("Detail Pane.Exit.F2&G.East");
-  columnVisibility.west_f2andg && filterx.push("Detail Pane.Exit.F2&G.West");
-  columnVisibility.east_e && filterx.push("Detail Pane.Exit.E.East");
-  columnVisibility.west_e && filterx.push("Detail Pane.Exit.E.West");
+  columnVisibility?.east_f2andg && filterx.push("Detail Pane.Exit.F2&G.East");
+  columnVisibility?.west_f2andg && filterx.push("Detail Pane.Exit.F2&G.West");
+  columnVisibility?.east_e && filterx.push("Detail Pane.Exit.E.East");
+  columnVisibility?.west_e && filterx.push("Detail Pane.Exit.E.West");
 
   const body = {
     bodys: specificData,
@@ -926,7 +926,7 @@ export const exportIntradayBaseInvenShipper = async (
   specificData?: any
 ) => {
   const output = initialColumns
-    ?.filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    ?.filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     ?.map((item: any) => item.label);
 
   const body = {
@@ -977,8 +977,8 @@ export const exportBalanceIntradayDashboard = async (
   // }
 
   const output = initialColumns
-    ?.filter((item: any) => columnVisibility[item.key] && item.key !== "action")
-    ?.map((item: any) => item.label);
+    ?.filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
+    ?.map((item: any) => item.label2 || item.label);
   const body = {
     bodys: specificData,
     filter: output
@@ -1080,7 +1080,7 @@ export const exportBalanceIntradayDashboardShipper = async (
   // }
 
   const output = initialColumns
-    ?.filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    ?.filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     ?.map((item: any) => item.label);
   const body = {
     bodys: specificData,
@@ -1249,7 +1249,7 @@ export const exportMeteringChecking = async (
   // }
 
   const output = initialColumns
-    ?.filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    ?.filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     ?.map((item: any) => item.label);
   const body = {
     gasDay: specificData,
@@ -1352,7 +1352,7 @@ export const exportBalanceReport = async (
   // }
 
   const output = initialColumns
-    ?.filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    ?.filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     ?.map((item: any) => item.label);
 
   const body = {
@@ -1372,15 +1372,15 @@ export const exportDailyAdjustSummary = async (
   specificData?: any
 ) => {
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
-  const updatedOutput = output.map((item: any) => {
+  const updatedOutput = (output || [])?.map((item: any) => {
     return item === "Total" ? "totalH1ToH24Adjust" : item;
   });
 
   // ลบ 00:00 - 01:00 หลัง H1
-  // const cleanedOutput = output.map((item:any) => {
+  // const cleanedOutput = (output || [])?.map((item:any) => {
   //     const match = item.match(/^(H\d+)\s/);
   //     return match ? match[1] : item;
   // });
@@ -1407,7 +1407,7 @@ export const exportAllocationMonthlyReportDownload = async (
   const formattedDate = dayjs(specificData).format("YYYY-MM-DD");
 
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const body = {
@@ -1441,7 +1441,7 @@ export const exportBalancingMonthlyReportDownload = async (
   // }
 
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const body = {
@@ -1479,7 +1479,7 @@ export const exportMeteringRetriving = async (
   // }
 
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const body = {
@@ -1512,7 +1512,7 @@ export const exportMeteringDataCheck = async (
   // }
 
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const body = {
@@ -1558,7 +1558,7 @@ export const exportEventOffspecGas = async (
   // }
 
   let output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const removeList = ["Info", "Status", "Shipper"];
@@ -1632,7 +1632,7 @@ export const exportEventEmergencyDiffDay = async (
   // }
 
   let output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const removeList = ["Info", "Status", "Shipper"];
@@ -1729,7 +1729,7 @@ export const exportEventOfo = async (
   // }
 
   let output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const removeList = ["Info", "Status", "Shipper"];
@@ -1796,7 +1796,7 @@ export const exportTariffChargeReportMain = async (
   // let flat_map_id = seletedId.flatMap((item: any) => item?.id)
 
   let output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   // 2. เตรียม array ใหม่สำหรับผลลัพธ์สุดท้าย
@@ -1839,7 +1839,7 @@ export const exportTariffCreditDebitNote = async (
   // }
 
   let output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   // 2. เตรียม array ใหม่สำหรับผลลัพธ์สุดท้าย
@@ -1881,7 +1881,7 @@ export const exportMeteringManagement = async (
   // }
 
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   try {
@@ -1909,7 +1909,7 @@ export const exportSummaryNomReport = async (
   specificData?: any
 ) => {
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const days = [
@@ -1922,7 +1922,7 @@ export const exportSummaryNomReport = async (
     "Saturday",
   ];
 
-  const cleanedOutput = output.map((item: any) => {
+  const cleanedOutput = (output || [])?.map((item: any) => {
     return item.match(/^H\d+\s/) ? item.split(" ")[0] : item;
   });
 
@@ -1932,7 +1932,7 @@ export const exportSummaryNomReport = async (
   // แก้ไข updatedCleanOutput ให้จับจากคำ Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
   // แล้วเติมวันที่แทน ตามฟังก์ชั่นปัจจุบัน
   // ORIGINAL
-  const updatedCleanOutput = cleanedOutput.map((item: any, index: any) => {
+  const updatedCleanOutput = (cleanedOutput || [])?.map((item: any, index: any) => {
     if (index === 0) return item; // "Nomination Point"
 
     const dateIndex = Math.floor((index - 1) / 2);
@@ -1940,7 +1940,7 @@ export const exportSummaryNomReport = async (
 
     if (index % 2 === 1) {
       // Weekday label: append date
-      return `${item} ${specificData[dateIndex] ? specificData[dateIndex] : specificData?.dateOnHeader?.[dateIndex]}`;
+      return `${item} ${specificData?.[dateIndex] ? specificData[dateIndex] : specificData?.dateOnHeader?.[dateIndex]}`;
     } else {
       // Utilization label: prefix weekday
       return `${dayName} Utilization (%)`;
@@ -1987,7 +1987,7 @@ export const exportSummaryNomReportDailyTotalSystem = async (
   specificData?: any
 ) => {
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const days = [
@@ -2000,11 +2000,11 @@ export const exportSummaryNomReportDailyTotalSystem = async (
     "Saturday",
   ];
 
-  const cleanedOutput = output.map((item: any) => {
+  const cleanedOutput = (output || [])?.map((item: any) => {
     return item.match(/^H\d+\s/) ? item.split(" ")[0] : item;
   });
 
-  const UpdatedFilter = cleanedOutput.map((h: any) =>
+  const UpdatedFilter = (cleanedOutput || [])?.map((h: any) =>
     h === "Total cap" ? "Total" : h
   ); // Total แทน Total Cap
 
@@ -2031,10 +2031,10 @@ export const exportSummaryNomReportDailyArea = async (
   specificData?: any
 ) => {
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
-  const cleanedOutput = output.map((item: any) => {
+  const cleanedOutput = (output || [])?.map((item: any) => {
     return item.match(/^H\d+\s/) ? item.split(" ")[0] : item;
   });
 
@@ -2068,7 +2068,7 @@ export const exportSummaryNomReportAllNom = async (
 ) => {
   // export ส่งคีย์ tab และ overTotalCap ไปด้วย ชั้นนอก
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
   const days = [
     "Sunday",
@@ -2080,12 +2080,12 @@ export const exportSummaryNomReportAllNom = async (
     "Saturday",
   ];
 
-  const cleanedOutput = output.map((item: any) => {
+  const cleanedOutput = (output || [])?.map((item: any) => {
     return item.match(/^H\d+\s/) ? item.split(" ")[0] : item;
   });
 
   // All > Nomination > MMSCF > Excel File Column Total Cap ตัดคำว่า Cap ออก และ Head Column จัดกลาง และข้อมูลใน Row ถ้าเป็นตัวหนังสือชิดซ้าย พวกค่าจัดชิดขวา https://app.clickup.com/t/86euxuwqj
-  const UpdatedFilter = cleanedOutput.map((h: any) =>
+  const UpdatedFilter = (cleanedOutput || [])?.map((h: any) =>
     h === "Total cap" ? "Total" : h
   ); // Total แทน Total Cap
 
@@ -2113,7 +2113,7 @@ export const exportSummaryNomReportTotalWeekly = async (
   specificData?: any
 ) => {
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const days = [
@@ -2125,11 +2125,11 @@ export const exportSummaryNomReportTotalWeekly = async (
     "Friday",
     "Saturday",
   ];
-  const cleanedOutput = output.map((item: any) => {
+  const cleanedOutput = (output || [])?.map((item: any) => {
     return item.match(/^H\d+\s/) ? item.split(" ")[0] : item;
   });
 
-  const updatedCleanOutput = cleanedOutput.map((item: any, index: any) => {
+  const updatedCleanOutput = (cleanedOutput || [])?.map((item: any, index: any) => {
     if (
       index === 0 ||
       index === 1 ||
@@ -2239,7 +2239,7 @@ export const exportSummaryNomReportWeeklyAreaMmbtu = async (
   specificData?: any
 ) => {
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const days = [
@@ -2252,7 +2252,7 @@ export const exportSummaryNomReportWeeklyAreaMmbtu = async (
     "Saturday",
   ];
 
-  const cleanedOutput = output.map((item: any) => {
+  const cleanedOutput = (output || [])?.map((item: any) => {
     return item.match(/^H\d+\s/) ? item.split(" ")[0] : item;
   });
 
@@ -2262,7 +2262,7 @@ export const exportSummaryNomReportWeeklyAreaMmbtu = async (
   // แก้ไข updatedCleanOutput ให้จับจากคำ Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
   // แล้วเติมวันที่แทน ตามฟังก์ชั่นปัจจุบัน
   // ORIGINAL
-  const updatedCleanOutput = cleanedOutput.map((item: any, index: any) => {
+  const updatedCleanOutput = (cleanedOutput || [])?.map((item: any, index: any) => {
     // if (index === 0 || index === 1) return item; // "Nomination Point"
     if (index === 0) return item; // "Nomination Point"
 
@@ -2417,11 +2417,11 @@ export const exportCapacityRightTemplate = async (
   // }
 
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   try {
-    const ids = data.map((item: any) => item.id);
+    const ids = (data || [])?.map((item: any) => item.id);
     const body = {
       id: ids,
       filter: output,
@@ -2450,11 +2450,11 @@ export const exportBalOperateAndInstruct = async (
   // }
 
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   try {
-    // const ids = data.map((item: any) => item.id);
+    // const ids = (data || [])?.map((item: any) => item.id);
     const body = {
       bodys: specificData,
       filter: output,
@@ -2474,7 +2474,7 @@ export const exportCapacityReleaseCapacityManagementDetail = async (
   initialColumns?: any
 ) => {
   // Convert array of objects to a single object for easier lookup
-  const columnVisibilityMap = columnVisibility.reduce((acc: any, curr: any) => {
+  const columnVisibilityMap = columnVisibility?.reduce((acc: any, curr: any) => {
     return { ...acc, ...curr };
   }, {});
 
@@ -2523,11 +2523,11 @@ export const newExportTest = async (
   initialColumns?: any
 ) => {
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   try {
-    const ids = data.map((item: any) => item.id);
+    const ids = (data || [])?.map((item: any) => item.id);
     const body = {
       id: ids,
       idSub: data2,
@@ -2548,13 +2548,13 @@ export const newExportDivision = async (
   initialColumns?: any
 ) => {
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
-  const ids = data.map((item: any) => item.id);
+  const ids = (data || [])?.map((item: any) => item.id);
 
   try {
-    const ids = data.map((item: any) => item.id);
+    const ids = (data || [])?.map((item: any) => item.id);
     const body = {
       id: ids,
       filter: output,
@@ -2573,16 +2573,16 @@ export const exportSpecific = async (
   initialColumns?: any,
   specificData?: any
 ) => {
-  // let arr_of_col_1 = Object.keys(columnVisibility).filter(key => columnVisibility[key] && key !== "action");
+  // let arr_of_col_1 = Object.keys(columnVisibility).filter(key => columnVisibility?.[key] && key !== "action");
   // const filtered = initialColumns.filter((item:any) => arr_of_col_1.includes(item.key));
-  // let output = filtered.map((item:any) => item.label);
+  // let output = (filtered || [])?.map((item:any) => item.label);
 
   const output = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   try {
-    // const ids = data.map((item: any) => item.id);
+    // const ids = (data || [])?.map((item: any) => item.id);
     const body = {
       contractCode: parseInt(specificData),
       filter: output,
@@ -2603,9 +2603,9 @@ export const exportCapaPublic = async (
 ) => {
   try {
     let filteredColumnVisibility = Object.keys(columnVisibility)
-      .filter((key) => columnVisibility[key] === true)
+      .filter((key) => columnVisibility?.[key] === true)
       .reduce((obj: any, key: any) => {
-        obj[key] = columnVisibility[key];
+        obj[key] = columnVisibility?.[key];
         return obj;
       }, {});
 
@@ -2662,7 +2662,8 @@ export const postExport = async (path?: any, body?: any, fileName?: any) => {
     if (!response.ok) {
       throw new Error(`Export failed with status ${response.status}`);
     }
-
+    // console.log('path : ', path);
+    // console.log('body : ', body);
     let defaultFileName = path;
     if (path?.includes('audit-log')) {
       defaultFileName = `${path}`.split('?').shift();
@@ -2673,7 +2674,7 @@ export const postExport = async (path?: any, body?: any, fileName?: any) => {
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${fileName || defaultFileName}.xlsx`; // Specify the file name (adjust extension as needed)
+    link.download = path === "allocation/allocation-query" ? `${fileName || defaultFileName} - (${body?.bodys?.start_date} - ${body?.bodys?.end_date}).xlsx` : `${fileName || defaultFileName}.xlsx`; // Specify the file name (adjust extension as needed)
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -2796,13 +2797,30 @@ const postExportAllocMonthlyReport = async (path?: any, body?: any) => {
     // Export error occurred
   }
 };
+ const genManoStatus = (data: any[]) => {
+    // ลำดับเริ่มต้นตอนยังไม่ได้กด Sort
+    const priority = ['Shipper Reviewed', 'Accepted', 'Allocated', 'Rejected', 'Not Review']
+    console.log('data : ', data)
+    return [...(Array.isArray(data) ? data : [])].sort((a: any, b: any) => {
+      const statusA = a?.allocation_status_name ?? a?.allocation_status?.name ?? 'Not Review'
 
+      const statusB = b?.allocation_status_name ?? b?.allocation_status?.name ?? 'Not Review'
+
+      const indexA = priority.indexOf(statusA)
+      const indexB = priority.indexOf(statusB)
+
+      const priorityA = indexA === -1 ? 999 : indexA
+      const priorityB = indexB === -1 ? 999 : indexB
+
+      return priorityA - priorityB
+    })
+  }
 // ------- new
 export function epAllocationAllocationManagement(payload: any) {
   let { name, columnVisibility, initialColumns, resData } = payload;
 
   const filter = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    .filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     .map((item: any) => item.label);
 
   const renderStatus: any = (data: any) => {
@@ -2877,7 +2895,7 @@ export function epAllocationAllocationManagement(payload: any) {
   const newNResData = resData
     ?.flatMap((e: any) => {
       //
-      const rowData_ = e["data"]?.map((r: any) => {
+      const rowData_ = (e?.data || [])?.map((r: any) => {
         const lengthSubmission =
           (r["allocation_management_comment"]?.length > 0 &&
             r["allocation_management_comment"]
@@ -2897,6 +2915,8 @@ export function epAllocationAllocationManagement(payload: any) {
             "",
           ["Shipper Name"]: r["group"]?.["name"], // ""
           ["Contract Code"]: r["contract"] || "", // ""
+          ["Zone"]: r["zone"] || "",
+          ["Area"]: r["area"] || "",
           ["Nomination Point /Concept Point"]: r["point"] || "",
           ["Entry / Exit"]: r["entry_exit"]?.toUpperCase() || "",
           // ["Nominated Value (MMBTU/D)"]: (r["nominationValue"] !== null && dcimal4(parseToNumber(r["nominationValue"]))) || null, // value ""
@@ -2907,7 +2927,8 @@ export function epAllocationAllocationManagement(payload: any) {
           ["Nominated Value (MMBTU/D)"]: dcimal3(parseToNumber(r["nominationValue"] || 0)), // value ""
           ["System Allocation (MMBTU/D)"]: r["systemAllocation"] !== null && r["systemAllocation"] !== undefined && r["systemAllocation"] !== '' ? dcimal4(parseToNumber(r["systemAllocation"])) : null,
           ["Intraday System Allocation (MMBTU/D)"]: r["intradaySystem"] !== null && r["intradaySystem"] !== undefined && r["intradaySystem"] !== '' ? dcimal4(parseToNumber(r["intradaySystem"])) : null,
-          ["Previous Allocation TPA for Review (MMBTU/D)"]: r["previousAllocationTPAforReview"] !== null && r["previousAllocationTPAforReview"] !== undefined && r["previousAllocationTPAforReview"] !== '' ? dcimal4(parseToNumber(r["previousAllocationTPAforReview"])) : null,
+          ["Previous Allocation TPA for Review (MMBTU/D)"]: r["allocation_management_shipper_review"]?.length > 0 ? (r["previousAllocationTPAforReview"] !== null && r["previousAllocationTPAforReview"] !== undefined && r["previousAllocationTPAforReview"] !== '' ? dcimal4(parseToNumber(r["previousAllocationTPAforReview"])) : null) : null,
+         
           ["Shipper Allocation Review (MMBTU/D)"]:
             r["allocation_management_shipper_review"]?.length > 0
               ? dcimal4(
@@ -2954,14 +2975,14 @@ export function epAllocationAllocationManagement(payload: any) {
       // green
       let setDataObjGreen = {
         ["Total"]: "Total",
-        ["Status"]: renderStatus(e["data"]),
-        ["Gas Day"]:
-          (e["gas_day"] && getTodayNow(e["gas_day"]).format("DD/MM/YYYY")) ||
-          "",
+        ["Status"]: renderStatus(e?.data || []),
+        ["Gas Day"]: e?.gas_day ? getTodayNow(e.gas_day).format("DD/MM/YYYY") : "",
         ["Shipper Name"]: "", // ""
         ["Contract Code"]: "", // ""
-        ["Nomination Point /Concept Point"]: e["point_text"] || "",
-        ["Entry / Exit"]: e["entry_exit"]?.toUpperCase() || "",
+        ["Zone"]: "",
+        ["Area"]: "",
+        ["Nomination Point /Concept Point"]: e?.point_text || "",
+        ["Entry / Exit"]: e?.entry_exit?.toUpperCase() || "",
         ["Nominated Value (MMBTU/D)"]: dcimal3(
           rowData?.reduce(
             (accumulator: any, currentValue: any) =>
@@ -2986,18 +3007,33 @@ export function epAllocationAllocationManagement(payload: any) {
             0
           )
         ),
-        ["Previous Allocation TPA for Review (MMBTU/D)"]: dcimal4(
-          rowData?.reduce(
-            (accumulator: any, currentValue: any) =>
-              accumulator +
-              parseToNumber(
-                currentValue["Previous Allocation TPA for Review (MMBTU/D)"] ??
-                0
-              ),
-            0
-          )
-        ),
-        ["Shipper Allocation Review (MMBTU/D)"]: greenTabShipperAllocationReview,
+        ["Previous Allocation TPA for Review (MMBTU/D)"]: ((e?.data?.length > 0 && genManoStatus(e?.data)) || [])?.filter((f: any) => (f['allocation_management_shipper_review']?.length > 0 ? f['allocation_management_shipper_review'][0]?.shipper_allocation_review : null) !== null)?.length === 0
+          ? ''
+          : e?.previous_allocation_tpa_for_review !== null && e?.previous_allocation_tpa_for_review !== undefined
+            ? e?.shipper_allocation_review !== null && e?.shipper_allocation_review !== undefined
+              ? formatNumberFourDecimal(e?.previous_allocation_tpa_for_review)
+              : null
+            : null,
+        // ["Previous Allocation TPA for Review (MMBTU/D)"]: dcimal4(
+        //   rowData?.reduce(
+        //     (accumulator: any, currentValue: any) =>
+        //       accumulator +
+        //       parseToNumber(
+        //         currentValue["Previous Allocation TPA for Review (MMBTU/D)"] ??
+        //         0
+        //       ),
+        //     0
+        //   )
+        // ),
+        // ["Shipper Allocation Review (MMBTU/D)"]: greenTabShipperAllocationReview,
+        ['Shipper Allocation Review (MMBTU/D)']:
+          ((e?.data?.length > 0 && genManoStatus(e?.data)) || [])?.filter((f: any) => (f['allocation_management_shipper_review']?.length > 0 ? f['allocation_management_shipper_review'][0]?.shipper_allocation_review : null) !== null)?.length === 0
+            ? '' // https://app.clickup.com/t/9018502823/86ev29x2b
+            : e?.previous_allocation_tpa_for_review !== null && e?.previous_allocation_tpa_for_review !== undefined
+              ? e?.shipper_allocation_review !== null && e?.shipper_allocation_review !== undefined
+                ? formatNumberFourDecimal(e?.shipper_allocation_review)
+                : null
+              : null,
         ["Metering Value (MMBTU/D)"]:
         // rowData_?.filter((f:any) => f?.["Shipper Allocation Review (MMBTU/D)"] !== "")?.length === 0 ? "" :
           greenTabMeterValue,
@@ -3015,13 +3051,37 @@ export function epAllocationAllocationManagement(payload: any) {
     })
     ?.flat();
 
-  const formateData = newNResData.map((e: any) => {
+  const formateData = (newNResData || [])?.map((e: any) => {
     let setData: any = {
-      ["Total"]: e["Total"],
-      ["Status"]: e["Status"],
+      ["Total"]: '',
+      ["Status"]: '',
+      ["Gas Day"]: '',
+      ["Shipper Name"]: '',
+      ["Contract Code"]: '',
+      ["Zone"]: '',
+      ["Area"]: '',
+      ["Nomination Point /Concept Point"]: '',
+      ["Entry / Exit"]: '',
+      ["Nominated Value (MMBTU/D)"]: '',
+      ["System Allocation (MMBTU/D)"]: '',
+      ["Intraday System Allocation (MMBTU/D)"]: '',
+      ["Previous Allocation TPA for Review (MMBTU/D)"]: '',
+      ["Shipper Allocation Review (MMBTU/D)"]: '',
+      ["Metering Value (MMBTU/D)"]: '',
+      ["Review Code"]: '',
+      ["Comment"]: '',
+      ["tab"]: '',
+      ["isValid"]: '',
+    }
+    if(e){
+    setData = {
+      ["Total"]: e.Total,
+      ["Status"]: e.Status,
       ["Gas Day"]: e["Gas Day"],
       ["Shipper Name"]: e["Shipper Name"],
       ["Contract Code"]: e["Contract Code"],
+      ["Zone"]: e["Zone"],
+      ["Area"]: e["Area"],
       ["Nomination Point /Concept Point"]: e["Nomination Point /Concept Point"],
       ["Entry / Exit"]: e["Entry / Exit"],
       ["Nominated Value (MMBTU/D)"]: e["Nominated Value (MMBTU/D)"],
@@ -3033,10 +3093,11 @@ export function epAllocationAllocationManagement(payload: any) {
         e["Shipper Allocation Review (MMBTU/D)"],
       ["Metering Value (MMBTU/D)"]: e["Metering Value (MMBTU/D)"],
       ["Review Code"]: e["Review Code"],
-      ["Comment"]: e["Comment"],
-      ["tab"]: e["tab"],
-      ["isValid"]: e["isValid"],
+      ["Comment"]: e.Comment,
+      ["tab"]: e.tab,
+      ["isValid"]: e.isValid,
     };
+    }
     let filteredData = Object.keys(setData).reduce((obj: any, key: any) => {
       obj[key] = setData[key];
       return obj;
@@ -3059,6 +3120,8 @@ export function epAllocationAllocationManagement(payload: any) {
     "Gas Day": "1573A1", // #1573A1
     "Shipper Name": "1573A1", // #1573A1
     "Contract Code": "1573A1", // #1573A1
+    "Zone": "1573A1", // #1573A1
+    "Area": "1573A1", // #1573A1
     "Nomination Point /Concept Point": "1573A1", // #1573A1
     "Entry / Exit": "1573A1", // #1573A1
     "Nominated Value (MMBTU/D)": "1573A1", // #1573A1
@@ -3150,20 +3213,20 @@ export function epAllocationAllocationManagement(payload: any) {
 //     let setData: any = {
 //       ...(tabIndex === 0
 //         ? {}
-//         : { Publication: e["publication"] ? "Public" : "Unpublic" }),
+//         : { Publication: e?.[\"publication\"] ? "Public" : "Unpublic" }),
 //       // Publication: e['publication'] ? 'Public' : 'Unpublic',
-//       "Entry / Exit": e["entry_exit"],
-//       "Gas Day": e["gas_day"],
+//       "Entry / Exit": e?.[\"entry_exit\"],
+//       "Gas Day": e?.[\"gas_day\"],
 //       Timestamp:
-//         e["execute_timestamp"] &&
-//         dayjs(e["execute_timestamp"] * 1000).format("DD/MM/YYYY HH:mm"),
-//       "Shipper Name": e["group"]?.["name"],
-//       "Contract Code": e["contract"],
-//       "Contract Point": e["contract_point"],
-//       "Capacity Right (MMBTU/D)": dcimal4(e["contractCapacity"]),
-//       "Nominated Value (MMBTU/D)": dcimal4(e["nominationValue"]),
-//       "System Allocation (MMBTU/D)": dcimal4(e["allocatedValue"]),
-//       "Overusage (MMBTU/D)": dcimal4(e["overusage"]),
+//         e?.[\"execute_timestamp\"] &&
+//         dayjs(e?.[\"execute_timestamp\"] * 1000).format("DD/MM/YYYY HH:mm"),
+//       "Shipper Name": e?.[\"group\"]?.["name"],
+//       "Contract Code": e?.[\"contract\"],
+//       "Contract Point": e?.[\"contract_point\"],
+//       "Capacity Right (MMBTU/D)": dcimal4(e?.[\"contractCapacity\"]),
+//       "Nominated Value (MMBTU/D)": dcimal4(e?.[\"nominationValue\"]),
+//       "System Allocation (MMBTU/D)": dcimal4(e?.[\"allocatedValue\"]),
+//       "Overusage (MMBTU/D)": dcimal4(e?.[\"overusage\"]),
 //     };
 
 //     let filteredData = Object.keys(setData)
@@ -3261,16 +3324,34 @@ export async function epAllocationAllocationReport(payload: any) {
     )
     .map((item: any) => item.label);
 
-  const formateData = resData.map((e: any) => {
-    const contractCapacity = toExcelNumber(e["contractCapacity"]);
-    const nominationValue = toExcelNumber(e["nominationValue"]);
-    const allocatedValue = toExcelNumber(e["allocatedValue"]);
-    const overusage = toExcelNumber(e["overusage"]);
+  const formateData = (resData || [])?.map((e: any) => {
+    const contractCapacity = toExcelNumber(e.contractCapacity);
+    const nominationValue = toExcelNumber(e.nominationValue);
+    const allocatedValue = toExcelNumber(e.allocatedValue);
+    const overusage = toExcelNumber(e.overusage);
+    if (!e) return ({
+      ...((tabIndex === 1 || tabIndex === '1')
+        ? {}
+        : userDT?.account_manage?.[0]?.user_type_id !== 3 ? { Publication: '' } : {}),
+      'Entry / Exit': '',
+      'Gas Day': '',
+      ...((tabIndex === 1 || tabIndex === '1')
+        ? {}
+        : { 'Gas Hour': '' }),
+      'Timestamp': '',
+      'Shipper Name': '',
+      'Contract Code': '',
+      'Contract Point': '',
+      'Capacity Right (MMBTU/D)': '',
+      'Nominated Value (MMBTU/D)': '',
+      'System Allocation (MMBTU/D)': '',
+      'Overusage (MMBTU/D)': ''
+    });
     return ({
     ...((tabIndex === 1 || tabIndex === '1')
       ? {}
-      : userDT?.account_manage?.[0]?.user_type_id !== 3 ? { Publication: e["publication"] ? "Public" : "Unpublic" } : {}),
-    // : { Publication: e["publication"] ? "Public" : "Unpublic" }),
+      : userDT?.account_manage?.[0]?.user_type_id !== 3 ? { Publication: e.publication ? "Public" : "Unpublic" } : {}),
+    // : { Publication: e?.[\"publication\"] ? "Public" : "Unpublic" }),
     'Entry / Exit': e['entry_exit_obj']?.['name'],
     'Gas Day': e['gas_day']
       ? dayjs(e['gas_day']).format('DD/MM/YYYY')
@@ -3286,21 +3367,21 @@ export async function epAllocationAllocationReport(payload: any) {
     Timestamp:
       e['execute_timestamp'] &&
       dayjs(e['execute_timestamp'] * 1000).format('DD/MM/YYYY HH:mm'),
-    "Shipper Name": e["group"]?.["name"],
-    "Contract Code": e["contract"],
-    "Contract Point": e["contract_point"],
-    // "Capacity Right (MMBTU/D)": dcimal4(e["contractCapacity"]),
-    // "Nominated Value (MMBTU/D)": dcimal4(e["nominationValue"]),
-    // "System Allocation (MMBTU/D)": dcimal4(e["allocatedValue"]),
-    // "Overusage (MMBTU/D)": dcimal4(e["overusage"]),
-    // "Capacity Right (MMBTU/D)": e["contractCapacity"] !== null && e["contractCapacity"] !== undefined && e["contractCapacity"] !== '' ? dcimal4(e["contractCapacity"]) : null,
-    // "Nominated Value (MMBTU/D)": e["nominationValue"] !== null && e["nominationValue"] !== undefined && e["nominationValue"] !== '' ? dcimal4(e["nominationValue"]) : null,
-    // "System Allocation (MMBTU/D)": e["allocatedValue"] !== null && e["allocatedValue"] !== undefined && e["allocatedValue"] !== '' ? dcimal4(e["allocatedValue"]) : null,
-    // "Overusage (MMBTU/D)": e["overusage"] !== null && e["overusage"] !== undefined && e["overusage"] !== '' ? dcimal4(e["overusage"]) : null,
-    // "Capacity Right (MMBTU/D)": toExcelNumber(e["contractCapacity"]),
-    // "Nominated Value (MMBTU/D)": toExcelNumber(e["nominationValue"]),
-    // "System Allocation (MMBTU/D)": toExcelNumber(e["allocatedValue"]),
-    // "Overusage (MMBTU/D)": toExcelNumber(e["overusage"]),
+    "Shipper Name": e.group?.name,
+    "Contract Code": e.contract,
+    "Contract Point": e.contract_point,
+    // "Capacity Right (MMBTU/D)": dcimal4(e?.[\"contractCapacity\"]),
+    // "Nominated Value (MMBTU/D)": dcimal4(e?.[\"nominationValue\"]),
+    // "System Allocation (MMBTU/D)": dcimal4(e?.[\"allocatedValue\"]),
+    // "Overusage (MMBTU/D)": dcimal4(e?.[\"overusage\"]),
+    // "Capacity Right (MMBTU/D)": e?.[\"contractCapacity\"] !== null && e?.[\"contractCapacity\"] !== undefined && e?.[\"contractCapacity\"] !== '' ? dcimal4(e?.[\"contractCapacity\"]) : null,
+    // "Nominated Value (MMBTU/D)": e?.[\"nominationValue\"] !== null && e?.[\"nominationValue\"] !== undefined && e?.[\"nominationValue\"] !== '' ? dcimal4(e?.[\"nominationValue\"]) : null,
+    // "System Allocation (MMBTU/D)": e?.[\"allocatedValue\"] !== null && e?.[\"allocatedValue\"] !== undefined && e?.[\"allocatedValue\"] !== '' ? dcimal4(e?.[\"allocatedValue\"]) : null,
+    // "Overusage (MMBTU/D)": e?.[\"overusage\"] !== null && e?.[\"overusage\"] !== undefined && e?.[\"overusage\"] !== '' ? dcimal4(e?.[\"overusage\"]) : null,
+    // "Capacity Right (MMBTU/D)": toExcelNumber(e?.[\"contractCapacity\"]),
+    // "Nominated Value (MMBTU/D)": toExcelNumber(e?.[\"nominationValue\"]),
+    // "System Allocation (MMBTU/D)": toExcelNumber(e?.[\"allocatedValue\"]),
+    // "Overusage (MMBTU/D)": toExcelNumber(e?.[\"overusage\"]),
       "Capacity Right (MMBTU/D)": (contractCapacity || contractCapacity == 0) ? dcimal3(contractCapacity) : null,
       "Nominated Value (MMBTU/D)": (nominationValue || nominationValue == 0) ? dcimal3(nominationValue) : null,
       "System Allocation (MMBTU/D)": (allocatedValue || allocatedValue == 0) ? dcimal4(allocatedValue) : null,
@@ -3404,6 +3485,7 @@ export async function epAllocationAllocationReport(payload: any) {
   const overusageDetailRows: any[] = [];
 
   subSheetResData.forEach((e: any) => {
+    if(e){
     overusageDetailRows.push({
       'Gas Day': e['gas_day']
         ? dayjs(e['gas_day']).format('DD/MM/YYYY')
@@ -3422,15 +3504,16 @@ export async function epAllocationAllocationReport(payload: any) {
               ? `${e.gas_hour >= 10 ? e.gas_hour : '0' + e.gas_hour}:00`
               : '',
         }),
-      "Nominated Value (MMBTU/D)": dcimal3(e["nominationValue"]),
-      "System Allocation (MMBTU/D)": (e["allocatedValue"] || e["allocatedValue"] == 0) ? dcimal4(e["allocatedValue"]) : '',
-      // "Capacity Right (MMBTU/D)": dcimal4(e["contractCapacity"]),
-      // "Overusage (MMBTU/D)": dcimal4(e["overusage"]),
-      '': '',
+      "Nominated Value (MMBTU/D)": dcimal3(e.nominationValue),
+      "System Allocation (MMBTU/D)": (e.allocatedValue || e.allocatedValue == 0) ? dcimal4(e.allocatedValue) : '',
+      // "Capacity Right (MMBTU/D)": dcimal4(e.[\"contractCapacity\"]),
+      // "Overusage (MMBTU/D)": dcimal4(e.[\"overusage\"]),
+      // '': '',
       Timestamp:
         e['execute_timestamp'] &&
         dayjs(e['execute_timestamp'] * 1000).format('DD/MM/YYYY HH:mm'),
     });
+    }
   });
 
   let detailHeaderColorMap: {} = {}
@@ -3474,6 +3557,7 @@ export function epBalancingBalanceReport(payload: any) {
     filterShowTotalAllShipper,
     isShipper
   } = payload;
+  console.log('payload : ', payload);
 
   let filterx: string[] = [];
 
@@ -3497,148 +3581,148 @@ export function epBalancingBalanceReport(payload: any) {
   // ฟ้า เหลือง
 
   // ฝั่ง summary
-  columnVisibility.publicate && filterx.push("Publicate");
-  columnVisibility.gas_day && filterx.push("Gas Day");
-  columnVisibility.gas_hour && filterx.push("Gas Hour");
-  columnVisibility.timestamp && filterx.push("Timestamp");
-  columnVisibility.shipper_name && filterx.push("Summary Pane.Shipper Name");
-  columnVisibility.plan_actual && filterx.push("Summary Pane.Plan / Actual");
-  columnVisibility.contract_code && filterx.push("Summary Pane.Contract Code");
-  columnVisibility.east_total_entry_mmbtud &&
+  columnVisibility?.publicate && filterx.push("Publicate");
+  columnVisibility?.gas_day && filterx.push("Gas Day");
+  columnVisibility?.gas_hour && filterx.push("Gas Hour");
+  columnVisibility?.timestamp && filterx.push("Timestamp");
+  columnVisibility?.shipper_name && filterx.push("Summary Pane.Shipper Name");
+  columnVisibility?.plan_actual && filterx.push("Summary Pane.Plan / Actual");
+  columnVisibility?.contract_code && filterx.push("Summary Pane.Contract Code");
+  columnVisibility?.east_total_entry_mmbtud &&
     filterx.push("Summary Pane.Total Entry (MMBTU).East");
-  columnVisibility.west_total_entry_mmbtud &&
+  columnVisibility?.west_total_entry_mmbtud &&
     filterx.push("Summary Pane.Total Entry (MMBTU).West");
-  columnVisibility.east_west_total_entry_mmbtud &&
+  columnVisibility?.east_west_total_entry_mmbtud &&
     filterx.push("Summary Pane.Total Entry (MMBTU).East-West");
-  columnVisibility.east_total_exit_mmbtud &&
+  columnVisibility?.east_total_exit_mmbtud &&
     filterx.push("Summary Pane.Total Exit (MMBTU).East");
-  columnVisibility.west_total_exit_mmbtud &&
+  columnVisibility?.west_total_exit_mmbtud &&
     filterx.push("Summary Pane.Total Exit (MMBTU).West");
-  columnVisibility.east_west_total_exit_mmbtud &&
+  columnVisibility?.east_west_total_exit_mmbtud &&
     filterx.push("Summary Pane.Total Exit (MMBTU).East-West");
-  columnVisibility.east_imbalance_zone_mmbtud &&
+  columnVisibility?.east_imbalance_zone_mmbtud &&
     filterx.push("Summary Pane.Imbalance Zone (MMBTU).East");
-  columnVisibility.west_imbalance_zone_mmbtud &&
+  columnVisibility?.west_imbalance_zone_mmbtud &&
     filterx.push("Summary Pane.Imbalance Zone (MMBTU).West");
-  columnVisibility.total_imbalance_zone_mmbtud &&
+  columnVisibility?.total_imbalance_zone_mmbtud &&
     filterx.push("Summary Pane.Imbalance Zone (MMBTU).Total");
-  columnVisibility.east_instructed_flow_mmbtud &&
+  columnVisibility?.east_instructed_flow_mmbtud &&
     filterx.push("Summary Pane.Instructed Flow (MMBTU).East");
-  columnVisibility.west_instructed_flow_mmbtud &&
+  columnVisibility?.west_instructed_flow_mmbtud &&
     filterx.push("Summary Pane.Instructed Flow (MMBTU).West");
-  columnVisibility.east_west_instructed_flow_mmbtud &&
+  columnVisibility?.east_west_instructed_flow_mmbtud &&
     filterx.push("Summary Pane.Instructed Flow (MMBTU).East-West");
-  columnVisibility.east_shrinkage_volume_mmbtud &&
+  columnVisibility?.east_shrinkage_volume_mmbtud &&
     filterx.push("Summary Pane.Shrinkage Volume (MMBTU).East");
-  columnVisibility.west_shrinkage_volume_mmbtud &&
+  columnVisibility?.west_shrinkage_volume_mmbtud &&
     filterx.push("Summary Pane.Shrinkage Volume (MMBTU).West");
-  columnVisibility.east_park_mmbtud &&
+  columnVisibility?.east_park_mmbtud &&
     filterx.push("Summary Pane.Park (MMBTU).East");
-  columnVisibility.west_park_mmbtud &&
+  columnVisibility?.west_park_mmbtud &&
     filterx.push("Summary Pane.Park (MMBTU).West");
-  columnVisibility.east_unpark_mmbtud &&
+  columnVisibility?.east_unpark_mmbtud &&
     filterx.push("Summary Pane.Unpark (MMBTU).East");
-  columnVisibility.west_unpark_mmbtud &&
+  columnVisibility?.west_unpark_mmbtud &&
     filterx.push("Summary Pane.Unpark (MMBTU).West");
-  columnVisibility.east_sod_park_mmbtud &&
+  columnVisibility?.east_sod_park_mmbtud &&
     filterx.push("Summary Pane.SOD Park (MMBTU).East");
-  columnVisibility.west_sod_park_mmbtud &&
+  columnVisibility?.west_sod_park_mmbtud &&
     filterx.push("Summary Pane.SOD Park (MMBTU).West");
-  columnVisibility.east_eod_park_mmbtud &&
+  columnVisibility?.east_eod_park_mmbtud &&
     filterx.push("Summary Pane.EOD Park (MMBTU).East");
-  columnVisibility.west_eod_park_mmbtud &&
+  columnVisibility?.west_eod_park_mmbtud &&
     filterx.push("Summary Pane.EOD Park (MMBTU).West");
-  columnVisibility.east_min_inventory_change_mmbtud &&
+  columnVisibility?.east_min_inventory_change_mmbtud &&
     filterx.push("Summary Pane.Change Min Inventory (MMBTU).East");
-  columnVisibility.west_min_inventory_change_mmbtud &&
+  columnVisibility?.west_min_inventory_change_mmbtud &&
     filterx.push("Summary Pane.Change Min Inventory (MMBTU).West");
-  columnVisibility.east_reserve_bal_mmbtud &&
+  columnVisibility?.east_reserve_bal_mmbtud &&
     filterx.push("Summary Pane.Reserve Bal. (MMBTU).East");
-  columnVisibility.west_reserve_bal_mmbtud &&
+  columnVisibility?.west_reserve_bal_mmbtud &&
     filterx.push("Summary Pane.Reserve Bal. (MMBTU).West");
-  columnVisibility.east_adjust_imbalance_mmbtud &&
+  columnVisibility?.east_adjust_imbalance_mmbtud &&
     filterx.push("Summary Pane.Adjust Imbalance (MMBTU).East");
-  columnVisibility.west_adjust_imbalance_mmbtud &&
+  columnVisibility?.west_adjust_imbalance_mmbtud &&
     filterx.push("Summary Pane.Adjust Imbalance (MMBTU).West");
-  columnVisibility.east_vent_gas && filterx.push("Summary Pane.Vent Gas (MMBTU).East");
-  columnVisibility.west_vent_gas && filterx.push("Summary Pane.Vent Gas (MMBTU).West");
-  columnVisibility.east_commissioning_gas &&
+  columnVisibility?.east_vent_gas && filterx.push("Summary Pane.Vent Gas (MMBTU).East");
+  columnVisibility?.west_vent_gas && filterx.push("Summary Pane.Vent Gas (MMBTU).West");
+  columnVisibility?.east_commissioning_gas &&
     filterx.push("Summary Pane.Commissioning Gas (MMBTU).East");
-  columnVisibility.west_commissioning_gas &&
+  columnVisibility?.west_commissioning_gas &&
     filterx.push("Summary Pane.Commissioning Gas (MMBTU).West");
-  columnVisibility.east_other_gas &&
+  columnVisibility?.east_other_gas &&
     filterx.push("Summary Pane.Other Gas (MMBTU).East");
-  columnVisibility.west_other_gas &&
+  columnVisibility?.west_other_gas &&
     filterx.push("Summary Pane.Other Gas (MMBTU).West");
-  columnVisibility.east_daily_imb_mmbtud &&
+  columnVisibility?.east_daily_imb_mmbtud &&
     filterx.push("Summary Pane.Daily IMB (MMBTU).East");
-  columnVisibility.west_daily_imb_mmbtud &&
+  columnVisibility?.west_daily_imb_mmbtud &&
     filterx.push("Summary Pane.Daily IMB (MMBTU).West");
-  columnVisibility.total_aip_mmbtud &&
+  columnVisibility?.total_aip_mmbtud &&
     filterx.push("Summary Pane.AIP (MMBTU).Total");
-  columnVisibility.total_ain_mmbtud &&
+  columnVisibility?.total_ain_mmbtud &&
     filterx.push("Summary Pane.AIN (MMBTU).Total");
-  columnVisibility.total_percentage_imb &&
+  columnVisibility?.total_percentage_imb &&
     filterx.push("Summary Pane.%Imb.Total");
-  columnVisibility.total_percentage_abslmb &&
+  columnVisibility?.total_percentage_abslmb &&
     filterx.push("Summary Pane.%Absimb.Total");
-  columnVisibility.total_percentage_abslmb &&
+  columnVisibility?.total_percentage_abslmb &&
     filterx.push("Summary Pane.%Absimb.Total");
-  columnVisibility.east_acc_imb_month_mmbtud &&
+  columnVisibility?.east_acc_imb_month_mmbtud &&
     filterx.push("Summary Pane.Acc. IMB. (MONTH) (MMBTU).East");
-  columnVisibility.west_acc_imb_month_mmbtud &&
+  columnVisibility?.west_acc_imb_month_mmbtud &&
     filterx.push("Summary Pane.Acc. IMB. (MONTH) (MMBTU).West");
-  columnVisibility.east_acc_imb_mmbtud &&
+  columnVisibility?.east_acc_imb_mmbtud &&
     filterx.push("Summary Pane.Acc. IMB. (MMBTU).East");
-  columnVisibility.west_acc_imb_mmbtud &&
+  columnVisibility?.west_acc_imb_mmbtud &&
     filterx.push("Summary Pane.Acc. IMB. (MMBTU).West");
-  columnVisibility.east_acc_imb_inventory_mmbtud &&
+  columnVisibility?.east_acc_imb_inventory_mmbtud &&
     filterx.push("Summary Pane.Min. Inventory (MMBTU).East");
   // ตรงนี้มีคีย์หาย ของ summary
 
-  columnVisibility.east_min_inventory_mmbtud &&
+  columnVisibility?.east_min_inventory_mmbtud &&
     filterx.push("Summary Pane.Min. Inventory (MMBTU).East");
-  columnVisibility.west_min_inventory_mmbtud &&
+  columnVisibility?.west_min_inventory_mmbtud &&
     filterx.push("Summary Pane.Min. Inventory (MMBTU).West");
 
 
 
   // ฝั่ง detail
-  columnVisibility.gsp && filterx.push("Detail Pane.Entry.East.GSP");
-  columnVisibility.bypass_gas &&
+  columnVisibility?.gsp && filterx.push("Detail Pane.Entry.East.GSP");
+  columnVisibility?.bypass_gas &&
     filterx.push("Detail Pane.Entry.East.Bypass Gas");
-  columnVisibility.lng && filterx.push("Detail Pane.Entry.East.LNG");
-  columnVisibility.others_east && filterx.push("Detail Pane.Entry.East.Others");
-  columnVisibility.ydn && filterx.push("Detail Pane.Entry.West.YDN");
-  columnVisibility.ytg && filterx.push("Detail Pane.Entry.West.YTG");
-  columnVisibility.ztk && filterx.push("Detail Pane.Entry.West.ZTK");
-  columnVisibility.others_west && filterx.push("Detail Pane.Entry.West.Others");
-  columnVisibility.ra6_east &&
+  columnVisibility?.lng && filterx.push("Detail Pane.Entry.East.LNG");
+  columnVisibility?.others_east && filterx.push("Detail Pane.Entry.East.Others");
+  columnVisibility?.ydn && filterx.push("Detail Pane.Entry.West.YDN");
+  columnVisibility?.ytg && filterx.push("Detail Pane.Entry.West.YTG");
+  columnVisibility?.ztk && filterx.push("Detail Pane.Entry.West.ZTK");
+  columnVisibility?.others_west && filterx.push("Detail Pane.Entry.West.Others");
+  columnVisibility?.ra6_east &&
     filterx.push("Detail Pane.Entry.East-West.RA6 East");
-  columnVisibility.ra6_west &&
+  columnVisibility?.ra6_west &&
     filterx.push("Detail Pane.Entry.East-West.RA6 West");
-  columnVisibility.bvw10_east &&
+  columnVisibility?.bvw10_east &&
     filterx.push("Detail Pane.Entry.East-West.BVW10 East");
-  columnVisibility.bvw10_West &&
+  columnVisibility?.bvw10_West &&
     filterx.push("Detail Pane.Entry.East-West.BVW10 West");
-  columnVisibility.egat && filterx.push("Detail Pane.Exit.East.EGAT");
-  columnVisibility.ipp && filterx.push("Detail Pane.Exit.East.IPP");
-  columnVisibility.others_east_exit &&
+  columnVisibility?.egat && filterx.push("Detail Pane.Exit.East.EGAT");
+  columnVisibility?.ipp && filterx.push("Detail Pane.Exit.East.IPP");
+  columnVisibility?.others_east_exit &&
     filterx.push("Detail Pane.Exit.East.Others");
-  columnVisibility.egat_west && filterx.push("Detail Pane.Exit.West.EGAT");
-  columnVisibility.ipp_west && filterx.push("Detail Pane.Exit.West.IPP");
-  columnVisibility.others_west_exit &&
+  columnVisibility?.egat_west && filterx.push("Detail Pane.Exit.West.EGAT");
+  columnVisibility?.ipp_west && filterx.push("Detail Pane.Exit.West.IPP");
+  columnVisibility?.others_west_exit &&
     filterx.push("Detail Pane.Exit.West.Others");
-  columnVisibility.egat_east_west &&
+  columnVisibility?.egat_east_west &&
     filterx.push("Detail Pane.Exit.East-West.EGAT");
-  columnVisibility.ipp_east_west &&
+  columnVisibility?.ipp_east_west &&
     filterx.push("Detail Pane.Exit.East-West.IPP");
-  columnVisibility.others_east_west_exit &&
+  columnVisibility?.others_east_west_exit &&
     filterx.push("Detail Pane.Exit.East-West.Others");
-  columnVisibility.east_f2andg && filterx.push("Detail Pane.Exit.F2&G.East");
-  columnVisibility.west_f2andg && filterx.push("Detail Pane.Exit.F2&G.West");
-  columnVisibility.east_e && filterx.push("Detail Pane.Exit.E.East");
-  columnVisibility.west_e && filterx.push("Detail Pane.Exit.E.West");
+  columnVisibility?.east_f2andg && filterx.push("Detail Pane.Exit.F2&G.East");
+  columnVisibility?.west_f2andg && filterx.push("Detail Pane.Exit.F2&G.West");
+  columnVisibility?.east_e && filterx.push("Detail Pane.Exit.E.East");
+  columnVisibility?.west_e && filterx.push("Detail Pane.Exit.E.West");
 
   const EXCLUDED_KEYS = new Set(["action"]);
   const filter = initialColumns
@@ -3760,6 +3844,7 @@ export function epBalancingBalanceReport(payload: any) {
   };
 
   const newData = resData?.flatMap((e: any) => {
+    if(!e) return [];
     const {
       values: valuesTotalAll,
       shipper_data,
@@ -3768,7 +3853,7 @@ export function epBalancingBalanceReport(payload: any) {
       execute_timestamp,
       ...nE
     } = e;
-    const gasDay = dayjs(e["gas_day"], "YYYY-MM-DD").format("DD/MM/YYYY");
+    const gasDay = dayjs(e.gas_day, "YYYY-MM-DD").format("DD/MM/YYYY");
 
     // ขาว ฟ้า
     const totalShipper = shipper_data?.flatMap((sp: any) => {
@@ -3795,6 +3880,19 @@ export function epBalancingBalanceReport(payload: any) {
           ...contractObj,
           ["values_"]: valuesContract,
         };
+      }).map((em:any) => { //https://app.clickup.com/t/9018502823/86ewwaxq3
+        
+        return {
+          ...em,
+          accImbMonth_east: "",
+          accImbMonth_west: "",
+          accImb_east: "",
+          accImb_west: "",
+          accImbInv_east: "",
+          accImbInv_west: "",
+          minInventory_east: "",
+          minInventory_west: "",
+        }
       });
 
 
@@ -3804,14 +3902,12 @@ export function epBalancingBalanceReport(payload: any) {
           ...valuesTotalShipper,
           {
             tag: "custom_gas_day",
-            value: `TOTAL : `,
+            value: `TOTAL : ${shipperGroupData?.find((f: any) => f?.id_name === shipper )?.name}(${gasDay})`,
           },
           { tag: "custom_shipper_name", 
-            value: `${shipperGroupData?.find((f: any) => {
-              return f?.id_name === shipper;
-            })?.name
-              }(${gasDay})` },
-          { tag: "custom_contract_code", value: "" },
+            // value: `${shipperGroupData?.find((f: any) => f?.id_name === shipper )?.name}(${gasDay})` },
+            value: `` },
+          { tag: "custom_contract_code", value: "ALL CONTRACT" },
         ],
         shipperGroupData
       );
@@ -3850,9 +3946,9 @@ export function epBalancingBalanceReport(payload: any) {
       keyHead,
       [
         ...valuesTotalAll,
-        { tag: "custom_gas_day", value: `TOTAL ALL : ` },
-        { tag: "custom_shipper_name", value: `(${gasDay})` },
-        { tag: "custom_contract_code", value: "" },
+        { tag: "custom_gas_day", value: `TOTAL ALL : (${gasDay})` },
+        { tag: "custom_shipper_name", value: `` },
+        { tag: "custom_contract_code", value: "ALL CONTRACT" },
       ],
       shipperGroupData
     );
@@ -3890,113 +3986,113 @@ export function epBalancingBalanceReport(payload: any) {
     }
   });
 
-  const formateData = newData.map((e: any) => {
+  const formateData = (newData || [])?.map((e: any) => {
     let setData: any = {
-      ["Gas Day"]: e["custom_gas_day"] || "",
+      ["Gas Day"]: e?.custom_gas_day || "",
       ["Summary Pane"]: {
-        ["Shipper Name"]: e["custom_shipper_name"] || "",
-        ["Contract Code"]: e["custom_contract_code"] || "",
+        ["Shipper Name"]: e?.custom_shipper_name || "",
+        ["Contract Code"]: e?.custom_contract_code || "",
         ["Total Entry (MMBTU)"]: {
-          ["East"]: e["total_entry_east"] !== null && e["total_entry_east"] !== undefined ? formatNumberFourDecimalNom(e["total_entry_east"]) : '',
-          ["West"]: e["total_entry_west"] !== null && e["total_entry_west"] !== undefined ? formatNumberFourDecimalNom(e["total_entry_west"]) : '',
-          ["East-West"]: e["total_entry_east-west"] !== null && e["total_entry_east-west"] !== undefined ? formatNumberFourDecimalNom(e["total_entry_east-west"]) : '',
+          ["East"]: e?.total_entry_east !== null && e?.total_entry_east !== undefined ? formatNumberFourDecimalNom(e?.total_entry_east) : '',
+          ["West"]: e?.total_entry_west !== null && e?.total_entry_west !== undefined ? formatNumberFourDecimalNom(e?.total_entry_west) : '',
+          ["East-West"]: e?.["total_entry_east-west"] !== null && e?.["total_entry_east-west"] !== undefined ? formatNumberFourDecimalNom(e?.["total_entry_east-west"]) : '',
         },
         ["Total Exit (MMBTU)"]: {
-          ["East"]: e["total_exit_east"] !== null && e["total_exit_east"] !== undefined ? formatNumberFourDecimalNom(e["total_exit_east"]) : '',
-          ["West"]: e["total_exit_west"] !== null && e["total_exit_west"] !== undefined ? formatNumberFourDecimalNom(e["total_exit_west"]) : '',
-          ["East-West"]: e["total_exit_east-west"] !== null && e["total_exit_east-west"] !== undefined ? formatNumberFourDecimalNom(e["total_exit_east-west"]) : '',
+          ["East"]: e?.total_exit_east !== null && e?.total_exit_east !== undefined ? formatNumberFourDecimalNom(e?.total_exit_east) : '',
+          ["West"]: e?.total_exit_west !== null && e?.total_exit_west !== undefined ? formatNumberFourDecimalNom(e?.total_exit_west) : '',
+          ["East-West"]: e?.["total_exit_east-west"] !== null && e?.["total_exit_east-west"] !== undefined ? formatNumberFourDecimalNom(e?.["total_exit_east-west"]) : '',
         },
         ["Imbalance Zone (MMBTU)"]: {
-          ["East"]: e["imbZone_east"] !== null && e["imbZone_east"] !== undefined ? formatNumberFourDecimalNom(e["imbZone_east"]) : '',
-          ["West"]: e["imbZone_west"] !== null && e["imbZone_west"] !== undefined ? formatNumberFourDecimalNom(e["imbZone_west"]) : '',
-          ["Total"]: e["imbZone_total"] !== null && e["imbZone_total"] !== undefined ? formatNumberFourDecimalNom(e["imbZone_total"]) : '',
+          ["East"]: e?.imbZone_east !== null && e?.imbZone_east !== undefined ? formatNumberFourDecimalNom(e?.imbZone_east) : '',
+          ["West"]: e?.imbZone_west !== null && e?.imbZone_west !== undefined ? formatNumberFourDecimalNom(e?.imbZone_west) : '',
+          ["Total"]: e?.imbZone_total !== null && e?.imbZone_total !== undefined ? formatNumberFourDecimalNom(e?.imbZone_total) : '',
         },
         ["Instructed Flow (MMBTU)"]: {
-          ["East"]: e["instructedFlow_east"] !== null && e["instructedFlow_east"] !== undefined ? formatNumberFourDecimalNom(e["instructedFlow_east"]) : '',
-          ["West"]: e["instructedFlow_west"] !== null && e["instructedFlow_west"] !== undefined ? formatNumberFourDecimalNom(e["instructedFlow_west"]) : '',
-          ["East-West"]: e["instructedFlow_east-west"] !== null && e["instructedFlow_east-west"] !== undefined ? formatNumberFourDecimalNom(e["instructedFlow_east-west"]) : '',
+          ["East"]: e?.instructedFlow_east !== null && e?.instructedFlow_east !== undefined ? formatNumberFourDecimalNom(e?.instructedFlow_east) : '',
+          ["West"]: e?.instructedFlow_west !== null && e?.instructedFlow_west !== undefined ? formatNumberFourDecimalNom(e?.instructedFlow_west) : '',
+          ["East-West"]: e?.["instructedFlow_east-west"] !== null && e?.["instructedFlow_east-west"] !== undefined ? formatNumberFourDecimalNom(e?.["instructedFlow_east-west"]) : '',
         },
         ["Shrinkage Volume (MMBTU)"]: {
-          ["East"]: e["shrinkage_east"] !== null && e["shrinkage_east"] !== undefined ? formatNumberFourDecimalNom(e["shrinkage_east"]) : '',
-          ["West"]: e["shrinkage_west"] !== null && e["shrinkage_west"] !== undefined ? formatNumberFourDecimalNom(e["shrinkage_west"]) : '',
+          ["East"]: e?.shrinkage_east !== null && e?.shrinkage_east !== undefined ? formatNumberFourDecimalNom(e?.shrinkage_east) : '',
+          ["West"]: e?.shrinkage_west !== null && e?.shrinkage_west !== undefined ? formatNumberFourDecimalNom(e?.shrinkage_west) : '',
         },
         ["Park (MMBTU)"]: {
-          ["East"]: e["park_east"] !== null && e["park_east"] !== undefined ? formatNumberFourDecimalNom(e["park_east"]) : '',
-          ["West"]: e["park_west"] !== null && e["park_west"] !== undefined ? formatNumberFourDecimalNom(e["park_west"]) : '',
+          ["East"]: e?.park_east !== null && e?.park_east !== undefined ? formatNumberFourDecimalNom(e?.park_east) : '',
+          ["West"]: e?.park_west !== null && e?.park_west !== undefined ? formatNumberFourDecimalNom(e?.park_west) : '',
         },
         ["Unpark (MMBTU)"]: {
-          ["East"]: e["Unpark_east"] !== null && e["Unpark_east"] !== undefined ? formatNumberFourDecimalNom(e["Unpark_east"]) : '',
-          ["West"]: e["Unpark_west"] !== null && e["Unpark_west"] !== undefined ? formatNumberFourDecimalNom(e["Unpark_west"]) : '',
+          ["East"]: e?.Unpark_east !== null && e?.Unpark_east !== undefined ? formatNumberFourDecimalNom(e?.Unpark_east) : '',
+          ["West"]: e?.Unpark_west !== null && e?.Unpark_west !== undefined ? formatNumberFourDecimalNom(e?.Unpark_west) : '',
         },
         ["SOD Park (MMBTU)"]: {
-          ["East"]: e["SodPark_east"] !== null && e["SodPark_east"] !== undefined ? formatNumberFourDecimalNom(e["SodPark_east"]) : '',
-          ["West"]: e["SodPark_west"] !== null && e["SodPark_west"] !== undefined ? formatNumberFourDecimalNom(e["SodPark_west"]) : '',
+          ["East"]: e?.SodPark_east !== null && e?.SodPark_east !== undefined ? formatNumberFourDecimalNom(e?.SodPark_east) : '',
+          ["West"]: e?.SodPark_west !== null && e?.SodPark_west !== undefined ? formatNumberFourDecimalNom(e?.SodPark_west) : '',
         },
         ["EOD Park (MMBTU)"]: {
-          ["East"]: e["EodPark_east"] !== null && e["EodPark_east"] !== undefined ? formatNumberFourDecimalNom(e["EodPark_east"]) : '',
-          ["West"]: e["EodPark_west"] !== null && e["EodPark_west"] !== undefined ? formatNumberFourDecimalNom(e["EodPark_west"]) : '',
+          ["East"]: e?.EodPark_east !== null && e?.EodPark_east !== undefined ? formatNumberFourDecimalNom(e?.EodPark_east) : '',
+          ["West"]: e?.EodPark_west !== null && e?.EodPark_west !== undefined ? formatNumberFourDecimalNom(e?.EodPark_west) : '',
         },
         ["Change Min Inventory (MMBTU)"]: {
-          ["East"]: e["minInventoryChange_east"] !== null && e["minInventoryChange_east"] !== undefined ? formatNumberFourDecimalNom(e["minInventoryChange_east"]) : '',
-          ["West"]: e["minInventoryChange_west"] !== null && e["minInventoryChange_west"] !== undefined ? formatNumberFourDecimalNom(e["minInventoryChange_west"]) : '',
+          ["East"]: e?.minInventoryChange_east !== null && e?.minInventoryChange_east !== undefined ? formatNumberFourDecimalNom(e?.minInventoryChange_east) : '',
+          ["West"]: e?.minInventoryChange_west !== null && e?.minInventoryChange_west !== undefined ? formatNumberFourDecimalNom(e?.minInventoryChange_west) : '',
         },
         ["Reserve Bal. (MMBTU)"]: {
-          ["East"]: e["reserveBal_east"] !== null && e["reserveBal_east"] !== undefined ? formatNumberFourDecimalNom(e["reserveBal_east"]) : '',
-          ["West"]: e["reserveBal_west"] !== null && e["reserveBal_west"] !== undefined ? formatNumberFourDecimalNom(e["reserveBal_west"]) : '',
+          ["East"]: e?.reserveBal_east !== null && e?.reserveBal_east !== undefined ? formatNumberFourDecimalNom(e?.reserveBal_east) : '',
+          ["West"]: e?.reserveBal_west !== null && e?.reserveBal_west !== undefined ? formatNumberFourDecimalNom(e?.reserveBal_west) : '',
         },
         ["Adjust Imbalance (MMBTU)"]: {
-          ["East"]: e["adjustDailyImb_east"] !== null && e["adjustDailyImb_east"] !== undefined ? formatNumberFourDecimalNom(e["adjustDailyImb_east"]) : '',
-          ["West"]: e["adjustDailyImb_west"] !== null && e["adjustDailyImb_west"] !== undefined ? formatNumberFourDecimalNom(e["adjustDailyImb_west"]) : '',
+          ["East"]: e?.adjustDailyImb_east !== null && e?.adjustDailyImb_east !== undefined ? formatNumberFourDecimalNom(e?.adjustDailyImb_east) : '',
+          ["West"]: e?.adjustDailyImb_west !== null && e?.adjustDailyImb_west !== undefined ? formatNumberFourDecimalNom(e?.adjustDailyImb_west) : '',
         }, 
         ["Vent Gas (MMBTU)"]: {
-          ["East"]: e["ventGas_east"] !== null && e["ventGas_east"] !== undefined ? formatNumberFourDecimalNom(e["ventGas_east"]) : '',
-          ["West"]: e["ventGas_west"] !== null && e["ventGas_west"] !== undefined ? formatNumberFourDecimalNom(e["ventGas_west"]) : '',
+          ["East"]: e?.ventGas_east !== null && e?.ventGas_east !== undefined ? formatNumberFourDecimalNom(e?.ventGas_east) : '',
+          ["West"]: e?.ventGas_west !== null && e?.ventGas_west !== undefined ? formatNumberFourDecimalNom(e?.ventGas_west) : '',
         },
         ["Commissioning Gas (MMBTU)"]: {
-          ["East"]: e["commissioningGas_east"] !== null && e["commissioningGas_east"] !== undefined ? formatNumberFourDecimalNom(e["commissioningGas_east"]) : '',
-          ["West"]: e["commissioningGas_west"] !== null && e["commissioningGas_west"] !== undefined ? formatNumberFourDecimalNom(e["commissioningGas_west"]) : '',
+          ["East"]: e?.commissioningGas_east !== null && e?.commissioningGas_east !== undefined ? formatNumberFourDecimalNom(e?.commissioningGas_east) : '',
+          ["West"]: e?.commissioningGas_west !== null && e?.commissioningGas_west !== undefined ? formatNumberFourDecimalNom(e?.commissioningGas_west) : '',
         },
         ["Other Gas (MMBTU)"]: {
-          ["East"]: e["otherGas_east"] !== null && e["otherGas_east"] !== undefined ? formatNumberFourDecimalNom(e["otherGas_east"]) : '',
-          ["West"]: e["otherGas_west"] !== null && e["otherGas_west"] !== undefined ? formatNumberFourDecimalNom(e["otherGas_west"]) : '',
+          ["East"]: e?.otherGas_east !== null && e?.otherGas_east !== undefined ? formatNumberFourDecimalNom(e?.otherGas_east) : '',
+          ["West"]: e?.otherGas_west !== null && e?.otherGas_west !== undefined ? formatNumberFourDecimalNom(e?.otherGas_west) : '',
         },
         ["Daily IMB (MMBTU)"]: {
-          ["East"]: e["dailyImb_east"] !== null && e["dailyImb_east"] !== undefined ? formatNumberFourDecimalNom(e["dailyImb_east"]) : '',
-          ["West"]: e["dailyImb_west"] !== null && e["dailyImb_west"] !== undefined ? formatNumberFourDecimalNom(e["dailyImb_west"]) : '',
+          ["East"]: e?.dailyImb_east !== null && e?.dailyImb_east !== undefined ? formatNumberFourDecimalNom(e?.dailyImb_east) : '',
+          ["West"]: e?.dailyImb_west !== null && e?.dailyImb_west !== undefined ? formatNumberFourDecimalNom(e?.dailyImb_west) : '',
         },
         ["AIP (MMBTU)"]: {
-          ["Total"]: e["aip"] !== null && e["aip"] !== undefined ? formatNumberFourDecimalNom(e["aip"]) : '',
+          ["Total"]: e?.aip !== null && e?.aip !== undefined ? formatNumberFourDecimalNom(e?.aip) : '',
         },
         ["AIN (MMBTU)"]: {
-          ["Total"]: e["ain"] !== null && e["ain"] !== undefined ? formatNumberFourDecimalNom(e["ain"]) : '',
+          ["Total"]: e?.ain !== null && e?.ain !== undefined ? formatNumberFourDecimalNom(e?.ain) : '',
         },
         ["%Imb"]: {
-          ["Total"]: e["absimb"] !== null && e["absimb"] !== undefined ? formatNumberFourDecimalNom(e["absimb"]) : '',
+          ["Total"]: e?.absimb !== null && e?.absimb !== undefined ? formatNumberFourDecimalNom(e?.absimb) : '',
         },
         ["%Absimb"]: {
-          ["Total"]: e["absimb"] !== null && e["absimb"] !== undefined
-            ? formatNumberFourDecimalNom(Math.abs(parseToNumber(e["absimb"]) ?? 0))
+          ["Total"]: e?.absimb !== null && e?.absimb !== undefined
+            ? formatNumberFourDecimalNom(Math.abs(parseToNumber(e?.absimb) ?? 0))
             : "",
         },
         ["Acc. IMB. (MONTH) (MMBTU)"]: {
-          ["East"]: e["accImbMonth_east"] !== null && e["accImbMonth_east"] !== undefined ? formatNumberFourDecimalNom(e["accImbMonth_east"]) : '',
-          ["West"]: e["accImbMonth_west"] !== null && e["accImbMonth_west"] !== undefined ? formatNumberFourDecimalNom(e["accImbMonth_west"]) : '',
+          ["East"]: e?.accImbMonth_east !== null && e?.accImbMonth_east !== undefined ? formatNumberFourDecimalNom(e?.accImbMonth_east) : '',
+          ["West"]: e?.accImbMonth_west !== null && e?.accImbMonth_west !== undefined ? formatNumberFourDecimalNom(e?.accImbMonth_west) : '',
         },
         ["Acc. IMB. (MMBTU)"]: {
-          ["East"]: e["accImb_east"] !== null && e["accImb_east"] !== undefined ? formatNumberFourDecimalNom(e["accImb_east"]) : '',
-          ["West"]: e["accImb_west"] !== null && e["accImb_west"] !== undefined ? formatNumberFourDecimalNom(e["accImb_west"]) : '',
+          ["East"]: e?.accImb_east !== null && e?.accImb_east !== undefined ? formatNumberFourDecimalNom(e?.accImb_east) : '',
+          ["West"]: e?.accImb_west !== null && e?.accImb_west !== undefined ? formatNumberFourDecimalNom(e?.accImb_west) : '',
         },
         ["Min. Inventory (MMBTU)"]: {
-          ["East"]: (e["minInventory_east"] !== null && e["minInventory_east"] !== undefined) ? formatNumberFourDecimalNom(e["minInventory_east"]) : '',
-          ["West"]: (e["minInventory_west"] !== null && e["minInventory_west"] !== undefined) ? formatNumberFourDecimalNom(e["minInventory_west"]) : '',
+          ["East"]: (e?.minInventory_east !== null && e?.minInventory_east !== undefined) ? formatNumberFourDecimalNom(e?.minInventory_east) : '',
+          ["West"]: (e?.minInventory_west !== null && e?.minInventory_west !== undefined) ? formatNumberFourDecimalNom(e?.minInventory_west) : '',
         },
       },
       ["Detail Pane"]: {
         ["Entry"]: {
           ["East"]: {
-            ["GSP"]: e["detail_entry_east_gsp"],
-            ["Bypass Gas"]: e["detail_entry_east_bypassGas"],
-            ["LNG"]: e["detail_entry_east_lng"],
+            ["GSP"]: e?.detail_entry_east_gsp,
+            ["Bypass Gas"]: e?.detail_entry_east_bypassGas,
+            ["LNG"]: e?.detail_entry_east_lng,
             ["Others"]:
               sumDetail(e?.["values_"], "detail_entry_east_", [
                 "gsp",
@@ -4006,9 +4102,9 @@ export function epBalancingBalanceReport(payload: any) {
               ]) ?? "",
           },
           ["West"]: {
-            ["YDN"]: e["detail_entry_west_yadana"],
-            ["YTG"]: e["detail_entry_west_yetagun"],
-            ["ZTK"]: e["detail_entry_west_zawtika"],
+            ["YDN"]: e?.detail_entry_west_yadana,
+            ["YTG"]: e?.detail_entry_west_yetagun,
+            ["ZTK"]: e?.detail_entry_west_zawtika,
             ["Others"]:
               sumDetail(e?.["values_"], "detail_entry_west_", [
                 "yadana",
@@ -4018,16 +4114,16 @@ export function epBalancingBalanceReport(payload: any) {
               ]) ?? "",
           },
           ["East-West"]: {
-            ["RA6 East"]: e["detail_entry_east-west_ra6East"],
-            ["RA6 West"]: e["detail_entry_east-west_ra6West"],
-            ["BVW10 East"]: e["detail_entry_east-west_bvw10East"],
-            ["BVW10 West"]: e["detail_entry_east-west_bvw10West"],
+            ["RA6 East"]: e?.["detail_entry_east-west_ra6East"],
+            ["RA6 West"]: e?.["detail_entry_east-west_ra6West"],
+            ["BVW10 East"]: e?.["detail_entry_east-west_bvw10East"],
+            ["BVW10 West"]: e?.["detail_entry_east-west_bvw10West"],
           },
         },
         ["Exit"]: {
           ["East"]: {
-            ["EGAT"]: e["detail_exit_east_egat"],
-            ["IPP"]: e["detail_exit_east_ipp"],
+            ["EGAT"]: e?.detail_exit_east_egat,
+            ["IPP"]: e?.detail_exit_east_ipp,
             ["Others"]:
               sumDetail(e?.["values_"], "detail_exit_east_", [
                 "egat",
@@ -4036,8 +4132,8 @@ export function epBalancingBalanceReport(payload: any) {
               ]) ?? "",
           },
           ["West"]: {
-            ["EGAT"]: e["detail_exit_west_egat"],
-            ["IPP"]: e["detail_exit_west_ipp"],
+            ["EGAT"]: e?.detail_exit_west_egat,
+            ["IPP"]: e?.detail_exit_west_ipp,
             ["Others"]:
               sumDetail(e?.["values_"], "detail_exit_west_", [
                 "egat",
@@ -4046,8 +4142,8 @@ export function epBalancingBalanceReport(payload: any) {
               ]) ?? "",
           },
           ["East-West"]: {
-            ["EGAT"]: e["detail_exit_east-west_egat"],
-            ["IPP"]: e["detail_exit_east-west_ipp"],
+            ["EGAT"]: e?.["detail_exit_east-west_egat"],
+            ["IPP"]: e?.["detail_exit_east-west_ipp"],
             ["Others"]:
               sumDetail(e?.["values_"], "detail_exit_east-west_", [
                 "egat",
@@ -4056,17 +4152,16 @@ export function epBalancingBalanceReport(payload: any) {
               ]) ?? "",
           },
           ["F2&G"]: {
-            ["East"]: e["detail_exit_east_F2andG"],
-            ["West"]: e["detail_exit_west_F2andG"],
+            ["East"]: e?.detail_exit_east_F2andG,
+            ["West"]: e?.detail_exit_west_F2andG,
           },
           ["E"]: {
-            ["East"]: e["detail_exit_E_east"],
-            ["West"]: e["detail_exit_E_west"],
+            ["East"]: e?.detail_exit_E_east,
+            ["West"]: e?.detail_exit_E_west,
           },
         },
       },
     };
-    console.log('setData : ', setData);
     let filteredData = Object.keys(setData).reduce((obj: any, key: any) => {
       obj[key] = setData[key]; // เพิ่ม key และ value ที่ผ่านการกรอง
       return obj;
@@ -4074,8 +4169,7 @@ export function epBalancingBalanceReport(payload: any) {
 
     return filteredData;
   });
-  const filterHeader = filterx || [];
-  console.log('filterHeader : ', filterHeader);
+  const filterHeader = filterx;
 
   const headerColorMap = {
     Publicate: "1573A1", // #1573A1
@@ -4303,95 +4397,95 @@ export function epBalancingIntradayBalancingReport(payload: any) {
   // filterShowTotalAllShipper true
   // ฟ้า เหลือง
 
-  columnVisibility.publicate && filterx.push("Publicate");
-  columnVisibility.gas_day && filterx.push("Gas Day");
-  columnVisibility.gas_hour && filterx.push("Gas Hour");
-  columnVisibility.timestamp && filterx.push("Timestamp");
-  columnVisibility.shipper_name && filterx.push("Summary Pane.Shipper Name");
-  columnVisibility.plan_actual && filterx.push("Summary Pane.Plan / Actual");
-  columnVisibility.contract_code && filterx.push("Summary Pane.Contract Code");
-  columnVisibility.east_total_entry_mmbtud && filterx.push("Summary Pane.Total Entry (MMBTU/D).East");
-  columnVisibility.west_total_entry_mmbtud && filterx.push("Summary Pane.Total Entry (MMBTU/D).West");
-  columnVisibility.east_west_total_entry_mmbtud && filterx.push("Summary Pane.Total Entry (MMBTU/D).East-West");
-  columnVisibility.east_total_exit_mmbtud && filterx.push("Summary Pane.Total Exit (MMBTU/D).East");
-  columnVisibility.west_total_exit_mmbtud && filterx.push("Summary Pane.Total Exit (MMBTU/D).West");
-  columnVisibility.east_west_total_exit_mmbtud && filterx.push("Summary Pane.Total Exit (MMBTU/D).East-West");
-  columnVisibility.east_imbalance_zone_mmbtud && filterx.push("Summary Pane.Imbalance Zone (MMBTU/D).East");
-  columnVisibility.west_imbalance_zone_mmbtud && filterx.push("Summary Pane.Imbalance Zone (MMBTU/D).West");
-  columnVisibility.total_imbalance_zone_mmbtud && filterx.push("Summary Pane.Imbalance Zone (MMBTU/D).Total");
-  columnVisibility.east_instructed_flow_mmbtud && filterx.push("Summary Pane.Instructed Flow (MMBTU/D).East");
-  columnVisibility.west_instructed_flow_mmbtud && filterx.push("Summary Pane.Instructed Flow (MMBTU/D).West");
-  columnVisibility.east_west_instructed_flow_mmbtud && filterx.push("Summary Pane.Instructed Flow (MMBTU/D).East-West");
-  columnVisibility.east_shrinkage_volume_mmbtud && filterx.push("Summary Pane.Shrinkage Volume (MMBTU/D).East");
-  columnVisibility.west_shrinkage_volume_mmbtud && filterx.push("Summary Pane.Shrinkage Volume (MMBTU/D).West");
-  columnVisibility.east_park_mmbtud && filterx.push("Summary Pane.Park (MMBTU/D).East");
-  columnVisibility.west_park_mmbtud && filterx.push("Summary Pane.Park (MMBTU/D).West");
-  columnVisibility.east_unpark_mmbtud && filterx.push("Summary Pane.Unpark (MMBTU/D).East");
-  columnVisibility.west_unpark_mmbtud && filterx.push("Summary Pane.Unpark (MMBTU/D).West");
-  columnVisibility.east_sod_park_mmbtud && filterx.push("Summary Pane.SOD Park (MMBTU/D).East");
-  columnVisibility.west_sod_park_mmbtud && filterx.push("Summary Pane.SOD Park (MMBTU/D).West");
-  columnVisibility.east_eod_park_mmbtud && filterx.push("Summary Pane.EOD Park (MMBTU/D).East");
-  columnVisibility.west_eod_park_mmbtud && filterx.push("Summary Pane.EOD Park (MMBTU/D).West");
-  columnVisibility.east_min_inventory_change_mmbtud && filterx.push("Summary Pane.Change Min Inventory (MMBTU/D).East");
-  columnVisibility.west_min_inventory_change_mmbtud && filterx.push("Summary Pane.Change Min Inventory (MMBTU/D).West");
-  columnVisibility.east_reserve_bal_mmbtud && filterx.push("Summary Pane.Reserve Bal. (MMBTU/D).East");
-  columnVisibility.west_reserve_bal_mmbtud && filterx.push("Summary Pane.Reserve Bal. (MMBTU/D).West");
-  columnVisibility.east_adjust_imbalance_mmbtud && filterx.push("Summary Pane.Adjust Imbalance (MMBTU/D).East");
-  columnVisibility.west_adjust_imbalance_mmbtud && filterx.push("Summary Pane.Adjust Imbalance (MMBTU/D).West");
-  columnVisibility.east_vent_gas && filterx.push("Summary Pane.Vent Gas.East");
-  columnVisibility.west_vent_gas && filterx.push("Summary Pane.Vent Gas.West");
-  columnVisibility.east_commissioning_gas && filterx.push("Summary Pane.Commissioning Gas.East");
-  columnVisibility.west_commissioning_gas && filterx.push("Summary Pane.Commissioning Gas.West");
-  columnVisibility.east_other_gas && filterx.push("Summary Pane.Other Gas.East");
-  columnVisibility.west_other_gas && filterx.push("Summary Pane.Other Gas.West");
-  columnVisibility.east_daily_imb_mmbtud && filterx.push("Summary Pane.Daily IMB (MMBTU/D).East");
-  columnVisibility.west_daily_imb_mmbtud && filterx.push("Summary Pane.Daily IMB (MMBTU/D).West");
-  columnVisibility.total_aip_mmbtud && filterx.push("Summary Pane.AIP (MMBTU/D).Total");
-  columnVisibility.total_ain_mmbtud && filterx.push("Summary Pane.AIN (MMBTU/D).Total");
-  columnVisibility.total_percentage_imb && filterx.push("Summary Pane.%Imb.Total");
-  columnVisibility.total_percentage_abslmb && filterx.push("Summary Pane.%Absimb.Total");
-  columnVisibility.total_percentage_abslmb && filterx.push("Summary Pane.%Absimb.Total");
-  columnVisibility.east_acc_imb_month_mmbtud && filterx.push("Summary Pane.Acc. IMB. (MONTH) (MMBTU/D).East");
-  columnVisibility.west_acc_imb_month_mmbtud && filterx.push("Summary Pane.Acc. IMB. (MONTH) (MMBTU/D).West");
+  columnVisibility?.publicate && filterx.push("Publicate");
+  columnVisibility?.gas_day && filterx.push("Gas Day");
+  columnVisibility?.gas_hour && filterx.push("Gas Hour");
+  columnVisibility?.timestamp && filterx.push("Timestamp");
+  columnVisibility?.shipper_name && filterx.push("Summary Pane.Shipper Name");
+  columnVisibility?.plan_actual && filterx.push("Summary Pane.Plan / Actual");
+  columnVisibility?.contract_code && filterx.push("Summary Pane.Contract Code");
+  columnVisibility?.east_total_entry_mmbtud && filterx.push("Summary Pane.Total Entry (MMBTU/D).East");
+  columnVisibility?.west_total_entry_mmbtud && filterx.push("Summary Pane.Total Entry (MMBTU/D).West");
+  columnVisibility?.east_west_total_entry_mmbtud && filterx.push("Summary Pane.Total Entry (MMBTU/D).East-West");
+  columnVisibility?.east_total_exit_mmbtud && filterx.push("Summary Pane.Total Exit (MMBTU/D).East");
+  columnVisibility?.west_total_exit_mmbtud && filterx.push("Summary Pane.Total Exit (MMBTU/D).West");
+  columnVisibility?.east_west_total_exit_mmbtud && filterx.push("Summary Pane.Total Exit (MMBTU/D).East-West");
+  columnVisibility?.east_imbalance_zone_mmbtud && filterx.push("Summary Pane.Imbalance Zone (MMBTU/D).East");
+  columnVisibility?.west_imbalance_zone_mmbtud && filterx.push("Summary Pane.Imbalance Zone (MMBTU/D).West");
+  columnVisibility?.total_imbalance_zone_mmbtud && filterx.push("Summary Pane.Imbalance Zone (MMBTU/D).Total");
+  columnVisibility?.east_instructed_flow_mmbtud && filterx.push("Summary Pane.Instructed Flow (MMBTU/D).East");
+  columnVisibility?.west_instructed_flow_mmbtud && filterx.push("Summary Pane.Instructed Flow (MMBTU/D).West");
+  columnVisibility?.east_west_instructed_flow_mmbtud && filterx.push("Summary Pane.Instructed Flow (MMBTU/D).East-West");
+  columnVisibility?.east_shrinkage_volume_mmbtud && filterx.push("Summary Pane.Shrinkage Volume (MMBTU/D).East");
+  columnVisibility?.west_shrinkage_volume_mmbtud && filterx.push("Summary Pane.Shrinkage Volume (MMBTU/D).West");
+  columnVisibility?.east_park_mmbtud && filterx.push("Summary Pane.Park (MMBTU/D).East");
+  columnVisibility?.west_park_mmbtud && filterx.push("Summary Pane.Park (MMBTU/D).West");
+  columnVisibility?.east_unpark_mmbtud && filterx.push("Summary Pane.Unpark (MMBTU/D).East");
+  columnVisibility?.west_unpark_mmbtud && filterx.push("Summary Pane.Unpark (MMBTU/D).West");
+  columnVisibility?.east_sod_park_mmbtud && filterx.push("Summary Pane.SOD Park (MMBTU/D).East");
+  columnVisibility?.west_sod_park_mmbtud && filterx.push("Summary Pane.SOD Park (MMBTU/D).West");
+  columnVisibility?.east_eod_park_mmbtud && filterx.push("Summary Pane.EOD Park (MMBTU/D).East");
+  columnVisibility?.west_eod_park_mmbtud && filterx.push("Summary Pane.EOD Park (MMBTU/D).West");
+  columnVisibility?.east_min_inventory_change_mmbtud && filterx.push("Summary Pane.Change Min Inventory (MMBTU/D).East");
+  columnVisibility?.west_min_inventory_change_mmbtud && filterx.push("Summary Pane.Change Min Inventory (MMBTU/D).West");
+  columnVisibility?.east_reserve_bal_mmbtud && filterx.push("Summary Pane.Reserve Bal. (MMBTU/D).East");
+  columnVisibility?.west_reserve_bal_mmbtud && filterx.push("Summary Pane.Reserve Bal. (MMBTU/D).West");
+  columnVisibility?.east_adjust_imbalance_mmbtud && filterx.push("Summary Pane.Adjust Imbalance (MMBTU/D).East");
+  columnVisibility?.west_adjust_imbalance_mmbtud && filterx.push("Summary Pane.Adjust Imbalance (MMBTU/D).West");
+  columnVisibility?.east_vent_gas && filterx.push("Summary Pane.Vent Gas.East");
+  columnVisibility?.west_vent_gas && filterx.push("Summary Pane.Vent Gas.West");
+  columnVisibility?.east_commissioning_gas && filterx.push("Summary Pane.Commissioning Gas.East");
+  columnVisibility?.west_commissioning_gas && filterx.push("Summary Pane.Commissioning Gas.West");
+  columnVisibility?.east_other_gas && filterx.push("Summary Pane.Other Gas.East");
+  columnVisibility?.west_other_gas && filterx.push("Summary Pane.Other Gas.West");
+  columnVisibility?.east_daily_imb_mmbtud && filterx.push("Summary Pane.Daily IMB (MMBTU/D).East");
+  columnVisibility?.west_daily_imb_mmbtud && filterx.push("Summary Pane.Daily IMB (MMBTU/D).West");
+  columnVisibility?.total_aip_mmbtud && filterx.push("Summary Pane.AIP (MMBTU/D).Total");
+  columnVisibility?.total_ain_mmbtud && filterx.push("Summary Pane.AIN (MMBTU/D).Total");
+  columnVisibility?.total_percentage_imb && filterx.push("Summary Pane.%Imb.Total");
+  columnVisibility?.total_percentage_abslmb && filterx.push("Summary Pane.%Absimb.Total");
+  columnVisibility?.total_percentage_abslmb && filterx.push("Summary Pane.%Absimb.Total");
+  columnVisibility?.east_acc_imb_month_mmbtud && filterx.push("Summary Pane.Acc. IMB. (MONTH) (MMBTU/D).East");
+  columnVisibility?.west_acc_imb_month_mmbtud && filterx.push("Summary Pane.Acc. IMB. (MONTH) (MMBTU/D).West");
 
-  columnVisibility.east_acc_imb_mmbtud && filterx.push("Summary Pane.Acc. IMB. (MMBTU/D).East");
-  columnVisibility.west_acc_imb_mmbtud && filterx.push("Summary Pane.Acc. IMB. (MMBTU/D).West");
+  columnVisibility?.east_acc_imb_mmbtud && filterx.push("Summary Pane.Acc. IMB. (MMBTU/D).East");
+  columnVisibility?.west_acc_imb_mmbtud && filterx.push("Summary Pane.Acc. IMB. (MMBTU/D).West");
 
-  columnVisibility.acc_imb_inventory_mmbtud && filterx.push("Summary Pane.Acc. IMB. Inventory (MMBTU/D)");
-  columnVisibility.east_acc_imb_inventory_mmbtud && filterx.push("Summary Pane.Acc. IMB. Inventory (MMBTU/D).East");
-  columnVisibility.west_acc_imb_inventory_mmbtud && filterx.push("Summary Pane.Acc. IMB. Inventory (MMBTU/D).West");
+  columnVisibility?.acc_imb_inventory_mmbtud && filterx.push("Summary Pane.Acc. IMB. Inventory (MMBTU/D)");
+  columnVisibility?.east_acc_imb_inventory_mmbtud && filterx.push("Summary Pane.Acc. IMB. Inventory (MMBTU/D).East");
+  columnVisibility?.west_acc_imb_inventory_mmbtud && filterx.push("Summary Pane.Acc. IMB. Inventory (MMBTU/D).West");
   // ตรงนี้มีคีย์หาย ของ summary
 
-  columnVisibility.min_inventory_mmbtud && filterx.push("Summary Pane.Min. Inventory (MMBTU/D)");
-  columnVisibility.east_min_inventory_mmbtud && filterx.push("Summary Pane.Min. Inventory (MMBTU/D).East");
-  columnVisibility.west_min_inventory_mmbtud && filterx.push("Summary Pane.Min. Inventory (MMBTU/D).West");
+  columnVisibility?.min_inventory_mmbtud && filterx.push("Summary Pane.Min. Inventory (MMBTU/D)");
+  columnVisibility?.east_min_inventory_mmbtud && filterx.push("Summary Pane.Min. Inventory (MMBTU/D).East");
+  columnVisibility?.west_min_inventory_mmbtud && filterx.push("Summary Pane.Min. Inventory (MMBTU/D).West");
 
   // ฝั่ง detail
-  columnVisibility.gsp && filterx.push("Detail Pane.Entry.East.GSP");
-  columnVisibility.bypass_gas && filterx.push("Detail Pane.Entry.East.Bypass Gas");
-  columnVisibility.lng && filterx.push("Detail Pane.Entry.East.LNG");
-  columnVisibility.others_east && filterx.push("Detail Pane.Entry.East.Others");
-  columnVisibility.ydn && filterx.push("Detail Pane.Entry.West.YDN");
-  columnVisibility.ytg && filterx.push("Detail Pane.Entry.West.YTG");
-  columnVisibility.ztk && filterx.push("Detail Pane.Entry.West.ZTK");
-  columnVisibility.others_west && filterx.push("Detail Pane.Entry.West.Others");
-  columnVisibility.ra6_east && filterx.push("Detail Pane.Entry.East-West.RA6 East");
-  columnVisibility.ra6_west && filterx.push("Detail Pane.Entry.East-West.RA6 West");
-  columnVisibility.bvw10_east && filterx.push("Detail Pane.Entry.East-West.BVW10 East");
-  columnVisibility.bvw10_West && filterx.push("Detail Pane.Entry.East-West.BVW10 West");
-  columnVisibility.egat && filterx.push("Detail Pane.Exit.East.EGAT");
-  columnVisibility.ipp && filterx.push("Detail Pane.Exit.East.IPP");
-  columnVisibility.others_east_exit && filterx.push("Detail Pane.Exit.East.Others");
-  columnVisibility.egat_west && filterx.push("Detail Pane.Exit.West.EGAT");
-  columnVisibility.ipp_west && filterx.push("Detail Pane.Exit.West.IPP");
-  columnVisibility.others_west_exit && filterx.push("Detail Pane.Exit.West.Others");
-  columnVisibility.egat_east_west && filterx.push("Detail Pane.Exit.East-West.EGAT");
-  columnVisibility.ipp_east_west && filterx.push("Detail Pane.Exit.East-West.IPP");
-  columnVisibility.others_east_west_exit && filterx.push("Detail Pane.Exit.East-West.Others");
-  columnVisibility.east_f2andg && filterx.push("Detail Pane.Exit.F2&G.East");
-  columnVisibility.west_f2andg && filterx.push("Detail Pane.Exit.F2&G.West");
-  columnVisibility.east_e && filterx.push("Detail Pane.Exit.E.East");
-  columnVisibility.west_e && filterx.push("Detail Pane.Exit.E.West");
+  columnVisibility?.gsp && filterx.push("Detail Pane.Entry.East.GSP");
+  columnVisibility?.bypass_gas && filterx.push("Detail Pane.Entry.East.Bypass Gas");
+  columnVisibility?.lng && filterx.push("Detail Pane.Entry.East.LNG");
+  columnVisibility?.others_east && filterx.push("Detail Pane.Entry.East.Others");
+  columnVisibility?.ydn && filterx.push("Detail Pane.Entry.West.YDN");
+  columnVisibility?.ytg && filterx.push("Detail Pane.Entry.West.YTG");
+  columnVisibility?.ztk && filterx.push("Detail Pane.Entry.West.ZTK");
+  columnVisibility?.others_west && filterx.push("Detail Pane.Entry.West.Others");
+  columnVisibility?.ra6_east && filterx.push("Detail Pane.Entry.East-West.RA6 East");
+  columnVisibility?.ra6_west && filterx.push("Detail Pane.Entry.East-West.RA6 West");
+  columnVisibility?.bvw10_east && filterx.push("Detail Pane.Entry.East-West.BVW10 East");
+  columnVisibility?.bvw10_West && filterx.push("Detail Pane.Entry.East-West.BVW10 West");
+  columnVisibility?.egat && filterx.push("Detail Pane.Exit.East.EGAT");
+  columnVisibility?.ipp && filterx.push("Detail Pane.Exit.East.IPP");
+  columnVisibility?.others_east_exit && filterx.push("Detail Pane.Exit.East.Others");
+  columnVisibility?.egat_west && filterx.push("Detail Pane.Exit.West.EGAT");
+  columnVisibility?.ipp_west && filterx.push("Detail Pane.Exit.West.IPP");
+  columnVisibility?.others_west_exit && filterx.push("Detail Pane.Exit.West.Others");
+  columnVisibility?.egat_east_west && filterx.push("Detail Pane.Exit.East-West.EGAT");
+  columnVisibility?.ipp_east_west && filterx.push("Detail Pane.Exit.East-West.IPP");
+  columnVisibility?.others_east_west_exit && filterx.push("Detail Pane.Exit.East-West.Others");
+  columnVisibility?.east_f2andg && filterx.push("Detail Pane.Exit.F2&G.East");
+  columnVisibility?.west_f2andg && filterx.push("Detail Pane.Exit.F2&G.West");
+  columnVisibility?.east_e && filterx.push("Detail Pane.Exit.E.East");
+  columnVisibility?.west_e && filterx.push("Detail Pane.Exit.E.West");
 
   // console.log('filterx : ', filterx);
   const EXCLUDED_KEYS = new Set(["action"]);
@@ -4763,127 +4857,127 @@ export function epBalancingIntradayBalancingReport(payload: any) {
 
 
 
-  const formateData = newData.map((e: any) => {
+  const formateData = (newData || []).map((e: any) => {
 
     let setData: any = {
-      ["Publicate"]: e["custom_publication"] || "",
-      ["Gas Day"]: e["custom_gas_day"] || "",
-      ["Gas Hour"]: e["custom_gas_hour"] || "",
-      ["Timestamp"]: e["custom_timestamp"] || "",
+      ["Publicate"]: e?.["custom_publication"] || "",
+      ["Gas Day"]: e?.["custom_gas_day"] || "",
+      ["Gas Hour"]: e?.["custom_gas_hour"] || "",
+      ["Timestamp"]: e?.["custom_timestamp"] || "",
       ["Summary Pane"]: {
         //   ['Shipper']: e['custom_shipper_name'] || '',
-        ["Shipper Name"]: e["custom_shipper_name"] || "",
-        ["Plan / Actual"]: e["custom_plan_actual"] || "",
-        ["Contract Code"]: e["custom_contract_code"] || "",
+        ["Shipper Name"]: e?.custom_shipper_name || "",
+        ["Plan / Actual"]: e?.custom_plan_actual || "",
+        ["Contract Code"]: e?.custom_contract_code || "",
         ["Total Entry (MMBTU/D)"]: {
-          ["East"]: e["total_entry_east"] || "",
-          ["West"]: e["total_entry_west"] || "",
-          ["East-West"]: e["total_entry_east-west"] || "",
+          ["East"]: e?.total_entry_east || "",
+          ["West"]: e?.total_entry_west || "",
+          ["East-West"]: e?.["total_entry_east-west"] || "",
         },
         ["Total Exit (MMBTU/D)"]: {
-          ["East"]: e["total_exit_east"] || "",
-          ["West"]: e["total_exit_west"] || "",
-          ["East-West"]: e["total_exit_east-west"] || "",
+          ["East"]: e?.total_exit_east || "",
+          ["West"]: e?.total_exit_west || "",
+          ["East-West"]: e?.["total_exit_east-west"] || "",
         },
         ["Imbalance Zone (MMBTU/D)"]: {
-          ["East"]: e["imbZone_east"] || "",
-          ["West"]: e["imbZone_west"] || "",
-          ["Total"]: e["imbZone_total"] || "",
+          ["East"]: e?.imbZone_east || "",
+          ["West"]: e?.imbZone_west || "",
+          ["Total"]: e?.imbZone_total || "",
         },
         ["Instructed Flow (MMBTU/D)"]: {
-          ["East"]: e["instructedFlow_east"] || "",
-          ["West"]: e["instructedFlow_west"] || "",
-          ["East-West"]: e["instructedFlow_east-west"] || "",
+          ["East"]: e?.instructedFlow_east || "",
+          ["West"]: e?.instructedFlow_west || "",
+          ["East-West"]: e?.["instructedFlow_east-west"] || "",
         },
         ["Shrinkage Volume (MMBTU/D)"]: {
-          ["East"]: e["shrinkage_east"] || "",
-          ["West"]: e["shrinkage_west"] || "",
+          ["East"]: e?.shrinkage_east || "",
+          ["West"]: e?.shrinkage_west || "",
         },
         ["Park (MMBTU/D)"]: {
-          ["East"]: e["park_east"] || "",
-          ["West"]: e["park_west"] || "",
+          ["East"]: e?.park_east || "",
+          ["West"]: e?.park_west || "",
         },
         ["Unpark (MMBTU/D)"]: {
-          ["East"]: e["Unpark_east"] || "",
-          ["West"]: e["Unpark_west"] || "",
+          ["East"]: e?.Unpark_east || "",
+          ["West"]: e?.Unpark_west || "",
         },
         ["SOD Park (MMBTU/D)"]: {
-          ["East"]: e["SodPark_east"] || "",
-          ["West"]: e["SodPark_west"] || "",
+          ["East"]: e?.SodPark_east || "",
+          ["West"]: e?.SodPark_west || "",
         },
         ["EOD Park (MMBTU/D)"]: {
-          ["East"]: e["EodPark_east"] || "",
-          ["West"]: e["EodPark_west"] || "",
+          ["East"]: e?.EodPark_east || "",
+          ["West"]: e?.EodPark_west || "",
         },
         ["Change Min Inventory (MMBTU/D)"]: {
-          ["East"]: e["minInventoryChange_east"] || "",
-          ["West"]: e["minInventoryChange_west"] || "",
+          ["East"]: e?.minInventoryChange_east || "",
+          ["West"]: e?.minInventoryChange_west || "",
         },
         ["Reserve Bal. (MMBTU/D)"]: {
-          ["East"]: e["reserveBal_east"] || "",
-          ["West"]: e["reserveBal_west"] || "",
+          ["East"]: e?.reserveBal_east || "",
+          ["West"]: e?.reserveBal_west || "",
         },
         ["Adjust Imbalance (MMBTU/D)"]: {
-          ["East"]: e["adjustDailyImb_east"] || "",
-          ["West"]: e["adjustDailyImb_west"] || "",
+          ["East"]: e?.adjustDailyImb_east || "",
+          ["West"]: e?.adjustDailyImb_west || "",
         },
         ["Vent Gas"]: {
-          ["East"]: e["ventGas_east"] || "",
-          ["West"]: e["ventGas_west"] || "",
+          ["East"]: e?.ventGas_east || "",
+          ["West"]: e?.ventGas_west || "",
         },
         ["Commissioning Gas"]: {
-          ["East"]: e["commissioningGas_east"] || "",
-          ["West"]: e["commissioningGas_west"] || "",
+          ["East"]: e?.commissioningGas_east || "",
+          ["West"]: e?.commissioningGas_west || "",
         },
         ["Other Gas"]: {
-          ["East"]: e["otherGas_east"] || "",
-          ["West"]: e["otherGas_west"] || "",
+          ["East"]: e?.otherGas_east || "",
+          ["West"]: e?.otherGas_west || "",
         },
         ["Daily IMB (MMBTU/D)"]: {
-          ["East"]: e["dailyImb_east"] || "",
-          ["West"]: e["dailyImb_west"] || "",
+          ["East"]: e?.dailyImb_east || "",
+          ["West"]: e?.dailyImb_west || "",
         },
         ["AIP (MMBTU/D)"]: {
-          ["Total"]: e["aip"] || "",
+          ["Total"]: e?.aip || "",
         },
         ["AIN (MMBTU/D)"]: {
-          ["Total"]: e["ain"] || "",
+          ["Total"]: e?.ain || "",
         },
         ["%Imb"]: {
-          // ["Total"]: e["absimb"] || "",
-          ["Total"]: e["absimb"] !== null && e["absimb"] !== undefined ? formatNumberFourDecimalNom(e["absimb"]) : '',
+          // ["Total"]: e?.absimb || "",
+          ["Total"]: e?.absimb !== null && e?.absimb !== undefined ? formatNumberFourDecimalNom(e?.absimb) : '',
         },
         ["%Absimb"]: {
-          // ["Total"]: e["absimb"] !== null && e["absimb"] !== undefined && !Number.isNaN(Math.abs(e["absimb"])) ? Math.abs(e["absimb"]) : "",
-          ["Total"]: e["absimb"] !== null && e["absimb"] !== undefined ? formatNumberFourDecimalNom(Math.abs(Number(parseToNumber(e["absimb"])))) : "",
-          // ["Total"]: `${e["absimb"]}`,
-          // ["Total"]: e["absimb"] ? formatNumberFourDecimalNom(Math.abs(e["absimb"])) : '',
+          // ["Total"]: e?.absimb !== null && e?.absimb !== undefined && !Number.isNaN(Math.abs(e?.absimb)) ? Math.abs(e?.absimb) : "",
+          ["Total"]: e?.absimb !== null && e?.absimb !== undefined ? formatNumberFourDecimalNom(Math.abs(Number(parseToNumber(e?.absimb)))) : "",
+          // ["Total"]: `${e?.absimb}`,
+          // ["Total"]: e?.absimb ? formatNumberFourDecimalNom(Math.abs(e?.absimb)) : '',
           // contract["absimb"] ? formatNumberFourDecimalNom(Math.abs(contract["absimb"])) : ''
           // ['Total']: e['custom_abs_absimb'] || '',
         },
         ["Acc. IMB. (MONTH) (MMBTU/D)"]: {
-          ["East"]: e["accImbMonth_east"] || "",
-          ["West"]: e["accImbMonth_west"] || "",
+          ["East"]: e?.accImbMonth_east || "",
+          ["West"]: e?.accImbMonth_west || "",
         },
         ["Acc. IMB. (MMBTU/D)"]: {
-          ["East"]: e["accImb_east"] || "",
-          ["West"]: e["accImb_west"] || "",
+          ["East"]: e?.accImb_east || "",
+          ["West"]: e?.accImb_west || "",
         },
         ["Acc. IMB. Inventory (MMBTU/D)"]: {
-          ["East"]: e["accImbInv_east"] || "",
-          ["West"]: e["accImbInv_west"] || "",
+          ["East"]: e?.accImbInv_east || "",
+          ["West"]: e?.accImbInv_west || "",
         },
         ["Min. Inventory (MMBTU/D)"]: {
-          ["East"]: e["minInventory_east"] || "",
-          ["West"]: e["minInventory_west"] || "",
+          ["East"]: e?.minInventory_east || "",
+          ["West"]: e?.minInventory_west || "",
         },
       },
       ["Detail Pane"]: {
         ["Entry"]: {
           ["East"]: {
-            ["GSP"]: e["detail_entry_east_gsp"] || "",
-            ["Bypass Gas"]: e["detail_entry_east_bypassGas"] || "",
-            ["LNG"]: e["detail_entry_east_lng"] || "",
+            ["GSP"]: e?.detail_entry_east_gsp || "",
+            ["Bypass Gas"]: e?.detail_entry_east_bypassGas || "",
+            ["LNG"]: e?.detail_entry_east_lng || "",
             ["Others"]:
               formatNumberFourDecimal(sumDetail(e?.["values_"], "detail_entry_east_", [
                 "gsp",
@@ -4893,9 +4987,9 @@ export function epBalancingIntradayBalancingReport(payload: any) {
               ])),
           },
           ["West"]: {
-            ["YDN"]: e["detail_entry_west_yadana"] || "",
-            ["YTG"]: e["detail_entry_west_yetagun"] || "",
-            ["ZTK"]: e["detail_entry_west_zawtika"] || "",
+            ["YDN"]: e?.detail_entry_west_yadana || "",
+            ["YTG"]: e?.detail_entry_west_yetagun || "",
+            ["ZTK"]: e?.detail_entry_west_zawtika || "",
             ["Others"]:
               formatNumberFourDecimal(sumDetail(e?.["values_"], "detail_entry_west_", [
                 "yadana",
@@ -4905,16 +4999,16 @@ export function epBalancingIntradayBalancingReport(payload: any) {
               ])),
           },
           ["East-West"]: {
-            ["RA6 East"]: e["detail_entry_east-west_ra6East"] || "",
-            ["RA6 West"]: e["detail_entry_east-west_ra6West"] || "",
-            ["BVW10 East"]: e["detail_entry_east-west_bvw10East"] || "",
-            ["BVW10 West"]: e["detail_entry_east-west_bvw10West"] || "",
+            ["RA6 East"]: e?.["detail_entry_east-west_ra6East"] || "",
+            ["RA6 West"]: e?.["detail_entry_east-west_ra6West"] || "",
+            ["BVW10 East"]: e?.["detail_entry_east-west_bvw10East"] || "",
+            ["BVW10 West"]: e?.["detail_entry_east-west_bvw10West"] || "",
           },
         },
         ["Exit"]: {
           ["East"]: {
-            ["EGAT"]: e["detail_exit_east_egat"] || "",
-            ["IPP"]: e["detail_exit_east_ipp"] || "",
+            ["EGAT"]: e?.detail_exit_east_egat || "",
+            ["IPP"]: e?.detail_exit_east_ipp || "",
             ["Others"]:
               formatNumberFourDecimal(sumDetail(e?.["values_"], "detail_exit_east_", [
                 "egat",
@@ -4923,8 +5017,8 @@ export function epBalancingIntradayBalancingReport(payload: any) {
               ])),
           },
           ["West"]: {
-            ["EGAT"]: e["detail_exit_west_egat"] || "",
-            ["IPP"]: e["detail_exit_west_ipp"] || "",
+            ["EGAT"]: e?.detail_exit_west_egat || "",
+            ["IPP"]: e?.detail_exit_west_ipp || "",
             ["Others"]:
               formatNumberFourDecimal(sumDetail(e?.["values_"], "detail_exit_west_", [
                 "egat",
@@ -4933,8 +5027,8 @@ export function epBalancingIntradayBalancingReport(payload: any) {
               ])),
           },
           ["East-West"]: {
-            ["EGAT"]: e["detail_exit_east-west_egat"] || "",
-            ["IPP"]: e["detail_exit_east-west_ipp"] || "",
+            ["EGAT"]: e?.["detail_exit_east-west_egat"] || "",
+            ["IPP"]: e?.["detail_exit_east-west_ipp"] || "",
             ["Others"]:
               formatNumberFourDecimal(sumDetail(e?.["values_"], "detail_exit_east-west_", [
                 "egat",
@@ -4943,16 +5037,16 @@ export function epBalancingIntradayBalancingReport(payload: any) {
               ])),
           },
           ["F2&G"]: {
-            ["East"]: e["detail_exit_east_F2andG"] || "",
-            ["West"]: e["detail_exit_west_F2andG"] || "",
+            ["East"]: e?.detail_exit_east_F2andG || "",
+            ["West"]: e?.detail_exit_west_F2andG || "",
           },
           ["E"]: {
-            ["East"]: e["detail_exit_E_east"] || "",
-            ["West"]: e["detail_exit_E_west"] || "",
+            ["East"]: e?.detail_exit_E_east || "",
+            ["West"]: e?.detail_exit_E_west || "",
           },
         },
       },
-      ["custom_color"]: e["custom_color"] || "",
+      ["custom_color"]: e?.custom_color || "",
     };
     let filteredData = Object.keys(setData).reduce((obj: any, key: any) => {
       obj[key] = setData[key];
@@ -4964,7 +5058,7 @@ export function epBalancingIntradayBalancingReport(payload: any) {
   // console.log('formateData : ', formateData);
 
   // const filterHeader = filter || [];
-  const filterHeader = filterx || [];
+  const filterHeader = filterx;
 
   // header color
   const headerColorMap = {
@@ -5131,18 +5225,18 @@ export function epBalancingIntradayBalancingReport(payload: any) {
 }
 
 export function epBalancingIntradayAccImbalanceInventoryOriginal(payload: any) {
-  let { name, columnVisibility, initialColumns, resData } = payload;
+  let { name, columnVisibility, initialColumns, resData } = payload || {};
 
-  const filter = initialColumns
-    .filter((item: any) => columnVisibility[item.key] && item.key !== "action")
-    .map((item: any) => item.label);
+  const filter = (initialColumns || [])
+    .filter((item: any) => columnVisibility?.[item?.key] && item?.key !== "action")
+    .map((item: any) => item?.label);
 
-  const formateData = resData.map((e: any) => {
+  const formateData = (resData || []).map((e: any) => {
     let setData: any = {
-      ["Publicate"]: e["publication"] && "Public",
-      ["Gas Day"]: dayjs(e["gas_day"], "YYYY-MM-DD").format("DD/MM/YYYY"),
-      ["Gas Hour"]: e["gasHour"],
-      ["Timestamp"]: e["timestamp"],
+      ["Publicate"]: e?.["publication"] && "Public",
+      ["Gas Day"]: dayjs(e?.["gas_day"], "YYYY-MM-DD").format("DD/MM/YYYY"),
+      ["Gas Hour"]: e?.["gasHour"],
+      ["Timestamp"]: e?.["timestamp"],
       ["Acc. Total Inventory (MMBTU)"]: {
         ["East"]: e?.east_totalInv !== null && e?.east_totalInv !== undefined ? formatNumberFourDecimal(e?.east_totalInv) : '',
         ["West"]: e?.west_totalInv !== null && e?.west_totalInv !== undefined ? formatNumberFourDecimal(e?.west_totalInv) : '',
@@ -5168,8 +5262,8 @@ export function epBalancingIntradayAccImbalanceInventoryOriginal(payload: any) {
         ["West"]: e?.west_accImbInvPTT !== null && e?.west_accImbInvPTT !== undefined ? formatNumberFourDecimal(e?.west_accImbInvPTT) : '',
       },
       ["Mode/Zone"]: {
-        ["East"]: e["east_mode_zone"],
-        ["West"]: e["west_mode_zone"],
+        ["East"]: e?.["east_mode_zone"] ?? "",
+        ["West"]: e?.["west_mode_zone"] ?? "",
       },
     };
     let filteredData = Object.keys(setData)
@@ -5255,10 +5349,10 @@ export function epMeretingMeteringMeteringChecking(payload: any) {
   let { name, columnVisibility, initialColumns, resData, hindDefaultNodata, tabIndex } = payload;
 
   const filter = initialColumns
-    ?.filter((item: any) => columnVisibility[item.key] && item.key !== "action")
+    ?.filter((item: any) => columnVisibility?.[item.key] && item.key !== "action")
     ?.map((item: any) => item.label);
 
-    const formateDataTemp = resData.map((e: any) => {
+    const formateDataTemp = (resData || [])?.map((e: any) => {
       const cvValue = (pTime: any) => {
           return e[`type_${pTime}`] === "red_url"
             ? "×"
@@ -5279,9 +5373,9 @@ export function epMeretingMeteringMeteringChecking(payload: any) {
       // const value_ = (value_1 === null) ? "N/A" : value_1 === "-Infinity" || value_1 === "Infinity" ? "Div/0" : value_1
 
       let setData: any = {
-        ["Gas Day"]: dayjs(e["gasDay"], "YYYY-MM-DD").format("DD/MM/YYYY"),
-        ["Metering Point ID"]: e["meteringPointId"],
-        ["Customer Type"]: e["customer_type"]?.["name"] || "",
+        ["Gas Day"]: dayjs(e?.gasDay, "YYYY-MM-DD").format("DD/MM/YYYY"),
+        ["Metering Point ID"]: e?.meteringPointId,
+        ["Customer Type"]: e?.customer_type?.name || "",
         // ['00:00']: e['00:00'] || 'N/A',
         // ['00:00']: { f:`=IMAGE("${e['00:00']}")` },
         ["01:00"]: cvValue("00:00"),
@@ -5320,7 +5414,7 @@ export function epMeretingMeteringMeteringChecking(payload: any) {
       return filteredData;
     });
 
-    const formateData = resData.map((e: any) => {
+    const formateData = (resData || [])?.map((e: any) => {
       const cvValue = (pTime: any) => {
         if(tabIndex === 0){
           return e[`type_${pTime}`] === "red_url"
@@ -5351,9 +5445,9 @@ export function epMeretingMeteringMeteringChecking(payload: any) {
       // const value_ = (value_1 === null) ? "N/A" : value_1 === "-Infinity" || value_1 === "Infinity" ? "Div/0" : value_1
 
       let setData: any = {
-        ["Gas Day"]: dayjs(e["gasDay"], "YYYY-MM-DD").format("DD/MM/YYYY"),
-        ["Metering Point ID"]: e["meteringPointId"],
-        ["Customer Type"]: e["customer_type"]?.["name"] || "",
+        ["Gas Day"]: dayjs(e?.gasDay, "YYYY-MM-DD").format("DD/MM/YYYY"),
+        ["Metering Point ID"]: e?.meteringPointId,
+        ["Customer Type"]: e?.customer_type?.name || "",
         // ['00:00']: e['00:00'] || 'N/A',
         // ['00:00']: { f:`=IMAGE("${e['00:00']}")` },
         ["01:00"]: cvValue("00:00"),
@@ -5503,26 +5597,27 @@ export function epMeretingMeteringManagement(payload: any) {
     )
     .map((item: any) => item.label);
 
-  const formateData = resData.map((e: any) => {
+  const formateData = (resData || [])?.map((e: any) => {
     let setData: any = {
-      ["Gas Day"]: !!e["gasDay"] ? dayjs(e["gasDay"]).format("DD/MM/YYYY") : "",
-      ["Metering Point ID"]: e["meteringPointId"],
-      ["Zone"]: e["prop"]?.["zone"]?.["name"],
-      ["Area"]: e["prop"]?.["area"]?.["name"],
-      ["Customer Type"]: e["prop"]?.["customer_type"]?.["name"],
-      ["Volume (MMSCF)"]: dcimal6(e["volume"]),
-      ["Heating Value (BTU/SCF)"]: dcimal3(e["heatingValue"]),
-      ["Energy (MMBTU)"]: dcimal3(e["energy"]),
+      ["Gas Day"]: !!e?.gasDay ? dayjs(e?.gasDay).format("DD/MM/YYYY") : "",
+      ["Gas Hour"]: e?.gasHour,
+      ["Metering Point ID"]: e?.meteringPointId,
+      ["Zone"]: e?.prop?.["zone"]?.["name"],
+      ["Area"]: e?.prop?.["area"]?.["name"],
+      ["Customer Type"]: e?.prop?.["customer_type"]?.["name"],
+      ["Volume (MMSCF)"]: dcimal6(e?.volume),
+      ["Heating Value (BTU/SCF)"]: dcimal3(e?.heatingValue),
+      ["Energy (MMBTU)"]: dcimal3(e?.energy),
       ["Received Timestamp"]:
-        (!!e["registerTimestamp"] &&
-          dayjs(e["registerTimestamp"]).format("DD/MM/YYYY HH:mm:ss")) ||
+        (!!e?.registerTimestamp &&
+          dayjs(e?.registerTimestamp).format("DD/MM/YYYY HH:mm:ss")) ||
         null,
-      // ["TPA Insert Timestamp"]: e["insert_timestamp"],
-      ["TPA Insert Timestamp"]: (!!e["insert_timestamp"] &&
-        dayjs(e["insert_timestamp"]).format("DD/MM/YYYY HH:mm:ss")) ||
+      // ["TPA Insert Timestamp"]: e?.insert_timestamp,
+      ["TPA Insert Timestamp"]: (!!e?.insert_timestamp &&
+        dayjs(e?.insert_timestamp).format("DD/MM/YYYY HH:mm:ss")) ||
         null,
-      ["Metering Retrieving ID"]: e["metering_retrieving_id"],
-      ["Source"]: e["datasource"],
+      ["Metering Retrieving ID"]: e?.metering_retrieving_id,
+      ["Source"]: e?.datasource,
     };
     let filteredData = Object.keys(setData)
       .filter((key) => filter.includes(key)) // กรอง key ที่ตรงกับ filter
@@ -5539,6 +5634,7 @@ export function epMeretingMeteringManagement(payload: any) {
   // header color
   const headerColorMap = {
     "Gas Day": "1573A1", // #1573A1
+    "Gas Hour": "1573A1", // #1573A1
     "Metering Point ID": "1573A1", // #1573A1
     Zone: "1573A1", // #1573A1
     Area: "1573A1", // #1573A1
@@ -5597,10 +5693,10 @@ export function epMeretingMeteringRetrievingMeteringDataCheck(payload: any) {
     )
     .map((item: any) => item.label);
 
-  const formateData = resData.map((e: any) => {
+  const formateData = (resData || [])?.map((e: any) => {
     let setData: any = {
-      ["Metering Point ID"]: e["data"]["meteringPointId"],
-      ["Metered Point Description"]: e["description"],
+      ["Metering Point ID"]: e?.data["meteringPointId"],
+      ["Metered Point Description"]: e?.description,
     };
     let filteredData = Object.keys(setData)
       .filter((key) => filter.includes(key)) // กรอง key ที่ตรงกับ filter
@@ -5668,7 +5764,7 @@ export function epMeretingMeteringRetrievingRetrieving(
     )
     .map((item: any) => item.label);
 
-  const formateData = resData.map((e: any) => {
+  const formateData = (resData || [])?.map((e: any) => {
     let setData: any = {
       ['Gas Day']: !!e['data']['gasDay']
         ? dayjs(e['data']['gasDay']).format('DD/MM/YYYY')

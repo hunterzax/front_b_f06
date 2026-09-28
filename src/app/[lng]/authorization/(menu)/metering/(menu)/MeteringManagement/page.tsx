@@ -36,7 +36,7 @@ dayjs.tz.setDefault("Asia/Bangkok")
 
 interface ClientProps { params: { lng: string } }
 
-const ClientPage: React.FC<ClientProps> = (props) => {
+const ClientPage: React.FC<ClientProps> = () => {
     const { register, setValue, reset, formState: { errors }, watch, getValues } = useForm<any>();
     // const router = useRouter();
     // let isReadOnly = false;
@@ -79,27 +79,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
-    let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-    // let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+    let user_permission: any = typeof window !== 'undefined' ? (getCookieValue("k3a9r2b6m7t0x5w1s8j") || localStorage?.getItem("k3a9r2b6m7t0x5w1s8j")) : null;
     user_permission = user_permission ? decryptData(user_permission) : null;
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
-
-            // if (user_permission?.role_config) {
-            //     const updatedUserPermission = generateUserPermission(user_permission);
-            //     setUserPermission(updatedUserPermission);
-            // } else {
-            //     const permission = findRoleConfigByMenuName('Metering Management', userDT)
-            //     setUserPermission(permission);
-            // }
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+            }
 
             const permission = findRoleConfigByMenuName('Metering Management', userDT)
             if (permission) {
                 setUserPermission(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermission(updatedUserPermission);
             }
         } catch (error) {
@@ -137,44 +131,29 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [srchStartDate, setSrchStartDate] = useState<Date | null>(new Date);
     const [srchEndDate, setSrchEndDate] = useState<Date | null>(new Date);
 
+    const [isGasDayChanged, setIsGasDayChanged] = useState(false);
+
     const [optionMRID, setoptionMRID] = useState<any[]>([]);
     const [tk, settk] = useState(false)
 
     const handleFieldSearch = async () => {
         setIsLoading(true);
 
-        const filterMeterPointData = (data: any, zone: any, area: any) => {
-            return data?.filter((item: any) => {
-                const zoneName = String(item?.zone_obj?.name);
-                const areaId = String(item?.area_obj?.id);
-                return zone.includes(zoneName) && area.includes(areaId);
-            });
-        };
-
-        // เอาไว้ filter data ที่ไม่ซ้ำ และ sort option ไปในตัว
-        const removeDuplicatesAndSort = (arr: []) => {
-            const uniqueValues = Array.from(new Set(arr));
-            return uniqueValues.sort();  // จัดเรียง A-Z
-        };
-
         // ใช้เพื่อเวลาที่ในกรณีไม่เลือกวันใหม่ แล้วจะ filter อื่นๆจะได้ไม่เสียเวลา load data //test by bangjuu
         let response: any;
-        const isFilterRetrievingId = srchMeteringRetrievingId !== '' && srchMeteringRetrievingId && srchMeteringRetrievingId !== 'Last Retrieving'
+        const isFilterRetrievingId = Boolean(srchMeteringRetrievingId && srchMeteringRetrievingId !== 'Last Retrieving');
 
         let onOrOff = watch('filter_sharing_meter') ? 'on' : 'off';
-        if (isFilterRetrievingId == true) {
+        if (isFilterRetrievingId) {
             const url = `/master/metering-management/getDataByRetrievingID?share=${onOrOff}&metering_retrieving_id=${srchMeteringRetrievingId}`;
             let retrievingIDResponse = await getService(url);
             const startDate = (srchStartDate ? dayjs(srchStartDate) : srchEndDate ? dayjs(srchEndDate) : dayjs()).startOf('day');
             const endDate = (srchEndDate ? dayjs(srchEndDate) : startDate).endOf('day');
 
-            if (retrievingIDResponse && Array.isArray(retrievingIDResponse)) {
-                if (startDate) {
-                    retrievingIDResponse = retrievingIDResponse?.filter((item: any) => toDayjs(item?.gasDay, 'YYYY-MM-DD').isSameOrAfter(startDate, 'day'));
-                }
-                if (endDate) {
-                    retrievingIDResponse = retrievingIDResponse?.filter((item: any) => toDayjs(item?.gasDay, 'YYYY-MM-DD').isSameOrBefore(endDate, 'day'));
-                }
+            if (Array.isArray(retrievingIDResponse)) {
+                retrievingIDResponse = retrievingIDResponse
+                    .filter((item: any) => toDayjs(item?.gasDay, 'YYYY-MM-DD').isSameOrAfter(startDate, 'day'))
+                    .filter((item: any) => toDayjs(item?.gasDay, 'YYYY-MM-DD').isSameOrBefore(endDate, 'day'));
             }
             response = retrievingIDResponse;
         }
@@ -185,62 +164,130 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             const url = `/master/metering-management/getData?share=${onOrOff}&start_date=${startDate}&end_date=${endDate}`;
             response = await getService(url);
         }
-        if(response && Array.isArray(response)) {
-        settriggerSrchDate(false);
-        const sortGasdayandIDx: any = sortByGasDayAndMeteringPoint(response);
+        if (Array.isArray(response)) {
 
-        // let resultZoneArea = response?.filter((item: any) => {
-        let resultZoneArea = sortGasdayandIDx?.filter((item: any) => {
-            return (
-                ((srchZone?.length > 0 && srchZone?.length < dataZoneMasterZ?.length) ? srchZone.includes(item?.prop?.zone?.name) : true) &&
-                ((srchArea?.length > 0 && srchArea?.length < areaMaster?.data?.length) ? srchArea.includes(item?.prop?.area?.id.toString()) : true)
-                // srchMeteringRetrievingId !== '' && srchMeteringRetrievingId ? srchMeteringRetrievingId == item?.metering_retrieving_id : true
+            const sortGasdayandIDx: any =
+                sortByGasDayAndMeteringPoint(response);
+
+            // ==============================
+            // Filter Zone + Area
+            // ==============================
+            let resultZoneArea = sortGasdayandIDx?.filter((item: any) => {
+                return (
+                    (
+                        srchZone?.length > 0 &&
+                        srchZone?.length < dataZoneMasterZ?.length
+                            ? srchZone.includes(item?.prop?.zone?.name)
+                            : true
+                    ) &&
+                    (
+                        srchArea?.length > 0 &&
+                        srchArea?.length < areaMaster?.data?.length
+                            ? srchArea.includes(
+                                item?.prop?.area?.id?.toString()
+                            )
+                            : true
+                    )
+                );
+            });
+
+            // ==============================
+            // สร้าง Metered Point Master
+            // จาก response ของวันใหม่ก่อน
+            // ==============================
+            const meter_point_id: any[] = Array.from(
+                new Map(
+                    response.map((item: any) => [
+                        item?.meteringPointId,
+                        {
+                            id: item?.id?.toString(),
+                            name: item?.meteringPointId,
+                            zone_obj: item?.prop?.zone,
+                            area_obj: item?.prop?.area,
+                        },
+                    ])
+                ).values()
             );
-        });
-        let resultFilter: any;
 
+            setMeteredPointIdMaster(meter_point_id);
 
-        // อย่าหาทำ เอา setstate มา อยู่ร่วมกับ state ในฟังชั่นเดียวกันมันทำให้ state ไม่ทัน #By bank comment!!
-        resultFilter = resultZoneArea
+            // ==============================
+            // หา Metered Point ที่ใช้ได้
+            // ตาม Zone + Area ปัจจุบัน
+            // ==============================
+            const availableMeteredPointIds = meter_point_id
+                .filter((item: any) => {
+                    const zonePass =
+                        srchZone?.length > 0 &&
+                        srchZone?.length < dataZoneMasterZ?.length
+                            ? srchZone.includes(
+                                item?.zone_obj?.name?.toString()
+                            )
+                            : true;
 
-        // if (isFilterRetrievingId) {
-        //     const result_test = resultFilter?.filter((item: any) => item?.metering_retrieving_id == srchMeteringRetrievingId);
-        //     resultFilter = result_test;
-        // }
+                    const areaPass =
+                        srchArea?.length > 0 &&
+                        srchArea?.length < areaMaster?.data?.length
+                            ? srchArea.includes(
+                                item?.area_obj?.id?.toString()
+                            )
+                            : true;
 
-        // const meteredPointIdDatas = result_2?.map((item: any) => item?.id?.toString());
-        // setSrchMeteredPointId(meteredPointIdDatas)
+                    return zonePass && areaPass;
+                })
+                .map((item: any) => item?.name)
+                .filter(Boolean);
 
-        if (srchMeteredPointId?.length > 0) {
-            resultFilter = resultZoneArea?.filter((item: any) => srchMeteredPointId.includes(item?.meteringPointId?.toString()))
+            // ==============================
+            // ถ้าเปลี่ยน Gas Day
+            // ให้ Metered Point = Select All
+            // ==============================
+            const meterPointIdsForSearch = isGasDayChanged
+                ? availableMeteredPointIds
+                : srchMeteredPointId;
+
+            if (isGasDayChanged) {
+                setSrchMeteredPointId(availableMeteredPointIds);
+            }
+
+            // ==============================
+            // Filter Metered Point
+            // ==============================
+            let resultFilter: any = resultZoneArea;
+
+            if (meterPointIdsForSearch?.length > 0) {
+                resultFilter = resultZoneArea?.filter(
+                    (item: any) =>
+                        meterPointIdsForSearch.includes(
+                            item?.meteringPointId?.toString()
+                        )
+                );
+            }
+
+            // เรียงตาม Gas Day
+            const sort_gas_day = (
+                Array.isArray(resultFilter)
+                    ? resultFilter
+                    : []
+            ).sort(
+                (a: any, b: any) =>
+                    dayjs(a?.gasDay).valueOf() -
+                    dayjs(b?.gasDay).valueOf()
+            );
+
+            const sortGasdayandID: any =
+                sortByGasDayAndMeteringPoint(sort_gas_day);
+
+            setDataTable(resultFilter);
+            setFilteredDataTable(sortGasdayandID);
+
+            setCurrentPage(1);
+
+            // reset flag หลังจาก search เสร็จ
+            settriggerSrchDate(false);
+            setIsGasDayChanged(false);
         }
-
-        // ข้อมูลสำหรับ filter Metered Point ID
-        const meter_point_id = Array.from(
-            new Map(
-                response?.map((item: any) => [item.meteringPointId, { id: item?.id?.toString(), name: item?.meteringPointId, zone_obj: item?.prop?.zone, area_obj: item?.prop?.area }])
-            ).values()
-        );
-        setMeteredPointIdMaster(meter_point_id)
-
-        // อย่าหาทำ เอา setstate มา อยู่ร่วมกับ state ในฟังชั่นเดียวกันมันทำให้ state ไม่ทัน #By bank comment!!
-
-        // ถ้าเปิดตรงนี้ทำให้ตอนกดเสิช Metered Point ID มันจะกลายเป็น select all
-        // เอา data ที่จะลง table มา map และ filter เฉพาะตัวที่มีค่า จากนั้น นำไปผ่าน function removeDuplicatesAndSort => ได้ option มาแว้ว
-        // const resultFilterOption = removeDuplicatesAndSort(resultFilter?.map((item: any) => item?.meteringPointId)?.filter(Boolean));
-        // setSrchMeteredPointId(resultFilterOption)
-
-        // เรียงตาม gas_day น้อยไปมาก
-        const sort_gas_day = resultFilter.sort((a: any, b: any) => dayjs(a.gasDay).valueOf() - dayjs(b.gasDay).valueOf());
-        const sortGasdayandID: any = sortByGasDayAndMeteringPoint(sort_gas_day);
-
-        setDataTable(resultFilter);
-        // setoptionMRID(sort_gas_day)
-        setFilteredDataTable(sortGasdayandID);
-
-        setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
-        }
-        setIsLoading(false)
+        setIsLoading(false);
     };
 
     const handleReset = () => {
@@ -261,56 +308,53 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### LIKE SEARCH ###############
     const handleSearch = (query: string) => {
+        const queryLower = (query || '').toLowerCase().replace(/\s+/g, '')?.trim();
 
-        const queryLower = query.toLowerCase().replace(/\s+/g, '')?.trim();
+        if (!queryLower) {
+            setFilteredDataTable(Array.isArray(dataTable) ? dataTable : []);
+            return;
+        }
 
-        const filtered = dataTable?.filter(
+        const filtered = (Array.isArray(dataTable) ? dataTable : [])?.filter(
             (item: any) => {
-
-                // let name_search = JSON.parse(item.reqUser).first_name + ' ' + JSON.parse(item.reqUser).last_name
+                if (!item) return false;
                 return (
-                    item?.gasDay?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    formatStringToDDMMYYYY(item?.gasDay)?.toLowerCase().replace(/\s+/g, '')?.trim().includes(queryLower) ||
-                    item?.meteringPointId?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    item?.prop?.zone?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    item?.prop?.area?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    item?.prop?.customer_type?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+                    (item?.gasDay ? String(item.gasDay).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (formatStringToDDMMYYYY(item?.gasDay) ? formatStringToDDMMYYYY(item.gasDay).toLowerCase().replace(/\s+/g, '')?.trim().includes(queryLower) : false) ||
+                    (item?.meteringPointId ? String(item.meteringPointId).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (item?.prop?.zone?.name ? String(item.prop.zone.name).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (item?.prop?.area?.name ? String(item.prop.area.name).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (item?.prop?.customer_type?.name ? String(item.prop.customer_type.name).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
-                    item?.volume?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    item?.heatingValue?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    item?.energy?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+                    (item?.volume != null && item.volume.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                    (item?.heatingValue != null && item.heatingValue.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                    (item?.energy != null && item.energy.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
 
-                    formatNumberSixDecimal(item?.volume)?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    formatNumberThreeDecimal(item?.heatingValue)?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    formatNumberThreeDecimal(item?.energy)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+                    (formatNumberSixDecimal(item?.volume) ? formatNumberSixDecimal(item.volume).toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (formatNumberThreeDecimal(item?.heatingValue) ? formatNumberThreeDecimal(item.heatingValue).toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (formatNumberThreeDecimal(item?.energy) ? formatNumberThreeDecimal(item.energy).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
-                    formatNumberSixDecimalNoComma(item?.volume)?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    formatNumberThreeDecimalNoComma(item?.heatingValue)?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    formatNumberThreeDecimalNoComma(item?.energy)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+                    (formatNumberSixDecimalNoComma(item?.volume) ? formatNumberSixDecimalNoComma(item.volume).toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (formatNumberThreeDecimalNoComma(item?.heatingValue) ? formatNumberThreeDecimalNoComma(item.heatingValue).toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (formatNumberThreeDecimalNoComma(item?.energy) ? formatNumberThreeDecimalNoComma(item.energy).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
+                    (item?.registerTimestamp ? dayjs(item.registerTimestamp).format('DD/MM/YYYY HH:mm:ss').replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (item?.registerTimestamp ? dayjs(item.registerTimestamp).format('DD/MM/YYYY').toLowerCase().includes(queryLower) : false) ||
+                    (item?.registerTimestamp ? dayjs(item.registerTimestamp).format('HH:mm').toLowerCase().includes(queryLower) : false) ||
+                    (item?.registerTimestamp ? dayjs(item.registerTimestamp).format('DD/MM/YYYY HH:mm').toLowerCase().includes(queryLower) : false) ||
 
-                    // dayjs(item?.registerTimestamp)?.tz('Asia/Bangkok')?.format('DD/MM/YYYY HH:mm:ss')?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    // dayjs(item?.registerTimestamp)?.tz('Asia/Bangkok')?.format('DD/MM/YYYY')?.toLowerCase().includes(queryLower) ||
-                    // dayjs(item?.registerTimestamp)?.tz('Asia/Bangkok')?.format('HH:mm')?.toLowerCase().includes(queryLower) ||
-                    // dayjs(item?.registerTimestamp)?.tz('Asia/Bangkok')?.format('DD/MM/YYYY HH:mm')?.toLowerCase().includes(queryLower) ||
-                    dayjs(item?.registerTimestamp)?.format('DD/MM/YYYY HH:mm:ss')?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    dayjs(item?.registerTimestamp)?.format('DD/MM/YYYY')?.toLowerCase().includes(queryLower) ||
-                    dayjs(item?.registerTimestamp)?.format('HH:mm')?.toLowerCase().includes(queryLower) ||
-                    dayjs(item?.registerTimestamp)?.format('DD/MM/YYYY HH:mm')?.toLowerCase().includes(queryLower) ||
+                    (item?.insert_timestamp ? dayjs(item.insert_timestamp, 'YYYY-MM-DD HH:mm:ss').tz('Asia/Bangkok').format("DD/MM/YYYY HH:mm:ss").replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                    (item?.insert_timestamp ? dayjs(item.insert_timestamp).tz('Asia/Bangkok').format('DD/MM/YYYY').toLowerCase().includes(queryLower) : false) ||
+                    (item?.insert_timestamp ? dayjs(item.insert_timestamp).tz('Asia/Bangkok').format('HH:mm').toLowerCase().includes(queryLower) : false) ||
+                    (item?.insert_timestamp ? dayjs(item.insert_timestamp).tz('Asia/Bangkok').format('DD/MM/YYYY HH:mm').toLowerCase().includes(queryLower) : false) ||
 
+                    (item?.metering_retrieving_id ? String(item.metering_retrieving_id).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
-                    dayjs(item?.insert_timestamp, 'YYYY-MM-DD HH:mm:ss').tz('Asia/Bangkok').format("DD/MM/YYYY HH:mm:ss")?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    dayjs(item?.insert_timestamp)?.tz('Asia/Bangkok')?.format('DD/MM/YYYY')?.toLowerCase().includes(queryLower) ||
-                    dayjs(item?.insert_timestamp)?.tz('Asia/Bangkok')?.format('HH:mm')?.toLowerCase().includes(queryLower) ||
-                    dayjs(item?.insert_timestamp)?.tz('Asia/Bangkok')?.format('DD/MM/YYYY HH:mm')?.toLowerCase().includes(queryLower) ||
-
-                    item?.metering_retrieving_id?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-
-                    typeof item?.datasource !== 'object' && item?.datasource?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)
-                )
+                    (typeof item?.datasource !== 'object' && item?.datasource ? String(item.datasource).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false)
+                );
             }
         );
-        setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
+        setCurrentPage(1);
         const sortGasdayandID: any = sortByGasDayAndMeteringPoint(filtered);
         setFilteredDataTable(sortGasdayandID);
     };
@@ -402,22 +446,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             // setDataMasterRetrivingId(data_meter_retrive_id)
 
             // set ตอน default filter zone จะได้เป็น select all
-            const zoneNames = data_zone_de_dup.map((item: any) => item?.zone_name);
+            const zoneNames = (data_zone_de_dup || [])?.map((item: any) => item?.zone_name);
             setSrchZone(zoneNames)
 
-            const areaDatas = areaMaster?.data?.map((item: any) => item?.id?.toString());
+            const areaDatas = (areaMaster?.data || [])?.map((item: any) => item?.id?.toString());
             setSrchArea(areaDatas)
 
             if (response?.status !== 500) {
                 setLastRetrieving(formatDate(res_last?.create_date))
 
                 // เรียงตาม gas_day น้อยไปมาก
-                const sort_gas_day = response.sort((a: any, b: any) => dayjs(a.gasDay).valueOf() - dayjs(b.gasDay).valueOf());
+                const sort_gas_day = (Array.isArray(response) ? response : []).sort((a: any, b: any) => dayjs(a?.gasDay).valueOf() - dayjs(b?.gasDay).valueOf());
 
                 let resultZoneArea = sort_gas_day?.filter((item: any) => {
                     return (
-                        (srchZone?.length > 0 ? srchZone.includes(item?.prop?.zone?.name) : true) &&
-                        (srchArea?.length > 0 ? srchArea.includes(item?.prop?.area?.id.toString()) : true)
+                        ((srchZone?.length ?? 0) > 0 ? srchZone.includes(item?.prop?.zone?.name) : true) &&
+                        ((srchArea?.length ?? 0) > 0 ? srchArea.includes(item?.prop?.area?.id?.toString()) : true)
                         // srchMeteringRetrievingId !== '' && srchMeteringRetrievingId ? srchMeteringRetrievingId == item?.metering_retrieving_id : true
                     );
                 });
@@ -437,7 +481,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // ข้อมูลสำหรับ filter Metered Point ID
                 const meter_point_id = Array.from(
                     new Map(
-                        response?.map((item: any) => [item.meteringPointId, { id: item?.id?.toString(), name: item?.meteringPointId, zone_obj: item?.prop?.zone, area_obj: item?.prop?.area }])
+                        (Array.isArray(response) ? response : []).map((item: any) => [item?.meteringPointId, { id: item?.id?.toString(), name: item?.meteringPointId, zone_obj: item?.prop?.zone, area_obj: item?.prop?.area }])
                     ).values()
                 );
 
@@ -535,6 +579,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // ############### COLUMN SHOW/HIDE ###############
     const initialColumns: any = [
         { key: 'gas_day', label: 'Gas Day', visible: true },
+        { key: 'gas_hour', label: 'Gas Hour', visible: true },
         { key: 'mtr_p_id', label: 'Metering Point ID', visible: true },
         { key: 'zone', label: 'Zone', visible: true },
         { key: 'area', label: 'Area', visible: true },
@@ -585,17 +630,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     }, [triggerSrchDate, srchStartDate, srchEndDate])
 
     const sortByGasDayAndMeteringPoint = (data: any[]) => {
-        return data?.sort((a, b) => {
-            // เปรียบเทียบ gasDay ก่อน
-            const gasDayA = new Date(a.gasDay);
-            const gasDayB = new Date(b.gasDay);
+        return (data || [])?.sort((a, b) => {
+            const gasDayA = a?.gasDay ? new Date(a.gasDay).getTime() : 0;
+            const gasDayB = b?.gasDay ? new Date(b.gasDay).getTime() : 0;
 
-            if (gasDayA.getTime() < gasDayB.getTime()) return -1;
-            if (gasDayA.getTime() > gasDayB.getTime()) return 1;
+            if (gasDayA < gasDayB) return -1;
+            if (gasDayA > gasDayB) return 1;
 
-            // ถ้า gasDay เท่ากัน ให้เปรียบเทียบ meteringPointId
-            const meteringA = a.meteringPointId?.toUpperCase() || '';
-            const meteringB = b.meteringPointId?.toUpperCase() || '';
+            const meteringA = (a?.meteringPointId ?? '').toString().toUpperCase();
+            const meteringB = (b?.meteringPointId ?? '').toString().toUpperCase();
 
             return meteringA.localeCompare(meteringB);
         });
@@ -619,6 +662,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 //check ในกรณีกดเล่น หรือกดซ้ำ
                                 if (e !== srchStartDate) {
                                     settriggerSrchDate(true);
+                                    setIsGasDayChanged(true);
                                 }
                             }}
                             customWidth={145}
@@ -639,6 +683,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 //check ในกรณีกดเล่น หรือกดซ้ำ
                                 if (e !== srchEndDate) {
                                     settriggerSrchDate(true);
+                                    setIsGasDayChanged(true);
                                 }
                             }}
                             customWidth={140}
@@ -675,8 +720,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 areaMaster?.data
                                     ?.filter((item: any) => srchZone.includes(item?.zone?.name?.toString()))
                                     ?.map((item: any) => ({
-                                        value: item?.id?.toString(),
-                                        label: item.name
+                                        value: item?.id ? item?.id?.toString() : '',
+                                        label: item?.name || ''
                                     }))
                             }
                         />

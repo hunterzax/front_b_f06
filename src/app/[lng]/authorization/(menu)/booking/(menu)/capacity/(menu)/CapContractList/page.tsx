@@ -228,7 +228,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         if (modeSearch === 'reset') {
             // Restore the original data to data.booking_full_json
-            if (originalMomDataTable.current?.booking_full_json) {
+            if (data && originalMomDataTable.current?.booking_full_json) {
                 data.booking_full_json = [...originalMomDataTable.current.booking_full_json]; // Ensure deep copy if necessary
             }
 
@@ -248,44 +248,46 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             // setinitialColumnsDynamicEntry_New
 
-            data.booking_full_json = data?.booking_full_json.map((booking: any) => {
-                const dataTemp = JSON.parse(booking.data_temp);
+            if (data) {
+                data.booking_full_json = (data?.booking_full_json || [])?.map((booking: any) => {
+                    const dataTemp = booking?.data_temp ? JSON.parse(booking.data_temp) : {};
 
-                const filteredEntryValue = dataTemp.entryValue?.filter((value: any) => {
-                    let getOriginal: any = getData(value["0"]);
-                    let dateFrom: any = srchStartDate;
-                    let dateTo: any = srchEndDate;
-                    const condition1 = srchZone ? getOriginal?.zone?.name == srchZone : true;
-                    const condition2 = srchArea ? getOriginal?.area?.name === srchArea : true;
-                    const condition3 = srchContractCode ? getOriginal?.contract_point === srchContractCode : true;
-                    const condition4 = (srchStartDate && !srchEndDate) ? dayjs(value["5"], "DD/MM/YYYY").isSame(dayjs(dateFrom), 'day') : true;
-                    const condition5 = (!srchStartDate && srchEndDate) ? dayjs(value["6"], "DD/MM/YYYY").isSame(dayjs(dateTo), 'day') : true;
-                    const condition6 = (srchStartDate && srchEndDate) ? dayjs(value["5"], "DD/MM/YYYY").isSameOrAfter(dayjs(srchStartDate), 'day') && dayjs(value["6"], "DD/MM/YYYY").isSameOrBefore(dayjs(srchEndDate), 'day') : true;
-                    return condition1 && condition2 && condition3 && condition4 && condition5 && condition6
-                }) || [];
+                    const filteredEntryValue = dataTemp?.entryValue?.filter((value: any) => {
+                        let getOriginal: any = getData(value["0"]);
+                        let dateFrom: any = srchStartDate;
+                        let dateTo: any = srchEndDate;
+                        const condition1 = srchZone ? getOriginal?.zone?.name == srchZone : true;
+                        const condition2 = srchArea ? getOriginal?.area?.name === srchArea : true;
+                        const condition3 = srchContractCode ? getOriginal?.contract_point === srchContractCode : true;
+                        const condition4 = (srchStartDate && !srchEndDate) ? dayjs(value["5"], "DD/MM/YYYY").isSame(dayjs(dateFrom), 'day') : true;
+                        const condition5 = (!srchStartDate && srchEndDate) ? dayjs(value["6"], "DD/MM/YYYY").isSame(dayjs(dateTo), 'day') : true;
+                        const condition6 = (srchStartDate && srchEndDate) ? dayjs(value["5"], "DD/MM/YYYY").isSameOrAfter(dayjs(srchStartDate), 'day') && dayjs(value["6"], "DD/MM/YYYY").isSameOrBefore(dayjs(srchEndDate), 'day') : true;
+                        return condition1 && condition2 && condition3 && condition4 && condition5 && condition6
+                    }) || [];
 
-                const filteredExitValue = dataTemp.exitValue?.filter((value: any) => {
-                    let getOriginal: any = getData(value["0"]);
-                    let dateFrom: any = srchStartDate;
-                    let dateTo: any = srchEndDate;
-                    const condition1 = srchZone ? getOriginal?.zone?.name == srchZone : true;
-                    const condition2 = srchArea ? getOriginal?.area?.name === srchArea : true;
-                    const condition3 = srchContractCode ? getOriginal?.contract_point === srchContractCode : true;
-                    const condition4 = (srchStartDate && !srchEndDate) ? dayjs(value["5"], "DD/MM/YYYY").isSame(dayjs(dateFrom), 'day') : true;
-                    const condition5 = (!srchStartDate && srchEndDate) ? dayjs(value["6"], "DD/MM/YYYY").isSame(dayjs(dateTo), 'day') : true;
-                    const condition6 = (srchStartDate && srchEndDate) ? dayjs(value["5"], "DD/MM/YYYY").isSameOrAfter(dayjs(srchStartDate), 'day') && dayjs(value["6"], "DD/MM/YYYY").isSameOrBefore(dayjs(srchEndDate), 'day') : true;
-                    return condition1 && condition2 && condition3 && condition4 && condition5 && condition6
-                }) || [];
+                    const filteredExitValue = dataTemp?.exitValue?.filter((value: any) => {
+                        let getOriginal: any = getData(value["0"]);
+                        let dateFrom: any = srchStartDate;
+                        let dateTo: any = srchEndDate;
+                        const condition1 = srchZone ? getOriginal?.zone?.name == srchZone : true;
+                        const condition2 = srchArea ? getOriginal?.area?.name === srchArea : true;
+                        const condition3 = srchContractCode ? getOriginal?.contract_point === srchContractCode : true;
+                        const condition4 = (srchStartDate && !srchEndDate) ? dayjs(value["5"], "DD/MM/YYYY").isSame(dayjs(dateFrom), 'day') : true;
+                        const condition5 = (!srchStartDate && srchEndDate) ? dayjs(value["6"], "DD/MM/YYYY").isSame(dayjs(dateTo), 'day') : true;
+                        const condition6 = (srchStartDate && srchEndDate) ? dayjs(value["5"], "DD/MM/YYYY").isSameOrAfter(dayjs(srchStartDate), 'day') && dayjs(value["6"], "DD/MM/YYYY").isSameOrBefore(dayjs(srchEndDate), 'day') : true;
+                        return condition1 && condition2 && condition3 && condition4 && condition5 && condition6
+                    }) || [];
 
-                return {
+                    return {
                     ...booking,
                     data_temp: JSON.stringify({
                         ...dataTemp,
                         entryValue: filteredEntryValue,
                         exitValue: filteredExitValue,
                     }),
-                };
-            });
+                    };
+                });
+            }
 
             settk(!tk);
         }
@@ -1060,7 +1062,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.group?.name || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
-                    return (<div>{row?.group && row?.group?.name}</div>)
+                    return (<div>{row?.group?.name}</div>)
                 }
             },
             {

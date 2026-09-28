@@ -56,21 +56,21 @@ const TableCustomerType: React.FC<TableProps> = ({ openEditForm, openViewForm, t
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-1">
               <tr className="h-9">
 
-                {columnVisibility.entry_exit && (
+                {columnVisibility?.entry_exit && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, tableData)}>
                     {`Entry / Exit`}
                     {getArrowIcon("entry_exit_id")}
                   </th>
                 )}
 
-                {columnVisibility.cust_type && (
+                {columnVisibility?.cust_type && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("name", sortState, setSortState, setSortedData, tableData)}>
                     {`Customer Type`}
                     {getArrowIcon("name")}
                   </th>
                 )}
 
-                {columnVisibility.create_by && (
+                {columnVisibility?.create_by && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Created by`}
                     {getArrowIcon("create_by_account.first_name")}
@@ -80,21 +80,21 @@ const TableCustomerType: React.FC<TableProps> = ({ openEditForm, openViewForm, t
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => (
+              {(sortedData || [])?.map((row: any, index: any) => (
                 <tr
                   key={row?.id}
                   className={`${table_row_style}`}
                 >
 
-                  {columnVisibility.entry_exit && (
+                  {columnVisibility?.entry_exit && (
                     <td className="px-2 py-1  justify-center ">{row?.entry_exit_id && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color }}>{`${row?.entry_exit?.name}`}</div>}</td>
                   )}
 
-                  {columnVisibility.cust_type && (
+                  {columnVisibility?.cust_type && (
                     <td className="px-2 py-1 text-[#464255]">{row?.name ? row?.name : ''}</td>
                   )}
 
-                  {columnVisibility.create_by && (
+                  {columnVisibility?.create_by && (
                     <td className="px-2 py-1 text-[#464255]">
                       <div>
                         <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>

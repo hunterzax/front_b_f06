@@ -462,7 +462,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             // 2.2 top‑level numeric values Match? (แก้ไข: เพิ่ม return ใน .some)
             // row เหลือง
-            const topValMatch = row.values?.some((v: any) =>
+            const topValMatch = row?.values?.some((v: any) =>
                 toPlain(formatNumberFourDecimal(v.value) ?? v.value).includes(q)
             );
 
@@ -482,7 +482,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 return return_obj
             }
 
-            const filteredShippers = row.shipper_data?.map((ship: any) => {
+            const filteredShippers = row?.shipper_data?.map((ship: any) => {
                 const shipKey = toPlain(ship.shipper);
                 let find_shipper_name = shipperGroupData?.data?.find((item: any) =>
                     item?.id_name?.replace(/\s+/g, '').toLowerCase().trim() === shipKey

@@ -342,10 +342,23 @@ const ChartShortEachShipper: React.FC<TableProps> = ({
               strokeStyle: dataset.backgroundColor,
               hidden: !chart.isDatasetVisible(index),
               pointStyle: dataset.isEntry ? "rect" : "circle",
+              datasetIndex: index
             }));
           },
         },
-        onClick: null,
+        // onClick: null,
+        onClick: (_event: any, legendItem: any, legend: any) => {
+          const chart = legend.chart
+          const datasetIndex = legendItem.datasetIndex
+
+          if (datasetIndex === undefined) return
+
+          const currentlyVisible = chart.isDatasetVisible(datasetIndex)
+
+          chart.setDatasetVisibility(datasetIndex, !currentlyVisible)
+
+          chart.update()
+        },
       },
       title: {
         display: true,
@@ -375,16 +388,21 @@ const ChartShortEachShipper: React.FC<TableProps> = ({
         bodyColor: "black", // Set body text color to black (optional)
         borderColor: "#cfcfd1", // Set tooltip border color (e.g., black)
         borderWidth: 1, // Set the width of the border
+        usePointStyle: true,
         callbacks: {
           label: (tooltipItem: any) => {
             const labelName: any = tooltipItem?.dataset
               ? tooltipItem?.dataset?.label
               : ""; // Accessing the label name
-            const value = tooltipItem.raw
-              ? formatNumberThreeDecimal(tooltipItem.raw)
+            const value = tooltipItem?.raw
+              ? formatNumberThreeDecimal(tooltipItem?.raw)
               : 0; // Formatting the value
             return `${labelName} : ${value}`; // Showing label name and value
           },
+          labelPointStyle: (context: any) => ({
+            pointStyle: context?.dataset?.isEntry ? "rect" : "circle",
+            rotation: 0,
+          }),
         },
       },
     },
@@ -421,7 +439,7 @@ const ChartShortEachShipper: React.FC<TableProps> = ({
         position: "top",
         labels: {
           usePointStyle: true,
-          pointStyle: "circle",
+          // pointStyle: "circle",
           font: {
             size: 12,
           },
@@ -463,12 +481,17 @@ const ChartShortEachShipper: React.FC<TableProps> = ({
         bodyColor: "black",
         borderColor: "#cfcfd1",
         borderWidth: 1,
+        usePointStyle: true,
         callbacks: {
           label: (tooltipItem: any) => {
-            const labelName = tooltipItem.dataset.label;
-            const value = formatNumber(tooltipItem.raw);
+            const labelName = tooltipItem?.dataset.label;
+            const value = formatNumber(tooltipItem?.raw);
             return `${labelName} : ${value}`;
           },
+          labelPointStyle: (context: any) => ({
+            pointStyle: context?.dataset?.isEntry ? "rect" : "circle",
+            rotation: 0,
+          }),
         },
       },
       datalabels: {

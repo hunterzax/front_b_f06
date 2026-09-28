@@ -1,13 +1,14 @@
 "use client";
 // import { useTranslation } from "@/app/i18n/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getService } from "@/utils/postService";
 import { QualityPlanningData } from "@/app/types";
 import { QualityPlanningTabs } from "./components/QualityPlanningTabs";
 import { HourRangeTabs } from "./components/HourRangeTabs";
 import DatePickaSearch from "@/components/library/dateRang/dateSearch";
 import dayjs from "dayjs";
-import { getCurrentWeekSundayYyyyMmDd, formatNumberThreeDecimal, formatNumberThreeDecimalNoComma, generateUserPermission, toDayjs, findRoleConfigByMenuName, formatNumberFourDecimalNom, formatNumberFourDecimalNomNoComma } from "@/utils/generalFormatter";
+import { getCurrentWeekSundayYyyyMmDd, formatNumberThreeDecimal, formatNumberThreeDecimalNoComma, generateUserPermission, toDayjs, formatNumberFourDecimalNom, formatNumberFourDecimalNomNoComma } from "@/utils/generalFormatter";
+import { cascadingRound } from "@/utils/number";
 import SearchInput from "@/components/other/searchInput";
 import BtnExport from "@/components/other/btnExport";
 import getUserValue from "@/utils/getuserValue";
@@ -58,6 +59,11 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
   const [gasDay, setGasDay] = useState<Date | null>(null);  // วันที่ใช้ตอนค้นหา
   const [displayGasDayInTabWeekly, setDisplayGasDayInTabWeekly] = useState<Date | undefined | null>(null);  // วันที่แสดงใน tab weekly
   const [hourRange, setHourRange] = useState<[number, number] | undefined>(undefined);  // ช่วงเวลาใน Intraday
+
+  const tabIndexRef = useRef<number | null>(null)
+  const displayGasDayRef = useRef<Date | undefined | null>(null)
+
+  const now = toDayjs()
 
   // กำหนดคอลัมน์ของตาราง
   const columns: ColumnDef<QualityPlanningData>[] = [
@@ -121,7 +127,18 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
           size: 130,
           cell: ({ getValue, row }: { getValue: () => any, row: Row<QualityPlanningData> }) => {
             const value = getValue()
-            return <span className={`${isOutOfRange(value, row) ? "text-[#ED1B24]" : "text-[#464255]"}`}>
+            const gasday = toDayjs(row.original?.gasday, "DD/MM/YYYY")
+            let textColor = '#464255'
+            if(gasday.isBefore(now, "day")){
+              textColor = '#1473a1'
+            }
+            else if(gasday.isSame(now, "day")){
+              if(hour <= Number(now.format('HH'))){
+                textColor = '#1473a1'
+              }
+            }
+            
+            return <span className={`${isOutOfRange(value, row) ? "text-[#ED1B24]" : `text-[${textColor}]`}`}>
               {/* {value ? formatNumberThreeDecimal(value) : ''} */}
               {value !== null && value !== undefined ? (row.original?.parameter === "SG" ? formatNumberFourDecimalNom(value) : formatNumberThreeDecimal(value)) : ''}
             </span>
@@ -162,7 +179,8 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
       cell: ({ getValue, row }: { getValue: () => any, row: Row<QualityPlanningData> }) => {
         const value = getValue()
         return <span className={`${isOutOfRange(value, row) ? "text-[#ED1B24]" : "text-[#464255]"}`}>
-          {value ? (row.original?.parameter === "SG" ? formatNumberFourDecimalNom(value) : formatNumberThreeDecimal(value)) : ''}
+          {/* {value ? (row.original?.parameter === "SG" ? formatNumberFourDecimalNom(value)  : formatNumberThreeDecimal(value)) : ''} */}
+          {value ? (row.original?.parameter === "SG" ? formatNumberFourDecimalNom(cascadingRound(Number(value), 4))  : formatNumberThreeDecimal(value)) : ''}
         </span>
       },
       sortingFn: (a, b, columnId) => {
@@ -263,12 +281,12 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
     }
 
     // Daily: พรุ่งนี้
-    if (tab === 1) {
+    if (tab === 1 || tab === 2) {
       return now.add(1, "day").startOf("day").toDate();
     }
 
     // Weekly: วันอาทิตย์
-    if (tab === 2) {
+    if (tab === 3) {
       const sunday =
         now.day() === 5 || now.day() === 6
           ? now.add(1, "week").day(0)
@@ -304,6 +322,8 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
   useEffect(() => {
     const initialTab = 0;
     const initialDate = getDefaultGasDayByTab(initialTab);
+    tabIndexRef.current = initialTab
+    displayGasDayRef.current = initialDate
 
     setTabIndex(initialTab);
     setDisplayGasDay(initialDate);
@@ -494,13 +514,13 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
       setDisplayGasDay(now);
       setKey((prevKey) => prevKey + 1);
       return now;
-    } else if (tabIndex === 1) {
+    } else if (tabIndex === 1 || tabIndex === 2) {
       // Daily: พรุ่งนี้
       const tomorrow = dayjs().add(1, 'day').toDate();
       setDisplayGasDay(tomorrow);
       setKey((prevKey) => prevKey + 1);
       return tomorrow;
-    } else if (tabIndex === 2) {
+    } else if (tabIndex === 3) {
       // Weekly: วันอาทิตย์ของสัปดาห์นี้
       const sundayDate = getCurrentWeekSundayYyyyMmDd();
       const defaultDate = dayjs().format("YYYY-MM-DD");
@@ -589,8 +609,8 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
         item?.unit?.toLowerCase().includes(searchTerm) ||
 
         item?.valueBtuScf?.toString().toLowerCase().includes(searchTerm) ||
-        (item?.parameter === "SG" ? formatNumberFourDecimalNom(item.valueBtuScf) : formatNumberThreeDecimal(item.valueBtuScf))?.toString().toLowerCase().includes(searchTerm) ||
-        (item?.parameter === "SG" ? formatNumberFourDecimalNomNoComma(item.valueBtuScf) : formatNumberThreeDecimalNoComma(item.valueBtuScf))?.toString().toLowerCase().includes(searchTerm) ||
+        (item?.parameter === "SG" ? formatNumberFourDecimalNom(item?.valueBtuScf) : formatNumberThreeDecimal(item?.valueBtuScf))?.toString().toLowerCase().includes(searchTerm) ||
+        (item?.parameter === "SG" ? formatNumberFourDecimalNomNoComma(item?.valueBtuScf) : formatNumberThreeDecimalNoComma(item?.valueBtuScf))?.toString().toLowerCase().includes(searchTerm) ||
         keys.some(key => {
           const value = item[key as keyof QualityPlanningData];
           if (typeof value === 'object' && value !== null && 'value' in value) {
@@ -637,12 +657,15 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
           newData = responseFromService?.intraday || data;
           // newData = sort_gas_day || data;
           break;
-        case 1: // Daily - แสดงข้อมูลรายวันล่วงหน้า 7 วัน
+        case 1: // All - แสดงข้อมูลรายวันล่วงหน้า 7 วัน
+          newData = responseFromService?.newAll || data;
+          break;
+        case 2: // Daily - แสดงข้อมูลรายวันล่วงหน้า 7 วัน
           newData = responseFromService?.newDaily || data;
 
 
           break;
-        case 2: // Weekly - แสดงข้อมูลรายสัปดาห์
+        case 3: // Weekly - แสดงข้อมูลรายสัปดาห์
           newData = responseFromService?.newWeekly || data;
           break;
       }
@@ -663,7 +686,7 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
     // เสิชเดินหน้า 7 วัน tab daily
     const daysRange = Array.from({ length: 7 }, (_, i) =>
       dayjs(localDate, "DD/MM/YYYY")
-        .add(tabIndex === 1 || tabIndex === 2 ? i : -i, "day") // Add days for tabIndex = 1, subtract for others
+        .add(tabIndex === 1 || tabIndex === 2 || tabIndex === 3 ? i : -i, "day") // Add days for tabIndex = 1, subtract for others
         .format("DD/MM/YYYY")
     );
 
@@ -884,7 +907,7 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
       return;
     }
 
-    if (currentTab === 1) {
+    if (currentTab === 1 || currentTab === 2) {
       setConditionColumns({
         gasday: true,
         valueBtuScf: true,
@@ -906,18 +929,18 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
     tabValue: number = tabIndex,
     dateValue?: Date | null
   ) => {
+    const tabIndexUse = tabValue ?? tabIndex;
+
+    const selectedDate =
+      dateValue ??
+      displayGasDay ??
+      getDefaultGasDayByTab(tabIndexUse);
+
     try {
       setIsLoading(true);
 
-      const tabIndexUse = tabValue ?? tabIndex;
-
-      const selectedDate =
-        dateValue ??
-        displayGasDay ??
-        getDefaultGasDayByTab(tabIndexUse);
-
       const gasDayParam =
-        tabIndexUse === 2
+        tabIndexUse === 3
           ? dayjs(selectedDate)
               .startOf("week")
               .format("YYYY-MM-DD")
@@ -939,6 +962,9 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
 
       const response = await getService(url);
 
+      // tabIndexUse หรือ selectedDate เปลี่ยนระหว่างรอ API → ทิ้ง response นี้
+      if (displayGasDayRef.current !== selectedDate || tabIndexRef.current !== tabIndexUse) return
+
       setResponseFromService(response);
       setDisplayGasDayInTabWeekly(selectedDate);
 
@@ -956,8 +982,8 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
         );
       }
 
-      if (tabIndexUse === 1) {
-        newData = response?.newDaily ?? [];
+      if (tabIndexUse === 1 || tabIndexUse === 2) {
+        newData = tabIndexUse === 1  ? (response?.newAll ?? []) : (response?.newDaily ?? []);
 
         const startDate = dayjs(selectedDate);
 
@@ -977,7 +1003,7 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
           });
       }
 
-      if (tabIndexUse === 2) {
+      if (tabIndexUse === 3) {
         newData = response?.newWeekly ?? [];
       }
 
@@ -990,21 +1016,26 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
       setFilteredData(withUnit);
       setFilteredDataCopycat(withUnit);
       setCurrentDataByTab(tabIndexUse, selectedDate);
+      setIsLoading(false);
 
     } catch (error) {
       console.error("Quality Planning API error:", error);
+
+      // tabIndexUse หรือ selectedDate เปลี่ยนระหว่างรอ API → ทิ้ง response นี้
+      if (displayGasDayRef.current !== selectedDate || tabIndexRef.current !== tabIndexUse) return
 
       setResponseFromService(undefined);
       setData([]);
       setFilteredData([]);
       setFilteredDataCopycat([]);
-    } finally {
       setIsLoading(false);
     }
   };
 
   const handleTabChange = async (newTab: number) => {
     const newDefaultDate = getDefaultGasDayByTab(newTab);
+    tabIndexRef.current = newTab
+    displayGasDayRef.current = newDefaultDate
 
     setTabIndex(newTab);
     setDisplayGasDay(newDefaultDate);
@@ -1028,16 +1059,16 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
           <DatePickaSearch
             // key="gas-day-picker"
             key={"gas-day-picker" + key}
-            label={(tabIndex == 0 || tabIndex == 1) ? "Gas Day" : "Gas Week"}
-            modeSearch={(tabIndex == 0 || tabIndex == 1) ? "xx" : "sunday"}
-            placeHolder={(tabIndex == 0 || tabIndex == 1) ? "Select Gas Day" : "Select Gas Week"}
+            label={(tabIndex == 0 || tabIndex == 1 || tabIndex == 2) ? "Gas Day" : "Gas Week"}
+            modeSearch={(tabIndex == 0 || tabIndex == 1 || tabIndex == 2) ? "xx" : "sunday"}
+            placeHolder={(tabIndex == 0 || tabIndex == 1 || tabIndex == 2) ? "Select Gas Day" : "Select Gas Week"}
             allowClear
             // isGasWeek={dashboardObj ? false : tabIndex == 2 ? true : false}
             // isGasDay={dashboardObj ? false : tabIndex == 1 ? true : false}
             // isFixDay={dashboardObj ? true : false}
             dateToFix={displayGasDay}
             isFixDay={!!displayGasDay}
-            isDefaultTomorrow={tabIndex == 1 ? true : false}
+            isDefaultTomorrow={(tabIndex == 1 || tabIndex == 2) ? true : false}
             // isGasDay={tabIndex == 1 || tabIndex == 0 ? true : false}
             // isToday={tabIndex == 0 ? true : false}
             onChange={(date: any) => setDisplayGasDay(date)}
@@ -1055,10 +1086,14 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
           {/* <BtnSearch handleFieldSearch={() => brandNewFieldSearch()} /> */}
           <BtnSearch
             handleFieldSearch={() =>
+              {
+                tabIndexRef.current = tabIndex
+                displayGasDayRef.current = displayGasDay ?? getDefaultGasDayByTab(tabIndex)
               brandNewFieldSearch(
                 tabIndex,
                 displayGasDay ?? getDefaultGasDayByTab(tabIndex)
               )
+              }
             }
           />
           <BtnReset handleReset={handleReset} />
@@ -1067,12 +1102,6 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
         </aside>
       </div>
       <>
-        {
-          isLoading && 
-          <div className="absolute w-full h-full z-[10] pt-[150px]">
-            <Spinloading2 spin={isLoading} rounded={20} />
-          </div>
-        }
         {/* แท็บหลัก */}
         {/* <QualityPlanningTabs
           tabIndex={tabIndex}
@@ -1090,6 +1119,12 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
 
         {/* ส่วนเนื้อหาหลัก */}
         <div className="border-[#DFE4EA] border-[1px] p-4 rounded-tl-none rounded-xl shadow-sm">
+          {
+            isLoading && 
+            <div className="absolute w-full h-full z-[10] pt-[150px]">
+              <Spinloading2 spin={isLoading} rounded={20} />
+            </div>
+          }
           <div className=" text-sm flex flex-wrap items-center justify-between pb-4">
             <div className="flex items-center space-x-4">
               <div onClick={handleVisibilityClick}>
@@ -1114,7 +1149,7 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
                 textRender={"Export"}
                 specificMenu={'quality-planning'}
                 data={filteredData}
-                type={tabIndex === 1 ? 1 : tabIndex === 2 ? 2 : 3}
+                type={tabIndex === 0 ? 4 : tabIndex}
                 path="nomination/quality-planning"
                 gasDay={displayGasDay ?? gasDay}
                 can_export={userPermission ? userPermission?.f_export : false}
@@ -1131,7 +1166,7 @@ export default function ClientPage({ params: { lng } }: ClientProps) {
             data={filteredData}
             columns={columns}
             anchorEl={anchorEl}
-            isShowDayInWeek={tabIndex === 2}
+            isShowDayInWeek={tabIndex === 3}
             hourRange={hourRange}
             conditionColumns={conditionColumns}
             mainColumns={['zone_name', 'area_name', 'parameter']}

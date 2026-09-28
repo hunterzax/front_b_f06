@@ -1,3 +1,5 @@
+// Next.js client boundary. Coverity flags this as unused_expr (NO_EFFECT).
+// coverity[unused_expr:SUPPRESS]
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -329,12 +331,12 @@ const InactivityTracker = () => {
                     );
                 }
 
-                if (!isSuperAdmin) {
-                    await handleUpdateFlagLogOut();
-                    await clearCookiesAndLocalStorage();
-                    setCookie('redirectAfterLogin', pathname, 1);
-                    setInactive(true);
-                }
+                // if (!isSuperAdmin) {
+                //     await handleUpdateFlagLogOut();
+                //     await clearCookiesAndLocalStorage();
+                //     setCookie('redirectAfterLogin', pathname, 1);
+                //     setInactive(true);
+                // }
                     // console.log('----- pathname : ', pathname);
             };
 

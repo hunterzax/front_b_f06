@@ -16,7 +16,8 @@ import BtnGeneral from '@/components/other/btnGeneral'
 const ViewPage: React.FC<any> = ({userPermission, tableData, setViewOpen, tabIndex, subTabIndex, subTabIndexview}) => {
   const [sortedData, setSortedData] = useState<any>([])
   const [sumtableData, setsumtableData] = useState<any>([])
-
+  console.log('subTabIndex : ', subTabIndex);
+  console.log('@ tableData : ', tableData);
   useEffect(() => {
     const dataRowMod = (tableData?.dataRow ?? []).filter((itemx: any) => itemx?.gas_day == tableData?.gas_day_text)
 
@@ -98,38 +99,29 @@ const ViewPage: React.FC<any> = ({userPermission, tableData, setViewOpen, tabInd
       const dayData = item?.weeklyDay?.[dayKey]
 
       return (
-        item?.gas_day?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        item?.area_text?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        normalizeWithFourDecimal(dayData?.capacityRightMMBTUD).includes(queryLower) ||
-        normalizeWithFourDecimal(dayData?.nominatedValueMMBTUD).includes(queryLower) ||
-        normalizeWithFourDecimal(dayData?.overusageMMBTUD).includes(queryLower) ||
-        (item?.capacityRightMMBTUD?.toString() !== 'false' && item?.capacityRightMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-        (item?.nominatedValueMMBTUD?.toString() !== 'false' && item?.nominatedValueMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-        (item?.overusageMMBTUD?.toString() !== 'false' && item?.overusageMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-        formatNumberFourDecimal(item?.capacityRightMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimal(item?.nominatedValueMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimal(item?.overusageMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndex]]?.capacityRightMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndex]]?.nominatedValueMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndex]]?.overusageMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimal(item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndex]]?.capacityRightMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimal(item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndex]]?.nominatedValueMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimal(item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndex]]?.overusageMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimalNoComma(item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndex]]?.capacityRightMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimalNoComma(item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndex]]?.nominatedValueMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimalNoComma(item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndex]]?.overusageMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndexview]]?.capacityRightMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndexview]]?.nominatedValueMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndexview]]?.overusageMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimal(item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndexview]]?.capacityRightMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimal(item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndexview]]?.nominatedValueMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimal(item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndexview]]?.overusageMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimalNoComma(item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndexview]]?.capacityRightMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimalNoComma(item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndexview]]?.nominatedValueMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        formatNumberFourDecimalNoComma(item?.weeklyDay?.[['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][subTabIndexview]]?.overusageMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-        matchesQuery(item.capacityRightMMBTUD, queryLower) ||
-        matchesQuery(item.nominatedValueMMBTUD, queryLower) ||
-        matchesQuery(item.overusageMMBTUD, queryLower)
+        (item?.gas_day ? item.gas_day.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (item?.area_text ? item.area_text.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (normalizeWithFourDecimal(dayData?.capacityRightMMBTUD) ? normalizeWithFourDecimal(dayData?.capacityRightMMBTUD).includes(queryLower) : false) ||
+        (normalizeWithFourDecimal(dayData?.nominatedValueMMBTUD) ? normalizeWithFourDecimal(dayData?.nominatedValueMMBTUD).includes(queryLower) : false) ||
+        (normalizeWithFourDecimal(dayData?.overusageMMBTUD) ? normalizeWithFourDecimal(dayData?.overusageMMBTUD).includes(queryLower) : false) ||
+        (item?.capacityRightMMBTUD?.toString() !== 'false' && item?.capacityRightMMBTUD ? item.capacityRightMMBTUD.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (item?.nominatedValueMMBTUD?.toString() !== 'false' && item?.nominatedValueMMBTUD ? item.nominatedValueMMBTUD.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (item?.overusageMMBTUD?.toString() !== 'false' && item?.overusageMMBTUD ? item.overusageMMBTUD.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (item?.capacityRightMMBTUD !== null && item?.capacityRightMMBTUD !== undefined ? formatNumberFourDecimal(item.capacityRightMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (item?.nominatedValueMMBTUD !== null && item?.nominatedValueMMBTUD !== undefined ? formatNumberFourDecimal(item.nominatedValueMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (item?.overusageMMBTUD !== null && item?.overusageMMBTUD !== undefined ? formatNumberFourDecimal(item.overusageMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (dayData?.capacityRightMMBTUD ? dayData.capacityRightMMBTUD.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (dayData?.nominatedValueMMBTUD ? dayData.nominatedValueMMBTUD.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (dayData?.overusageMMBTUD ? dayData.overusageMMBTUD.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (dayData?.capacityRightMMBTUD !== null && dayData?.capacityRightMMBTUD !== undefined ? formatNumberFourDecimal(dayData.capacityRightMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (dayData?.nominatedValueMMBTUD !== null && dayData?.nominatedValueMMBTUD !== undefined ? formatNumberFourDecimal(dayData.nominatedValueMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (dayData?.overusageMMBTUD !== null && dayData?.overusageMMBTUD !== undefined ? formatNumberFourDecimal(dayData.overusageMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (dayData?.capacityRightMMBTUD !== null && dayData?.capacityRightMMBTUD !== undefined ? formatNumberFourDecimalNoComma(dayData.capacityRightMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (dayData?.nominatedValueMMBTUD !== null && dayData?.nominatedValueMMBTUD !== undefined ? formatNumberFourDecimalNoComma(dayData.nominatedValueMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        (dayData?.overusageMMBTUD !== null && dayData?.overusageMMBTUD !== undefined ? formatNumberFourDecimalNoComma(dayData.overusageMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+        matchesQuery(item?.capacityRightMMBTUD, queryLower) ||
+        matchesQuery(item?.nominatedValueMMBTUD, queryLower) ||
+        matchesQuery(item?.overusageMMBTUD, queryLower)
       )
     })
 
@@ -184,7 +176,6 @@ const ViewPage: React.FC<any> = ({userPermission, tableData, setViewOpen, tabInd
           : dayjs(sortedData?.gas_day_text, 'DD/MM/YYYY').add(subTabIndexview, 'day').format('DD/MM/YYYY')
     setGasdayFilter(find_gas_day)
   }, [sortedData])
-
   return (
     <div className="space-y-2">
       {!detailOpen && (
@@ -261,7 +252,7 @@ const ViewPage: React.FC<any> = ({userPermission, tableData, setViewOpen, tabInd
             </div>
 
             <TableView
-              tableData={paginatedData}
+              tableDataView={paginatedData}
               columnVisibility={columnVisibility}
               userPermission={userPermission}
               isLoading={true}

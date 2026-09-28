@@ -60,10 +60,10 @@ const ModalViewPoint: React.FC<FormExampleProps> = ({
                         </div>
 
                         <div
-                            className={`mb-4 w-[100%] ${data?.newpoint_detail?.length > 5 ? 'max-h-[350px] overflow-y-auto' : ''}`}
+                            className={`mb-4 w-[100%] ${(data?.newpoint_detail?.length ?? 0) > 5 ? 'max-h-[350px] overflow-y-auto' : ''}`}
                         >
-                            {data?.newpoint_detail?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border border-[#DFE4EA] rounded-lg">
+                            {(data?.newpoint_detail || [])?.map((item: any) => (
+                                <div key={item?.id} className="w-full h-auto mb-2 p-2 border border-[#DFE4EA] rounded-lg">
                                     <div className="flex flex-col py-2 px-1">
                                         <div className="mb-2 flex justify-between">
                                             <span className="text-[#464255] font-light text-[16px]">{item?.point}</span>

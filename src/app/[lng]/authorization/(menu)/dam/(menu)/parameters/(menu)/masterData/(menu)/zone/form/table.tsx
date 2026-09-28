@@ -90,49 +90,49 @@ const TableZone: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                {columnVisibility.entry_exit && (
+                {columnVisibility?.entry_exit && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, tableData)}>
                     {`Entry / Exit`}
                     {getArrowIcon("entry_exit_id")}
                   </th>
                 )}
 
-                {columnVisibility.name && (
+                {columnVisibility?.name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("name", sortState, setSortState, setSortedData, tableData)}>
                     {`Zone Name`}
                     {getArrowIcon("name")}
                   </th>
                 )}
 
-                {columnVisibility.desc && (
+                {columnVisibility?.desc && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("description", sortState, setSortState, setSortedData, tableData)}>
                     {`Description`}
                     {getArrowIcon("description")}
                   </th>
                 )}
 
-                {columnVisibility.start_date && (
+                {columnVisibility?.start_date && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                     {`Start Date`}
                     {getArrowIcon("start_date")}
                   </th>
                 )}
 
-                {columnVisibility.end_date && (
+                {columnVisibility?.end_date && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}>
                     {`End Date`}
                     {getArrowIcon("end_date")}
                   </th>
                 )}
 
-                {columnVisibility.create_by && (
+                {columnVisibility?.create_by && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Created by`}
                     {getArrowIcon("create_by_account.first_name")}
                   </th>
                 )}
 
-                {columnVisibility.action && (
+                {columnVisibility?.action && (
                   <th scope="col" className={`${table_header_style} text-center`}>
                     {`Action`}
                   </th>
@@ -141,20 +141,20 @@ const TableZone: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => (
+              {(sortedData || [])?.map((row: any, index: any) => (
                 <tr
                   key={row?.id}
                   className={`${table_row_style}`}
                 >
 
-                  {columnVisibility.entry_exit && (
+                  {columnVisibility?.entry_exit && (
                     <td className="px-2 py-1 justify-center ">{row?.entry_exit && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color }}>{`${row?.entry_exit?.name}`}</div>}</td>
                   )}
                   {/* 
-                  {columnVisibility.name && (
+                  {columnVisibility?.name && (
                     <td className="px-2 py-1 justify-center text-center">{row?.name && <div className="flex w-[140px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.color }}>{`${row?.name}`}</div>}</td>
                   )} */}
-                  {columnVisibility.name && (
+                  {columnVisibility?.name && (
                     <td className="px-2 py-1 justify-center text-center">
                       {row?.name && (
                         <div
@@ -171,19 +171,19 @@ const TableZone: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                   )}
 
 
-                  {columnVisibility.desc && (
+                  {columnVisibility?.desc && (
                     <td className="px-2 py-1 text-[#464255]">{row?.description ? row?.description : ''}</td>
                   )}
 
-                  {columnVisibility.start_date && (
+                  {columnVisibility?.start_date && (
                     <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                   )}
 
-                  {columnVisibility.end_date && (
+                  {columnVisibility?.end_date && (
                     <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                   )}
 
-                  {columnVisibility.create_by && (
+                  {columnVisibility?.create_by && (
                     <td className="px-2 py-1 text-[#464255]">
                       <div>
                         <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -192,7 +192,7 @@ const TableZone: React.FC<TableProps> = ({ openEditForm, openViewForm, openHisto
                     </td>
                   )}
 
-                  {columnVisibility.action && (
+                  {columnVisibility?.action && (
                     <td className="px-2 py-1">
                       {/* <div className="relative inline-block text-left "> */}
                       <div className="relative inline-flex justify-center items-center w-full">

@@ -35,14 +35,14 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
     };
 
     // เอาไว้ span column แบบ dynamic เคสเปิด ปิดไส้ใน
-    // const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility[col.key]).length || 1;
-    const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility[col.key]).length || 0;
+    // const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility?.[col.key]).length || 1;
+    const getVisibleChildCount = (parentKey: string) => initialColumns?.filter((col: any) => col.parent_id === parentKey && columnVisibility?.[col.key]).length || 0;
     const getVisibleChildCountMultiLevel = (parentKey: string): number => {
         const children = initialColumns?.filter((col: any) => col.parent_id === parentKey);
 
         // ถ้าไม่มีลูก: เป็น leaf → เช็คว่า visible ไหม
         if (children.length === 0) {
-            return columnVisibility[parentKey] ? 1 : 0;
+            return columnVisibility?.[parentKey] ? 1 : 0;
         }
 
         // มีลูก: ไปดูลูกของลูกแบบ recursive แล้วรวม count ของลูกที่มองเห็น
@@ -126,7 +126,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                                 <tr className="h-9">
 
-                                    {columnVisibility.publicate && userDT?.account_manage?.[0]?.user_type_id !== 3 && (
+                                    {columnVisibility?.publicate && userDT?.account_manage?.[0]?.user_type_id !== 3 && (
                                         <th
                                             className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px]`} rowSpan={4} scope="col"
                                         >
@@ -134,7 +134,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.gas_day && (
+                                    {columnVisibility?.gas_day && (
                                         <th
                                             className={`${table_header_style} text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                             rowSpan={4} scope="col"
@@ -145,7 +145,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.gas_hour && (
+                                    {columnVisibility?.gas_hour && (
                                         <th
                                             className={`${table_sort_header_style} text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                             rowSpan={4} scope="col"
@@ -159,7 +159,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.timestamp && (
+                                    {columnVisibility?.timestamp && (
                                         <th
                                             className={`${table_sort_header_style} text-center min-w-[150px] w-[170px] max-w-[200px]`}
                                             rowSpan={4} scope="col"
@@ -173,7 +173,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.summary_pane && (
+                                    {columnVisibility?.summary_pane && (
                                         <th
                                             className={`${table_header_style} bg-[#DEA477] text-center`}
                                             // colSpan={48} 
@@ -185,7 +185,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         </th>
                                     )}
 
-                                    {columnVisibility.detail_pane && (
+                                    {columnVisibility?.detail_pane && (
                                         <th
                                             className={`${table_header_style} bg-[#6EA48D] text-center`}
                                             // colSpan={25} 
@@ -201,8 +201,8 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                 <tr className="h-9">
 
-                                    {columnVisibility.summary_pane && (<>
-                                        {columnVisibility.shipper_name && (
+                                    {columnVisibility?.summary_pane && (<>
+                                        {columnVisibility?.shipper_name && (
                                             <th
                                                 className={`${table_header_style} min-w-[170px] w-[190px] max-w-[200px]`}
                                                 rowSpan={3} scope="col"
@@ -216,7 +216,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.plan_actual && (
+                                        {columnVisibility?.plan_actual && (
                                             <th
                                                 className={`${table_header_style} min-w-[170px] w-[190px] max-w-[200px]`} rowSpan={3} scope="col"
                                             >
@@ -224,7 +224,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.contract_code && (
+                                        {columnVisibility?.contract_code && (
                                             <th
                                                 className={`${table_header_style} `}
                                                 rowSpan={3} scope="col"
@@ -238,7 +238,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.total_entry_mmbtud && (
+                                        {columnVisibility?.total_entry_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -250,7 +250,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.total_exit_mmbtud && (
+                                        {columnVisibility?.total_exit_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -262,7 +262,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.imbalance_zone_mmbtud && (
+                                        {columnVisibility?.imbalance_zone_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -274,7 +274,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.instructed_flow_mmbtud && (
+                                        {columnVisibility?.instructed_flow_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -286,7 +286,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.shrinkage_volume_mmbtud && (
+                                        {columnVisibility?.shrinkage_volume_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -298,7 +298,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.park_mmbtud && (
+                                        {columnVisibility?.park_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -310,7 +310,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.unpark_mmbtud && (
+                                        {columnVisibility?.unpark_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -322,7 +322,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.sod_park_mmbtud && (
+                                        {columnVisibility?.sod_park_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -334,7 +334,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.eod_park_mmbtud && (
+                                        {columnVisibility?.eod_park_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -346,7 +346,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.min_inventory_change_mmbtud && (
+                                        {columnVisibility?.min_inventory_change_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -358,7 +358,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.reserve_bal_mmbtud && (
+                                        {columnVisibility?.reserve_bal_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -370,7 +370,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.adjust_imbalance_mmbtud && (
+                                        {columnVisibility?.adjust_imbalance_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -382,7 +382,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.vent_gas && (
+                                        {columnVisibility?.vent_gas && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -394,7 +394,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.commissioning_gas && (
+                                        {columnVisibility?.commissioning_gas && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -406,7 +406,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.other_gas && (
+                                        {columnVisibility?.other_gas && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -418,7 +418,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.daily_imb_mmbtud && (
+                                        {columnVisibility?.daily_imb_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -430,7 +430,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.aip_mmbtud && (
+                                        {columnVisibility?.aip_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -442,7 +442,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.ain_mmbtud && (
+                                        {columnVisibility?.ain_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -454,7 +454,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.percentage_imb && (
+                                        {columnVisibility?.percentage_imb && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -466,7 +466,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.percentage_abslmb && (
+                                        {columnVisibility?.percentage_abslmb && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -478,7 +478,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.acc_imb_month_mmbtud && (
+                                        {columnVisibility?.acc_imb_month_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -490,7 +490,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.acc_imb_mmbtud && (
+                                        {columnVisibility?.acc_imb_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -502,7 +502,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.min_inventory_mmbtud && (
+                                        {columnVisibility?.min_inventory_mmbtud && (
                                             <th
                                                 className={`${table_header_style} text-center`}
                                                 rowSpan={1}
@@ -517,10 +517,10 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                     </>
                                     )}
 
-                                    {columnVisibility.detail_pane && (
+                                    {columnVisibility?.detail_pane && (
                                         <>
                                             {/* under detail pane */}
-                                            {columnVisibility.entry && (
+                                            {columnVisibility?.entry && (
                                                 <th
                                                     className={`${table_header_style} text-center bg-[#1AB9CF]`}
                                                     rowSpan={1}
@@ -534,7 +534,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             )}
 
                                             {/* under detail pane */}
-                                            {columnVisibility.exit && (
+                                            {columnVisibility?.exit && (
                                                 <th
                                                     className={`${table_header_style} text-center bg-[#3A8FB8]`} rowSpan={1} scope="col"
                                                     // colSpan={13}
@@ -551,11 +551,11 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                 <tr className="h-9">
 
                                     {/* List : Column ย่อยพวก East / West / East-West ปรับจัดกลาง https://app.clickup.com/t/86etje74w */}
-                                    {columnVisibility.summary_pane && (<>
+                                    {columnVisibility?.summary_pane && (<>
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Total Entry (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_total_entry_mmbtud && (
+                                        {columnVisibility?.east_total_entry_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style}  text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -571,7 +571,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_total_entry_mmbtud && (
+                                        {columnVisibility?.west_total_entry_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -587,7 +587,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.east_west_total_entry_mmbtud && (
+                                        {columnVisibility?.east_west_total_entry_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#C8FFD7] hover:bg-[#a6f5bf] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -606,7 +606,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Total Exit (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_total_exit_mmbtud && (
+                                        {columnVisibility?.east_total_exit_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -622,7 +622,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_total_exit_mmbtud && (
+                                        {columnVisibility?.west_total_exit_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -638,7 +638,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.east_west_total_exit_mmbtud && (
+                                        {columnVisibility?.east_west_total_exit_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#C8FFD7] hover:bg-[#a6f5bf] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -657,7 +657,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Imbalance Zone (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_imbalance_zone_mmbtud && (
+                                        {columnVisibility?.east_imbalance_zone_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -673,7 +673,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_imbalance_zone_mmbtud && (
+                                        {columnVisibility?.west_imbalance_zone_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -689,7 +689,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.total_imbalance_zone_mmbtud && (
+                                        {columnVisibility?.total_imbalance_zone_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#e0e0e0] text-right min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -709,7 +709,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Instructed flow (MMBTU) ########################## */}
-                                        {columnVisibility.east_instructed_flow_mmbtud && (
+                                        {columnVisibility?.east_instructed_flow_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -725,7 +725,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_instructed_flow_mmbtud && (
+                                        {columnVisibility?.west_instructed_flow_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -741,7 +741,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.east_west_instructed_flow_mmbtud && (
+                                        {columnVisibility?.east_west_instructed_flow_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#C8FFD7] hover:bg-[#a6f5bf] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -760,7 +760,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Shrinkage Volume (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_shrinkage_volume_mmbtud && (
+                                        {columnVisibility?.east_shrinkage_volume_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -776,7 +776,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_shrinkage_volume_mmbtud && (
+                                        {columnVisibility?.west_shrinkage_volume_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -795,7 +795,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Park (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_park_mmbtud && (
+                                        {columnVisibility?.east_park_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -811,7 +811,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_park_mmbtud && (
+                                        {columnVisibility?.west_park_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -830,7 +830,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Unpark (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_unpark_mmbtud && (
+                                        {columnVisibility?.east_unpark_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -846,7 +846,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_unpark_mmbtud && (
+                                        {columnVisibility?.west_unpark_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -864,7 +864,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> SOD Park (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_sod_park_mmbtud && (
+                                        {columnVisibility?.east_sod_park_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -880,7 +880,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_sod_park_mmbtud && (
+                                        {columnVisibility?.west_sod_park_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -899,7 +899,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> EOD Park (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_eod_park_mmbtud && (
+                                        {columnVisibility?.east_eod_park_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -915,7 +915,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_eod_park_mmbtud && (
+                                        {columnVisibility?.west_eod_park_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -934,7 +934,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Min. Inventory Change (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_min_inventory_change_mmbtud && (
+                                        {columnVisibility?.east_min_inventory_change_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -950,7 +950,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_min_inventory_change_mmbtud && (
+                                        {columnVisibility?.west_min_inventory_change_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -968,7 +968,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Reserve Bal. (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_reserve_bal_mmbtud && (
+                                        {columnVisibility?.east_reserve_bal_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -984,7 +984,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_reserve_bal_mmbtud && (
+                                        {columnVisibility?.west_reserve_bal_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1002,7 +1002,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Adjust Imbalance (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_adjust_imbalance_mmbtud && (
+                                        {columnVisibility?.east_adjust_imbalance_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1018,7 +1018,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_adjust_imbalance_mmbtud && (
+                                        {columnVisibility?.west_adjust_imbalance_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1037,7 +1037,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Vent Gas ########################## */}
-                                        {columnVisibility.east_vent_gas && (
+                                        {columnVisibility?.east_vent_gas && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1053,7 +1053,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_vent_gas && (
+                                        {columnVisibility?.west_vent_gas && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1072,7 +1072,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Commissioning Gas ########################## */}
-                                        {columnVisibility.east_commissioning_gas && (
+                                        {columnVisibility?.east_commissioning_gas && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1087,7 +1087,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_commissioning_gas && (
+                                        {columnVisibility?.west_commissioning_gas && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1105,7 +1105,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Other Gas ########################## */}
-                                        {columnVisibility.east_other_gas && (
+                                        {columnVisibility?.east_other_gas && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1121,7 +1121,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_other_gas && (
+                                        {columnVisibility?.west_other_gas && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1140,7 +1140,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Daily IMB (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_daily_imb_mmbtud && (
+                                        {columnVisibility?.east_daily_imb_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1156,7 +1156,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_daily_imb_mmbtud && (
+                                        {columnVisibility?.west_daily_imb_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1175,7 +1175,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> AIP (MMBTU/D) ########################## */}
-                                        {columnVisibility.total_aip_mmbtud && (
+                                        {columnVisibility?.total_aip_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#e0e0e0] text-right min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1193,7 +1193,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> AIN (MMBTU/D) ########################## */}
-                                        {columnVisibility.total_ain_mmbtud && (
+                                        {columnVisibility?.total_ain_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#e0e0e0] text-right min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1211,7 +1211,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> % Imb ########################## */}
-                                        {columnVisibility.total_percentage_imb && (
+                                        {columnVisibility?.total_percentage_imb && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#e0e0e0] text-right min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1229,7 +1229,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> %Abslmb ########################## */}
-                                        {columnVisibility.total_percentage_abslmb && (
+                                        {columnVisibility?.total_percentage_abslmb && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#F2F2F2] hover:bg-[#e0e0e0] text-right min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1247,7 +1247,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Acc. IMB. (MONTH) (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_acc_imb_month_mmbtud && (
+                                        {columnVisibility?.east_acc_imb_month_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1263,7 +1263,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_acc_imb_month_mmbtud && (
+                                        {columnVisibility?.west_acc_imb_month_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1282,7 +1282,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Acc. IMB. (MMBTU/D) ########################## */}
-                                        {columnVisibility.east_acc_imb_mmbtud && (
+                                        {columnVisibility?.east_acc_imb_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1298,7 +1298,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_acc_imb_mmbtud && (
+                                        {columnVisibility?.west_acc_imb_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1317,7 +1317,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                         {/* ################################################################################################## */}
                                         {/* ########################## Under Summary Pane ---> Min. Inventory (MMBTU) ########################## */}
-                                        {columnVisibility.east_min_inventory_mmbtud && (
+                                        {columnVisibility?.east_min_inventory_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#CBD8F0] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1333,7 +1333,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             </th>
                                         )}
 
-                                        {columnVisibility.west_min_inventory_mmbtud && (
+                                        {columnVisibility?.west_min_inventory_mmbtud && (
                                             <th
                                                 className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#fcb3ce] text-center min-w-[120px] w-[130px] max-w-[150px]`}
                                                 rowSpan={2}
@@ -1355,11 +1355,11 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
 
 
-                                    {columnVisibility.detail_pane && (
+                                    {columnVisibility?.detail_pane && (
                                         <>
                                             {/* ################################################################################################## */}
                                             {/* ########################## Under Detail Pane ---> Entry ########################## */}
-                                            {columnVisibility.east_entry_detail_pane && (
+                                            {columnVisibility?.east_entry_detail_pane && (
                                                 <th
                                                     className={`${table_header_style} text-[#58585A] bg-[#DBE4FF] text-center`}
                                                     rowSpan={1}
@@ -1371,7 +1371,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.west_entry_detail_pane && (
+                                            {columnVisibility?.west_entry_detail_pane && (
                                                 <th
                                                     className={`${table_header_style} text-[#58585A] bg-[#FFCEE2] text-center`}
                                                     rowSpan={1}
@@ -1383,7 +1383,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.east_west_entry_detail_pane && (
+                                            {columnVisibility?.east_west_entry_detail_pane && (
                                                 <th
                                                     className={`${table_header_style} text-[#58585A] bg-[#C8FFD7] text-center`}
                                                     rowSpan={1}
@@ -1398,7 +1398,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                             {/* ################################################################################################## */}
                                             {/* ########################## Under Detail Pane ---> Exit ########################## */}
-                                            {columnVisibility.east_exit_detail_pane && (
+                                            {columnVisibility?.east_exit_detail_pane && (
                                                 <th
                                                     className={`${table_header_style} text-[#58585A] bg-[#DBE4FF] text-center`}
                                                     rowSpan={1}
@@ -1410,7 +1410,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.west_exit_detail_pane && (
+                                            {columnVisibility?.west_exit_detail_pane && (
                                                 <th
                                                     className={`${table_header_style} text-[#58585A] bg-[#FFCEE2] text-center`}
                                                     rowSpan={1}
@@ -1422,7 +1422,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.east_west_exit_detail_pane && (
+                                            {columnVisibility?.east_west_exit_detail_pane && (
                                                 <th
                                                     className={`${table_header_style} text-[#58585A] bg-[#C8FFD7] text-center`}
                                                     rowSpan={1}
@@ -1434,7 +1434,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.f2_and_g && (
+                                            {columnVisibility?.f2_and_g && (
                                                 <th
                                                     className={`${table_header_style} text-[#FFFFFF] bg-[#1473A1] text-center`}
                                                     rowSpan={1}
@@ -1446,7 +1446,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.e && (
+                                            {columnVisibility?.e && (
                                                 <th
                                                     className={`${table_header_style} text-[#FFFFFF] bg-[#1473A1] text-center`}
                                                     rowSpan={1}
@@ -1464,12 +1464,12 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                 </tr>
 
                                 <tr className="h-9">
-                                    {columnVisibility.detail_pane && (
+                                    {columnVisibility?.detail_pane && (
                                         <>
 
                                             {/* ################################################################################################## */}
                                             {/* ########################## Under Detail Pane ---> Entry ---> East ########################## */}
-                                            {columnVisibility.gsp && (
+                                            {columnVisibility?.gsp && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1}
@@ -1484,7 +1484,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.bypass_gas && (
+                                            {columnVisibility?.bypass_gas && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1}
@@ -1499,7 +1499,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.lng && (
+                                            {columnVisibility?.lng && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1}
@@ -1514,7 +1514,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.others_east && (
+                                            {columnVisibility?.others_east && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1}
@@ -1532,7 +1532,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                             {/* ################################################################################################## */}
                                             {/* ########################## Under Detail Pane ---> Entry ---> West ########################## */}
-                                            {columnVisibility.ydn && (
+                                            {columnVisibility?.ydn && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1}
@@ -1547,7 +1547,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.ytg && (
+                                            {columnVisibility?.ytg && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1}
@@ -1562,7 +1562,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.ztk && (
+                                            {columnVisibility?.ztk && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1}
@@ -1577,7 +1577,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.others_west && (
+                                            {columnVisibility?.others_west && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1594,7 +1594,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                             {/* ################################################################################################## */}
                                             {/* ########################## Under Detail Pane ---> Entry ---> East-West ########################## */}
-                                            {columnVisibility.ra6_east && (
+                                            {columnVisibility?.ra6_east && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1607,7 +1607,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.ra6_west && (
+                                            {columnVisibility?.ra6_west && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1620,7 +1620,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.bvw10_east && (
+                                            {columnVisibility?.bvw10_east && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1633,7 +1633,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.bvw10_West && (
+                                            {columnVisibility?.bvw10_West && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1649,7 +1649,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                             {/* ################################################################################################## */}
                                             {/* ########################## Under Detail Pane ---> Exit ---> East ########################## */}
-                                            {columnVisibility.egat && (
+                                            {columnVisibility?.egat && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1662,7 +1662,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.ipp && (
+                                            {columnVisibility?.ipp && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1675,7 +1675,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.others_east_exit && (
+                                            {columnVisibility?.others_east_exit && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1691,7 +1691,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                             {/* ################################################################################################## */}
                                             {/* ########################## Under Detail Pane ---> Exit ---> West ########################## */}
-                                            {columnVisibility.egat_west && (
+                                            {columnVisibility?.egat_west && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1704,7 +1704,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.ipp_west && (
+                                            {columnVisibility?.ipp_west && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1717,7 +1717,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.others_west_exit && (
+                                            {columnVisibility?.others_west_exit && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1732,7 +1732,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                             {/* ################################################################################################## */}
                                             {/* ########################## Under Detail Pane ---> Exit ---> East-West ########################## */}
-                                            {columnVisibility.egat_east_west && (
+                                            {columnVisibility?.egat_east_west && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1745,7 +1745,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.ipp_east_west && (
+                                            {columnVisibility?.ipp_east_west && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1758,7 +1758,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.others_east_west_exit && (
+                                            {columnVisibility?.others_east_west_exit && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#E5E5E5] hover:bg-[#e0e0e0] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1777,7 +1777,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             {/* E5EED9  DBE1F2 */}
                                             {/* DBE4FF  FFCEE2 */}
                                             {/* https://app.clickup.com/t/9018502823/86eujrg5h */}
-                                            {columnVisibility.east_f2andg && (
+                                            {columnVisibility?.east_f2andg && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#DBE4FF] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1790,7 +1790,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.west_f2andg && (
+                                            {columnVisibility?.west_f2andg && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#FFCEE2] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1806,7 +1806,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                                             {/* ################################################################################################## */}
                                             {/* ########################## Under Detail Pane ---> Exit ---> E ########################## */}
-                                            {columnVisibility.east_e && (
+                                            {columnVisibility?.east_e && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#DBE4FF] hover:bg-[#DBE4FF] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1819,7 +1819,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                                 </th>
                                             )}
 
-                                            {columnVisibility.west_e && (
+                                            {columnVisibility?.west_e && (
                                                 <th
                                                     className={`${table_sort_header_style} text-[#58585A] bg-[#FFCEE2] hover:bg-[#FFCEE2] text-center min-w-[173px] w-[180px] max-w-[200px]`}
                                                     rowSpan={1} scope="col" colSpan={1}
@@ -1840,7 +1840,7 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
 
                             <tbody>
                                 {/* TEST 3 Steps map */}
-                                {sortedData && sortedData?.map((row: any, index: any) => {
+                                {(sortedData || [])?.map((row: any, index: any) => {
 
                                     const hasPlanningKeyRow = row != null && ('totalAllPlanning' in row);
                                     const hasActualKeyRow = row != null && ('totalAllActual' in row);

@@ -210,12 +210,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     useEffect(() => {
         const targetConfig = selectedTermMaster?.find((item: any) => {
-            if (item?.start_date) {
+            if (item && item?.start_date) {
                 const today = dayjs().startOf('day');
                 const startDate = toDayjs(item.start_date).startOf('day');
 
                 if (startDate.isSameOrBefore(today)) {
-                    if (item?.end_date) {
+                    if (item.end_date) {
                         const endDate = toDayjs(item.end_date).startOf('day');
                         return endDate.isAfter(today);
                     } else {
@@ -878,7 +878,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                     //     "update_by_account": null
                                     // }]) // เอาไว้แก้บัค
 
-                                    setValue("type", e.target.value);
+                                    setValue("type", e?.target?.value ?? "");
                                 }}
                                 displayEmpty
                                 renderValue={(value: any) => {
@@ -1001,7 +1001,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                                 placeholder="Enter number of period"
                                                 // readOnly={isReadOnly}
                                                 {...register("period_number")}
-                                                // onChange={(e) => setValue("period_number", e.target.value)}
+                                                // onChange={(e) => setValue("period_number", e?.target?.value ?? "")}
                                                 onChange={(e) => {
                                                     const inputValue = e.target.value.replace(/,/g, ''); // Remove commas
                                                     if (inputValue === "") {
@@ -1200,7 +1200,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         </div>
                         <div className="text-[12px] text-[#1473A1] -mt-1 w-full col-span-2">
                             {requireText}
-                            {errors?.upload_tranform && (<p className="text-red-500 text-sm w-full">{`${errors?.upload_tranform?.message}`}</p>)}
+                            {errors?.upload_tranform && (<p className="text-red-500 text-sm w-full">{`${errors?.upload_tranform?.message || ''}`}</p>)}
                         </div>
                     </div>
                 </form>

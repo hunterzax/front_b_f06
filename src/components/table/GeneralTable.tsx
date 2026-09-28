@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from 'react';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -239,21 +237,21 @@ export function GeneralTable({
                     <div className="flex flex-col gap-2 mt-2">
                       {/* รายการคอลัมน์ทั้งหมด */}
                       {
-                        table.getAllLeafColumns()
-                        .filter(column => !removeFromShowHideColList.includes(column.id))
+                        (table?.getAllLeafColumns?.() || [])
+                        .filter(column => !(removeFromShowHideColList || []).includes(column?.id))
                         .map(column => {
-                          let displayText = typeof column.columnDef.header === 'string' 
-                            ? column.columnDef.header 
-                            : column.id
-                          if(dayinWeek.includes(displayText)){
-                            displayText = displayText.charAt(0).toUpperCase() + displayText.slice(1)
+                          let displayText = typeof column?.columnDef?.header === 'string' 
+                            ? column?.columnDef?.header 
+                            : column?.id
+                          if((dayinWeek || []).includes(displayText)){
+                            displayText = displayText?.charAt(0)?.toUpperCase() + displayText?.slice(1)
                           }
                           return (
-                            <label key={column.id} className="flex items-center gap-2">
+                            <label key={column?.id} className="flex items-center gap-2">
                             <input
                                 type="checkbox"
-                                checked={column.getIsVisible()}
-                                onChange={column.getToggleVisibilityHandler()}
+                                checked={column?.getIsVisible?.()}
+                                onChange={column?.getToggleVisibilityHandler?.()}
                                 className={`h-4 w-4 border border-gray-400 rounded-md checked:bg-[${headerColor}] checked:border-transparent text-white focus:ring-0`}
                                 style={{
                                     accentColor: headerColor,
@@ -275,40 +273,39 @@ export function GeneralTable({
 
       {/* ตารางแสดงข้อมูล */}
         <div className="w-full overflow-auto relative h-full rounded-t-md"> 
-          {/* <Spinloading spin={isLoading} rounded={0} /> */} {/* ขอปิดไว้ก่อน มันซ้ำซ้อนกับ */}
           {
             isLoading ?
               <TableSkeleton />
               :
               <table className="relative overflow-y-auto text-sm text-left rtl:text-right text-gray-500 w-full">
                 <thead className={`text-xs text-[#ffffff] bg-[${headerColor}] sticky top-0 z-[9]`} >
-                  {table.getHeaderGroups().map(headerGroup => (
-                    <tr key={headerGroup.id} className="h-9 relative z-50">
-                      {headerGroup.headers.map(header => {
-                        const canSort = header.column.getCanSort()
-                        const size = header.getSize() == 150 ? undefined : header.getSize() // 150 is default size of column
-                        const meta = header.column.columnDef.meta as any
+                  {table?.getHeaderGroups?.()?.map((headerGroup: any) => (
+                    <tr key={headerGroup?.id} className="h-9 relative z-50">
+                      {headerGroup?.headers?.map((header: any) => {
+                        const canSort = header?.column?.getCanSort?.()
+                        const size = header?.getSize?.() == 150 ? undefined : header?.getSize?.() // 150 is default size of column
+                        const meta = header?.column?.columnDef?.meta as any
                         return (
                           <th
-                            key={header.id}
+                            key={header?.id}
                             scope="col" 
                             className={`${canSort ? table_sort_header_style : table_header_style} text-center relative z-50`}
-                            colSpan={header.colSpan}
+                            colSpan={header?.colSpan}
                             style={{
                               textAlign: meta?.align ? meta?.align : 'left',
                               backgroundColor: meta?.headerColor ? meta?.headerColor : headerColor
                             }}
-                            onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
+                            onClick={canSort ? header?.column?.getToggleSortingHandler?.() : undefined}
                           >
                             <div style={{ width: size ? size : meta?.width ? meta?.width : '100%' }}>
                               {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
+                                header?.column?.columnDef?.header,
+                                header?.getContext?.()
                               )}
                               {canSort && (
                                 <div className={`${table_col_arrow_sort_style}`}>
-                                    <ArrowDropUpIcon sx={{ fontSize: 18, opacity: header.column.getIsSorted() === "asc"  ? 1 : 0.4, }} />
-                                    <ArrowDropDownIcon sx={{ fontSize: 18, opacity: header.column.getIsSorted() === "desc" ? 1 : 0.4, }} />
+                                    <ArrowDropUpIcon sx={{ fontSize: 18, opacity: header?.column?.getIsSorted?.() === "asc"  ? 1 : 0.4, }} />
+                                    <ArrowDropDownIcon sx={{ fontSize: 18, opacity: header?.column?.getIsSorted?.() === "desc" ? 1 : 0.4, }} />
                                 </div>
                               )}
                             </div>
@@ -319,16 +316,16 @@ export function GeneralTable({
                   ))}
                 </thead>
                 <tbody>
-                  {table.getRowModel().rows.map(row => (
+                  {table?.getRowModel?.()?.rows?.map((row: any) => (
                     <tr
-                      key={row.id}
+                      key={row?.id}
                       className={`${table_row_style} hover:bg-gray-50 even:bg-gray-50 even:hover:bg-gray transition-colors duration-200"`}
                     >
-                      {row.getVisibleCells().map(cell => {
-                        const meta = cell.column.columnDef.meta as any
+                      {row?.getVisibleCells?.()?.map((cell: any) => {
+                        const meta = cell?.column?.columnDef?.meta as any
                         return (
                           <td
-                            key={cell.id}
+                            key={cell?.id}
                             className="border px-4 py-2 text-[#464255] bg-white border-none h-[53px]"
                             style={{
                               color: meta?.textColor ? meta?.textColor : '#464255',
@@ -337,7 +334,7 @@ export function GeneralTable({
                               fontWeight: meta?.textStyle ? meta?.textStyle : 'normal'
                             }}
                           >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            {flexRender(cell?.column?.columnDef?.cell, cell?.getContext?.())}
                           </td>
                         )
                       })}

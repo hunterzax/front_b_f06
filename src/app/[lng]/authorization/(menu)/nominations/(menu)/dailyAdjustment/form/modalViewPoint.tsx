@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Dialog, DialogPanel } from '@headlessui/react'
-import { formatDateNoTime, formatNumberSixDecimal, formatNumberSixDecimalNom, formatNumberThreeDecimal } from '@/utils/generalFormatter';
+import { formatDateNoTime, formatNumberSixDecimal, formatNumberThreeDecimal } from '@/utils/generalFormatter';
+import { cascadingRound } from '@/utils/number';
 import { MenuItem, Select, TextField, Typography } from '@mui/material';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -96,7 +97,7 @@ const ModalViewPoint: React.FC<FormExampleProps> = ({
                                                         id="hv"
                                                         type="text"
                                                         placeholder=""
-                                                        value={item?.heating_value ||''}
+                                                        value={item?.heating_value ? formatNumberThreeDecimal(item?.heating_value) : ''}
                                                         readOnly={true}
                                                         className={`${inputClass} !bg-[#EFECEC] pointer-events-none `}
                                                     />
@@ -106,7 +107,7 @@ const ModalViewPoint: React.FC<FormExampleProps> = ({
                                                         id="unit3"
                                                         type="text"
                                                         placeholder=""
-                                                        value={item?.valume_mmscfd ? formatNumberSixDecimal(item?.valume_mmscfd) : item?.valume_mmscfh ? formatNumberSixDecimal(item?.valume_mmscfh) : ''}
+                                                        value={item?.valume_mmscfd ? formatNumberSixDecimal(cascadingRound(Number(item?.valume_mmscfd), 6)) : item?.valume_mmscfh ? formatNumberSixDecimal(cascadingRound(Number(item?.valume_mmscfh), 6)) : ''}
                                                         readOnly={true}
                                                         className={`${inputClass} !bg-[#EFECEC] pointer-events-none `}
                                                     />
@@ -116,7 +117,7 @@ const ModalViewPoint: React.FC<FormExampleProps> = ({
                                                         id="unit2"
                                                         type="text"
                                                         placeholder=""
-                                                        value={item?.valume_mmscfd2 ? formatNumberThreeDecimal(item?.valume_mmscfd2) : item?.valume_mmscfh2 ? formatNumberThreeDecimal(item?.valume_mmscfh2) : ''}
+                                                        value={item?.valume_mmscfd2 ? formatNumberThreeDecimal(cascadingRound(Number(item?.valume_mmscfd2), 3)) : item?.valume_mmscfh2 ? formatNumberThreeDecimal(cascadingRound(Number(item?.valume_mmscfh2), 3)) : ''}
                                                         readOnly={true}
                                                         className={`${inputClass} !bg-[#EFECEC] pointer-events-none `}
                                                     />
@@ -204,8 +205,8 @@ const ModalViewPoint: React.FC<FormExampleProps> = ({
                                             label=""
                                             multiline
                                             onChange={(e) => {
-                                                if (e.target.value.length <= 255) {
-                                                    setValue('reason', e.target.value);
+                                                if ((e?.target?.value?.length ?? 0) <= 255) {
+                                                    setValue('reason', e?.target?.value ?? "");
                                                 }
                                             }}
                                             placeholder='Enter Reasons'
@@ -235,23 +236,21 @@ const ModalViewPoint: React.FC<FormExampleProps> = ({
                                         </div>
                                     </div>
 
-                                    <div className="w-full flex justify-end pt-8">
+                                    <div className="w-full flex justify-end pt-8 gap-2">
                                         <button
                                             type="button"
                                             onClick={handleClose}
-                                            className={`w-[167px] py-2 px-6 rounded-lg ${mode === "view" ? "bg-[#00ADEF] font-bold text-white hover:bg-blue-600" : "bg-slate-100 text-black hover:bg-rose-500"}`}
+                                            className="w-[167px] py-2 px-6 rounded-lg bg-slate-100 text-black hover:bg-rose-500"
                                         >
-                                            {mode === "view" ? "Close" : "Cancel"}
+                                            {"Cancel"}
                                         </button>
 
-                                        {mode !== "view" && (
-                                            <button
-                                                type="submit"
-                                                className="w-[160px] font-semibold py-2 px-6 rounded-lg bg-[#00ADEF] text-white hover:bg-blue-600"
-                                            >
-                                                {mode === "update" ? "Submit" : "Save"}
-                                            </button>
-                                        )}
+                                        <button
+                                            type="submit"
+                                            className="w-[160px] font-semibold py-2 px-6 rounded-lg bg-[#00ADEF] text-white hover:bg-blue-600"
+                                        >
+                                            {"Submit"}
+                                        </button>
                                     </div>
 
                                 </form>
@@ -263,19 +262,10 @@ const ModalViewPoint: React.FC<FormExampleProps> = ({
                                 <button
                                     type="button"
                                     onClick={handleClose}
-                                    className={`w-[167px] py-2 px-6 rounded-lg ${mode === "view" ? "bg-[#00ADEF] font-bold text-white hover:bg-blue-600" : "bg-slate-100 text-black hover:bg-rose-500"}`}
+                                    className="w-[167px] py-2 px-6 rounded-lg bg-[#00ADEF] font-bold text-white hover:bg-blue-600"
                                 >
-                                    {mode === "view" ? "Close" : "Cancel"}
+                                    {"Close"}
                                 </button>
-
-                                {mode !== "view" && (
-                                    <button
-                                        type="submit"
-                                        className="w-[160px] font-semibold py-2 px-6 rounded-lg bg-[#00ADEF] text-white hover:bg-blue-600"
-                                    >
-                                        {mode === "update" ? "Submit" : "Save"}
-                                    </button>
-                                )}
                             </div>
                         }
 

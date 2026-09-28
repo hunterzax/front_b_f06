@@ -243,6 +243,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
         }
 
         const res_get_cal = await getService(`${url_cal}`);
+        if(Array.isArray(res_get_cal)){
         setDataCal(res_get_cal)
         setSortedData(res_get_cal)
 
@@ -253,6 +254,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
             totalNominationValue,
             totalRemainingCapacity,
         });
+        }
         setIsLoading(false)
     }
 
@@ -402,7 +404,7 @@ const fnHvData = async (area_id:any, areaMaster:any, nomination_point:any, nomDa
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("area_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("area_id", e.target.value);
+                                                    setValue("area_id", e?.target?.value ?? "");
                                                     handleSelectArea(e.target.value)
                                                     if(tabIndex == 0){
                                                         fnHvData(e.target.value, areaMaster, watch("nomination_point"), nomDataMain, null)
@@ -443,7 +445,7 @@ const fnHvData = async (area_id:any, areaMaster:any, nomination_point:any, nomDa
                                                     disabled={isReadOnly}
                                                     valueWatch={watch("nomination_point") || ""}
                                                     handleChange={(e) => {
-                                                        setValue("nomination_point", e.target.value);
+                                                        setValue("nomination_point", e?.target?.value ?? "");
                                                         // watch("area_id") areaMaster
                                                         // watch("nomination_point") nomDataMain
                                                         fnHvData(watch("area_id"), areaMaster, e.target.value, nomDataMain, null)
@@ -522,7 +524,7 @@ const fnHvData = async (area_id:any, areaMaster:any, nomination_point:any, nomDa
                                                 }}
                                                 onChange={(e) => {
                                                     fnHvData(watch("area_id"), areaMaster, watch("nomination_point"), nomDataMain, e.target.value)
-                                                    setValue("unit", e.target.value);
+                                                    setValue("unit", e?.target?.value ?? "");
                                                     clearErrors('unit')
                                                 }}
                                                 displayEmpty
@@ -615,7 +617,7 @@ const fnHvData = async (area_id:any, areaMaster:any, nomination_point:any, nomDa
                                                 </thead>
 
                                                 <tbody>
-                                                    {sortedData?.length > 0 && sortedData?.map((row: any, index: any) => {
+                                                    {(sortedData || [])?.map((row: any, index: any) => {
                                                         return (
                                                             <tr
                                                                 key={row?.id}

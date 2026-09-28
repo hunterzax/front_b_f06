@@ -201,7 +201,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         }
 
                                                         resetField("user_type_id"); // ล้างค่า user_type_id เพื่อป้องกันการซ้ำกัน https://app.clickup.com/t/9018502823/86euzxxp8
-                                                        setValue("process_type_id", e.target.value);
+                                                        setValue("process_type_id", e?.target?.value ?? "");
                                                         if (errors?.process_type_id) { clearErrors('process_type_id') }
                                                     }}
                                                     errors={errors?.process_type_id}
@@ -251,7 +251,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         },
                                                     }}
                                                     onChange={(e) => {
-                                                        setValue("user_type_id", e.target.value);
+                                                        setValue("user_type_id", e?.target?.value ?? "");
                                                         // fetchData(e?.target);
                                                     }}
                                                     displayEmpty
@@ -323,7 +323,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         },
                                                     }}
                                                     onChange={(e) => {
-                                                        setValue("nomination_type_id", e.target.value);
+                                                        setValue("nomination_type_id", e?.target?.value ?? "");
                                                         // fetchData(e?.target);
                                                     }}
                                                     displayEmpty
@@ -394,7 +394,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 },
                                                             }}
                                                             onChange={(e) => {
-                                                                setValue("hour", e.target.value);
+                                                                setValue("hour", e?.target?.value ?? "");
                                                             }}
                                                             displayEmpty
                                                             renderValue={(value: any) => {
@@ -460,7 +460,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 },
                                                             }}
                                                             onChange={(e) => {
-                                                                setValue("minute", e.target.value);
+                                                                setValue("minute", e?.target?.value ?? "");
                                                             }}
                                                             displayEmpty
                                                             renderValue={(value: any) => {

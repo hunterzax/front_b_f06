@@ -67,11 +67,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [srchName, setSrchName] = useState('');
     const [srchStartDate, setSrchStartDate] = useState<Date | null>(null);
     const [srchEndDate, setSrchEndDate] = useState<Date | null>(null);
-    const [srchStatus, setSrchStatus] = useState('');
+    const [srchStatus, setSrchStatus] = useState<any>([]);
     const [key, setKey] = useState(0);
 
     const handleFieldSearch = () => {
-        let stat = srchStatus === "1" ? true : false
+        // let stat = srchStatus === "1" ? true : false
+        const statusFilter = (srchStatus || [])?.map((s: any) => s === "1");
         // const res_filtered_date: any = filterStartEndDate(dataTable, srchStartDate, srchEndDate); // เดิมโรงงาน
         const res_filtered_date: any = filterStartEndDateNewLogic(dataTable, srchStartDate, srchEndDate); // v1.0.90 ปรับ logic filter start date และ end date https://app.clickup.com/t/86erqt8ed
         const result_2 = res_filtered_date?.filter((item: any) => {
@@ -80,7 +81,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 (srchName ? item?.name.toLowerCase().includes(srchName.toLowerCase()) : true) &&
                 // (srchStartDate ? formatSearchDate(item?.start_date) === formatSearchDate(srchStartDate) : true) &&
                 // (srchEndDate ? formatSearchDate(item?.end_date) === formatSearchDate(srchEndDate) : true) &&
-                (srchStatus ? item?.status === stat : true)
+                // (srchStatus ? item?.status === stat : true)
+                (statusFilter.length ? statusFilter.includes(item?.status) : true)
             );
         });
         setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
@@ -92,7 +94,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setSrchName('');
         setSrchStartDate(null);
         setSrchEndDate(null);
-        setSrchStatus('');
+        setSrchStatus([]);
         setFilteredDataTable(dataTable);
         setKey((prevKey) => prevKey + 1);
     };
@@ -153,11 +155,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         try {
             // User type (2 = TSO, 3 = Shipper, 4 = Other)
             const response: any = await getService(`/master/account-manage/group-master?user_type=4`);
-            const updatedDataOther = response?.map((item: any) => ({
-                ...item,
-                role: item.role_default?.[0]?.role || null,
-                division_: item?.division_group_show?.map((d:any) => d?.division)
-            }));
+            const updatedDataOther = response?.map((item: any) => {
+                if(item){
+                    return {
+                        ...item,
+                        role: item.role_default?.[0]?.role || null,
+                        division_: (item?.division_group_show || []).map((d:any) => d?.division)
+                    }
+                }
+                else{
+                    return {
+                        role: null,
+                        division_: []
+                    };
+                }
+            });
 
             setData(updatedDataOther);
             setFilteredDataTable(updatedDataOther);
@@ -254,7 +266,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         // // how to map
 
         // newData["division"] = newData.division ? [{ "id": newData.division }] : []
-        newData["division"] = newData.division.map((id: any) => ({ id })),
+        newData["division"] = (newData.division || [])?.map((id: any) => ({ id })),
 
             newData["role_default"] = [{ "id": newData.role_default }]
         newData["user_type_id"] = 4 // (2 = TSO, 3 = Shipper, 4 = Other)
@@ -334,7 +346,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         fetchDataDiv(id);
         setSelectedId(id);
-        const filteredData = dataTable.find((item: any) => item.id === id);
+        const filteredData = (dataTable || [])?.find((item: any) => item.id === id);
         if (filteredData) {
             getDivNotUseWayEdit(id);
             fdInterface.id = filteredData.id;
@@ -359,7 +371,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     };
 
     const openViewForm = (id: any) => {
-        const filteredData = dataTable.find((item: any) => item.id === id);
+        const filteredData = (dataTable || [])?.find((item: any) => item.id === id);
         if (filteredData) {
             getDivNotUseWayEdit(id);
             fdInterface.id = filteredData.id;
@@ -415,7 +427,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         try {
             const response: any = await getService(`/master/account-manage/history?type=group-4&method=all&id_value=${id}`);
 
-            const valuesArray = response.map((item: any) => item.value);
+            const valuesArray = (response || [])?.map((item: any) => item.value);
 
             let mappings = [
                 { key: "id_name", title: "Other ID" },
@@ -587,6 +599,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.id_name || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
+                    if (!row) return (<div></div>)
                     return (<div className={`${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} whitespace-pre`}>{row?.id_name ? row?.id_name : ''}</div>)
                 }
             },
@@ -597,6 +610,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.name || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
+                    if (!row) return (<div></div>)
                     return (<div className={`${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.name ? row?.name : ''}</div>)
                 }
             },
@@ -609,37 +623,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.division?.length || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
+                    if (!row) return (<div className="inline-flex items-center justify-center relative"></div>)
                     return (
                         <div className="inline-flex items-center justify-center relative">
-                            {/* <button
-                                type="button"
-                                className="flex items-center justify-center px-[2px] py-[2px] rounded-md hover:bg-blue-600 border border-[#DFE4EA] relative"
-                                onClick={() => openDiv(row?.id, row?.division, { "id_name": row?.id_name, "name": row?.name, "company_name": row?.company_name })}
-                                // disabled={row?.division.length <= 0 && true}
-                                disabled={!userPermission?.f_view || row?.system_login_account?.length <= 0}
-                            >
-                                <SupervisorAccountRoundedIcon sx={{ fontSize: 18, color: '#1473A1', '&:hover': { color: '#ffffff' } }} />
-                            </button> */}
-
-                            {/* <button
-                                type="button"
-                                className={iconButtonClass}
-                                onClick={() => openDiv(row?.id, row?.division, { "id_name": row?.id_name, "name": row?.name, "company_name": row?.company_name })}
-                                disabled={!userPermission?.f_view || row?.system_login_account?.length <= 0}
-                            >
-                                <SupervisorAccountRoundedIcon
-                                    fontSize="inherit"
-                                    className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-[1px]"
-                                    sx={{ color: 'currentColor', fontSize: 18 }}
-                                />
-                            </button>
-                            <span className="px-2 text-[#464255]">
-                                {row?.division?.length}
-                            </span> */}
                             <button
                                 type="button"
                                 className={iconButtonClass}
-                                // onClick={() => openDiv(row?.id, row?.division, { "id_name": row?.id_name, "name": row?.name, "company_name": row?.company_name })}
                                 onClick={() => openDiv(row?.id, (row?.division_group_show && row?.division_group_show?.length > 0 ? row?.division_group_show?.map((e:any) => e?.division) : row?.division), { "id_name": row?.id_name, "name": row?.name, "company_name": row?.company_name })}
                                 disabled={!userPermission?.f_view || row?.system_login_account?.length <= 0}
                             >
@@ -651,7 +640,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             </button>
                             <span className="px-2 text-[#464255]">
                                 {row?.division_group_show && row?.division_group_show?.length > 0 ? row?.division_group_show?.length : row?.division?.length}
-                                {/* {row?.division?.length} */}
                             </span>
                         </div>
                     )
@@ -665,6 +653,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.role?.name || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
+                    if (!row) return (<div></div>)
                     return (<div className={`${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.role ? row?.role?.name : ''}</div>)
                 }
             },
@@ -675,6 +664,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.telephone || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
+                    if (!row) return (<div></div>)
                     return (
                         <div className={`${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.telephone ? maskLastFiveDigits(row?.telephone) : ''}</div>
                     )
@@ -687,6 +677,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.email || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
+                    if (!row) return (<div></div>)
                     return (
                         <div className={`${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.email ? anonymizeEmail(row?.email) : ''}</div>
                     )
@@ -703,6 +694,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // sortUndefined: -1,
                 cell: (info) => {
                     const row: any = info?.row?.original
+                    if (!row) return (<div></div>)
                     return (
                         // <div className={`${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.start_date ? formatDateTimeSec(row?.start_date) : ''}</div>
                         <div className={`${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</div>
@@ -720,6 +712,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // sortUndefined: -1,
                 cell: (info) => {
                     const row: any = info?.row?.original
+                    if (!row) return (<div></div>)
                     return (
                         // <div className={`${row?.status ? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{row?.end_date ? formatDateTimeSec(row?.end_date) : ''}</div>
                         <div className={`${row?.status ? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</div>
@@ -734,7 +727,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 enableSorting: false,
                 size: 100,
                 cell: (info) => {
-                    const row: any = info?.row?.original;
+                    const row: any = info?.row?.original
+                    if (!row) return (<div></div>);
                     // const getPermission: any = renderPermission();
                     return (
                         <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view && !userPermission?.f_edit ? true : false} />
@@ -816,7 +810,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     <InputSearch
                         id="searchStat"
                         label="Status"
-                        type="select"
+                        type="select-multi-checkbox"
                         value={srchStatus}
                         onChange={(e) => setSrchStatus(e.target.value)}
                         options={[

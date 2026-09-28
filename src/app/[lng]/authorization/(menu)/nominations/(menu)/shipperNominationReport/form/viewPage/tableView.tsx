@@ -10,25 +10,25 @@ import NodataTable from '@/components/other/nodataTable'
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined'
 import dayjs from 'dayjs'
 
-const TableView: React.FC<any> = ({tableData, openViewForm, columnVisibility, isLoading, userPermission, tabEntry, openDetailForm, tabIndex, subTabIndex, subTabIndexview, gasDayFilter, itemsPerPage, currentPage, originalData, dataSorting}) => {
+const TableView: React.FC<any> = ({tableDataView, openViewForm, columnVisibility, isLoading, userPermission, tabEntry, openDetailForm, tabIndex, subTabIndex, subTabIndexview, gasDayFilter, itemsPerPage, currentPage, originalData, dataSorting}) => {
   const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-  const [sortedData, setSortedData] = useState<any>([])
+  const [sortedDataTableView, setSortedDataTableView] = useState<any>([])
 
   const sortKeyCapRight = tabIndex === 2 && subTabIndex >= 0 && subTabIndex <= 6 ? `weeklyDay.${dayKeys[subTabIndex]}.capacityRightMMBTUD` : 'capacityRightMMBTUD'
 
   const sortKeyNominated = tabIndex === 2 && subTabIndex >= 0 && subTabIndex <= 6 ? `weeklyDay.${dayKeys[subTabIndex]}.nominatedValueMMBTUD` : 'nominatedValueMMBTUD'
 
   const sortKeyOverusage = tabIndex === 2 && subTabIndex >= 0 && subTabIndex <= 6 ? `weeklyDay.${dayKeys[subTabIndex]}.overusageMMBTUD` : 'overusageMMBTUD'
-  console.log('--- tableData : ', tableData);
+
   useEffect(() => {
-    const sum_val_ = addTotalPerRow(tableData)
+    const sum_val_ = addTotalPerRow(tableDataView)
     if (sortState?.direction) {
       const col: any = sortState?.column
-      sortOnPagenationWithPaginate(col, sortState, setSortState, setSortedData, dataSorting, itemsPerPage, currentPage)
+      sortOnPagenationWithPaginate(col, sortState, setSortState, setSortedDataTableView, dataSorting, itemsPerPage, currentPage)
     } else {
-      setSortedData(sum_val_)
+      setSortedDataTableView(sum_val_)
     }
-  }, [tableData])
+  }, [tableDataView])
 
   const [sortState, setSortState] = useState({column: null, direction: null})
 
@@ -47,42 +47,42 @@ const TableView: React.FC<any> = ({tableData, openViewForm, columnVisibility, is
         <table className={`w-full text-sm text-left rtl:text-right text-gray-500 `}>
           <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
             <tr className="h-9">
-              {columnVisibility.gas_day && (
-                <th scope="col" className={`${table_sort_header_style} text-center max-w-[200px]`} onClick={() => handleSortWithPaginate('gas_day', sortState, setSortState, setSortedData, dataSorting, itemsPerPage, currentPage)}>
+              {columnVisibility?.gas_day && (
+                <th scope="col" className={`${table_sort_header_style} text-center max-w-[200px]`} onClick={() => handleSortWithPaginate('gas_day', sortState, setSortState, setSortedDataTableView, dataSorting, itemsPerPage, currentPage)}>
                   {`Gas Day`}
                   {getArrowIcon('gas_day')}
                 </th>
               )}
 
-              {columnVisibility.area && (
-                <th scope="col" className={`${table_sort_header_style} text-center !min-w-[120px] !max-w-[200px]`} onClick={() => handleSortWithPaginate('area_text', sortState, setSortState, setSortedData, dataSorting, itemsPerPage, currentPage)}>
+              {columnVisibility?.area && (
+                <th scope="col" className={`${table_sort_header_style} text-center !min-w-[120px] !max-w-[200px]`} onClick={() => handleSortWithPaginate('area_text', sortState, setSortState, setSortedDataTableView, dataSorting, itemsPerPage, currentPage)}>
                   {`Area`}
                   {getArrowIcon('area_text')}
                 </th>
               )}
 
-              {columnVisibility.capacity_right && (
-                <th scope="col" className={`${table_sort_header_style} !min-w-[120px] !max-w-[200px] text-right`} onClick={() => handleSortWithPaginate(sortKeyCapRight, sortState, setSortState, setSortedData, dataSorting, itemsPerPage, currentPage)}>
+              {columnVisibility?.capacity_right && (
+                <th scope="col" className={`${table_sort_header_style} !min-w-[120px] !max-w-[200px] text-right`} onClick={() => handleSortWithPaginate(sortKeyCapRight, sortState, setSortState, setSortedDataTableView, dataSorting, itemsPerPage, currentPage)}>
                   {`Capacity Right (MMBTU/D)`}
                   {getArrowIcon(sortKeyCapRight)}
                 </th>
               )}
 
-              {columnVisibility.nominated_value && (
-                <th scope="col" className={`${table_sort_header_style} !min-w-[120px] !max-w-[200px] text-right`} onClick={() => handleSortWithPaginate(sortKeyNominated, sortState, setSortState, setSortedData, dataSorting, itemsPerPage, currentPage)}>
+              {columnVisibility?.nominated_value && (
+                <th scope="col" className={`${table_sort_header_style} !min-w-[120px] !max-w-[200px] text-right`} onClick={() => handleSortWithPaginate(sortKeyNominated, sortState, setSortState, setSortedDataTableView, dataSorting, itemsPerPage, currentPage)}>
                   {`Nominated Value (MMBTU/D)`}
                   {getArrowIcon(sortKeyNominated)}
                 </th>
               )}
 
-              {columnVisibility.overusage && (
-                <th scope="col" className={`${table_sort_header_style} !min-w-[120px] !max-w-[200px] text-right`} onClick={() => handleSortWithPaginate(sortKeyOverusage, sortState, setSortState, setSortedData, dataSorting, itemsPerPage, currentPage)}>
+              {columnVisibility?.overusage && (
+                <th scope="col" className={`${table_sort_header_style} !min-w-[120px] !max-w-[200px] text-right`} onClick={() => handleSortWithPaginate(sortKeyOverusage, sortState, setSortState, setSortedDataTableView, dataSorting, itemsPerPage, currentPage)}>
                   {`Overusage (MMBTU/D)`}
                   {getArrowIcon(sortKeyOverusage)}
                 </th>
               )}
 
-              {columnVisibility.action && (
+              {columnVisibility?.action && (
                 <th scope="col" className={`${table_header_style} text-center`}>
                   {`Detail`}
                 </th>
@@ -91,14 +91,13 @@ const TableView: React.FC<any> = ({tableData, openViewForm, columnVisibility, is
           </thead>
 
           <tbody>
-            {sortedData?.length > 0 &&
-              sortedData?.map((row: any, index: any) => {
+            {(sortedDataTableView || []).map((row: any, index: any) => {
                 const hitMeUp = findWeeklyByGasDay(row?.weeklyDay, gasDayFilter)
-                console.log('row : ', row);
-                console.log('row?.capacityRightMMBTUD : ', row?.capacityRightMMBTUD);
+                // console.log('row : ', row);
+                // console.log('row?.capacityRightMMBTUD : ', row?.capacityRightMMBTUD);
                 return (
                   <tr key={row?.id} className={`${table_row_style}`}>
-                    {columnVisibility.gas_day && (
+                    {columnVisibility?.gas_day && (
                       <td className="px-2 py-1 text-[#464255] max-w-[60px] text-center">
                         {tabIndex == 0
                           ? originalData?.gas_day_text || originalData?.gas_day
@@ -110,7 +109,7 @@ const TableView: React.FC<any> = ({tableData, openViewForm, columnVisibility, is
                       </td>
                     )}
 
-                    {columnVisibility.area && (
+                    {columnVisibility?.area && (
                       <td className="px-2 py-1 justify-center flex min-w-[120px] text-center">
                         {row?.areaObj ? (
                           row?.areaObj?.entry_exit_id == 2 ? (
@@ -128,7 +127,7 @@ const TableView: React.FC<any> = ({tableData, openViewForm, columnVisibility, is
 
                     {tabIndex == 2 ? (
                       <>
-                        {columnVisibility.capacity_right && (
+                        {columnVisibility?.capacity_right && (
                           <td className="px-4 py-1 text-[#464255] max-w-[250px] text-right">
                             {' '}
                             {subTabIndex < 7
@@ -137,7 +136,7 @@ const TableView: React.FC<any> = ({tableData, openViewForm, columnVisibility, is
                           </td>
                         )}
 
-                        {columnVisibility.nominated_value && (
+                        {columnVisibility?.nominated_value && (
                           <td className="px-4 py-1 text-[#464255] max-w-[250px] text-right">
                             {' '}
                             {subTabIndex < 7
@@ -146,7 +145,7 @@ const TableView: React.FC<any> = ({tableData, openViewForm, columnVisibility, is
                           </td>
                         )}
 
-                        {columnVisibility.overusage && (
+                        {columnVisibility?.overusage && (
                           <td className="px-4 py-1 text-[#464255] max-w-[250px] text-right">
                             {' '}
                             {subTabIndex < 7
@@ -157,15 +156,15 @@ const TableView: React.FC<any> = ({tableData, openViewForm, columnVisibility, is
                       </>
                     ) : (
                       <>
-                        {columnVisibility.capacity_right && <td className="px-4 py-1 text-[#464255] max-w-[60px] text-right">{row?.capacityRightMMBTUD ? formatNumberThreeDecimal(row?.capacityRightMMBTUD) : '0.000'}</td>}
+                        {columnVisibility?.capacity_right && <td className="px-4 py-1 text-[#464255] max-w-[60px] text-right">{row?.capacityRightMMBTUD ? formatNumberThreeDecimal(row?.capacityRightMMBTUD) : '0.000'}</td>}
 
-                        {columnVisibility.nominated_value && <td className="px-4 py-1 text-[#464255] max-w-[60px] text-right">{row?.nominatedValueMMBTUD ? formatNumberThreeDecimal(row?.nominatedValueMMBTUD) : (row?.nominatedValueMMBTUD === null ? null : '0.000')}</td>}
+                        {columnVisibility?.nominated_value && <td className="px-4 py-1 text-[#464255] max-w-[60px] text-right">{row?.nominatedValueMMBTUD === null ? null : (row?.nominatedValueMMBTUD ? formatNumberThreeDecimal(row?.nominatedValueMMBTUD) : '0.000')}</td>}
 
-                        {columnVisibility.overusage && <td className="px-4 py-1 text-[#464255] max-w-[60px] text-right">{row?.overusageMMBTUD ? formatNumberThreeDecimal(row?.overusageMMBTUD) : (row?.nominatedValueMMBTUD === null ? null : '0.000')}</td>}
+                        {columnVisibility?.overusage && <td className="px-4 py-1 text-[#464255] max-w-[60px] text-right">{row?.nominatedValueMMBTUD === null ? null : (row?.overusageMMBTUD ? formatNumberThreeDecimal(row?.overusageMMBTUD) : '0.000')}</td>}
                       </>
                     )}
 
-                    {columnVisibility.action && (
+                    {columnVisibility?.action && (
                       <td className="px-2 py-1 text-center">
                         <div className="inline-flex items-center justify-center relative">
                           {
@@ -187,7 +186,7 @@ const TableView: React.FC<any> = ({tableData, openViewForm, columnVisibility, is
         <TableSkeleton />
       )}
 
-      {isLoading && sortedData?.length == 0 && <NodataTable />}
+      {isLoading && sortedDataTableView?.length == 0 && <NodataTable />}
     </div>
   )
 }

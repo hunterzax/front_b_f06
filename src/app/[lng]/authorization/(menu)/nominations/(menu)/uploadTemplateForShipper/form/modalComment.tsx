@@ -42,12 +42,12 @@ const ModalComment: React.FC<FormExampleProps> = ({
                         </div>
 
                         <div className={`mb-1 w-[100%] ${data?.length > 2 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
-                            {data?.length > 0 && data?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                            {(data || [])?.map((item: any) => (
+                                <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
                                         <div className="mb-2 flex justify-between items-center">
                                             <div className="flex items-center">
-                                                <span className='font-light'>By <span className="font-bold">{item?.create_by_account && item?.create_by_account?.first_name + ' ' + item?.create_by_account?.last_name}</span></span>
+                                                <span className='font-light'>By <span className="font-bold">{item?.create_by_account ? `${item?.create_by_account?.first_name || ''} ${item?.create_by_account?.last_name || ''}` : ''}</span></span>
                                             </div>
                                             <span className="text-gray-500">{formatDate(item?.create_date)}</span>
                                         </div>

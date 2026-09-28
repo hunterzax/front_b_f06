@@ -48,18 +48,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
     // let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-    let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+    let user_permission: any = typeof window !== 'undefined' ? (getCookieValue("k3a9r2b6m7t0x5w1s8j") || localStorage?.getItem("k3a9r2b6m7t0x5w1s8j")) : null;
     user_permission = user_permission ? decryptData(user_permission) : null;
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+            }
 
             const permission = findRoleConfigByMenuName('Config Mode/Zone Base Inventory', userDT)
             if (permission) {
                 setUserPermission(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermission(updatedUserPermission);
             }
         } catch (error) {
@@ -204,23 +207,20 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [formData, setFormData] = useState(fdInterface);
 
     const handleFormSubmit = async (data: any) => {
-        // const newData = replaceEmptyStringsWithNull(data)
-        // if (typeof data.end_date !== 'string') {
-        //     data.end_date = null;
-        // }
+        if (!data) return;
 
-        data.base_inventory_value = parseFloat(String(data?.base_inventory_value).replace(/,/g, '')) || null;
-        data.hv = parseFloat(String(data.hv).replace(/,/g, '')) || null;
-        data.high_difficult_day = parseFloat(String(data.high_difficult_day).replace(/,/g, '')) || null;
-        data.high_red = parseFloat(String(data.high_red).replace(/,/g, '')) || null;
-        data.high_orange = parseFloat(String(data.high_orange).replace(/,/g, '')) || null;
-        data.high_max = parseFloat(String(data.high_max).replace(/,/g, '')) || null;
-        data.alert_high = parseFloat(String(data.alert_high).replace(/,/g, '')) || null;
-        data.low_orange = parseFloat(String(data.low_orange).replace(/,/g, '')) || null;
-        data.low_red = parseFloat(String(data.low_red).replace(/,/g, '')) || null;
-        data.low_difficult_day = parseFloat(String(data.low_difficult_day).replace(/,/g, '')) || null;
-        data.low_max = parseFloat(String(data.low_max).replace(/,/g, '')) || null;
-        data.alert_low = parseFloat(String(data.alert_low).replace(/,/g, '')) || null;
+        data.base_inventory_value = parseFloat(String(data?.base_inventory_value ?? '').replace(/,/g, '')) || null;
+        data.hv = parseFloat(String(data?.hv ?? '').replace(/,/g, '')) || null;
+        data.high_difficult_day = parseFloat(String(data?.high_difficult_day ?? '').replace(/,/g, '')) || null;
+        data.high_red = parseFloat(String(data?.high_red ?? '').replace(/,/g, '')) || null;
+        data.high_orange = parseFloat(String(data?.high_orange ?? '').replace(/,/g, '')) || null;
+        data.high_max = parseFloat(String(data?.high_max ?? '').replace(/,/g, '')) || null;
+        data.alert_high = parseFloat(String(data?.alert_high ?? '').replace(/,/g, '')) || null;
+        data.low_orange = parseFloat(String(data?.low_orange ?? '').replace(/,/g, '')) || null;
+        data.low_red = parseFloat(String(data?.low_red ?? '').replace(/,/g, '')) || null;
+        data.low_difficult_day = parseFloat(String(data?.low_difficult_day ?? '').replace(/,/g, '')) || null;
+        data.low_max = parseFloat(String(data?.low_max ?? '').replace(/,/g, '')) || null;
+        data.alert_low = parseFloat(String(data?.alert_low ?? '').replace(/,/g, '')) || null;
 
         switch (formMode) {
             case "create":
@@ -423,7 +423,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 },
                 cell: (info) => {
                     const row: any = info?.row?.original
-                    return (<div>{row?.mode && row?.mode}</div>)
+                    return (<div>{row?.mode}</div>)
                 }
             },
             {

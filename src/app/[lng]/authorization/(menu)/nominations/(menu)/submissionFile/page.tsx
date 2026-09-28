@@ -154,17 +154,17 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     setModalErrorMsg(errorMsg || 'Internal Error, please contact Admin.');
                     setModalErrorOpen(true)
                 } else {
-                    if(tabIndex == 0 && (response?.warningLogHr?.length > 0 || response?.warningLogDay?.length > 0 || response?.sheet2Quality?.length > 0 || response?.sheet1Quality?.length > 0)){
+                    if(tabIndex == 0 && (response?.warningLogHr?.length > 0 || response?.warningLogDay?.length > 0 || response?.sheet2Quality?.length > 0 || response?.sheet1Quality?.length > 0 || response?.warningOtherTypePoint?.length > 0)){
                         // const msg1 = tabIndex == 0 && (response?.warningLogHr?.length > 0 || response?.warningLogDay?.length > 0) && `Capacity Exceeds Capacity Right Amount.` || ""
-                        const msg1 = tabIndex == 0 && (response?.warningLogHr?.length > 0 || response?.warningLogDay?.length > 0 || response?.sheet1Quality?.length > 0 || response?.sheet2Quality?.length > 0) && [...(response?.warningLogHr || []), ...(response?.warningLogDay || []), ...(response?.sheet1Quality || []), ...(response?.sheet2Quality || [])].join('<br/>') || ""
+                        const msg1 = tabIndex == 0 && (response?.warningLogHr?.length > 0 || response?.warningLogDay?.length > 0 || response?.sheet1Quality?.length > 0 || response?.sheet2Quality?.length > 0 || response?.warningOtherTypePoint?.length > 0 ) && [...(response?.warningLogHr || []), ...(response?.warningLogDay || []), ...(response?.sheet1Quality || []), ...(response?.sheet2Quality || []), ...(response?.warningOtherTypePoint || [])].join('<br/>') || ""
                         // const msg2 = response?.sheet2Quality?.length > 0 && "Quality Exceed Value Out of Range." || ""
                         // const msg3 = response?.sheet1Quality?.length > 0 && "Nomination Exceed Value" || ""
                         // setModalWarningMsg(`${msg1}\n ${msg2}\n ${msg3}`)
                         setModalWarningMsg(`${msg1}`)
                         setModalWarningOpen(true)
-                    }else if(tabIndex == 1 && (response?.warningLogDayWeek?.length > 0 || response?.warningLogDay?.length > 0 || response?.sheet2Quality?.length > 0 || response?.sheet1Quality?.length > 0)){
+                    }else if(tabIndex == 1 && (response?.warningLogDayWeek?.length > 0 || response?.warningLogDay?.length > 0 || response?.sheet2Quality?.length > 0 || response?.sheet1Quality?.length > 0 || response?.warningOtherTypePoint?.length > 0)){
                         // const msg1 = tabIndex == 1 && (response?.warningLogDayWeek?.length > 0 || response?.warningLogDay?.length > 0) && `Capacity Exceeds Capacity Right Amount.` || ""
-                        const msg1 = tabIndex == 1 && (response?.warningLogDayWeek?.length > 0 || response?.warningLogDay?.length > 0 || response?.sheet2Quality?.length > 0 || response?.sheet1Quality?.length > 0) && [...(response?.warningLogDayWeek || []), ...(response?.warningLogDay || []), ...(response?.sheet1Quality || []), ...(response?.sheet2Quality || [])].join('<br/>') || "" || ""
+                        const msg1 = tabIndex == 1 && (response?.warningLogDayWeek?.length > 0 || response?.warningLogDay?.length > 0 || response?.sheet2Quality?.length > 0 || response?.sheet1Quality?.length > 0 || response?.warningOtherTypePoint?.length > 0) && [...(response?.warningLogDayWeek || []), ...(response?.warningLogDay || []), ...(response?.sheet1Quality || []), ...(response?.sheet2Quality || []), ...(response?.warningOtherTypePoint || [])].join('<br/>') || ""
                         
                         // const msg2 = response?.sheet2Quality?.length > 0 && "Quality Exceed Value Out of Range." || ""
                         // const msg3 = response?.sheet1Quality?.length > 0 && "Nomination Exceed Value" || ""
@@ -453,8 +453,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 {...register('remark', { required: false })}
                                 value={watch('remark') || ''}
                                 onChange={(e) => {
-                                    if (e.target.value.length <= 255) {
-                                        setValue('remark', e.target.value);
+                                    if ((e?.target?.value?.length ?? 0) <= 255) {
+                                        setValue('remark', e?.target?.value ?? "");
                                     }
                                 }}
                                 label=""
@@ -564,8 +564,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 }}
                 title="Failed"
                 description={
-                    modalErrorMsg?.split('<br/>')?.length > 1 ?
-                        <div className={`${modalErrorMsg?.length > 400 ? "h-[calc(300px)] overflow-y-auto text-sm" : ""}`}>
+                    modalErrorMsg.split('<br/>').length > 1 ?
+                        <div className={`${modalErrorMsg.length > 400 ? "h-[calc(300px)] overflow-y-auto text-sm" : ""}`}>
                             <ul className=" text-start list-disc space-y-3 pl-4">
                                 {
                                     modalErrorMsg.split('<br/>').map(item => {
@@ -595,8 +595,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 }}
                 title="Warning"
                 description={
-                    modalWarningMsg?.split('<br/>')?.length > 1 ?
-                        <div className={`${modalWarningMsg?.length > 400 ? "h-[calc(300px)] overflow-y-auto text-sm" : ""}`}>
+                    modalWarningMsg.split('<br/>').length > 1 ?
+                        <div className={`${modalWarningMsg.length > 400 ? "h-[calc(300px)] overflow-y-auto text-sm" : ""}`}>
                             <ul className=" text-start list-disc space-y-3">
                                 {
                                     modalWarningMsg.split('<br/>').map(item => {

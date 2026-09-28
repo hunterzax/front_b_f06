@@ -10,6 +10,7 @@ import {
   filterStartEndDateNewLogic,
   findRoleConfigByMenuName,
   formatDateNoTime,
+  formatDateTimeSec,
   formatNumberThreeDecimal,
   generateUserPermission,
   getContrastTextColor,
@@ -350,7 +351,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   const handleFormSubmit = async (data: any) => {
     if (formMode == "create") {
+      if(data){
       data.ref_id = null;
+      }
     } else if (formMode == "period") {
       // ปิดไว้เพราะส่ง free text
       // const filteredData = nominationPointData?.data?.filter((item: any) => item.id === data.ref_id);
@@ -361,18 +364,19 @@ const ClientPage: React.FC<ClientProps> = (props) => {
       data.end_date = null;
     }
 
-    // data.maximum_capacity = parseInt(data.maximum_capacity)
+    if(data){
     data.maximum_capacity = parseFloat(data.maximum_capacity);
 
     //handle m-n-relation
-    if (data?.contract_point_id && Array.isArray(data.contract_point_id)) {
-      data.contract_nomination_point = data.contract_point_id.map((id: any) => {
+    if (data.contract_point_id && Array.isArray(data.contract_point_id)) {
+      data.contract_nomination_point = (data.contract_point_id || [])?.map((id: any) => {
         return {
           nomination_point_id: selectedId,
           contract_point_id: id,
         };
       });
       delete data.contract_point_id;
+    }
     }
 
     switch (formMode) {
@@ -491,7 +495,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const openEditForm = (id: any) => {
     //  fetchDataDiv(id);
     setSelectedId(id);
-    const filteredData = dataTable.find((item: any) => item.id === id);
+    const filteredData = (dataTable || [])?.find((item: any) => item.id === id);
     if (filteredData) {
       fdInterface.nomination_point = filteredData.nomination_point;
       fdInterface.description = filteredData.description;
@@ -515,7 +519,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   };
 
   const openViewForm = (id: any) => {
-    const filteredData = dataTable.find((item: any) => item.id === id);
+    const filteredData = (dataTable || [])?.find((item: any) => item.id === id);
     if (filteredData) {
       fdInterface.nomination_point = filteredData.nomination_point;
       fdInterface.description = filteredData.description;
@@ -568,14 +572,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         `/master/account-manage/history?type=nomination-point&method=all&id_value=${id}`,
       );
 
-      const valuesArray = response.map((item: any) => item.value);
+      const valuesArray = (response || [])?.map((item: any) => item.value);
 
       let mappings = [
         // { key: "entry_exit.name", title: "Entry/Exit" },
         { key: "nomination_point", title: "Nomination Point" },
         // { key: "description", title: "Description" },
       ];
-      let result = mappings.map(({ key, title }) => {
+      let result = (mappings || [])?.map(({ key, title }) => {
         const value = key
           .split(".")
           .reduce((acc, part) => acc && acc[part], valuesArray[0]);
@@ -642,28 +646,28 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   // ############### COLUMN SHOW/HIDE ###############
   const initialColumns: any = [
+    { key: "nom_point", label: "Nomination Point", visible: true },
+    { key: "desc", label: "Description", visible: true },
     { key: "entry_exit", label: "Entry / Exit", visible: true },
     { key: "zone", label: "Zone", visible: true },
     { key: "area", label: "Area", visible: true },
     { key: "contract_point", label: "Contract Point", visible: true },
-    { key: "nom_point", label: "Nomination Point", visible: true },
-    { key: "desc", label: "Description", visible: true },
     { key: "customer_type", label: "Customer Type", visible: true },
     { key: "max_cap", label: "Maximum Capacity (MMSCFD)", visible: true },
     { key: "start_date", label: "Start Date", visible: true },
     { key: "end_date", label: "End Date", visible: true },
     // { key: 'create_by', label: 'Created by', visible: true },
-    // { key: 'updated_by', label: 'Updated by', visible: true },
+    { key: 'updated_by', label: 'Updated by', visible: true },
     { key: "action", label: "Action", visible: true },
   ];
 
   const initialColumnsHistory: any = [
+    { key: "nomination_point", label: "Nomination Point", visible: true },
+    { key: "description", label: "Description", visible: true },
     { key: "entry_exit", label: "Entry / Exit", visible: true },
     { key: "zone", label: "Zone", visible: true },
     { key: "area", label: "Area", visible: true },
     { key: "contract_point", label: "Contract Point", visible: true },
-    { key: "nomination_point", label: "Nomination Point", visible: true },
-    { key: "description", label: "Description", visible: true },
     { key: "customer_type", label: "Customer Type", visible: true },
     {
       key: "maximum_capacity",
@@ -679,7 +683,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const open = Boolean(anchorEl);
   const [columnVisibility, setColumnVisibility] = useState<any>(
     Object.fromEntries(
-      initialColumns.map((column: any) => [column.key, column.visible]),
+      (initialColumns || [])?.map((column: any) => [column.key, column.visible]),
     ),
   );
 
@@ -705,6 +709,28 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   const columns = useMemo<ColumnDef<any>[]>(
     () => [
+      {
+        accessorKey: "nomination_point",
+        header: "Nomination Point",
+        enableSorting: true,
+        accessorFn: (row: any) => row?.nomination_point || "",
+        cell: (info) => {
+          const row: any = info?.row?.original;
+          return (
+            <div>{row?.nomination_point ? row?.nomination_point : ""}</div>
+          );
+        },
+      },
+      {
+        accessorKey: "desc",
+        header: "Description",
+        enableSorting: true,
+        accessorFn: (row: any) => row?.description || "",
+        cell: (info) => {
+          const row: any = info?.row?.original;
+          return <div>{row?.description ? row?.description : ""}</div>;
+        },
+      },
       {
         accessorKey: "entry_exit",
         header: "Entry / Exit",
@@ -864,28 +890,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         },
       },
       {
-        accessorKey: "nomination_point",
-        header: "Nomination Point",
-        enableSorting: true,
-        accessorFn: (row: any) => row?.nomination_point || "",
-        cell: (info) => {
-          const row: any = info?.row?.original;
-          return (
-            <div>{row?.nomination_point ? row?.nomination_point : ""}</div>
-          );
-        },
-      },
-      {
-        accessorKey: "desc",
-        header: "Description",
-        enableSorting: true,
-        accessorFn: (row: any) => row?.description || "",
-        cell: (info) => {
-          const row: any = info?.row?.original;
-          return <div>{row?.description ? row?.description : ""}</div>;
-        },
-      },
-      {
         accessorKey: "customer_type",
         header: "Customer Type",
         enableSorting: true,
@@ -975,6 +979,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             </div>
           );
         },
+      },
+      {
+          accessorKey: "updated_by",
+          accessorFn: (row) => `${`${row?.update_by_account?.first_name} ` || ''}${row?.update_by_account?.last_name} ${row?.update_date ? formatDateTimeSec(row?.update_date) : ''}`,
+          header: "Updated by",
+          width: 150,
+          enableSorting: true,
+          cell: (info) => {
+              const row: any = info?.row?.original
+              return (
+                  <div>
+                    <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>
+                    <div className="text-gray-500 text-xs">{row?.update_date ? formatDateTimeSec(row?.update_date) : ''}</div>
+                  </div>
+              )
+          }
       },
       {
         accessorKey: "action",
@@ -1099,8 +1119,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
               setSNomPointId([]);
             }}
             options={entryExitMaster?.data?.map((item: any) => ({
-              value: item?.id?.toString(),
-              label: item.name,
+              value: item?.id ? item?.id?.toString() : '',
+              label: item?.name || '',
             }))}
           />
 
@@ -1115,10 +1135,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
               setSrchArea([]);
               setSNomPointId([]);
             }}
-            // options={zoneMaster?.data?.filter((item: any) => srchEntryExit ? item?.entry_exit?.id == srchEntryExit : item?.entry_exit?.id !== null)?.map((item: any) => ({
-            //   value: item?.id?.toString(),
-            //   label: item.name
-            // }))}
             options={zoneMaster?.data
               ?.filter((item: any) =>
                 srchEntryExit?.length > 0
@@ -1141,17 +1157,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
               setSrchArea(e.target.value)
               setSNomPointId([]);
             }}
-            // options={areaMaster?.data?.filter((item: any) =>
-            //   srchEntryExit && srchZone ? item?.entry_exit?.id == srchEntryExit && item?.zone?.id == srchZone :
-            //     srchEntryExit || srchZone ? item?.entry_exit?.id == srchEntryExit || item?.zone?.id == srchZone :
-            //       item !== null)?.map((item: any) => (
-            //         {
-            //           value: item?.id?.toString(),
-            //           label: item.name
-            //         }))}
-
-            options={areaMaster?.data
-              ?.filter((item: any) =>
+            options={(areaMaster?.data || []).filter((item: any) =>
                 srchEntryExit?.length > 0 && srchZone?.length > 0
                   ? srchEntryExit.includes(item?.entry_exit?.id?.toString()) &&
                   srchZone.includes(item?.zone?.id?.toString())
@@ -1162,8 +1168,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     : item !== null,
               )
               ?.map((item: any) => ({
-                value: item?.id?.toString(),
-                label: item.name,
+                value: item?.id ? item?.id?.toString() : '',
+                label: item?.name || '',
               }))}
           />
 
@@ -1174,17 +1180,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             type="select-multi-checkbox"
             value={sNomPointId}
             onChange={(e) => setSNomPointId(e.target.value)}
-            // options={nominationPointData?.data?.map((item: any) => ({
-            //   value: item?.id?.toString(),
-            //   label: item.nomination_point
-            // }))}
-            // options={nominationPointData?.data
-            //   ?.filter((item: any) => srchArea === '' || item.area.id.toString() === srchArea) // ถ้าไม่ได้กด search area ไม่ต้องกรอง
-            //   .map((item: any) => ({
-            //     value: item?.id?.toString(),
-            //     label: item.nomination_point,
-            //   }))
-            // }
             options={nominationPointData?.data
               ?.filter(
                 (item: any) =>
@@ -1258,7 +1253,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           />
         }
         initialColumns={Object.fromEntries(
-          initialColumns.map((column: any) => [column.key, column.visible]),
+          (initialColumns || [])?.map((column: any) => [column.key, column.visible]),
         )}
         onColumnVisibilityChange={(columnKey: any) =>
           handleColumnToggle(columnKey)
@@ -1270,6 +1265,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             setDataExport(newData);
           }
         }}
+        columnPinning={
+          {
+            left: ['nomination_point', 'desc'],
+            // right: ['actions'],
+          }
+        }
       />
 
 

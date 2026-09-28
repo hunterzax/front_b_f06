@@ -88,56 +88,56 @@ const TablePlanDeadline: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                     <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
-                                {columnVisibility.type && (
+                                {columnVisibility?.type && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("term_type_id", sortState, setSortState, setSortedData, tableData)}  >
                                         {`Term`}
                                         {getArrowIcon("term_type_id")}
                                     </th>
                                 )}
 
-                                {/* {columnVisibility.hour && (
+                                {/* {columnVisibility?.hour && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("hour", sortState, setSortState, setSortedData, tableData)} >
                                         {`Hour`}
                                         {getArrowIcon("hour")}
                                     </th>
                                 )}
 
-                                {columnVisibility.day && (
+                                {columnVisibility?.day && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("day", sortState, setSortState, setSortedData, tableData)} >
                                         {`Day`}
                                         {getArrowIcon("day")}
                                     </th>
                                 )} */}
 
-                                {columnVisibility.hour && (
+                                {columnVisibility?.hour && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("custom_endtime", sortState, setSortState, setSortedData, tableData)} >
                                         {`End Time`}
                                         {getArrowIcon("custom_endtime")}
                                     </th>
                                 )}
 
-                                {columnVisibility.day && (
+                                {columnVisibility?.day && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("day", sortState, setSortState, setSortedData, tableData)} >
                                         {`Date of Month`}
                                         {getArrowIcon("day")}
                                     </th>
                                 )}
 
-                                {columnVisibility.before_month && (
+                                {columnVisibility?.before_month && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("before_month", sortState, setSortState, setSortedData, tableData)} >
                                         {`Before Month`}
                                         {getArrowIcon("before_month")}
                                     </th>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)} >
                                         {`Start Date`}
                                         {getArrowIcon("start_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)} >
                                         {`End Date`}
                                         {getArrowIcon("end_date")}
@@ -146,7 +146,7 @@ const TablePlanDeadline: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                                 {/* <th scope="col" className="whitespace-nowrap px-2 py-1">
                                     {`Created by`}
                                 </th> */}
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -161,8 +161,8 @@ const TablePlanDeadline: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                                         key={row?.id}
                                         className={`${table_row_style}`}
                                     >
-                                        {/* <td className="px-2 py-1 text-[#464255]">{row?.term_type && row?.term_type?.name}</td> */}
-                                        {columnVisibility.type && (
+                                        {/* <td className="px-2 py-1 text-[#464255]">{row?.term_type?.name}</td> */}
+                                        {columnVisibility?.type && (
                                             <td className="px-2 py-1">
                                                 {row?.term_type && 
                                                 <div className="flex w-full h-ful justify-center items-center">
@@ -176,7 +176,7 @@ const TablePlanDeadline: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                                             </td>
                                         )}
 
-                                        {columnVisibility.hour && (
+                                        {columnVisibility?.hour && (
                                             <td className="px-2 py-1 text-[#464255] text-center">
                                                 {/* {row?.hour !== undefined && String(row?.hour).padStart(2, '0')}
                                                 {`:`}
@@ -185,24 +185,24 @@ const TablePlanDeadline: React.FC<TableProps> = ({ openEditForm, openViewForm, o
                                             </td>
                                         )}
 
-                                        {columnVisibility.day && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.day && row?.day}</td>
+                                        {columnVisibility?.day && (
+                                            <td className="px-2 py-1 text-[#464255]">{row?.day}</td>
                                         )}
 
-                                        {columnVisibility.before_month && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.before_month && row?.before_month}</td>
+                                        {columnVisibility?.before_month && (
+                                            <td className="px-2 py-1 text-[#464255]">{row?.before_month}</td>
                                         )}
 
                                         {/* <td className="px-2 py-1 text-right text-[#464255]">{formatNumber(row?.area_nominal_capacity)}</td> */}
-                                        {columnVisibility.start_date && (
+                                        {columnVisibility?.start_date && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.end_date && (
+                                        {columnVisibility?.end_date && (
                                             <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 {/* <div className="relative inline-block text-left "> */}
                                                 <div className="relative inline-flex justify-center items-center w-full">

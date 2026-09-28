@@ -39,8 +39,8 @@ const TableTabTotal: React.FC<TableProps> = ({ tableData, isLoading, columnVisib
 
       if (tableDataCurrent?.length > 0) {
         const closed_time = tableDataCurrent?.reduce((prev: any, curr: any) => {
-          const prevTime = dayjs(`${dayjs().format('YYYY-MM-DD')}T${prev.time}`).valueOf();
-          const currTime = dayjs(`${dayjs().format('YYYY-MM-DD')}T${curr.time}`).valueOf();
+          const prevTime = dayjs(`${dayjs().format('YYYY-MM-DD')}T${prev?.time}`).valueOf();
+          const currTime = dayjs(`${dayjs().format('YYYY-MM-DD')}T${curr?.time}`).valueOf();
           const nowTime = now.valueOf();
 
           const prevDiff = Math.abs(prevTime - nowTime);
@@ -69,14 +69,19 @@ const TableTabTotal: React.FC<TableProps> = ({ tableData, isLoading, columnVisib
 
     if (tableDataAll?.length > 0) {
 
-      tableDataAll.forEach((entry: any) => {
-        entry.groups.forEach((group: any) => {
-          if (!newHeaderMap[group.point]) {
-            newHeaderMap[group.point] = new Set();
+      (tableDataAll || []).forEach((entry: any) => {
+        (entry?.groups || []).forEach((group: any) => {
+          if (group?.point) {
+            const pt = group?.point;
+            if (!newHeaderMap[pt]) {
+              newHeaderMap[pt] = new Set();
+            }
+            (group?.items || []).forEach((item: any) => {
+              if (item?.shipper_name) {
+                newHeaderMap[pt]?.add(item?.shipper_name);
+              }
+            });
           }
-          group.items.forEach((item: any) => {
-            newHeaderMap[group.point].add(item.shipper_name);
-          });
         });
       });
     }
@@ -104,29 +109,20 @@ const TableTabTotal: React.FC<TableProps> = ({ tableData, isLoading, columnVisib
         return;
       }
 
-      if (tableDataAll?.length == 0) {
-        setRows([]);
-        return;
-      }
-
       // 1) flatten every timeShow into a row object
-      const allRows = closestTimeGroup?.flatMap((entry: any) =>
-        entry.groups?.flatMap((group: any) =>
-          group.items?.flatMap((item: any) =>
-            (item.timeShow || [])
+      const allRows = (closestTimeGroup || [])?.flatMap((entry: any) =>
+        (entry?.groups || [])?.flatMap((group: any) =>
+          (group?.items || [])?.flatMap((item: any) =>
+            (item?.timeShow || [])
               .slice() // clone
-              .sort((a: any, b: any) => a.time.localeCompare(b.time))
+              .sort((a: any, b: any) => (a?.time || '').localeCompare(b?.time || ''))
               .map((ts: any) => ({ entry, group, item, ts }))
           )
         )
       )?.map((e: any) => e?.entry);
 
-      // 2) global sort by ts.time
-      // allRows.sort((a: any, b: any) => a.ts.time.localeCompare(b.ts.time));
-      // allRows.sort((a: any, b: any) => a.ts.time.localeCompare(b.ts.time))
-
       const seenallRows = new Set();
-      const uniqueallRows = allRows.filter((item: any) => {
+      const uniqueallRows = (allRows || []).filter((item: any) => {
         const key = JSON.stringify(item);
         if (seenallRows.has(key)) return false;
         seenallRows.add(key);
@@ -143,7 +139,7 @@ const TableTabTotal: React.FC<TableProps> = ({ tableData, isLoading, columnVisib
     <div className={`relative ${tableType == 'current' ? 'h-[calc(100vh-490px)]' : 'h-[calc(100vh-200px)]'}  overflow-y-auto block  rounded-t-md z-1`}>
 
       {
-        isLoading ?
+        !isLoading ?
           <table className="w-full text-sm text-left rtl:text-right text-gray-500">
 
             {/* #################################### TABLE CURRENT #################################### */}
@@ -152,7 +148,7 @@ const TableTabTotal: React.FC<TableProps> = ({ tableData, isLoading, columnVisib
               <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                 <tr className="h-9">
                   {/* 1st col: Current Time */}
-                  {columnVisibility.current_time && tableType === 'current' && (
+                  {columnVisibility?.current_time && (
                     <th
                       scope="col"
                       rowSpan={2}
@@ -172,53 +168,53 @@ const TableTabTotal: React.FC<TableProps> = ({ tableData, isLoading, columnVisib
                     </th>
                   )}
 
-                  {columnVisibility.current_time && tableType === 'all' && (
-                    <th
-                      scope="col"
-                      rowSpan={2}
-                      className={`${table_sort_header_style} !min-w-[50px] !w-[150px] !max-w-[170px]`}
-                      onClick={() => handleSort("current_time", sortState, setSortState, setSortedData, tableType === 'current' ? tableDataCurrent : tableDataAll)}
-                    >
-                      {`Time`}
-                      {getArrowIcon("current_time")}
-                    </th>
-                  )}
-
                   {/* 2nd+ cols: point headers with colSpan */}
-                  {closestTimeGroup?.groups?.map((group: any) => (
+                  {Array.isArray(closestTimeGroup?.groups) && closestTimeGroup.groups.map((group: any) => (
                     <th
-                      key={group.point}
-                      colSpan={group.items.length + 1} // shipper names + total
+                      key={String(group?.point ?? '')}
+                      colSpan={(Array.isArray(group?.items) ? group.items.length : 0) + 1} // shipper names + total
                       className={`${table_header_style} border-r-[1px] border-r-[#308DBA] border-l-[1px] border-l-[#308DBA] text-center`}
                     >
-                      {group.point}
+                      {group?.point ?? ''}
                     </th>
                   ))}
                 </tr>
 
                 {/* 2nd header row: shipper names + Total under each point */}
                 <tr className="h-9">
-                  {closestTimeGroup?.groups?.map((group: any) =>
-                    group.items.map((item: any, idx: any) => (
-                      <th
-                        key={`${group.point}-${item.rowId}`}
-                        className={`${table_sort_header_style} text-center bg-[#00ADEF] `}
-                        onClick={() => handleSort(`${group.point}-${item.rowId}`, sortState, setSortState, setSortedData, tableType === 'current' ? tableDataCurrent : tableDataAll)}
-                      >
-                        {item.shipper_name}
-                        {getArrowIcon(`${group.point}-${item.rowId}`)}
-                      </th>
-                    )).concat(
-                      <th
-                        key={`${group.point}-total`}
-                        className={`${table_sort_header_style} w-[150px] max-w-[200px] min-w-[110px] bg-[#E3E9F0] text-[#58585A] text-center hover:bg-[#d7dfe8] select-none`}
-                        onClick={() => handleSort(`${group.point}-total`, sortState, setSortState, setSortedData, tableType === 'current' ? tableDataCurrent : tableDataAll)}
-                      >
-                        {`Total`}
-                        {getArrowIcon(`${group.point}-total`)}
-                      </th>
-                    )
-                  )}
+                  {Array.isArray(closestTimeGroup?.groups)
+                    ? closestTimeGroup.groups.flatMap((group: any) => {
+                        if (!group) return [];
+                        const groupPoint = String(group?.point ?? '');
+                        const itemHeaders = Array.isArray(group?.items)
+                          ? group.items.map((item: any) => {
+                              const sortKey = `${groupPoint}-${item?.rowId ?? ''}`;
+                              return (
+                                <th
+                                  key={sortKey}
+                                  className={`${table_sort_header_style} text-center bg-[#00ADEF] `}
+                                  onClick={() => handleSort(sortKey, sortState, setSortState, setSortedData, tableType === 'current' ? tableDataCurrent : tableDataAll)}
+                                >
+                                  {item?.shipper_name ?? ''}
+                                  {getArrowIcon(sortKey)}
+                                </th>
+                              );
+                            })
+                          : [];
+                        const totalSortKey = `${groupPoint}-total`;
+                        const totalHeader = (
+                          <th
+                            key={totalSortKey}
+                            className={`${table_sort_header_style} w-[150px] max-w-[200px] min-w-[110px] bg-[#E3E9F0] text-[#58585A] text-center hover:bg-[#d7dfe8] select-none`}
+                            onClick={() => handleSort(totalSortKey, sortState, setSortState, setSortedData, tableType === 'current' ? tableDataCurrent : tableDataAll)}
+                          >
+                            Total
+                            {getArrowIcon(totalSortKey)}
+                          </th>
+                        );
+                        return [...itemHeaders, totalHeader];
+                      })
+                    : null}
                 </tr>
               </thead>
             }
@@ -228,42 +224,34 @@ const TableTabTotal: React.FC<TableProps> = ({ tableData, isLoading, columnVisib
                 {closestTimeGroup && (
                   <tr className="h-10 border-b border-gray-200 text-sm text-[#333]">
                     {/* Current Time Column */}
-                    {columnVisibility.current_time && tableType === 'current' && (
+                    {columnVisibility?.current_time && (
                       <td className="px-4 py-2 font-semibold">
                         {/* {closestTimeGroup.time} */}
                         {dayjs().format("HH:mm")}
                       </td>
                     )}
 
-                    {columnVisibility.current_time && tableType === 'all' && (
-                      <td className="px-4 py-2 font-semibold">
-                        {closestTimeGroup.time}
-                      </td>
-                    )}
-
                     {/* Loop through groups to display shipper values and totals */}
-                    {closestTimeGroup.groups.map((group: any) => (
-                      <>
+                    {(closestTimeGroup?.groups || []).map((group: any) => (
+                      <React.Fragment key={`grp-${group?.point ?? ''}`}>
                         {/* Each shipper's value */}
-                        {group.items.map((item: any) => (
+                        {(group?.items || []).map((item: any) => (
                           <td
-                            key={`val-${group.point}-${item.rowId}`}
+                            key={`val-${group?.point ?? ''}-${item?.rowId ?? ''}`}
                             className="px-4 py-2 text-right"
                           >
-                            {/* {item.timeShow[0]?.value?.toFixed(2) ?? "-"} */}
-                            {/* {formatNumberThreeDecimal(item.timeShow[0]?.value)} */}
-                            {formatNumberThreeDecimal(item.timeShow?.value)}
+                            {formatNumberThreeDecimal(item?.timeShow?.value ?? item?.timeShow?.[0]?.value ?? 0)}
                           </td>
                         ))}
 
                         {/* Total column for the group */}
                         <td
-                          key={`total-${group.point}`}
+                          key={`total-${group?.point ?? ''}`}
                           className="px-4 py-2 text-right font-semibold "
                         >
-                          {formatNumberThreeDecimal(group.total)}
+                          {formatNumberThreeDecimal(group?.total ?? 0)}
                         </td>
-                      </>
+                      </React.Fragment>
                     ))}
                   </tr>
                 )}
@@ -343,28 +331,28 @@ const TableTabTotal: React.FC<TableProps> = ({ tableData, isLoading, columnVisib
                     key={`${ix}`}
                     className="h-10 border-b border-gray-200 text-sm text-[#333]"
                   >
-                    <td className="px-4 py-2 font-semibold">{data.time}</td>
+                    <td className="px-4 py-2 font-semibold">{data?.time}</td>
 
                     {Object.entries(headerMap).flatMap(([point, shippers]) => {
                       // Find the group for this point
-                      const pointGroup = data.groups.find((g: any) => g.point === point);
+                      const pointGroup = data?.groups?.find((g: any) => g?.point === point);
 
                       // Build a map shipper_name → value at this ts.time
                       const shipperMap: Record<string, number> = {};
                       if (pointGroup) {
-                        pointGroup.items.forEach((it: any) => {
-                          const lookup = Object.fromEntries(it.timeShow.map((t: any) => [t.time, t.value]));
-                          shipperMap[it.shipper_name] = lookup[data.time] ?? 0;
+                        (pointGroup?.items || []).forEach((it: any) => {
+                          const lookup = Object.fromEntries((it?.timeShow || []).map((t: any) => [t?.time, t?.value]));
+                          shipperMap[it?.shipper_name] = lookup[data?.time] ?? 0;
                         });
                       }
 
                       // Render each shipper's value cell
-                      const cells = Array.from(shippers).map((sh) => (
+                      const cells = Array.from(shippers || []).map((sh) => (
                         <td
-                          key={`${data.time}-${point}-${sh}`}
+                          key={`${data?.time ?? ''}-${point ?? ''}-${sh ?? ''}`}
                           className="px-2 py-1 text-right"
                         >
-                          {formatNumberThreeDecimal(shipperMap[sh] || 0)}
+                          {formatNumberThreeDecimal(shipperMap?.[sh] || 0)}
                         </td>
                       ));
 
@@ -375,7 +363,7 @@ const TableTabTotal: React.FC<TableProps> = ({ tableData, isLoading, columnVisib
                       return [
                         ...cells,
                         <td
-                          key={`${data.time}-${point}-total`}
+                          key={`${data?.time ?? ''}-${point ?? ''}-total`}
                           className="px-2 py-1 text-right font-semibold"
                         >
                           {formatNumberThreeDecimal(total)}

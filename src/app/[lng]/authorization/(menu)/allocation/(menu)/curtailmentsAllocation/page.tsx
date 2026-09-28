@@ -313,8 +313,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // };
 
     useEffect(() => {
-        if (filteredDataTable) {
-            setPaginatedData(filteredDataTable?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
+        if (Array.isArray(filteredDataTable)) {
+            setPaginatedData(filteredDataTable.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
         }
     }, [filteredDataTable, currentPage, itemsPerPage])
 
@@ -855,7 +855,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         type="select-multi-checkbox"
                         onChange={(e) => setSrchArea(e.target.value)}
                         placeholder="Select Area"
-                        options={areaMaster?.data?.map((item: any) => ({
+                        options={(Array.isArray(areaMaster?.data) ? areaMaster.data : []).map((item: any) => ({
                             value: item?.id?.toString(),
                             label: item.name
                         }))}

@@ -396,7 +396,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     disabled={isReadOnly}
                                                     onChange={(e) => {
                                                         if (e.target.value.length <= 255) {
-                                                            setValue('remark', e.target.value);
+                                                            setValue('remark', e?.target?.value ?? "");
                                                         }
                                                     }}
                                                     placeholder="Enter comment"

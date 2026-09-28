@@ -80,49 +80,49 @@ const TableDetailNote: React.FC<TableProps> = ({ tableData, isLoading, columnVis
                             </th>
                         }
 
-                        {columnVisibility.contract_code && (
+                        {columnVisibility?.contract_code && (
                             <th scope="col" className={`${table_sort_header_style} `} onClick={() => handleSort("contract_code", sortState, setSortState, setSortedData, tableDataNew)}>
                                 {`Contract Code`}
                                 {getArrowIcon("contract_code")}
                             </th>
                         )}
 
-                        {columnVisibility.contract_type && (
+                        {columnVisibility?.contract_type && (
                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("term_obj.name", sortState, setSortState, setSortedData, tableDataNew)}>
                                 {`Contract Type`}
                                 {getArrowIcon("term_obj.name")}
                             </th>
                         )}
 
-                        {columnVisibility.quantity && (
+                        {columnVisibility?.quantity && (
                             <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSort("quantity", sortState, setSortState, setSortedData, tableDataNew)}>
                                 {`Quantity`}
                                 {getArrowIcon("quantity")}
                             </th>
                         )}
 
-                        {columnVisibility.unit && (
+                        {columnVisibility?.unit && (
                             <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSort("unit", sortState, setSortState, setSortedData, tableDataNew)}>
                                 {`Unit`}
                                 {getArrowIcon("unit")}
                             </th>
                         )}
 
-                        {columnVisibility.fee_baht && (
+                        {columnVisibility?.fee_baht && (
                             <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSort("fee", sortState, setSortState, setSortedData, tableDataNew)}>
                                 {`Fee (Baht/MMBTU)`}
                                 {getArrowIcon("fee")}
                             </th>
                         )}
 
-                        {columnVisibility.amount_baht && (
+                        {columnVisibility?.amount_baht && (
                             <th scope="col" className={`${table_sort_header_style} text-right`} onClick={() => handleSort("amount", sortState, setSortState, setSortedData, tableDataNew)}>
                                 {`Amount (Baht)`}
                                 {getArrowIcon("amount")}
                             </th>
                         )}
 
-                        {columnVisibility.edit && mode !== 'view' && (
+                        {columnVisibility?.edit && mode !== 'view' && (
                             <th scope="col" className={`${table_header_style} !w-[180px] text-center`} >
                                 {`Edit`}
                             </th>
@@ -131,10 +131,12 @@ const TableDetailNote: React.FC<TableProps> = ({ tableData, isLoading, columnVis
                 </thead>
 
                 <tbody>
-                    {sortedData && sortedData.map((row: any, index: number) => (
+                    {(sortedData || [])?.map((row: any, index: number) => {
+                        if (!row) return null;
+                        return (
                         <tr
                             key={index}
-                            className={`${table_row_style} ${row.isSummary ? "bg-gray-200 font-bold" : ""}`}
+                            className={`${table_row_style} ${row?.isSummary ? "bg-gray-200 font-bold" : ""}`}
                         >
                             {
                                 mode !== 'view' &&
@@ -142,8 +144,8 @@ const TableDetailNote: React.FC<TableProps> = ({ tableData, isLoading, columnVis
                                     <div className="flex gap-2 text-[#58585A] align-middle justify-center items-center">
                                         <input
                                             type="checkbox"
-                                            checked={selectedRows.includes(index)}
-                                            onChange={() => handleCheckboxChange(index)}
+                                            checked={Array.isArray(selectedRows) && selectedRows.includes(index)}
+                                            onChange={() => handleCheckboxChange && handleCheckboxChange(index)}
                                             className="form-checkbox w-4 h-4"
                                             disabled={false}
                                         />
@@ -151,11 +153,11 @@ const TableDetailNote: React.FC<TableProps> = ({ tableData, isLoading, columnVis
                                 </td>
                             }
 
-                            {columnVisibility.contract_code && (
+                            {columnVisibility?.contract_code && (
                                 <td className="px-2 py-1  text-[#464255]  ">{row?.contract_code ? row?.contract_code : ''}</td>
                             )}
 
-                            {columnVisibility.contract_type && (
+                            {columnVisibility?.contract_type && (
                                 // <td className="px-2 py-1 items-center text-center justify-center ">{row?.contract_code ? row?.contract_code : ''}</td>
                                 // <td className="px-2 py-1 justify-center ">
                                 //     <div className="flex justify-center items-center">
@@ -181,7 +183,7 @@ const TableDetailNote: React.FC<TableProps> = ({ tableData, isLoading, columnVis
                                 </td>
                             )}
 
-                            {columnVisibility.quantity && (
+                            {columnVisibility?.quantity && (
                                 <td className="px-2 py-1 items-center text-[#464255] text-right justify-center ">
                                     {/* {row?.quantity ? row?.quantity : ''} */}
                                     {
@@ -207,11 +209,11 @@ const TableDetailNote: React.FC<TableProps> = ({ tableData, isLoading, columnVis
                                 </td>
                             )}
 
-                            {columnVisibility.unit && (
+                            {columnVisibility?.unit && (
                                 <td className="px-2 py-1 items-center text-[#464255] text-center justify-center ">{row?.unit ? row?.unit : ''}</td>
                             )}
 
-                            {columnVisibility.fee_baht && (
+                            {columnVisibility?.fee_baht && (
                                 <td className="px-2 py-1 items-center text-[#464255] text-right justify-center ">
                                     {/* {row?.fee ? row?.fee : ''} */}
 
@@ -237,7 +239,7 @@ const TableDetailNote: React.FC<TableProps> = ({ tableData, isLoading, columnVis
                                 </td>
                             )}
 
-                            {columnVisibility.amount_baht && (
+                            {columnVisibility?.amount_baht && (
                                 <td className="px-2 py-1 items-center text-[#464255] text-right justify-center ">
                                     {/* {row?.amount_baht ? row?.amount_baht : ''} */}
 
@@ -265,7 +267,7 @@ const TableDetailNote: React.FC<TableProps> = ({ tableData, isLoading, columnVis
                                 </td>
                             )}
 
-                            {columnVisibility.edit && mode !== 'view' && (
+                            {columnVisibility?.edit && mode !== 'view' && (
                                 isEditing && rowEditing == row?.id ? (
                                     <td className="px-2 py-1 min-w-[140px]">
                                         <div className="flex gap-2 w-full">
@@ -318,7 +320,8 @@ const TableDetailNote: React.FC<TableProps> = ({ tableData, isLoading, columnVis
                                 )
                             )}
                         </tr>
-                    ))}
+                        );
+                    })}
 
                 </tbody>
             </table>

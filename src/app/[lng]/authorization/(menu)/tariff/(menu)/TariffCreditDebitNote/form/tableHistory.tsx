@@ -61,27 +61,27 @@ const TableTariffCreditDebitNoteHistory: React.FC<TableProps> = ({ tableData, is
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-9">
 
-                        {columnVisibility.cndn_id && (
+                        {columnVisibility?.cndn_id && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("cndn_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`CNDN ID`}
                                 {getArrowIcon("cndn_id")}
                             </th>
                         )}
 
-                        {columnVisibility.tariff_id && (
+                        {columnVisibility?.tariff_id && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("filter_tariff_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Tariff ID`}
                                 {getArrowIcon("filter_tariff_id")}
                             </th>
                         )}
 
-                        {columnVisibility.comment && (
+                        {columnVisibility?.comment && (
                             <th scope="col" className={`${table_header_style} text-center`}>
                                 {`Comment`}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -92,7 +92,7 @@ const TableTariffCreditDebitNoteHistory: React.FC<TableProps> = ({ tableData, is
                 </thead>
 
                 <tbody>
-                    {sortedData && sortedData?.map((row: any, index: any) => (
+                    {(sortedData || [])?.map((row: any, index: any) => (
                         <tr
                             key={row?.id}
                             className={`${table_row_style}`}
@@ -106,7 +106,7 @@ const TableTariffCreditDebitNoteHistory: React.FC<TableProps> = ({ tableData, is
                                 <td className={`px-2 py-1 text-[#464255] min-w-[120px] `}>{row?.filter_tariff_id ? row?.filter_tariff_id : ''}</td>
                             )}
 
-                            {columnVisibility.comment && (
+                            {columnVisibility?.comment && (
                                 <td className="px-2 py-1 text-center">
                                     <div className="inline-flex items-center justify-center relative">
                                         {/* <button
@@ -140,7 +140,7 @@ const TableTariffCreditDebitNoteHistory: React.FC<TableProps> = ({ tableData, is
                                 </td>
                             )}
 
-                            {columnVisibility.updated_by && (
+                            {columnVisibility?.updated_by && (
                                 <td className="px-2 py-1 text-[#464255]">
                                     <div>
                                         {/* <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

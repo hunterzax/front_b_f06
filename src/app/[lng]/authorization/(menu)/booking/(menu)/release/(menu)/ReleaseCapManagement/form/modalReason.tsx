@@ -48,8 +48,8 @@ const ModalReason: React.FC<FormExampleProps> = ({
                         </div>
 
                         <div className={`mb-1 w-[100%] ${data?.length > 2 ? 'max-h-[350px] overflow-y-auto' : ''}`}>
-                            {data?.length > 0 && data?.reverse()?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                            {Array.isArray(data) && data.length > 0 && data?.slice()?.reverse()?.map((item: any) => (
+                                <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
                                         {/* <div className="mb-2 flex justify-between">
                                             <span className='font-light '>By <span className="font-bold"> {item?.account_id}</span></span> <div className='flex !w-[60px] h-[21px] justify-center items-center rounded-lg bg-[#D3F8E2] font-semibold text-[12px] text-[#464255]'> {`Active`} </div>
@@ -60,8 +60,8 @@ const ModalReason: React.FC<FormExampleProps> = ({
                                                 {/* <div className='ml-2 flex !w-[65px] h-[24px] justify-center items-center rounded-lg font-semibold text-[12px] text-[#464255]' style={{ backgroundColor: item?.status ? '#D3F8E2' : '#EAECF0' }}>
                                                     {item?.status ? 'Active' : 'Inactive'}
                                                 </div> */}
-                                                <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: item?.release_capacity_status?.color }}>{`${item?.release_capacity_status?.name}`}</div>
-                                                <span className='font-light'>By <span className="font-bold">{item?.create_by_account && item?.create_by_account?.first_name + ' ' + item?.create_by_account?.last_name}</span></span>
+                                                <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: item?.release_capacity_status?.color || "" }}>{`${item?.release_capacity_status?.name || ""}`}</div>
+                                                <span className='font-light'>By <span className="font-bold">{item?.create_by_account ? `${item?.create_by_account?.first_name || ''} ${item?.create_by_account?.last_name || ''}` : ''}</span></span>
                                             </div>
                                             <span className="text-gray-500">{formatDate(item?.create_date)}</span>
                                         </div>

@@ -418,7 +418,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    // setValue("user_type_id", e.target.value);
+                                                    // setValue("user_type_id", e?.target?.value ?? "");
                                                     setValue("user_type_id", Number(e.target.value));
                                                     setValue("group_id", '');
                                                     setValue("division_id", '');
@@ -464,7 +464,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("group_id") || ''}
                                                 handleChange={(e) => {
-                                                    setValue('group_id', e.target.value);
+                                                    setValue('group_id', e?.target?.value ?? "");
                                                     getDivision(e?.target);
                                                     setValue("division_id", '');
                                                     setValue("role_manage", '');
@@ -491,7 +491,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("division_id") || ''}
                                                 handleChange={(e) => {
-                                                    setValue("division_id", e.target.value);
+                                                    setValue("division_id", e?.target?.value ?? "");
                                                     if (errors?.division_id) { clearErrors('division_id') }
                                                 }}
                                                 errors={errors?.division_id}
@@ -517,7 +517,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("role_manage") || ''}
                                                 handleChange={(e) => {
-                                                    setValue("role_manage", e.target.value);
+                                                    setValue("role_manage", e?.target?.value ?? "");
                                                     if (errors?.role_manage) { clearErrors('role_manage') }
                                                 }}
                                                 errors={errors?.role_manage}

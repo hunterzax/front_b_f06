@@ -200,8 +200,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
             const targetEntryMmscfd = data.entryData.contracted_mmscfd_array?.find((entry: any) => exitDate == entry.date)
             const targetExitMmscfd = data.exitData.contracted_mmscfd_array?.find((entry: any) => exitDate == entry.date)
             const entryObj = (targetMapEntry?.[1] as any)
-            const exitValue = exitObj.value;
-            const entryValue = entryObj.value;
+            const exitValue = exitObj?.value;
+            const entryValue = entryObj?.value;
             const key = `${entryValue}_${exitValue}_${targetEntryMmscfd?.value}_${targetExitMmscfd?.value}`
             if (!grouped[key]) {
                 grouped[key] = {

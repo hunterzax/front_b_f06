@@ -44,7 +44,7 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
         // วนลูปในแต่ละรายการของ data (เช่น zone)
         dataArray?.forEach((item: any) => {
             dayNames?.forEach(day => {
-                const dayData = item[day];
+                const dayData = item?.[day];
                 if (dayData) {
                     // คำนวณค่า min_val, exchange_val, และ total
                     const min = parseFloat(dayData?.min_val) || 0;
@@ -59,7 +59,7 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
             });
 
             const resulttotal = parseFloat(item?.totalWeek) || 0;
-            result.totalWeek = (result?.totalWeek || 0) + resulttotal;
+            result.totalWeek = (result.totalWeek || 0) + resulttotal;
         });
 
         return result;
@@ -67,11 +67,11 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
 
     // ROW TOTAL ฟ้า ๆ ข้างล่าง
     const mappedTable = useMemo(() => {
-        if (!sortTable) return null;
+        if (!sortTable || sortTable.length === 0) return null;
         const resultDate: any = summarizeWeeklyData(sortTable)
-        const totalList: any = [sortTable[0]]; // ถ้าต้องใช้ใน loop ก็ set นอก loop ไปเลย
+        const totalList: any = [(sortTable?.[0] || {})]; // ถ้าต้องใช้ใน loop ก็ set นอก loop ไปเลย
 
-        return sortTable?.length > 0 && totalList?.map((row: any, rowIndex: number) => {
+        return totalList.map((row: any, rowIndex: number) => {
             return (
                 <tr key={`${rowIndex}-${rowIndex}`} className="!bg-[#D1F2FF] h-10">
                     {columnVisibility?.shipper_name && (
@@ -132,6 +132,11 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
         });
     }, [columnVisibility?.total, sortTable, columnVisibility]);
 
+    useEffect(() => {
+      console.log('tableData : ', tableData);
+    }, [tableData])
+    
+
     return (
         <div className={`relative h-[calc(100vh-380px)] overflow-y-auto block  rounded-t-md z-1`}>
             {
@@ -140,7 +145,7 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.shipper_name && (
+                                {columnVisibility?.shipper_name && (
                                     <th
                                         className={`${table_sort_header_style} `} rowSpan={3} scope="col" onClick={() => handleSortWithPaginate("group", sortState, setSortState, setsortTable, dataForSorting, itemsPerPage, currentPage)}
                                     >
@@ -149,7 +154,7 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
                                     </th>
                                 )}
 
-                                {columnVisibility.contract_code && (
+                                {columnVisibility?.contract_code && (
                                     <th
                                         className={`${table_sort_header_style}  w-[320px]`} rowSpan={3} scope="col" onClick={() => handleSortWithPaginate("contract_code", sortState, setSortState, setsortTable, dataForSorting, itemsPerPage, currentPage)}
                                     >
@@ -158,7 +163,7 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
                                     </th>
                                 )}
 
-                                {columnVisibility.zone && (
+                                {columnVisibility?.zone && (
                                     <th
                                         className={`${table_sort_header_style} text-center border-r-[1px] border-r-[#298EBF]`} rowSpan={3} scope="col" onClick={() => handleSortWithPaginate("zone", sortState, setSortState, setsortTable, dataForSorting, itemsPerPage, currentPage)}
                                     >
@@ -167,7 +172,7 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
                                     </th>
                                 )}
 
-                                {columnVisibility.mmbtud && (
+                                {columnVisibility?.mmbtud && (
                                     <th
                                         className={`${table_header_style} border-r-[1px] border-r-[#298EBF]`}
                                         // colSpan={21} 
@@ -185,19 +190,19 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
                             <tr className="h-9">
 
                                 {/* 
-                                     if these 3 are all true columnVisibility.change_min_inventory_sunday, columnVisibility.exchange_min_invent_sunday, columnVisibility.total_sunday then colSpan={3}
+                                     if these 3 are all true columnVisibility?.change_min_inventory_sunday, columnVisibility?.exchange_min_invent_sunday, columnVisibility?.total_sunday then colSpan={3}
                                      if 2 are true and 1 is false then colSpan={2}
                                      if 1 is true and 2 are false then colSpan={1}
                                 */}
 
-                                {columnVisibility.sunday && (
+                                {columnVisibility?.sunday && (
                                     <th
                                         className={`${table_header_style} text-center border-r-[1px] border-r-[#298EBF] border-t-[1px] border-t-[#298EBF]`}
                                         colSpan={
                                             [
-                                                columnVisibility.change_min_inventory_sunday,
-                                                columnVisibility.exchange_min_invent_sunday,
-                                                columnVisibility.total_sunday,
+                                                columnVisibility?.change_min_inventory_sunday,
+                                                columnVisibility?.exchange_min_invent_sunday,
+                                                columnVisibility?.total_sunday,
                                             ].filter(Boolean).length || 1
                                         }
                                         scope="col"
@@ -207,14 +212,14 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
                                     </th>
                                 )}
 
-                                {columnVisibility.monday && (
+                                {columnVisibility?.monday && (
                                     <th
                                         className={`${table_header_style} text-center border-r-[1px] border-r-[#298EBF] border-t-[1px] border-t-[#298EBF]`}
                                         colSpan={
                                             [
-                                                columnVisibility.change_min_inventory_monday,
-                                                columnVisibility.exchange_min_invent_monday,
-                                                columnVisibility.total_monday,
+                                                columnVisibility?.change_min_inventory_monday,
+                                                columnVisibility?.exchange_min_invent_monday,
+                                                columnVisibility?.total_monday,
                                             ].filter(Boolean).length || 1
                                         }
                                         scope="col"
@@ -224,14 +229,14 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
                                     </th>
                                 )}
 
-                                {columnVisibility.tuesday && (
+                                {columnVisibility?.tuesday && (
                                     <th
                                         className={`${table_header_style} text-center border-r-[1px] border-r-[#298EBF] border-t-[1px] border-t-[#298EBF]`}
                                         colSpan={
                                             [
-                                                columnVisibility.change_min_inventory_tuesday,
-                                                columnVisibility.exchange_min_invent_tuesday,
-                                                columnVisibility.total_tuesday,
+                                                columnVisibility?.change_min_inventory_tuesday,
+                                                columnVisibility?.exchange_min_invent_tuesday,
+                                                columnVisibility?.total_tuesday,
                                             ].filter(Boolean).length || 1
                                         }
                                         scope="col"
@@ -241,14 +246,14 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
                                     </th>
                                 )}
 
-                                {columnVisibility.wednesday && (
+                                {columnVisibility?.wednesday && (
                                     <th
                                         className={`${table_header_style} text-center border-r-[1px] border-r-[#298EBF] border-t-[1px] border-t-[#298EBF]`}
                                         colSpan={
                                             [
-                                                columnVisibility.change_min_inventory_wednesday,
-                                                columnVisibility.exchange_min_invent_wednesday,
-                                                columnVisibility.total_wednesday,
+                                                columnVisibility?.change_min_inventory_wednesday,
+                                                columnVisibility?.exchange_min_invent_wednesday,
+                                                columnVisibility?.total_wednesday,
                                             ].filter(Boolean).length || 1
                                         }
                                         scope="col"
@@ -258,14 +263,14 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
                                     </th>
                                 )}
 
-                                {columnVisibility.thursday && (
+                                {columnVisibility?.thursday && (
                                     <th
                                         className={`${table_header_style} text-center border-r-[1px] border-r-[#298EBF] border-t-[1px] border-t-[#298EBF]`}
                                         colSpan={
                                             [
-                                                columnVisibility.change_min_inventory_thursday,
-                                                columnVisibility.exchange_min_invent_thursday,
-                                                columnVisibility.total_thursday,
+                                                columnVisibility?.change_min_inventory_thursday,
+                                                columnVisibility?.exchange_min_invent_thursday,
+                                                columnVisibility?.total_thursday,
                                             ].filter(Boolean).length || 1
                                         }
                                         scope="col"
@@ -275,14 +280,14 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
                                     </th>
                                 )}
 
-                                {columnVisibility.friday && (
+                                {columnVisibility?.friday && (
                                     <th
                                         className={`${table_header_style} text-center border-r-[1px] border-r-[#298EBF] border-t-[1px] border-t-[#298EBF]`}
                                         colSpan={
                                             [
-                                                columnVisibility.change_min_inventory_friday,
-                                                columnVisibility.exchange_min_invent_friday,
-                                                columnVisibility.total_friday,
+                                                columnVisibility?.change_min_inventory_friday,
+                                                columnVisibility?.exchange_min_invent_friday,
+                                                columnVisibility?.total_friday,
                                             ].filter(Boolean).length || 1
                                         }
                                         scope="col"
@@ -292,14 +297,14 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
                                     </th>
                                 )}
 
-                                {columnVisibility.saturday && (
+                                {columnVisibility?.saturday && (
                                     <th
                                         className={`${table_header_style} text-center border-r-[1px] border-r-[#298EBF] border-t-[1px] border-t-[#298EBF]`}
                                         colSpan={
                                             [
-                                                columnVisibility.change_min_inventory_saturday,
-                                                columnVisibility.exchange_min_invent_saturday,
-                                                columnVisibility.total_saturday,
+                                                columnVisibility?.change_min_inventory_saturday,
+                                                columnVisibility?.exchange_min_invent_saturday,
+                                                columnVisibility?.total_saturday,
                                             ].filter(Boolean).length || 1
                                         }
                                         scope="col"
@@ -360,7 +365,7 @@ const TableWeekly: React.FC<any> = ({ tableData, columnVisibility, isLoading, us
                         </thead>
 
                         <tbody>
-                            {sortTable && sortTable?.map((row: any, rowIndex: number) => {
+                            {(sortTable || [])?.map((row: any, rowIndex: number) => {
                                 return (
                                     <tr key={`${rowIndex}-${rowIndex}`}>
                                         {columnVisibility?.shipper_name && (

@@ -215,9 +215,8 @@ const ModalSubmissionDetails: React.FC<FormExampleProps> = ({
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {sortedData && sortedData.length > 0 &&
-                                            sortedData?.map((row: any, index: any) => {
-                                                const subRow = row?.map((subRow: any, subRowIndex: any) => {
+                                        {(sortedData || [])?.map((row: any, index: any) => {
+                                                const subRow = (row || [])?.map((subRow: any, subRowIndex: any) => {
                                                     const name = (subRow?.entry_exit?.name?.toLowerCase()) || (subRowIndex == 0 ? 'entry' : 'exit')
                                                     return <tr key={`${index}-${name}`} className={`${table_row_style}`}>
                                                         <td className="px-2 py-1 text-[#464255]">{subRow?.temp_contract_point || ''}</td>
@@ -226,10 +225,10 @@ const ModalSubmissionDetails: React.FC<FormExampleProps> = ({
                                                         <td className={`px-2 py-1 ${subRow?.temp_end_date ? 'text-[#0DA2A2]' : 'text-[#9CA3AF]'}`}>{subRow?.temp_end_date ? formatDateNoTime(addDays(parse(subRow?.temp_end_date, 'dd/MM/yyyy', new Date()), 1).toISOString()) : ''}</td>
                                                         {/* <td className={`px-2 py-1 ${subRow?.temp_end_date ? 'text-[#0DA2A2]' : 'text-[#9CA3AF]'}`}>{subRow?.temp_end_date ? formatDateNoTime(toDayjs(subRow?.temp_end_date, 'DD/MM/YYYY').add(1, 'day').toISOString()) : ''}</td> */}
 
-                                                        <td className="px-2 py-1 text-[#464255] text-right">{subRow?.total_contracted_mmbtu_d && formatNumberThreeDecimal(subRow.total_contracted_mmbtu_d)}</td>
-                                                        <td className="px-2 py-1 text-[#464255] text-right">{subRow?.total_contracted_mmscfd && formatNumberThreeDecimal(subRow.total_contracted_mmscfd)}</td>
-                                                        <td className="px-2 py-1 text-[#464255] text-right">{subRow?.total_release_mmscfd ? formatNumberThreeDecimal(subRow.total_release_mmscfd) : ''}</td>
-                                                        <td className="px-2 py-1 text-[#464255] text-right">{subRow?.total_release_mmbtu_d && formatNumberThreeDecimal(subRow.total_release_mmbtu_d)}</td>
+                                                        <td className="px-2 py-1 text-[#464255] text-right">{subRow?.total_contracted_mmbtu_d && formatNumberThreeDecimal(subRow?.total_contracted_mmbtu_d)}</td>
+                                                        <td className="px-2 py-1 text-[#464255] text-right">{subRow?.total_contracted_mmscfd && formatNumberThreeDecimal(subRow?.total_contracted_mmscfd)}</td>
+                                                        <td className="px-2 py-1 text-[#464255] text-right">{subRow?.total_release_mmscfd ? formatNumberThreeDecimal(subRow?.total_release_mmscfd) : ''}</td>
+                                                        <td className="px-2 py-1 text-[#464255] text-right">{subRow?.total_release_mmbtu_d && formatNumberThreeDecimal(subRow?.total_release_mmbtu_d)}</td>
                                                     </tr>
                                                 }) || (<></>)
 
@@ -239,7 +238,7 @@ const ModalSubmissionDetails: React.FC<FormExampleProps> = ({
 
                                                     {/* TOTAL */}
 
-                                                    <tr key={`${row?.id}-total`} className={`${table_row_style}`}>
+                                                    <tr key={`${index}-total`} className={`${table_row_style}`}>
                                                         <td className="px-2 py-1 font-semibold text-[#464255] bg-[#00ADEF47]" colSpan={6}>
                                                             {`Total`}
                                                         </td>
@@ -248,7 +247,7 @@ const ModalSubmissionDetails: React.FC<FormExampleProps> = ({
                                                 </React.Fragment>
                                                 )
                                             }
-                                            )}
+                                        )}
                                     </tbody>
                                 </table>
                             </div>

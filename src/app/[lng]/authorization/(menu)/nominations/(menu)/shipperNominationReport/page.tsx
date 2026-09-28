@@ -2,7 +2,9 @@
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   addSumPerRow,
+  addTotalPerRow,
   exportToExcel,
+  exportToExcelAllShipperNominationReport,
   findRoleConfigByMenuName,
   formatNumberFourDecimal,
   formatNumberFourDecimalNoComma,
@@ -12,6 +14,10 @@ import {
   isAllWeekly,
   liftWeeklyForDate,
   mergeDaily_AddOuterAndRowsFromWeekly,
+  roundTo3,
+  roundTo4,
+  sumDataNomShipperReport,
+  sumDataNomShipperReportConcept,
   toDayjs
 } from '@/utils/generalFormatter'
 import {getService} from '@/utils/postService'
@@ -37,7 +43,7 @@ import {ColumnDef} from '@tanstack/react-table'
 import BtnActionTable from '@/components/other/btnActionInTable'
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined'
 import BtnGeneral from '@/components/other/btnGeneral'
-import { parseToNumber } from '@/utils/number'
+import {parseToNumber} from '@/utils/number'
 
 interface ClientProps {
   params: {
@@ -45,7 +51,9 @@ interface ClientProps {
   }
 }
 
-const ClientPage: React.FC<ClientProps> = (props) => {
+
+
+const ClientPage: React.FC<ClientProps> = () => {
   // #region  Check Authen
   const userDT: any = getUserValue()
   const token = getCookieValue('v4r2d9z5m3h0c1p0x7l')
@@ -65,66 +73,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     {key: 'imbalance', label: 'Imbalance (MMBTU/D)', visible: true},
     {key: 'action', label: 'Action', visible: true}
   ]
-
-  const initialColumnsTabIntraday: any = [
-    {key: 'gas_day', label: 'Gas Day', visible: true},
-    {key: 'zone', label: 'Zone', visible: true},
-    {key: 'area', label: 'Area', visible: true},
-    {key: 'parameter', label: 'Parameter', visible: true},
-
-    {key: 'h1', label: 'H1 00:00 - 01:00', visible: true}, // show if tabIndex = 0
-    {key: 'h2', label: 'H2 01:01 - 02:00', visible: true}, // show if tabIndex = 0
-    {key: 'h3', label: 'H3 02:01 - 03:00', visible: true}, // show if tabIndex = 0
-    {key: 'h4', label: 'H4 03:01 - 04:00', visible: true}, // show if tabIndex = 0
-    {key: 'h5', label: 'H5 04:01 - 05:00', visible: true}, // show if tabIndex = 0
-    {key: 'h6', label: 'H6 05:01 - 06:00', visible: true}, // show if tabIndex = 0
-
-    {key: 'h7', label: 'H7 06:01 - 07:00', visible: true}, // show if tabIndex = 1
-    {key: 'h8', label: 'H8 07:01 - 08:00', visible: true}, // show if tabIndex = 1
-    {key: 'h9', label: 'H9 08:01 - 09:00', visible: true}, // show if tabIndex = 1
-    {key: 'h10', label: 'H10 09:01 - 10:00', visible: true}, // show if tabIndex = 1
-    {key: 'h11', label: 'H11 10:01 - 11:00', visible: true}, // show if tabIndex = 1
-    {key: 'h12', label: 'H12 11:01 - 12:00', visible: true}, // show if tabIndex = 1
-
-    {key: 'h13', label: 'H13 12:01 - 13:00', visible: true}, // show if tabIndex = 2
-    {key: 'h14', label: 'H14 13:01 - 14:00', visible: true}, // show if tabIndex = 2
-    {key: 'h15', label: 'H15 14:01 - 15:00', visible: true}, // show if tabIndex = 2
-    {key: 'h16', label: 'H16 15:01 - 16:00', visible: true}, // show if tabIndex = 2
-    {key: 'h17', label: 'H17 16:01 - 17:00', visible: true}, // show if tabIndex = 2
-    {key: 'h18', label: 'H18 17:01 - 18:00', visible: true}, // show if tabIndex = 2
-
-    {key: 'h19', label: 'H19 18:01 - 19:00', visible: true}, // show if tabIndex = 3
-    {key: 'h20', label: 'H20 19:01 - 20:00', visible: true}, // show if tabIndex = 3
-    {key: 'h21', label: 'H21 20:01 - 21:00', visible: true}, // show if tabIndex = 3
-    {key: 'h22', label: 'H22 21:01 - 22:00', visible: true}, // show if tabIndex = 3
-    {key: 'h23', label: 'H23 22:01 - 23:00', visible: true}, // show if tabIndex = 3
-    {key: 'h24', label: 'H24 23:01 - 24:00', visible: true} // show if tabIndex = 3
-  ]
-
-  const filterColumnsByTabIndex = (subTabIndex: number) => {
-    return initialColumnsTabIntraday.filter((col: any) => {
-      // Always show these columns
-      const alwaysVisibleKeys = ['gas_day', 'zone', 'area', 'parameter']
-
-      if (alwaysVisibleKeys.includes(col.key)) {
-        return true
-      }
-
-      if (subTabIndex === 4) {
-        return true // Show all columns if tabIndex = 4
-      }
-
-      // Define hourly column visibility based on tab index
-      const hourColumnMapping: {[key: number]: string[]} = {
-        0: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-        1: ['h7', 'h8', 'h9', 'h10', 'h11', 'h12'],
-        2: ['h13', 'h14', 'h15', 'h16', 'h17', 'h18'],
-        3: ['h19', 'h20', 'h21', 'h22', 'h23', 'h24']
-      }
-
-      return hourColumnMapping[subTabIndex]?.includes(col.key) ?? false
-    })
-  }
 
   // #region STATE
   const [dataTable, setData] = useState<any>([])
@@ -152,7 +100,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
-  const [columnVisibility, setColumnVisibility] = useState<any>(Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible])))
+  const [columnVisibility, setColumnVisibility] = useState<any>(Object.fromEntries((initialColumns || [])?.map((column: any) => [column?.key, column?.visible])))
   const [subTabIndex, setSubTabIndex] = useState(0)
   const [subTabIndexview, setsubTabIndexview] = useState(0)
   const [viewOpen, setViewOpen] = useState(false)
@@ -184,18 +132,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const {shipperGroupData} = useFetchMasters()
   const dispatch = useAppDispatch()
   // #region PERMISSION
-  let user_permission: any = localStorage?.getItem('k3a9r2b6m7t0x5w1s8j')
+  let user_permission: any = typeof window !== 'undefined' ? (localStorage?.getItem('k3a9r2b6m7t0x5w1s8j') || getCookieValue('k3a9r2b6m7t0x5w1s8j')) : null
   user_permission = user_permission ? decryptData(user_permission) : null
 
   const getPermission = () => {
     try {
-      user_permission = user_permission ? JSON.parse(user_permission) : null // Convert JSON string to object
+      let parsed_permission = user_permission
+      if (typeof parsed_permission === 'string') {
+        parsed_permission = JSON.parse(parsed_permission) // Convert JSON string to object
+      }
 
       const permission = findRoleConfigByMenuName(`Shipper Nomination Report`, userDT)
       if (permission) {
         setUserPermission(permission)
-      } else if (user_permission?.role_config) {
-        const updatedUserPermission = generateUserPermission(user_permission)
+      } else if (parsed_permission?.role_config) {
+        const updatedUserPermission = generateUserPermission(parsed_permission)
         setUserPermission(updatedUserPermission)
       }
     } catch (error) {
@@ -204,9 +155,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   }
 
   function sortByDate(resultAll: any[]) {
-    return resultAll.sort((a, b) => {
-      const dateA = new Date(a.gas_day_text.split('/').reverse().join('/')) // แปลงวันที่จาก 'DD/MM/YYYY' เป็น 'YYYY/MM/DD'
-      const dateB = new Date(b.gas_day_text.split('/').reverse().join('/'))
+    return (resultAll || []).sort((a, b) => {
+      const dateA = new Date((a?.gas_day_text || '').split('/').reverse().join('/'))
+      const dateB = new Date((b?.gas_day_text || '').split('/').reverse().join('/'))
       return dateA.getTime() - dateB.getTime() // เปรียบเทียบวันที่
     })
   }
@@ -222,7 +173,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
       saturday: 6
     }
 
-    return Object.entries(item?.weeklyDay)
+    return Object.entries(item?.weeklyDay || {})
       .map(([day, data]: any) => ({
         day,
         ...data,
@@ -237,11 +188,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const handleFieldSearchNew = async (tabIndexP?: any, srchStartDateP?: any) => {
     const tabIndex_ = tabIndexP !== undefined ? tabIndexP : tabIndex
     const srchStartDate_ = srchStartDateP ? dayjs(srchStartDateP)?.format('YYYY-MM-DD') : srchStartDate
-    console.log('tabIndexP : ', tabIndexP)
-    console.log('tabIndex_ : ', tabIndex_)
-    console.log('srchStartDateP : ', srchStartDateP)
-    console.log('srchStartDate_ : ', srchStartDate_)
-    console.log('/ handleFieldSearchNew')
+
     setIsLoading(false)
     // dayjs(isFixDay)?.format('YYYY-MM-DD')
 
@@ -250,345 +197,312 @@ const ClientPage: React.FC<ClientProps> = (props) => {
       const startDate = toDayjs(srchStartDate_)
       url += `&gasDay=${startDate.isValid() ? startDate.format('YYYY-MM-DD') : srchStartDate_}`
     }
-    console.log('url : ', url)
     const response: any = await getService(url)
+    console.log('response : ', response);
     let dataToFilter = response
-
+    
     // ถ้า user เป็น shipper
     if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-      dataToFilter = dataToFilter?.filter((item: any) => item?.shipper_name == userDT?.account_manage?.[0]?.group?.name)
+      dataToFilter = (Array.isArray(dataToFilter) ? dataToFilter : [])?.filter((item: any) => item?.shipper_name == userDT?.account_manage?.[0]?.group?.name)
     }
 
     switch (tabIndex_) {
       case 0:
         // =========== ALL NEW ===========
-        console.log('0_dataToFilter : ', dataToFilter);
-        const merged: any = mergeDaily_AddOuterAndRowsFromWeekly(dataToFilter)
+        
+
+        console.log('dataToFilter : ', dataToFilter);
+        // const merged: any = mergeDaily_AddOuterAndRowsFromWeekly(dataToFilter)
+        const merged: any = dataToFilter
+        console.log('merged : ', merged);
 
         const res_is_all_weekly = isAllWeekly(merged) // true ถ้าทุกตัวมี nomination_type.id === 2
         if (res_is_all_weekly) {
-          dataToFilter = liftWeeklyForDate(merged, toDayjs(srchStartDate_).format('DD/MM/YYYY')) // ถ้ามันเป็น weekly หมด จะเข้าไปเอาใน weeklyDay มาแสดง
+          dataToFilter = liftWeeklyForDate(merged, toDayjs(srchStartDate_)?.isValid() ? toDayjs(srchStartDate_).format('DD/MM/YYYY') : '') // ถ้ามันเป็น weekly หมด จะเข้าไปเอาใน weeklyDay มาแสดง
         } else {
-            console.log('0_merged : ', merged);
           // ถ้ามี daily เอาแค่ daily
-          const type_daily = merged?.filter((item: any) => item?.nomination_type?.id == 1) // เดิมโรงงาน
-        //   const type_daily = merged
+          const type_daily = (Array.isArray(merged) ? merged : [])?.filter((item: any) => item?.nomination_type?.id == 1) // เดิมโรงงาน
+          //   const type_daily = merged
           // ถ้าชื่อ shipper_name ไม่ซ้ำและเป็น nomination_type.id == 2 ให้เอามาด้วย
-          const nameCounts = (merged ?? []).reduce((acc: Record<string, number>, it: any) => {
+          const nameCounts = (Array.isArray(merged) ? merged : []).reduce((acc: Record<string, number>, it: any) => {
             const name = it?.shipper_name ?? ''
             acc[name] = (acc[name] ?? 0) + 1
             return acc
           }, {})
 
-          const ddddd = (merged ?? []).filter((it: any) => {
+          const ddddd = (Array.isArray(merged) ? merged : []).filter((it: any) => {
             const typeId = it?.nomination_type?.id
             const name = it?.shipper_name ?? ''
             // return typeId === 2 && nameCounts[name] === 1
             return typeId === 2
           })
-          console.log('ddddd : ', ddddd);
-          console.log('srchStartDate_ : ', srchStartDate_);
-          const only_one_shipper_type_weekly: any = liftWeeklyForDate(ddddd, toDayjs(srchStartDate_).format('DD/MM/YYYY'))
-          console.log('type_daily : ', type_daily);
-          console.log('only_one_shipper_type_weekly : ', only_one_shipper_type_weekly);
-          dataToFilter = [...type_daily, ...only_one_shipper_type_weekly]
+          const only_one_shipper_type_weekly: any = liftWeeklyForDate(ddddd, toDayjs(srchStartDate_)?.isValid() ? toDayjs(srchStartDate_).format('DD/MM/YYYY') : '')
+
+          dataToFilter = [...(Array.isArray(type_daily) ? type_daily : []), ...(Array.isArray(only_one_shipper_type_weekly) ? only_one_shipper_type_weekly : [])]
         }
-        console.log('1_dataToFilter : ', dataToFilter);
-        dataToFilter = addSumPerRow(dataToFilter) // <-- วิธีนี้ไม่ถูก แต่รีบอะ
+        dataToFilter = addSumPerRow(dataToFilter) 
+        // nominatedValueMMBTUD
 
         const groupedByShipperNameNew = Object.values(
-            (dataToFilter || []).reduce((groups:any, item:any) => {
-                const shipperName = item?.shipper_name ?? "UNKNOWN";
+          (Array.isArray(dataToFilter) ? dataToFilter : []).reduce((groups: any, item: any) => {
+            const shipperName = item?.shipper_name ?? 'UNKNOWN'
 
-                    if (!groups[shipperName]) {
-                    groups[shipperName] = [];
-                    }
-
-                    groups[shipperName].push(item);
-
-                    return groups;
-                }, {})
-            );
-        dataToFilter = groupedByShipperNameNew?.map((e_:any) => {
-            if(e_?.length > 1){
-                const id_ = e_?.map((newDataRow:any) => newDataRow?.id)?.flat()
-                const contractAll = e_?.map((newDataRow:any) => newDataRow?.contractAll)?.flat()
-                const dataRow = e_?.map((newDataRow:any) => newDataRow?.dataRow)?.flat()?.map((d_:any) =>{
-                    const { ...nD } = d_
-                    return {
-                        ...nD,
-                        gas_day: toDayjs(srchStartDate_).format('DD/MM/YYYY')
-                    }
-                })
-
-                const dataRowNew = Object.values(
-                    (dataRow || []).reduce((groups:any, item:any) => {
-                        const area_text = item?.area_text ?? "UNKNOWN";
-
-                            if (!groups[area_text]) {
-                            groups[area_text] = [];
-                            }
-
-                            groups[area_text].push(item);
-
-                            return groups;
-                        }, {})
-                    );
-                console.log('dataRowNew : ', dataRowNew);
-                // conceptPointZone
-
-                const dataRowNew_ = dataRowNew?.map((dn:any) => {
-                    if(dn?.length > 1){
-                        const contractAll_ = dn?.map((newDataRow:any) => newDataRow?.contractAll)?.flat()
-                        const capacityRightMMBTUD_ = dn?.reduce((accumulator:any, currentValue:any) => accumulator + (currentValue?.capacityRightMMBTUD || 0),0); 
-                        const nominatedValueMMBTUD_ = dn?.reduce((accumulator:any, currentValue:any) => accumulator + (currentValue?.nominatedValueMMBTUD || 0),0); 
-                        const overusageMMBTUD_ = dn?.reduce((accumulator:any, currentValue:any) => accumulator + (currentValue?.overusageMMBTUD || 0),0); 
-                        const conceptPointZone_ = Object.values(
-                            dn?.flatMap((item: any) => item?.conceptPointZone ?? [])?.reduce((result_:any, concept: any) => {
-                                const zoneText = concept?.zone_text;
-                                if (!zoneText) return result_;
-                                if (!result_[zoneText]) {
-                                    result_[zoneText] = {
-                                    zone_text: zoneText,
-                                    zone: [],
-                                    };
-                                }
-                                result_[zoneText].zone.push(...(concept?.zone ?? []));
-                                return result_;
-                                }, {})
-                            );
-                        console.log('conceptPointZone_ : ', conceptPointZone_);
-                        const nominaionPointZone_ = Object.values(
-                            dn?.flatMap((item: any) => item?.nominaionPointZone ?? [])?.reduce((result_:any, concept: any) => {
-                                const zoneText = concept?.zone_text;
-                                if (!zoneText) return result_;
-                                if (!result_[zoneText]) {
-                                    result_[zoneText] = {
-                                    zone_text: zoneText,
-                                    zone: [],
-                                    };
-                                }
-                                result_[zoneText].zone.push(...(concept?.zone ?? []));
-                                return result_;
-                                }, {})
-                            );
-
-                        const nominaionPointZone_convert_daily = nominaionPointZone_?.map((cv:any) => {
-                            const { zone, ...nCv } = cv
-                            const zone_ = zone?.map((cvZone:any) => {
-                                const { data_temp, ...ncvZone } = cvZone
-
-                                if (cvZone?.nom?.nomination_type_id === 2) {
-                                  const numDay_ = toDayjs(srchStartDate_).day()
-
-                                  const weeklyValue =
-                                    parseToNumber(
-                                      data_temp?.[14 + numDay_]
-                                    ) ?? 0
-
-                                  // ค่ารายชั่วโมง key 14-37
-                                  const valWeeklyHr =
-                                    weeklyValue / 24
-
-                                  const hourlyEntries = Array.from(
-                                    { length: 24 },
-                                    (_, index) => ({
-                                      key: index + 14,
-                                      value: valWeeklyHr
-                                    })
-                                  )
-
-                                  // รวมค่าจาก key 14-37
-                                  const valWeeklyTotal =
-                                    hourlyEntries.reduce(
-                                      (sum, item) =>
-                                        sum + item.value,
-                                      0
-                                    )
-
-                                  console.log(
-                                    'valWeeklyHr : ',
-                                    valWeeklyHr
-                                  )
-
-                                  console.log(
-                                    'valWeeklyTotal : ',
-                                    valWeeklyTotal
-                                  )
-
-                                  const newDataTemp =
-                                    Object.fromEntries([
-                                      // key 0-13
-                                      ...Array.from(
-                                        { length: 14 },
-                                        (_, key) => [
-                                          key,
-                                          data_temp?.[key] ?? ''
-                                        ]
-                                      ),
-
-                                      // key 14-37
-                                      ...hourlyEntries.map(
-                                        (item) => [
-                                          item.key,
-                                          String(item.value)
-                                        ]
-                                      ),
-
-                                      // key 38 = ผลรวม key 14-37
-                                      [38, String(valWeeklyTotal)]
-                                    ])
-
-                                  return {
-                                    ...ncvZone,
-                                    data_temp: newDataTemp
-                                  }
-                                }else{
-                                    return cvZone
-                                }
-                            })
-
-                            return {
-                                ...nCv,
-                                zone: zone_
-                            }
-                        })
-
-                        const conceptPointZone_convert_daily = conceptPointZone_?.map((cv:any) => {
-                            const { zone, ...nCv } = cv
-                            const zone_ = zone?.map((cvZone:any) => {
-                                const { data_temp, ...ncvZone } = cvZone
-                                if(cvZone?.nom?.nomination_type_id === 2){
-                                    const numDay_ = toDayjs(srchStartDate_).day()
-                                    const valWeeklyTotal = String(parseToNumber(data_temp?.[14 + numDay_]))
-                                    const valWeeklyHr:any = String(Number(parseToNumber(data_temp?.[14 + numDay_])) / 24)
-                                    // const valWeeklyTotal = Number( Number(valWeeklyHr)?.toFixed(3)) * 24
-                                    // console.log('valWeeklyTotal : ', valWeeklyTotal);
-                                    // console.log('valWeeklyHr : ', valWeeklyHr);
-                                    const newDataTemp = Object.fromEntries([
-                                        // key 0 - 13 จากข้อมูลเดิม
-                                        ...Array.from({ length: 14 }, (_, key) => [
-                                            key,
-                                            data_temp?.[key] ?? "",
-                                        ]),
-
-                                        // key 14 - 37 จาก valWeeklyHr
-                                        ...Array.from({ length: 24 }, (_, index) => [
-                                            index + 14,
-                                            valWeeklyHr,
-                                        ]),
-
-                                        // key 38 จาก valWeeklyTotal
-                                        [38, valWeeklyTotal],
-                                        ]);
-                                    return {
-                                        ...ncvZone,
-                                        data_temp: newDataTemp
-                                    }
-                                }else{
-                                    return cvZone
-                                }
-                            })
-
-                            return {
-                                ...nCv,
-                                zone: zone_
-                            }
-                        })
-                        
-                        return {
-                            areaObj: dn?.[0]?.areaObj,
-                            area_text: dn?.[0]?.area_text,
-                            capacityRightMMBTUD: capacityRightMMBTUD_,
-                            conceptPointZone: conceptPointZone_convert_daily,
-                            contract_code_id_arr: contractAll_,
-                            nominaionPointZone: nominaionPointZone_convert_daily,
-                            gas_day: toDayjs(srchStartDate_).format('DD/MM/YYYY'),
-                            nominatedValueMMBTUD: nominatedValueMMBTUD_,
-                            overusageMMBTUD: overusageMMBTUD_,
-                            shipper_name: dn?.[0]?.shipper_name,
-                            weeklyDay: null,
-                            zoneObj: dn?.[0]?.zoneObj,
-                            zone_text: dn?.[0]?.zone_text,
-
-                        }
-                    }else{
-                        return dn?.[0]
-                    }
-                })
-                console.log('dataRowNew_ : ', dataRowNew_);
-
-                const capacityRightMMBTUD = e_?.reduce((accumulator:any, currentValue:any) => accumulator + (currentValue?.capacityRightMMBTUD || 0),0);
-                const imbalanceMMBTUD = e_?.reduce((accumulator:any, currentValue:any) => accumulator + (currentValue?.imbalanceMMBTUD || 0),0);
-                const nominatedValueMMBTUD = e_?.reduce((accumulator:any, currentValue:any) => accumulator + (currentValue?.nominatedValueMMBTUD || 0),0);
-                const overusageMMBTUD = e_?.reduce((accumulator:any, currentValue:any) => accumulator + (currentValue?.overusageMMBTUD || 0),0);
-                const tmpOverUseage = e_?.reduce((accumulator:any, currentValue:any) => accumulator + (currentValue?.tmpOverUseage || 0),0);
-                const tmpSumCapacityRightMMBTUD = e_?.reduce((accumulator:any, currentValue:any) => accumulator + (currentValue?.tmpSumCapacityRightMMBTUD || 0),0);
-                return {
-                    capacityRightMMBTUD: capacityRightMMBTUD,
-                    contractAll: contractAll,
-                    dataRow: dataRowNew_,
-                    gas_day: toDayjs(srchStartDate_).format('DD/MM/YYYY'),
-                    gas_day_text: toDayjs(srchStartDate_).format('DD/MM/YYYY'),
-                    id: e_?.[0]?.id,
-                    id_: id_,
-                    imbalanceMMBTUD: imbalanceMMBTUD,
-                    nominatedValueMMBTUD: nominatedValueMMBTUD,
-                    nomination_type: null, // 1 2
-                    overusageMMBTUD: overusageMMBTUD,
-                    shipper_name: e_?.[0]?.shipper_name,
-                    tmpOverUseage: tmpOverUseage,
-                    tmpSumCapacityRightMMBTUD: tmpSumCapacityRightMMBTUD,
-                    weeklyDay: null,
-                }
-            }else{
-                return e_?.[0]
+            if (!groups[shipperName]) {
+              groups[shipperName] = []
             }
+
+            groups[shipperName].push(item)
+
+            return groups
+          }, {})
+        )
+        dataToFilter = (Array.isArray(groupedByShipperNameNew) ? groupedByShipperNameNew : [])?.map((e_: any) => {
+          if (Array.isArray(e_) && e_.length > 1) {
+            const id_ = e_?.map((newDataRow: any) => newDataRow?.id)?.flat()
+            const contractAll = e_?.map((newDataRow: any) => newDataRow?.contractAll)?.flat()
+            const dataRow = e_
+              ?.map((newDataRow: any) => newDataRow?.dataRow)
+              ?.flat()
+              ?.map((d_: any) => {
+                const {...nD} = d_ || {}
+                return {
+                  ...nD,
+                  gas_day: toDayjs(srchStartDate_)?.isValid() ? toDayjs(srchStartDate_).format('DD/MM/YYYY') : ''
+                }
+              })
+
+            const dataRowNew = Object.values(
+              (dataRow || []).reduce((groups: any, item: any) => {
+                const area_text = item?.area_text ?? 'UNKNOWN'
+
+                if (!groups[area_text]) {
+                  groups[area_text] = []
+                }
+
+                groups[area_text].push(item)
+
+                return groups
+              }, {})
+            )
+
+            const dataRowNew_ = (Array.isArray(dataRowNew) ? dataRowNew : [])?.map((dn: any) => {
+              if (Array.isArray(dn) && dn.length > 1) {
+                const contractAll_ = dn?.map((newDataRow: any) => newDataRow?.contractAll)?.flat()
+                const capacityRightMMBTUD_ = dn?.reduce((accumulator: any, currentValue: any) => accumulator + (currentValue?.capacityRightMMBTUD || 0), 0)
+                const nominatedValueMMBTUD_ = dn?.reduce((accumulator: any, currentValue: any) => accumulator + (currentValue?.nominatedValueMMBTUD || 0), 0)
+                const overusageMMBTUD_ = dn?.reduce((accumulator: any, currentValue: any) => accumulator + (currentValue?.overusageMMBTUD || 0), 0)
+                const conceptPointZone_ = Object.values(
+                  dn
+                    ?.flatMap((item: any) => item?.conceptPointZone ?? [])
+                    ?.reduce((result_: any, concept: any) => {
+                      const zoneText = concept?.zone_text
+                      if (!zoneText) return result_
+                      if (!result_[zoneText]) {
+                        result_[zoneText] = {
+                          zone_text: zoneText,
+                          zone: []
+                        }
+                      }
+                      result_[zoneText].zone.push(...(concept?.zone ?? []))
+                      return result_
+                    }, {})
+                )
+                const nominaionPointZone_ = Object.values(
+                  dn
+                    ?.flatMap((item: any) => item?.nominaionPointZone ?? [])
+                    ?.reduce((result_: any, concept: any) => {
+                      const zoneText = concept?.zone_text
+                      if (!zoneText) return result_
+                      if (!result_[zoneText]) {
+                        result_[zoneText] = {
+                          zone_text: zoneText,
+                          zone: []
+                        }
+                      }
+                      result_[zoneText].zone.push(...(concept?.zone ?? []))
+                      return result_
+                    }, {})
+                )
+
+                const nominaionPointZone_convert_daily = (Array.isArray(nominaionPointZone_) ? nominaionPointZone_ : [])?.map((cv: any) => {
+                  const {zone, ...nCv} = cv || {}
+                  const zone_ = (Array.isArray(zone) ? zone : [])?.map((cvZone: any) => {
+                    const {data_temp, ...ncvZone} = cvZone || {}
+                    
+                    if (cvZone?.nom?.nomination_type_id === 2) {
+                      // console.log('- data_temp : ', cvZone?.data_temp?.[3]);
+                      // console.log('- data_temp : ', cvZone?.data_temp?.[38]);
+                      // console.log('- cvZone : ', cvZone);
+                      const numDay_ = toDayjs(srchStartDate_)?.isValid() ? toDayjs(srchStartDate_).day() : 0
+
+                      const weeklyValue = parseToNumber(data_temp?.[14 + numDay_]) ?? 0
+
+                      // ค่ารายชั่วโมง key 14-37
+                      const valWeeklyHr = !!cvZone?.data_temp?.[38] ? weeklyValue : weeklyValue / 24
+                      
+                      if(cvZone?.data_temp?.[3] === "LMPT1" && cvZone?.data_temp?.[9] === "MMSCFD"){
+                        console.log('srchStartDate_ : ', srchStartDate_);
+                        console.log('numDay_ : ', numDay_);
+                        console.log('cvZone : ', cvZone);
+                        console.log('data_temp : ', data_temp);
+                        console.log('cvZone?.data_temp : ', cvZone?.data_temp?.[3]); 
+                        console.log('weeklyValue : ', weeklyValue); 
+                        console.log('valWeeklyHr : ', valWeeklyHr);
+                        console.log('- - - -');
+                      }
+                      // const valWeeklyHr = weeklyValue 
+
+                      const hourlyEntries = Array.from({length: 24}, (_, index) => ({
+                        key: index + 14,
+                        value: valWeeklyHr
+                      }))
+
+                      // รวมค่าจาก key 14-37
+                      const valWeeklyTotal = hourlyEntries.reduce((sum, item) => sum + (item?.value ?? 0), 0)
+
+                      const newDataTemp = Object.fromEntries([
+                        // key 0-13
+                        ...Array.from({length: 14}, (_, key) => [key, data_temp?.[key] ?? '']),
+
+                        // key 14-37
+                        ...(hourlyEntries || [])?.map((item) => [item?.key, String(item?.value ?? '')]),
+
+                        // key 38 = ผลรวม key 14-37
+                        [38, String(valWeeklyTotal)]
+                      ])
+
+                      return {
+                        ...ncvZone,
+                        data_temp: newDataTemp
+                      }
+                    } else {
+                      return cvZone
+                    }
+                  })
+
+                  return {
+                    ...nCv,
+                    zone: zone_
+                  }
+                })
+
+                const conceptPointZone_convert_daily = (Array.isArray(conceptPointZone_) ? conceptPointZone_ : [])?.map((cv: any) => {
+                  const {zone, ...nCv} = cv || {}
+                  const zone_ = (Array.isArray(zone) ? zone : [])?.map((cvZone: any) => {
+                    const {data_temp, ...ncvZone} = cvZone || {}
+                    if (cvZone?.nom?.nomination_type_id === 2) {
+                      const numDay_ = toDayjs(srchStartDate_)?.isValid() ? toDayjs(srchStartDate_).day() : 0
+                      const valWeeklyTotal = String(parseToNumber(data_temp?.[14 + numDay_]))
+                      const valWeeklyHr: any = String(Number(parseToNumber(data_temp?.[14 + numDay_])) / 24)
+
+                      const newDataTemp = Object.fromEntries([
+                        // key 0 - 13 จากข้อมูลเดิม
+                        ...Array.from({length: 14}, (_, key) => [key, data_temp?.[key] ?? '']),
+
+                        // key 14 - 37 จาก valWeeklyHr
+                        ...Array.from({length: 24}, (_, index) => [index + 14, valWeeklyHr]),
+
+                        // key 38 จาก valWeeklyTotal
+                        [38, valWeeklyTotal]
+                      ])
+                      return {
+                        ...ncvZone,
+                        data_temp: newDataTemp
+                      }
+                    } else {
+                      return cvZone
+                    }
+                  })
+
+                  return {
+                    ...nCv,
+                    zone: zone_
+                  }
+                })
+
+                return {
+                  areaObj: dn?.[0]?.areaObj,
+                  area_text: dn?.[0]?.area_text,
+                  capacityRightMMBTUD: capacityRightMMBTUD_,
+                  conceptPointZone: conceptPointZone_convert_daily,
+                  contract_code_id_arr: contractAll_,
+                  nominaionPointZone: nominaionPointZone_convert_daily,
+                  gas_day: toDayjs(srchStartDate_)?.isValid() ? toDayjs(srchStartDate_).format('DD/MM/YYYY') : '',
+                  nominatedValueMMBTUD: nominatedValueMMBTUD_,
+                  overusageMMBTUD: overusageMMBTUD_,
+                  shipper_name: dn?.[0]?.shipper_name,
+                  weeklyDay: null,
+                  zoneObj: dn?.[0]?.zoneObj,
+                  zone_text: dn?.[0]?.zone_text
+                }
+              } else {
+                return dn?.[0]
+              }
+            })
+            console.log('dataRowNew_ : ', dataRowNew_);
+            const capacityRightMMBTUD = e_?.reduce((accumulator: any, currentValue: any) => accumulator + (currentValue?.capacityRightMMBTUD || 0), 0)
+            const imbalanceMMBTUD = e_?.reduce((accumulator: any, currentValue: any) => accumulator + (currentValue?.imbalanceMMBTUD || 0), 0)
+            const nominatedValueMMBTUD = e_?.reduce((accumulator: any, currentValue: any) => accumulator + (currentValue?.nominatedValueMMBTUD || 0), 0)
+            const overusageMMBTUD = e_?.reduce((accumulator: any, currentValue: any) => accumulator + (currentValue?.overusageMMBTUD || 0), 0)
+            const tmpOverUseage = e_?.reduce((accumulator: any, currentValue: any) => accumulator + (currentValue?.tmpOverUseage || 0), 0)
+            const tmpSumCapacityRightMMBTUD = e_?.reduce((accumulator: any, currentValue: any) => accumulator + (currentValue?.tmpSumCapacityRightMMBTUD || 0), 0)
+            return {
+              capacityRightMMBTUD: capacityRightMMBTUD,
+              contractAll: contractAll,
+              dataRow: dataRowNew_,
+              gas_day: toDayjs(srchStartDate_)?.isValid() ? toDayjs(srchStartDate_).format('DD/MM/YYYY') : '',
+              gas_day_text: toDayjs(srchStartDate_)?.isValid() ? toDayjs(srchStartDate_).format('DD/MM/YYYY') : '',
+              id: e_?.[0]?.id,
+              id_: id_,
+              imbalanceMMBTUD: imbalanceMMBTUD,
+              nominatedValueMMBTUD: nominatedValueMMBTUD,
+              nomination_type: null, // 1 2
+              overusageMMBTUD: overusageMMBTUD,
+              shipper_name: e_?.[0]?.shipper_name,
+              tmpOverUseage: tmpOverUseage,
+              tmpSumCapacityRightMMBTUD: tmpSumCapacityRightMMBTUD,
+              weeklyDay: null
+            }
+          } else {
+            return e_?.[0]
+          }
         })
-        console.log('groupedByShipperNameNew : ', groupedByShipperNameNew);
-        // capacityRightMMBTUD
-        // imbalanceMMBTUD
-        // nominatedValueMMBTUD
-        // overusageMMBTUD
-
-        // tmpOverUseage
-        // tmpSumCapacityRightMMBTUD
-
-        // dataRow
-
-        console.log('2_dataToFilter : ', dataToFilter);
 
         break
       case 1:
-        const filtered_daily = dataToFilter?.filter((item: any) => item?.nomination_type.id == 1) // daily
+        const filtered_daily = (Array.isArray(dataToFilter) ? dataToFilter : []).filter((item: any) => item && item?.nomination_type?.id == 1) // daily
 
         const data_with_sum = addSumPerRow(filtered_daily) // <-- วิธีนี้ไม่ถูก แต่รีบอะ
         setDataDailyOriginal(data_with_sum)
         dataToFilter = data_with_sum
         break
       case 2:
-        const filtered_weekly = dataToFilter?.filter((item: any) => item?.nomination_type.id == 2) // weekly
+        const filtered_weekly = (Array.isArray(dataToFilter) ? dataToFilter : []).filter((item: any) => item && item?.nomination_type?.id == 2) // weekly
         setDataWeeklyOriginal(filtered_weekly)
-        dataToFilter = filtered_weekly && Array.isArray(filtered_weekly) && filtered_weekly.length > 0 ? filtered_weekly : dataWeeklyOriginal
+        dataToFilter = Array.isArray(filtered_weekly) && filtered_weekly.length > 0 ? filtered_weekly : (dataWeeklyOriginal || [])
 
         break
     }
-    console.log('## dataToFilter : ', dataToFilter);
-    const result_2 = dataToFilter?.filter((item: any) => {
-      return srchShipper?.length > 0 ? srchShipper.includes(item?.shipper_name) : true
+    const result_2 = (Array.isArray(dataToFilter) ? dataToFilter : []).filter((item: any) => {
+      if (!item) return false
+      return (Array.isArray(srchShipper) && srchShipper.length > 0) ? srchShipper.includes(item?.shipper_name) : true
     })
 
-    if (response?.length > 0 && tabIndex_ === 2) {
-      const resultAll = result_2?.map((item: any) => convertWeeklyDataToArray(item))
+    if (Array.isArray(response) && response.length > 0 && tabIndex_ === 2) {
+      const resultAll = (Array.isArray(result_2) ? result_2 : []).map((item: any) => convertWeeklyDataToArray(item))
       const sortresult = sortByDate(resultAll.flat())
       set_filtered_weekly_all(sortresult)
     } else {
       set_filtered_weekly_all([])
     }
-    console.log('## result_2 : ', result_2);
-    setselectprops((pre) => pre?.map((item: any) => (item?.id == tabIndex_ ? {...item, gas_props: srchStartDate_, shipper: srchShipper} : item)))
+    setselectprops((pre) => (Array.isArray(pre) ? pre : []).map((item: any) => (item?.id == tabIndex_ ? {...item, gas_props: srchStartDate_, shipper: srchShipper} : item)))
     setData(result_2)
     setFilteredDataTable(result_2)
+
+    console.log('# result_2 : ', result_2);
+
+  //   const test = tableData?.nominaionPointZone[0]?.zone?.filter((f:any) => f?.data_temp?.[3] === "LMPT1" && f?.data_temp?.[9] === "MMSCFD")
+  // console.log('[LMPT1] test : ', test);
 
     setCurrentPage(1)
     setTimeout(() => {
@@ -630,37 +544,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
   const handleSearch = (query: string, tabIDX?: any) => {
     let tab: any = tabIDX || tabIndex
-    const queryLower = query.replace(/\s+/g, '')?.toLowerCase().trim()
-    let filtered: any
+    const queryLower = query?.replace(/\s+/g, '')?.toLowerCase()?.trim() || ''
+    let filtered: any = []
 
-    if (tab === 0) {
-      filtered = filteredDataTable?.filter((item: any) => {
+    if (tab === 0 || tab === 1) {
+      filtered = (filteredDataTable || [])?.filter((item: any) => {
         return (
-          item?.gas_day_text?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.shipper_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimal(item?.capacityRightMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimal(item?.nominatedValueMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimal(item?.overusageMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimal(item?.imbalanceMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.capacityRightMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.nominatedValueMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.overusageMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.imbalanceMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)
-        )
-      })
-    } else if (tab === 1) {
-      filtered = filteredDataTable?.filter((item: any) => {
-        return (
-          item?.gas_day_text?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.shipper_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimal(item?.capacityRightMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimal(item?.nominatedValueMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimal(item?.overusageMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimal(item?.imbalanceMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.capacityRightMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.nominatedValueMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.overusageMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.imbalanceMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)
+          item?.gas_day_text?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          item?.shipper_name?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          formatNumberFourDecimal(item?.capacityRightMMBTUD)?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          formatNumberFourDecimal(item?.nominatedValueMMBTUD)?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          formatNumberFourDecimal(item?.overusageMMBTUD)?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          formatNumberFourDecimal(item?.imbalanceMMBTUD)?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          item?.capacityRightMMBTUD?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          item?.nominatedValueMMBTUD?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          item?.overusageMMBTUD?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          item?.imbalanceMMBTUD?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower)
         )
       })
     } else if (tab === 2) {
@@ -675,28 +574,30 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         {id: 7, day: 'all'}
       ]
 
-      let filter_weekly_sunday = filteredDataTable?.filter((item: any) => item?.gas_day_text == dayjs(srchStartDate).format('DD/MM/YYYY'))
-      filtered = filter_weekly_sunday?.filter((item: any) => {
+      let filter_weekly_sunday = (filteredDataTable || [])?.filter((item: any) => item?.gas_day_text == (srchStartDate && dayjs(srchStartDate)?.isValid() ? dayjs(srchStartDate).format('DD/MM/YYYY') : ''))
+      filtered = (filter_weekly_sunday || [])?.filter((item: any) => {
+        const dayKey = tabdayIndex?.[subTabIndex]?.day
+        const dayObj = dayKey ? item?.weeklyDay?.[dayKey] : null
         return (
-          item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.gas_day_text?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.shipper_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimal(item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.capacityRightMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimal(item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.nominatedValueMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimal(item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.overusageMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimal(item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.imbalanceMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimalNoComma(item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.capacityRightMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimalNoComma(item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.nominatedValueMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimalNoComma(item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.overusageMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          formatNumberFourDecimalNoComma(item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.imbalanceMMBTUD)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.capacityRightMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.nominatedValueMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.overusageMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-          item?.weeklyDay[tabdayIndex[subTabIndex]?.day]?.imbalanceMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)
+          dayObj?.gas_day_text?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          item?.shipper_name?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          formatNumberFourDecimal(dayObj?.capacityRightMMBTUD)?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          formatNumberFourDecimal(dayObj?.nominatedValueMMBTUD)?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          formatNumberFourDecimal(dayObj?.overusageMMBTUD)?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          formatNumberFourDecimal(dayObj?.imbalanceMMBTUD)?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          formatNumberFourDecimalNoComma(dayObj?.capacityRightMMBTUD)?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          formatNumberFourDecimalNoComma(dayObj?.nominatedValueMMBTUD)?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          formatNumberFourDecimalNoComma(dayObj?.overusageMMBTUD)?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          formatNumberFourDecimalNoComma(dayObj?.imbalanceMMBTUD)?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          dayObj?.capacityRightMMBTUD?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          dayObj?.nominatedValueMMBTUD?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          dayObj?.overusageMMBTUD?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower) ||
+          dayObj?.imbalanceMMBTUD?.toString()?.replace(/\s+/g, '')?.toLowerCase()?.trim()?.includes(queryLower)
         )
       })
     }
 
-    setPaginatedData(filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
+    setPaginatedData((filtered || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
   }
 
   const handleColumnToggle = (columnKey: string) => {
@@ -743,27 +644,27 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     setTabIndex((pre: any) => tabIDX)
     settk(!tk)
 
-    const props = selectprops?.find((item) => item?.id == tabIDX)
+    const selectedProp = selectprops?.find((item) => item?.id == tabIDX)
 
-    onchangeGasdate(props?.gas_props, tabIDX)
+    onchangeGasdate(selectedProp?.gas_props, tabIDX)
 
     if (userDT?.account_manage?.[0]?.user_type_id !== 3) {
-      setSrchShipper(props?.shipper ? props?.shipper : '')
+      setSrchShipper(selectedProp?.shipper ? selectedProp?.shipper : [])
     }
-    // fetchOnlyData(tabIDX, props?.gas_props)
-    handleFieldSearchNew(tabIDX, props?.gas_props)
+    // fetchOnlyData(tabIDX, selectedProp?.gas_props)
+    handleFieldSearchNew(tabIDX, selectedProp?.gas_props)
   }
 
   const openViewForm = async (id: any) => {
     let filteredData: any
     if (tabIndex === 0) {
       filteredData = dataTable?.find((item: any) => item?.id === id)
-      console.log('++++ dataTable : ', dataTable);
     } else if (tabIndex === 1) {
       filteredData = dataDailyOriginal?.find((item: any) => item?.id === id)
     } else if (tabIndex === 2) {
       filteredData = dataWeeklyOriginal?.find((item: any) => item?.id === id)
     }
+    // console.log('filteredData : ', filteredData);
     setViewDataMain(filteredData)
     setViewOpen(true)
   }
@@ -839,8 +740,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           if (!raw) return ''
 
           const fixed = formatNumberFourDecimal(raw) // เช่น 10,000.0000
-          const noComma = fixed.replace(/,/g, '') // เช่น 10000.0000
-          const rounded = parseFloat(raw).toString() // เช่น 10000
+          const noComma = fixed?.replace(/,/g, '') || '' // เช่น 10000.0000
+          const rounded = !isNaN(parseFloat(raw)) ? parseFloat(raw).toString() : '' // เช่น 10000
 
           return `${fixed} ${noComma} ${rounded}`
         },
@@ -859,15 +760,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           if (!raw) return ''
 
           const fixed = formatNumberFourDecimal(raw) // เช่น 10,000.0000
-          const noComma = fixed.replace(/,/g, '') // เช่น 10000.0000
-          const rounded = parseFloat(raw).toString() // เช่น 10000
+          const noComma = fixed?.replace(/,/g, '') || '' // เช่น 10000.0000
+          const rounded = !isNaN(parseFloat(raw)) ? parseFloat(raw).toString() : '' // เช่น 10000
 
           return `${fixed} ${noComma} ${rounded}`
         },
         sortDescFirst: true,
         cell: (info) => {
           const row: any = info?.row?.original
-          return <div className="text-right">{row?.nominatedValueMMBTUD ? formatNumberThreeDecimal(row?.nominatedValueMMBTUD) : '0.000'}</div>
+          return <div className="text-right">{row?.nominatedValueMMBTUD === null || row?.nominatedValueMMBTUD === undefined ? null : (row?.nominatedValueMMBTUD ? formatNumberThreeDecimal(row?.nominatedValueMMBTUD) : '0.000')}</div>
         }
       },
       {
@@ -879,8 +780,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           if (!raw) return ''
 
           const fixed = formatNumberFourDecimal(raw) // เช่น 10,000.0000
-          const noComma = fixed.replace(/,/g, '') // เช่น 10000.0000
-          const rounded = parseFloat(raw).toString() // เช่น 10000
+          const noComma = fixed?.replace(/,/g, '') || '' // เช่น 10000.0000
+          const rounded = !isNaN(parseFloat(raw)) ? parseFloat(raw).toString() : '' // เช่น 10000
 
           return `${fixed} ${noComma} ${rounded}`
         },
@@ -898,8 +799,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           if (!raw) return ''
 
           const fixed = formatNumberFourDecimal(raw) // เช่น 10,000.0000
-          const noComma = fixed.replace(/,/g, '') // เช่น 10000.0000
-          const rounded = parseFloat(raw).toString() // เช่น 10000
+          const noComma = fixed?.replace(/,/g, '') || '' // เช่น 10000.0000
+          const rounded = !isNaN(parseFloat(raw)) ? parseFloat(raw).toString() : '' // เช่น 10000
 
           return `${fixed} ${noComma} ${rounded}`
         },
@@ -931,11 +832,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         header: 'Gas Day',
         enableSorting: true,
         accessorFn: (row: any) => {
-          return row?.gas_day_text && subTabIndex < 7 ? dayjs(row.gas_day_text, 'DD/MM/YYYY')?.add(subTabIndex, 'day')?.format('DD/MM/YYYY') : dayjs(row.gas_day_text, 'DD/MM/YYYY')?.add(subTabIndex, 'day')?.format('DD/MM/YYYY') || row?.gas_day_text || ''
+          return row?.gas_day_text && subTabIndex < 7 ? (dayjs(row.gas_day_text, 'DD/MM/YYYY')?.isValid() ? dayjs(row.gas_day_text, 'DD/MM/YYYY').add(subTabIndex, 'day').format('DD/MM/YYYY') : row.gas_day_text) : (row?.gas_day_text ?? '')
         },
         cell: (info) => {
           const row: any = info?.row?.original
-          return <div>{row?.gas_day_text && subTabIndex < 7 ? dayjs(row.gas_day_text, 'DD/MM/YYYY')?.add(subTabIndex, 'day')?.format('DD/MM/YYYY') : (row?.gas_day_text ?? '')}</div>
+          return <div>{row?.gas_day_text && subTabIndex < 7 ? (dayjs(row.gas_day_text, 'DD/MM/YYYY')?.isValid() ? dayjs(row.gas_day_text, 'DD/MM/YYYY').add(subTabIndex, 'day').format('DD/MM/YYYY') : row.gas_day_text) : (row?.gas_day_text ?? '')}</div>
         }
       },
       {
@@ -964,8 +865,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           if (!Number.isFinite(num)) return ''
 
           const fixed = formatNumberThreeDecimal(num) // เช่น "10,000.0000"
-          const noComma = fixed.replace(/,/g, '') // เช่น "10000.0000"
-          const rounded = parseFloat(noComma).toString() // เช่น "10000"
+          const noComma = fixed?.replace(/,/g, '') || '' // เช่น "10000.0000"
+          const rounded = !isNaN(parseFloat(noComma)) ? parseFloat(noComma).toString() : '' // เช่น "10000"
 
           return `${fixed} ${noComma} ${rounded}`
         },
@@ -992,8 +893,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           if (!Number.isFinite(num)) return ''
 
           const fixed = formatNumberThreeDecimal(num) // เช่น "10,000.0000"
-          const noComma = fixed.replace(/,/g, '') // เช่น "10000.0000"
-          const rounded = parseFloat(noComma).toString() // เช่น "10000"
+          const noComma = fixed?.replace(/,/g, '') || '' // เช่น "10000.0000"
+          const rounded = !isNaN(parseFloat(noComma)) ? parseFloat(noComma).toString() : '' // เช่น "10000"
 
           return `${fixed} ${noComma} ${rounded}`
         },
@@ -1013,7 +914,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         accessorFn: (row: any) => {
           const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
           const rawSrc = subTabIndex < 7 ? row?.weeklyDay?.[dayKeys[subTabIndex]]?.overusageMMBTUD : row?.overusageMMBTUD
-          console.log('rawSrc : ', rawSrc)
           if (rawSrc == null) return ''
 
           const num = typeof rawSrc === 'number' ? rawSrc : Number(String(rawSrc).replace(/,/g, '').trim())
@@ -1021,8 +921,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           if (!Number.isFinite(num)) return ''
 
           const fixed = formatNumberThreeDecimal(num) // เช่น "10,000.0000"
-          const noComma = fixed.replace(/,/g, '') // เช่น "10000.0000"
-          const rounded = parseFloat(noComma).toString() // เช่น "10000"
+          const noComma = fixed?.replace(/,/g, '') || '' // เช่น "10000.0000"
+          const rounded = !isNaN(parseFloat(noComma)) ? parseFloat(noComma).toString() : '' // เช่น "10000"
 
           return `${fixed} ${noComma} ${rounded}`
         },
@@ -1057,8 +957,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           if (!Number.isFinite(num)) return ''
 
           const fixed = formatNumberThreeDecimal(num) // เช่น "10,000.0000"
-          const noComma = fixed.replace(/,/g, '') // เช่น "10000.0000"
-          const rounded = parseFloat(noComma).toString() // เช่น "10000"
+          const noComma = fixed?.replace(/,/g, '') || '' // เช่น "10000.0000"
+          const rounded = !isNaN(parseFloat(noComma)) ? parseFloat(noComma).toString() : '' // เช่น "10000"
 
           return `${fixed} ${noComma} ${rounded}`
         },
@@ -1138,6 +1038,371 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   useEffect(() => {
     getVisibleHours()
   }, [subTabIndex])
+
+  // useEffect(() => {
+  //   console.log('dataTable : ', dataTable)
+  // }, [dataTable])
+
+  // useEffect(() => {
+  //   // console.log('filteredDataTable : ', filteredDataTable);
+  //   console.log('dataTable : ', dataTable) // use
+  //   console.log('dataDailyOriginal : ', dataDailyOriginal)
+  //   console.log('dataWeeklyOriginal : ', dataWeeklyOriginal)
+
+  //   // tabIndex == 0 ?
+  //   // exportToExcel(dataTable, 'shipper-nom-report-tab-0', columnVisibility)
+  //   // tabIndex == 1 ?
+  //   // exportToExcel(dataTable, 'shipper-nom-report-tab-0', columnVisibility)
+  //   // tabIndex == 2 ?
+  //   // exportToExcel(dataTable, 'shipper-nom-report-tab-weekly', columnVisibility, {subTabIndex: subTabIndex})
+  //   // ----------------------
+
+  //   // # viewPage
+  //   // exportToExcel(
+  //   //   filteredDataTable?.dataRow, // เอาแค่ที่ filter มา export
+  //   //   'shipper-nom-report-view',
+  //   //   columnVisibility,
+  //   //   {
+  //   //     tabIndex: tabIndex,
+  //   //     subTabIndex: subTabIndex < 7 ? subTabIndex : subTabIndexview,
+  //   //     tableData: tableData
+  //   //   }
+  //   // )
+  //   // ----------------------
+
+  //   // # detailPage
+  //   // exportToExcel(tabMain === 0 ? sortedData : sortedDataTabConcept, 'shipper-nom-report-detail', columnVisibility, {
+  //   //   tabMainIndex: tabMainIndex, // จากหน้าแรก daily/weekly = 0, daily = 1, weekly = 2
+  //   //   subTabIndex: subTabIndex < 7 ? subTabIndex : subTabIndexview, // จาก tab weekly -> tab ย่อยรายวัน sunday = 0, monday = 1, ... , saturday = 6
+  //   //   tabEachZoneIndex: tabMain, // จากหน้า detail tab entry/exit = 0, concept point = 1
+  //   //   tableData: tableData,
+  //   //   gasDay: gasDay,
+  //   //   day_text: getDayNameBySubTabIndex(subTabIndex < 7 ? subTabIndex : subTabIndexview),
+  //   //   date: dayjs(tableData.gas_day, 'DD/MM/YYYY')
+  //   //     .add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day')
+  //   //     .format('DD/MM/YYYY')
+  //   // })
+  //   // ----------------------
+
+  //   // 'shipper-nom-report-tab-0' | 'shipper-nom-report-tab-weekly'
+  //   const enwExportAll = [
+  //     {typeExport: 'pageInfo', nameSheet: 'Main', data: dataTable, config: {columnVisibility, type: tabIndex == 2 ? 'shipper-nom-report-tab-weekly' : 'shipper-nom-report-tab-0', subTabIndex: 7}},
+  //     ...dataTable?.flatMap((e: any) => {
+  //       const viewData = e?.dataRow?.length > 0 ? addTotalPerRow(e?.dataRow) : []
+  //       return [
+  //         {
+  //           typeExport: 'pageView',
+  //           nameSheet: `View Page - ${e?.shipper_name}`,
+  //           data: viewData,
+  //           config: {
+  //             columnVisibility,
+  //             type: 'shipper-nom-report-view',
+  //             extra_obj: {
+  //               tabIndex: tabIndex,
+  //               subTabIndex: tabIndex === 2 ? 7 : 0,
+  //               tableData: e
+  //             }
+  //           }
+  //         },
+  //         ...viewData?.map((d: any) => {
+  //           return {typeExport: 'pageDetail', nameSheet: `Detail Page - ${e?.shipper_name} [${d?.area_text}] - Nomination Point / Concept Point`, data: d, config: {type: 'shipper-nom-report-detail'}}
+  //         }) // nom concept ต้องแยกมาอีก
+  //       ]
+  //     })
+  //   ]
+
+  //   // console.log('enwExportAll : ', enwExportAll)
+  // }, [filteredDataTable, dataTable, dataDailyOriginal, dataWeeklyOriginal])
+
+  
+  const enwExportAll_ = (tabMainIndex:number) => {
+    // tabIndex == 0 ?
+    // exportToExcel(dataTable, 'shipper-nom-report-tab-0', columnVisibility)
+    // tabIndex == 1 ?
+    // exportToExcel(dataTable, 'shipper-nom-report-tab-0', columnVisibility)
+    // tabIndex == 2 ?
+    // exportToExcel(dataTable, 'shipper-nom-report-tab-weekly', columnVisibility, {subTabIndex: subTabIndex})
+    // ----------------------
+
+    // # viewPage
+    // exportToExcel(
+    //   filteredDataTable?.dataRow, // เอาแค่ที่ filter มา export
+    //   'shipper-nom-report-view',
+    //   columnVisibility,
+    //   {
+    //     tabIndex: tabIndex,
+    //     subTabIndex: subTabIndex < 7 ? subTabIndex : subTabIndexview,
+    //     tableData: tableData
+    //   }
+    // )
+    // ----------------------
+
+    // # detailPage
+    // exportToExcel(tabMain === 0 ? sortedData : sortedDataTabConcept, 'shipper-nom-report-detail', columnVisibility, {
+    //   tabMainIndex: tabMainIndex, // จากหน้าแรก daily/weekly = 0, daily = 1, weekly = 2
+    //   subTabIndex: subTabIndex < 7 ? subTabIndex : subTabIndexview, // จาก tab weekly -> tab ย่อยรายวัน sunday = 0, monday = 1, ... , saturday = 6
+    //   tabEachZoneIndex: tabMain, // จากหน้า detail tab entry/exit = 0, concept point = 1
+    //   tableData: tableData,
+    //   gasDay: gasDay,
+    //   day_text: getDayNameBySubTabIndex(subTabIndex < 7 ? subTabIndex : subTabIndexview),
+    //   date: dayjs(tableData.gas_day, 'DD/MM/YYYY')
+    //     .add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day')
+    //     .format('DD/MM/YYYY')
+    // })
+    // ----------------------
+    const getDayNameBySubTabIndex = (subTabIndex: number) => {
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+      return days[subTabIndex] || ''
+    }
+
+    const columnVisibility_N = {
+        "supply_demand": true,
+        "area": true,
+        "nomination_point": true,
+        "unit": true,
+        "type": true,
+        "entry_exit": true,
+        "wi": true,
+        "hv": true,
+        "sg": true,
+        "h1": true,
+        "h2": true,
+        "h3": true,
+        "h4": true,
+        "h5": true,
+        "h6": true,
+        "h7": true,
+        "h8": true,
+        "h9": true,
+        "h10": true,
+        "h11": true,
+        "h12": true,
+        "h13": true,
+        "h14": true,
+        "h15": true,
+        "h16": true,
+        "h17": true,
+        "h18": true,
+        "h19": true,
+        "h20": true,
+        "h21": true,
+        "h22": true,
+        "h23": true,
+        "h24": true,
+        "total": true,
+        "week_day": true
+    }
+    const columnVisibility_C = {
+        "zone": true,
+        "supply_demand": true,
+        "concept_id": true,
+        "unit": true,
+        "entry_exit": true,
+        "h1": true,
+        "h2": true,
+        "h3": true,
+        "h4": true,
+        "h5": true,
+        "h6": true,
+        "h7": true,
+        "h8": true,
+        "h9": true,
+        "h10": true,
+        "h11": true,
+        "h12": true,
+        "h13": true,
+        "h14": true,
+        "h15": true,
+        "h16": true,
+        "h17": true,
+        "h18": true,
+        "h19": true,
+        "h20": true,
+        "h21": true,
+        "h22": true,
+        "h23": true,
+        "h24": true,
+        "total": true,
+        "week_day": true
+    }
+    const enwExportAll = [
+      {typeExport: 'pageInfo', nameSheet: 'Main', data: tabIndex == 2 ? (subTabIndex === 7 ? dataExport : dataExport?.map((da:any) => {
+        return {
+          ...da,
+          gas_day_text: dayjs(da?.gas_day_text, 'DD/MM/YYYY')
+                  .add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day')
+                  .format('DD/MM/YYYY'),
+        }
+      })) : dataTable || [], config: {
+        columnVisibility, type: tabIndex == 2 ? 'shipper-nom-report-tab-weekly' : 'shipper-nom-report-tab-0',
+        extra_obj:{
+          subTabIndex: subTabIndex,
+        }
+      }},
+      
+      ...(dataTable || [])?.flatMap((e: any, ix:number) => {
+        const date_ = `${tabIndex === 2 ? (subTabIndex === 7 ? "All" : dayjs(e?.gas_day_text, "DD/MM/YYYY").add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day').format("DDMMYY")) : dayjs(e?.gas_day_text, "DD/MM/YYYY").format("DDMMYY")}`
+        let viewData = e?.dataRow?.length > 0 ? addTotalPerRow(e?.dataRow) : []
+        const cpEast = viewData?.find((f:any) => f?.zone_text === "EAST")
+        const cpWest = viewData?.find((f:any) => f?.zone_text === "WEST")
+        const cpEastWest = viewData?.find((f:any) => f?.zone_text === "EAST-WEST")
+        const newCP = [
+          cpEast,
+          cpWest,
+          cpEastWest,
+        ]?.filter((f:any) => !!f)
+          return [
+          {
+            typeExport: 'pageView',
+            nameSheet: `${date_}-View-${e?.shipper_name}`,
+            data: viewData,
+            config: {
+              columnVisibility: {
+                  "gas_day": true,
+                  "area": true,
+                  "capacity_right": true,
+                  "nominated_value": true,
+                  "overusage": true,
+                  "total": true,
+                  "action": true
+              },
+              type: 'shipper-nom-report-view',
+              extra_obj: {
+                tabIndex: tabIndex,
+                // subTabIndex: subTabIndex < 7 ? subTabIndex : subTabIndexview,
+                subTabIndex: subTabIndex,
+                tableData: e
+              }
+            }
+          },
+          ...(
+            tabIndex === 2 ? [
+              {
+                  typeExport: 'pageDetail', 
+                  nameSheet: `${subTabIndex === 7 ? "All" : dayjs(e?.gas_day_text, "DD/MM/YYYY").add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day').format("DDMMYY")}-NP-${e?.shipper_name}`, 
+                  data: viewData.map((d:any, ix:number) => {
+                    return sumDataNomShipperReport(d?.nominaionPointZone[0]?.zone)
+                  }).flat(),
+                  config: {
+                    columnVisibility: columnVisibility_N,
+                    type: 'shipper-nom-report-detail',
+                    extra_obj:{
+                      shipper_name: e?.shipper_name, 
+                      tabMainIndex: tabMainIndex, // จากหน้าแรก daily/weekly = 0, daily = 1, weekly = 2// subTabIndex: subTabIndex < 7 ? subTabIndex : subTabIndexview, // จาก tab weekly -> tab ย่อยรายวัน sunday = 0, monday = 1, ... , saturday = 6
+                      subTabIndex: subTabIndex, // จาก tab weekly -> tab ย่อยรายวัน sunday = 0, monday = 1, ... , saturday = 6
+                      tabEachZoneIndex: 0, // จากหน้า detail tab entry/exit = 0, concept point = 1
+                      tableData: viewData.map((d:any, ix:number) => {
+                        return d
+                      }).flat(),
+                      gasDay: tabIndex === 2 ? dayjs(e?.gas_day_text, 'DD/MM/YYYY')
+                        .add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day')
+                        .format('DD/MM/YYYY') : e?.gas_day_text,
+                      day_text: getDayNameBySubTabIndex(subTabIndex),
+                      date: tabIndex === 2 ? (subTabIndex === 7 ? "All" : dayjs(e?.gas_day_text, 'DD/MM/YYYY')
+                        .add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day')
+                        .format('DD/MM/YYYY')) : e?.gas_day_text
+                    }
+                  }
+                }
+            ]
+            : [
+                {
+                  typeExport: 'pageDetail', 
+                  nameSheet: `${dayjs(e?.gas_day_text, "DD/MM/YYYY").format("DDMMYY")}-NP-${e?.shipper_name}`, 
+                  data: viewData.map((d:any, ix:number) => {
+                    return sumDataNomShipperReport(d?.nominaionPointZone[0]?.zone)
+                  }).flat(),
+                  config: {
+                    columnVisibility: columnVisibility_N,
+                    type: 'shipper-nom-report-detail',
+                    extra_obj:{
+                      shipper_name: e?.shipper_name, 
+                      tabMainIndex: tabMainIndex, // จากหน้าแรก daily/weekly = 0, daily = 1, weekly = 2
+                      subTabIndex: subTabIndex < 7 ? subTabIndex : subTabIndexview, // จาก tab weekly -> tab ย่อยรายวัน sunday = 0, monday = 1, ... , saturday = 6
+                      tabEachZoneIndex: 0, // จากหน้า detail tab entry/exit = 0, concept point = 1
+                      tableData: viewData.map((d:any, ix:number) => {
+                        return d
+                      }).flat(),
+                      gasDay: dayjs(e?.gas_day_text, 'DD/MM/YYYY')
+                        .add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day')
+                        .format('DD/MM/YYYY'),
+                      day_text: getDayNameBySubTabIndex(subTabIndex),
+                      date: dayjs(e?.gas_day_text, 'DD/MM/YYYY')
+                        .add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day')
+                        .format('DD/MM/YYYY')
+                    }
+                  }
+                }
+            ]
+          ),
+
+          ...(
+            tabIndex === 2 ? [
+              {
+                  typeExport: 'pageDetail', 
+                  nameSheet: `${subTabIndex === 7 ? "All" : dayjs(e?.gas_day_text, "DD/MM/YYYY").add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day').format("DDMMYY")}-CP-${e?.shipper_name}`, 
+                  data: newCP.map((d:any, ix:number) => {
+                    return sumDataNomShipperReportConcept(d?.conceptPointZone[0]?.zone)
+                  }).flat(),
+                  config: {
+                    columnVisibility: columnVisibility_C,
+                    type: 'shipper-nom-report-detail',
+                    extra_obj:{
+                      shipper_name: e?.shipper_name, 
+                      tabMainIndex: tabMainIndex, // จากหน้าแรก daily/weekly = 0, daily = 1, weekly = 2
+                      subTabIndex: subTabIndex, // จาก tab weekly -> tab ย่อยรายวัน sunday = 0, monday = 1, ... , saturday = 6
+                      tabEachZoneIndex: 1, // จากหน้า detail tab entry/exit = 0, concept point = 1
+                      tableData: newCP.map((d:any, ix:number) => {
+                        return d
+                      }).flat(),
+                      gasDay: tabIndex === 2 ? dayjs(e?.gas_day_text, 'DD/MM/YYYY')
+                        .add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day')
+                        .format('DD/MM/YYYY') : e?.gas_day_text,
+                      day_text: getDayNameBySubTabIndex(subTabIndex),
+                      date: tabIndex === 2 ? (subTabIndex === 7 ? "All" : dayjs(e?.gas_day_text, 'DD/MM/YYYY')
+                        .add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day')
+                        .format('DD/MM/YYYY')) : e?.gas_day_text
+                    }
+                  }
+                }
+            ]
+            : [
+                {
+                  typeExport: 'pageDetail', 
+                  nameSheet: `${dayjs(e?.gas_day_text, "DD/MM/YYYY").format("DDMMYY")}-CP-${e?.shipper_name}`, 
+                  data: newCP.map((d:any, ix:number) => {
+                    return sumDataNomShipperReportConcept(d?.conceptPointZone[0]?.zone)
+                  }).flat(),
+                  config: {
+                    columnVisibility: columnVisibility_C,
+                    type: 'shipper-nom-report-detail',
+                    extra_obj:{
+                      shipper_name: e?.shipper_name, 
+                      tabMainIndex: tabMainIndex, // จากหน้าแรก daily/weekly = 0, daily = 1, weekly = 2
+                      subTabIndex: subTabIndex < 7 ? subTabIndex : subTabIndexview, // จาก tab weekly -> tab ย่อยรายวัน sunday = 0, monday = 1, ... , saturday = 6
+                      tabEachZoneIndex: 1, // จากหน้า detail tab entry/exit = 0, concept point = 1
+                      tableData: newCP.map((d:any, ix:number) => {
+                        return d
+                      }).flat(),
+                      gasDay: dayjs(e?.gas_day_text, 'DD/MM/YYYY')
+                        .add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day')
+                        .format('DD/MM/YYYY'),
+                      day_text: getDayNameBySubTabIndex(subTabIndex),
+                      date: dayjs(e?.gas_day_text, 'DD/MM/YYYY')
+                        .add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day')
+                        .format('DD/MM/YYYY')
+                    }
+                  }
+                }
+            ]
+          ),
+
+        ]
+      })
+    ]
+    console.log('enwExportAll : ', enwExportAll)
+    exportToExcelAllShipperNominationReport(enwExportAll)
+  }
 
   return (
     <div className=" space-y-2">
@@ -1250,11 +1515,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                       modeIcon={'export'}
                       textRender={'Export'}
                       disable={dataExport?.length <= 0 ? true : false}
-                      generalFunc={() => exportToExcel(filteredDataTable, 'shipper-nom-report-tab-0', columnVisibility)}
+                      // generalFunc={() => exportToExcel(filteredDataTable, 'shipper-nom-report-tab-0', columnVisibility)}
+                      generalFunc={() => enwExportAll_(0)}
                       can_export={userPermission ? userPermission?.f_export : false}
                     />
                   }
-                  initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
+                  initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
                   onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                   onFilteredDataChange={(filteredData: any) => {
                     const newData = filteredData || []
@@ -1277,11 +1543,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     modeIcon={'export'}
                     textRender={'Export'}
                     disable={dataExport?.length <= 0 ? true : false}
-                    generalFunc={() => exportToExcel(filteredDataTable, 'shipper-nom-report-tab-0', columnVisibility)}
+                    // generalFunc={() => exportToExcel(filteredDataTable, 'shipper-nom-report-tab-0', columnVisibility)}
+                    generalFunc={() => enwExportAll_(1)}
                     can_export={userPermission ? userPermission?.f_export : false}
                   />
                 }
-                initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
+                initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
                 onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                 onFilteredDataChange={(filteredData: any) => {
                   const newData = filteredData || []
@@ -1344,11 +1611,12 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     modeIcon={'export'}
                     textRender={'Export'}
                     disable={dataExport?.length <= 0 ? true : false}
-                    generalFunc={() => exportToExcel(dataExport, 'shipper-nom-report-tab-weekly', columnVisibility, {subTabIndex: subTabIndex})}
+                    // generalFunc={() => exportToExcel(dataExport, 'shipper-nom-report-tab-weekly', columnVisibility, {subTabIndex: subTabIndex})}
+                    generalFunc={() => enwExportAll_(2)}
                     can_export={userPermission ? userPermission?.f_export : false}
                   />
                 }
-                initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
+                initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
                 onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                 onFilteredDataChange={(filteredData: any) => {
                   const newData = filteredData || []

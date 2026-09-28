@@ -161,7 +161,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         if (userDT?.account_manage?.[0]?.user_type_id == 3) {
             setDataTableTotal(res_filtered?.length)
         } else {
-            setDataTableTotal(res_main_data.total)
+            setDataTableTotal(res_main_data?.total ?? 0)
         }
 
         // setDataTableTotal(res_filtered?.length)
@@ -192,6 +192,25 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         }, 200);
     };
+    
+    useEffect(() => {
+        let url = `/master/tariff/tariffChargeReport/tariffChargeReportFindId`
+        if (srchStartDate !== undefined && srchStartDate !== null) {
+            url += `?month_year_charge=${dayjs(srchStartDate).format("YYYY-MM-DD")}`
+        }
+        else{
+            url += `?month_year_charge=${dayjs().startOf('month').format("YYYY-MM-DD")}`
+        }
+
+        if(userDT?.account_manage?.[0]?.user_type_id == 3){
+            url += `&shipper_id=${userDT?.account_manage?.[0]?.group?.id}`
+        }
+        getService(url).then((res_tariff_id: any) => {
+            if(res_tariff_id && Array.isArray(res_tariff_id)){
+                setDataTariffId(res_tariff_id)
+            }
+        });
+    }, [srchStartDate]);
 
     // ############### LIKE SEARCH ###############
     const handleSearch = (query: string) => {
@@ -273,9 +292,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             setDataContractCode(filter_1)
 
             // DATA TARIFF ID
-            // tariff/tariffChargeReport/tariffChargeReportFindId
-            const res_tariff_id = await getService(`/master/tariff/tariffChargeReport/tariffChargeReportFindId`)
-            setDataTariffId(res_tariff_id)
+            // // tariff/tariffChargeReport/tariffChargeReportFindId
+            // const res_tariff_id = await getService(`/master/tariff/tariffChargeReport/tariffChargeReportFindId`)
+            // setDataTariffId(res_tariff_id)
 
             // ที่ปิดไว้เพราะ List > เข้ามาหน้าแรก ต้องขึ้นเป็นให้ Filter ข้อมูล เพราะคิดว่าข้อมูลจริงมันจะเยอะมากๆ เลยต้องให้ filter เลือกข้อมูลที่ต้องการก่อน https://app.clickup.com/t/86eupydpt
 

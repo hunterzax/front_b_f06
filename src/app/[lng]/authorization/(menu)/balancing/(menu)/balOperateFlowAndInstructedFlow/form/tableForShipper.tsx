@@ -456,7 +456,7 @@ const TableBalOperateAndInstructFlowShipper: React.FC<TableProps> = ({ openEditF
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData.map((row: any, key: any) => {
+                            {(sortedData || [])?.map((row: any, key: any) => {
 
                                 const find_shipper = dataShipperGroup?.find((itemx: any) => itemx?.id_name == row?.shipperName)
                                 // const count_comment_only_shipper = row?.comment?.filter((item:any) => item?.create_by_account?.userType?.id == 3)
@@ -581,7 +581,7 @@ const TableBalOperateAndInstructFlowShipper: React.FC<TableProps> = ({ openEditF
                                     </td>
                                 )} */}
 
-                                        {columnVisibility.file && (
+                                        {columnVisibility?.file && (
                                             <td className="px-2 py-1 text-center">
                                                 <div className="inline-flex items-center justify-center relative">
                                                     {/* <button
@@ -644,7 +644,7 @@ const TableBalOperateAndInstructFlowShipper: React.FC<TableProps> = ({ openEditF
                                             </td>
                                         )}
 
-                                        {columnVisibility.action && userDT?.account_manage?.[0]?.user_type_id !== 3 && (
+                                        {columnVisibility?.action && userDT?.account_manage?.[0]?.user_type_id !== 3 && (
                                             <td className="px-2 py-1">
                                                 <div className="relative inline-flex justify-center items-center w-full">
                                                     <BtnActionTable

@@ -69,22 +69,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### General ###############
     const addSumsToMockTableData = (dataArray: any[]) => {
-        return dataArray.map(group => {
+        return (dataArray || [])?.map(group => {
             let sumPark = 0;
             let sumUnpark = 0;
             let sumParkAllocate = 0;
 
-            group.data?.forEach((entry: any) => {
+            (group?.data || [])?.forEach((entry: any) => {
                 // 1. Sum Park values
-                entry.data?.forEach((d: any) => {
+                (entry?.data || [])?.forEach((d: any) => {
                     const value = parseFloat((d?.value || "0").replace(/,/g, ""));
-                    if (d.type === "Park") sumPark += value;
-                    if (d.type === "Unpark") sumUnpark += value;
+                    if (d?.type === "Park") sumPark += value;
+                    if (d?.type === "Unpark") sumUnpark += value;
                 });
 
                 // 3. Sum parkAllocatedMMBTUD
-                if (entry.parkAllocatedMMBTUD != null) {
-                    const val = parseFloat(String(entry.parkAllocatedMMBTUD).replace(/,/g, ""));
+                if (entry?.parkAllocatedMMBTUD != null) {
+                    const val = parseFloat(String(entry?.parkAllocatedMMBTUD).replace(/,/g, ""));
                     if (!isNaN(val)) sumParkAllocate += val;
                 }
             });
@@ -200,7 +200,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const handleSearch = (query: string) => {
         const queryLower = query.replace(/\s+/g, '').toLowerCase().trim();
 
-        const filtered = dataTable
+        const filtered = (dataTable || [])
             .map((item: any) => {
                 // First, check top-level match
                 const topLevelMatch =
@@ -215,20 +215,20 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     formatNumberThreeDecimal(item?.parkDefault?.value)?.toString().replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
                     item?.zoneObj?.name?.replace(/\s+/g, '').toLowerCase().includes(queryLower);
 
-                // Then, deep filter each entry in item.data
-                const filteredInnerData = item.data
+                // Then, deep filter each entry in item?.data
+                const filteredInnerData = (item?.data || [])
                     .map((entry: any) => {
                         const secondLevelMatch = entry?.nomination_code?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
                             entry?.EODPark?.toString().replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
                             entry?.parkAllocatedMMBTUD?.toString().replace(/\s+/g, '').toLowerCase().includes(queryLower)
 
-                        const matchedSubData = entry.data?.filter((d: any) =>
-                            d.group?.name?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                            d.contract_code?.contract_code?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                            d.reserve_balancing_gas_contract?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                            d.version?.version?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                            d.value?.replace(/\s+/g, '').toLowerCase().includes(queryLower) || // unpark nominations
-                            removeComma(d.value)?.replace(/\s+/g, '').toLowerCase().includes(queryLower) // unpark nominations
+                        const matchedSubData = (entry?.data || [])?.filter((d: any) =>
+                            d?.group?.name?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
+                            d?.contract_code?.contract_code?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
+                            d?.reserve_balancing_gas_contract?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
+                            d?.version?.version?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
+                            d?.value?.replace(/\s+/g, '').toLowerCase().includes(queryLower) || // unpark nominations
+                            removeComma(d?.value)?.replace(/\s+/g, '').toLowerCase().includes(queryLower) // unpark nominations
                         );
 
                         if (secondLevelMatch) {
@@ -243,10 +243,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     })
                     .filter(Boolean); // Remove null entries
 
-                if (topLevelMatch || filteredInnerData.length > 0) {
+                if (topLevelMatch || (filteredInnerData?.length ?? 0) > 0) {
                     return {
                         ...item,
-                        data: filteredInnerData.length > 0 ? filteredInnerData : item.data, // keep original data if top-level matched
+                        data: (filteredInnerData?.length ?? 0) > 0 ? filteredInnerData : (item?.data || []), // keep original data if top-level matched
                     };
                 }
 
@@ -614,6 +614,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 }}
                 onSubmit={handleFormSubmit}
                 setResetForm={setResetForm}
+                srchStartDate={srchStartDate}
             />
 
             <ModalComponent

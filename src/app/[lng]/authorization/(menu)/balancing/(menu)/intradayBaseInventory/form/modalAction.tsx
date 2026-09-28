@@ -205,7 +205,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     disabled={isReadOnly}
                                                     valueWatch={watch("zone_id") || ""}
                                                     handleChange={(e) => {
-                                                        setValue("zone_id", e.target.value);
+                                                        setValue("zone_id", e?.target?.value ?? "");
                                                         if (errors?.zone_id) { clearErrors('zone_id') }
                                                     }}
                                                     errors={errors?.zone_id}
@@ -261,7 +261,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     disabled={isReadOnly}
                                                     onChange={(e) => {
                                                         if (e.target.value.length <= 255) {
-                                                            setValue('remark', e.target.value);
+                                                            setValue('remark', e?.target?.value ?? "");
                                                         }
                                                     }}
                                                     placeholder='Enter comment'

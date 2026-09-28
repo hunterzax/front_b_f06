@@ -98,34 +98,34 @@ const TableEmailNoti: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.module && (
+                                {columnVisibility?.module && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("menus_id", sortState, setSortState, setSortedData, tableData)}>
                                         {`Module`}
                                         {getArrowIcon("menus_id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.activity && (
+                                {columnVisibility?.activity && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("activity_id", sortState, setSortState, setSortedData, tableData)}>
                                         {`Activity`}
                                         {getArrowIcon("activity_id")}
                                     </th>
                                 )}
-                                {columnVisibility.subject && (
+                                {columnVisibility?.subject && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("subject", sortState, setSortState, setSortedData, tableData)}>
                                         {`Subject`}
                                         {getArrowIcon("subject")}
                                     </th>
                                 )}
 
-                                {columnVisibility.active && (
+                                {columnVisibility?.active && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("active", sortState, setSortState, setSortedData, tableData)}>
                                         {`Active`}
                                         {getArrowIcon("active")}
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -140,16 +140,16 @@ const TableEmailNoti: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                         key={row?.id}
                                         className={`${table_row_style}`}
                                     >
-                                        {columnVisibility.module && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.menus && row?.menus?.name}</td>
+                                        {columnVisibility?.module && (
+                                            <td className="px-2 py-1 text-[#464255]">{row?.menus?.name}</td>
                                         )}
 
-                                        {columnVisibility.activity && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.activity && row?.activity?.name}</td>
+                                        {columnVisibility?.activity && (
+                                            <td className="px-2 py-1 text-[#464255]">{row?.activity?.name}</td>
                                         )}
 
-                                        {columnVisibility.subject && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.subject && row?.subject}</td>
+                                        {columnVisibility?.subject && (
+                                            <td className="px-2 py-1 text-[#464255]">{row?.subject}</td>
                                         )}
                                         {/* <td className="px-2 py-1 text-[#464255]">
                                             <Switch
@@ -161,7 +161,7 @@ const TableEmailNoti: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                             />
                                         </td> */}
 
-                                        {columnVisibility.active && (
+                                        {columnVisibility?.active && (
                                             <td className="px-2 py-1">
                                                 <div>
                                                     <label className="relative inline-block w-10 h-6 cursor-pointer">
@@ -182,7 +182,7 @@ const TableEmailNoti: React.FC<TableProps> = ({ openEditForm, openViewForm, hand
                                             </td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 {/* <div className="relative inline-block text-left "> */}
                                                 <div className="relative inline-flex justify-center items-center w-full">

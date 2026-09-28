@@ -61,77 +61,77 @@ const TableNomPointHistory: React.FC<TableProps> = ({ tableData, isLoading, colu
                     <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                         <tr className="h-9">
 
-                            {columnVisibility.entry_exit && (
-                                <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
-                                    {`Entry / Exit`}
-                                    {getArrowIcon("entry_exit_id")}
-                                </th>
-                            )}
-
-                            {columnVisibility.zone && (
-                                <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("zone_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
-                                    {`Zone`}
-                                    {getArrowIcon("zone_id")}
-                                </th>
-                            )}
-
-                            {columnVisibility.area && (
-                                <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("area.name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
-                                    {`Area`}
-                                    {getArrowIcon("area.name")}
-                                </th>
-                            )}
-
-                            {columnVisibility.contract_point && (
-                                <th scope="col" className={`${table_sort_header_style}`}>
-                                    {`Contract Point`}
-                                    {/* {getArrowIcon("contract_point_id")} */}
-                                </th>
-                            )}
-
-                            {columnVisibility.nomination_point && (
+                            {columnVisibility?.nomination_point && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("nomination_point", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`Nomination Point`}
                                     {getArrowIcon("nomination_point")}
                                 </th>
                             )}
 
-                            {columnVisibility.description && (
+                            {columnVisibility?.description && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("description", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`Description`}
                                     {getArrowIcon("description")}
                                 </th>
                             )}
 
-                            {columnVisibility.customer_type && (
+                            {columnVisibility?.entry_exit && (
+                                <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("entry_exit_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
+                                    {`Entry / Exit`}
+                                    {getArrowIcon("entry_exit_id")}
+                                </th>
+                            )}
+
+                            {columnVisibility?.zone && (
+                                <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("zone_id", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
+                                    {`Zone`}
+                                    {getArrowIcon("zone_id")}
+                                </th>
+                            )}
+
+                            {columnVisibility?.area && (
+                                <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("area.name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
+                                    {`Area`}
+                                    {getArrowIcon("area.name")}
+                                </th>
+                            )}
+
+                            {columnVisibility?.contract_point && (
+                                <th scope="col" className={`${table_sort_header_style}`}>
+                                    {`Contract Point`}
+                                    {/* {getArrowIcon("contract_point_id")} */}
+                                </th>
+                            )}
+
+                            {columnVisibility?.customer_type && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("customer_type.name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`Customer Type`}
                                     {getArrowIcon("customer_type.name")}
                                 </th>
                             )}
 
-                            {columnVisibility.maximum_capacity && (
+                            {columnVisibility?.maximum_capacity && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("maximum_capacity", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`Maximum Capacity (MMSCFD)`}
                                     {getArrowIcon("maximum_capacity")}
                                 </th>
                             )}
 
-                            {columnVisibility.start_date && (
+                            {columnVisibility?.start_date && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`Start Date`}
                                     {getArrowIcon("start_date")}
                                 </th>
                             )}
 
-                            {columnVisibility.end_date && (
+                            {columnVisibility?.end_date && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`End Date`}
                                     {getArrowIcon("end_date")}
                                 </th>
                             )}
 
-                            {columnVisibility.updated_by && (
+                            {columnVisibility?.updated_by && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`Updated by`}
                                     {getArrowIcon("update_by_account.first_name")}
@@ -141,21 +141,29 @@ const TableNomPointHistory: React.FC<TableProps> = ({ tableData, isLoading, colu
                     </thead>
 
                     <tbody>
-                        {sortedData && sortedData?.map((row: any, index: any) => (
+                        {(sortedData || [])?.map((row: any, index: any) => (
                             <tr
                                 key={row?.id}
                                 className={`${table_row_style}`}
                             >
 
-                                {columnVisibility.entry_exit && (
+                                {columnVisibility?.nomination_point && (
+                                    <td className="px-2 py-1 text-[#464255]">{row?.nomination_point}</td>
+                                )}
+
+                                {columnVisibility?.description && (
+                                    <td className="px-2 py-1 text-[#464255]">{row?.description}</td>
+                                )}
+
+                                {columnVisibility?.entry_exit && (
                                     <td className="px-2 py-1  justify-center ">{row?.entry_exit_id && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.entry_exit?.color }}>{`${row?.entry_exit?.name}`}</div>}</td>
                                 )}
 
-                                {columnVisibility.zone && (
+                                {columnVisibility?.zone && (
                                     <td className="px-2 py-1  justify-center ">{row?.zone && <div className="flex w-[100px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone?.color }}>{`${row?.zone?.name}`}</div>}</td>
                                 )}
 
-                                {columnVisibility.area && (
+                                {columnVisibility?.area && (
                                     <td className="px-2 py-1 justify-center ">
                                         {
                                             row?.area.entry_exit_id == 2 ?
@@ -176,11 +184,11 @@ const TableNomPointHistory: React.FC<TableProps> = ({ tableData, isLoading, colu
                                     </td>
                                 )}
 
-                                {/* {columnVisibility.contract_point && (
+                                {/* {columnVisibility?.contract_point && (
                                 <td className="px-2 py-1 text-[#464255]">{row?.contract_point?.contract_point}</td>
                             )} */}
 
-                                {columnVisibility.contract_point && (
+                                {columnVisibility?.contract_point && (
                                     // <td className="px-2 py-1 text-[#464255]">{row?.contract_point?.contract_point}</td>
                                     <td className="px-2 py-1 text-center">
                                         <div className="inline-flex items-center justify-center relative">
@@ -199,31 +207,23 @@ const TableNomPointHistory: React.FC<TableProps> = ({ tableData, isLoading, colu
                                     </td>
                                 )}
 
-                                {columnVisibility.nomination_point && (
-                                    <td className="px-2 py-1 text-[#464255]">{row?.nomination_point}</td>
-                                )}
-
-                                {columnVisibility.description && (
-                                    <td className="px-2 py-1 text-[#464255]">{row?.description}</td>
-                                )}
-
-                                {columnVisibility.customer_type && (
+                                {columnVisibility?.customer_type && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.customer_type?.name}</td>
                                 )}
 
-                                {columnVisibility.maximum_capacity && (
+                                {columnVisibility?.maximum_capacity && (
                                     <td className="px-2 py-1 text-[#464255] text-right">{row?.maximum_capacity ? formatNumberThreeDecimal(row?.maximum_capacity) : ''}</td>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div>
                                             <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

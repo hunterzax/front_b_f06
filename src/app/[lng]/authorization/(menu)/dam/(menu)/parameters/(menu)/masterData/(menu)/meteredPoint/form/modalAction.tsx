@@ -574,11 +574,11 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                         },
                                                                     }}
                                                                     onChange={(e) => {
-                                                                        setValue("ref_id", e.target.value);
-                                                                        setValue("metered_point_name", e.target.value);
-                                                                        modeNewPeriod(e.target.value);
+                                                                        setValue("ref_id", e?.target?.value ?? "");
+                                                                        setValue("metered_point_name", e?.target?.value ?? "");
+                                                                        modeNewPeriod(e?.target?.value ?? "");
 
-                                                                        if (errors?.ref_id && e.target.value) { clearErrors('ref_id') }
+                                                                        if (errors?.ref_id && (e?.target?.value ?? "")) { clearErrors('ref_id') }
                                                                     }}
                                                                     displayEmpty
                                                                     renderValue={(value: any) => {
@@ -599,7 +599,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                     }}
                                                                 >
                                                                     {/* filter where dataTable.start_date <= present date and dataTable.end_date > present date */}
-                                                                    {/* {dataTable?.length > 0 && dataTable?.map((item: any) => (
+                                                                    {/* {(dataTable || [])?.map((item: any) => (
                                                                     <MenuItem key={item.id} value={item.id}>
                                                                         <ListItemText primary={<Typography fontSize={14}>{item.metered_point_name}</Typography>} />
                                                                     </MenuItem>
@@ -662,11 +662,17 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                             const textA = (a?.metered_point_name ?? '').toString().toLowerCase();
                                                                             const textB = (b?.metered_point_name ?? '').toString().toLowerCase();
                                                                             return textA?.localeCompare(textB);
-                                                                        })?.map((item: any) => (
-                                                                            <MenuItem key={item.id} value={item.id}>
-                                                                                <ListItemText primary={<Typography fontSize={14}>{item?.metered_point_name}</Typography>} />
+                                                                        })?.map((item: any, index: number) => {
+                                                                            let key = `metered-point-${index}`
+                                                                            if(item.id){
+                                                                                key = item?.id ? item?.id : ''
+                                                                            }
+                                                                            return (
+                                                                            <MenuItem key={key} value={key}>
+                                                                                <ListItemText primary={<Typography fontSize={14}>{item?.metered_point_name || ''}</Typography>} />
                                                                             </MenuItem>
-                                                                        ))
+                                                                            )
+                                                                        })
                                                                     }
 
 
@@ -685,7 +691,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                         if (errors?.metered_point_name) {
                                                                             clearErrors('metered_point_name')
                                                                         }
-                                                                        setValue('metered_point_name', e.target.value);
+                                                                        setValue('metered_point_name', e?.target?.value ?? "");
                                                                     }}
                                                                 />
                                                                 {(errors.ref_id || errors.metered_point_name) && (<p className="text-red-500 text-sm">{`Enter Contract Point`}</p>)}
@@ -708,8 +714,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             // readOnly={isReadOnly}
                                                             readOnly={mode == 'view' ? true : false}
                                                             onChange={(e) => {
-                                                                if (e.target.value.length <= 50) {
-                                                                    setValue('description', e.target.value);
+                                                                if ((e?.target?.value?.length ?? 0) <= 50) {
+                                                                    setValue('description', e?.target?.value ?? "");
                                                                 }
                                                             }}
                                                             maxLength={50}
@@ -746,9 +752,9 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 },
                                                             }}
                                                             onChange={(e) => {
-                                                                setValue("point_type_id", e.target.value);
-                                                                setSelectType(e.target.value)
-                                                                e.target.value == 2 && resetWhenSelectType()
+                                                                setValue("point_type_id", e?.target?.value ?? "");
+                                                                setSelectType(e?.target?.value ?? "")
+                                                                e?.target?.value == 2 && resetWhenSelectType()
                                                                 clearErrors();
                                                                 setValue('nomination_point_id', '');
                                                                 setValue('non_tpa_point_id', '');
@@ -771,7 +777,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 },
                                                             }}
                                                         >
-                                                            {meterPointType?.length > 0 && meterPointType?.map((item: any) => (
+                                                            {(meterPointType || [])?.map((item: any) => (
                                                                 <MenuItem key={item.id} value={item.id}>
                                                                     <ListItemText primary={<Typography fontSize={14}>{item.type}</Typography>} />
                                                                 </MenuItem>
@@ -796,7 +802,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             disabled={isReadOnly || selectType == 2 || watch('point_type_id') == 2}
                                                             valueWatch={watch('entry_exit_id') || ''}
                                                             handleChange={(e) => {
-                                                                setValue('entry_exit_id', e.target.value);
+                                                                setValue('entry_exit_id', e?.target?.value ?? "");
                                                                 findZoneAndArea('') //for clear if select new option
 
                                                                 setValue('customer_type_id', '');
@@ -829,7 +835,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             valueWatch={watch('customer_type_id') || ''}
                                                             handleChange={(e) => {
                                                                 findZoneAndArea('') //for clear if select new option
-                                                                setValue('customer_type_id', e.target.value)
+                                                                setValue('customer_type_id', e?.target?.value ?? "")
                                                                 setValue('nomination_point_id', '');
                                                                 if (errors?.customer_type_id) {
                                                                     clearErrors('customer_type_id')
@@ -863,8 +869,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 disabled={isReadOnly}
                                                                 valueWatch={watch('nomination_point_id') || ''}
                                                                 handleChange={(e) => {
-                                                                    findZoneAndArea(e.target.value); // เอา id ไปกรองหา zone, area ของ type 1
-                                                                    setValue('nomination_point_id', e.target.value);
+                                                                    findZoneAndArea(e?.target?.value ?? ""); // เอา id ไปกรองหา zone, area ของ type 1
+                                                                    setValue('nomination_point_id', e?.target?.value ?? "");
 
                                                                     if (errors?.nomination_point_id) {
                                                                         clearErrors('nomination_point_id');
@@ -898,8 +904,8 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 disabled={isReadOnly}
                                                                 valueWatch={watch('non_tpa_point_id') || ''}
                                                                 handleChange={(e) => {
-                                                                    findZoneAndArea(e.target.value); // เอา id ไปกรองหา zone, area ของ type 1
-                                                                    setValue('non_tpa_point_id', e.target.value);
+                                                                    findZoneAndArea(e?.target?.value ?? ""); // เอา id ไปกรองหา zone, area ของ type 1
+                                                                    setValue('non_tpa_point_id', e?.target?.value ?? "");
 
                                                                     if (errors?.non_tpa_point_id) {
                                                                         clearErrors('non_tpa_point_id');
@@ -949,7 +955,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 },
                                                             }}
                                                             onChange={(e) => {
-                                                                setValue("zone_id", e.target.value);
+                                                                setValue("zone_id", e?.target?.value ?? "");
                                                                 // fetchData(e?.target);
                                                             }}
                                                             displayEmpty
@@ -1026,7 +1032,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                 },
                                                             }}
                                                             onChange={(e) => {
-                                                                setValue("area_id", e.target.value);
+                                                                setValue("area_id", e?.target?.value ?? "");
                                                                 // fetchData(e?.target);
                                                             }}
                                                             displayEmpty

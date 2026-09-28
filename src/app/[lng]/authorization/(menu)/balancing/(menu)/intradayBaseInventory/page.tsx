@@ -40,7 +40,7 @@ interface ClientProps {
     };
 }
 
-const ClientPage: React.FC<ClientProps> = (props) => {
+const ClientPage: React.FC<ClientProps> = () => {
 
     // ############### Check Authen ###############
     const userDT: any = getUserValue();
@@ -142,7 +142,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setSrchTimeStamp('')
         // setFilteredDataTable(dataTable);
 
-        setValue('active_mode', false)
+        setValue('active_mode', true)
         setValue('last_daily_version', false)
         setValue('last_hourly_version', false)
 
@@ -150,6 +150,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setFilteredDataTable([]);
 
         setKey((prevKey) => prevKey + 1);
+
+        fetchData();
     };
 
     // ############### LIKE SEARCH ###############
@@ -329,7 +331,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         const data_timestamp = Array.from(
             new Map(
                 // data?.map((item: any) => [item.timestamp, { timestamp: formatDate(item.timestamp) }])
-                data?.map((item: any) => [item.timestamp, { timestamp: item.timestamp }])
+                (Array.isArray(data) ? data : []).map((item: any) => [item.timestamp, { timestamp: item.timestamp }])
             ).values()
         );
         setDataTimestamp(data_timestamp);
@@ -337,33 +339,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         // DATA MODE
         const data_mode = Array.from(
             new Map(
-                data?.map((item: any) => [item.mode, { mode: item?.mode, zone: item?.zone_text }])
+                (Array.isArray(data) ? data : []).map((item: any) => [item?.mode, { mode: item?.mode, zone: item?.zone_text }])
             ).values()
         );
         setDataMode(data_mode);
-
-        // DATA ZONE แบบไม่ซ้ำ
-        const data_zone_de_dup = Array.from(
-            new Map(
-                zoneMaster?.data?.map((item: any) => [item.name, { zone_name: item.name }])
-            ).values()
-        );
-        setDataZoneMasterZ(data_zone_de_dup);
-
     }
 
     useEffect(() => {
-      console.log('dataZoneMasterZ : ', dataZoneMasterZ);
-      const tdataMode = dataMode?.filter((itemx: any) => srchZone !== undefined ? srchZone.toLocaleLowerCase() == itemx?.zone.toLocaleLowerCase() : true)
-      console.log('tdataMode : ', tdataMode);
-    }, [dataZoneMasterZ])
-    
-    useEffect(() => {
-        console.log('dataMode : ', dataMode);
-        console.log('srchZone : ', srchZone);
-        const tdataMode = dataMode?.filter((itemx: any) => (srchZone !== undefined && srchZone !== "") ? srchZone.toLocaleLowerCase() == itemx?.zone.toLocaleLowerCase() : true)
-        console.log('tdataMode_ : ', tdataMode);
-    }, [dataMode])
+        // DATA ZONE แบบไม่ซ้ำ
+        const data_zone_de_dup = Array.from(
+            new Map(
+                (Array.isArray(zoneMaster?.data) ? zoneMaster?.data : []).map((item: any) => [item.name, { zone_name: item.name }])
+            ).values()
+        );
+        setDataZoneMasterZ(data_zone_de_dup);
+    }, [zoneMaster])
     
     
 
@@ -475,7 +465,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries((initialColumns || []).map((column: any) => [column?.key, column?.visible]))
     );
 
     const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {
@@ -915,19 +905,19 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 description={
                     <div>
                         {
-                            modalErrorMsg?.split('<br/>').length > 1 ?
+                            (modalErrorMsg || '').split('<br/>').length > 1 ?
                                 <ul className="text-start list-disc">
                                     {
-                                        modalErrorMsg.split('<br/>').map(item => {
+                                        (modalErrorMsg || '').split('<br/>').map((item, idx) => {
                                             return (
-                                                <li>{item}</li>
+                                                <li key={idx}>{item}</li>
                                             )
                                         })
                                     }
                                 </ul>
                                 :
                                 <div className="text-center">
-                                    {`${modalErrorMsg}`}
+                                    {`${modalErrorMsg || ''}`}
                                 </div>
                         }
                     </div>

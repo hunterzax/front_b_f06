@@ -143,8 +143,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             // filter ให้เห็นเฉพาะ role ตัวเอง
             let filteredDataUserGuide: any = response
             // if (userRoleId !== 1) { // ไม่ใช่ super admin
+           
             if (userDT?.account_manage?.[0]?.user_type_id !== 1) { // ไม่ใช่ super admin
-                filteredDataUserGuide = response?.filter((item: any) => item.user_guide_match.some((match: any) => match.role_id === userRoleId));
+                filteredDataUserGuide = response?.filter((item: any) => {
+                    return (
+                        item?.user_guide_match.some((match: any) => match.role_id === userRoleId) ||
+                        item?.create_by === userDT?.id // https://app.clickup.com/t/9018502823/86euzxxnn
+                    )
+                });
             }
 
             setData(filteredDataUserGuide);
@@ -409,7 +415,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.document_name || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
-                    return (<div>{row?.document_name && row?.document_name}</div>)
+                    return (<div>{row?.document_name}</div>)
                 }
             },
             {
@@ -437,7 +443,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 accessorFn: (row: any) => row?.description || '',
                 cell: (info) => {
                     const row: any = info?.row?.original
-                    return (<div>{row?.description && row?.description}</div>)
+                    return (<div>{row?.description}</div>)
                 }
             },
             {

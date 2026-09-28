@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
@@ -275,8 +274,8 @@ const NotificationArea = React.forwardRef<HTMLDivElement, { data: any[], onUpdat
           return (
             <input
               type="checkbox"
-              checked={selectedNotifications.includes(row.id)}
-              onChange={() => handleNotificationSelect(row.id)}
+              checked={(selectedNotifications || []).includes(row?.id)}
+              onChange={() => handleNotificationSelect(row?.id)}
               className="form-checkbox w-5 h-5 border rounded-[8px] accent-[#1473A1] focus:ring-[#1473A1] disabled:opacity-100 disabled:cursor-not-allowed ml-[-8px]"
             />
           )

@@ -69,14 +69,14 @@ const TableAllocationMGNHistory: React.FC<TableProps> = ({ tableData, isLoading,
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-20">
 
-                        {columnVisibility.status && (
+                        {columnVisibility?.status && (
                             <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("status", sortState, setSortState, setSortedData, masterData)}>
                                 {`Status`}
                                 {getArrowIcon("status")}
                             </th>
                         )}
 
-                        {columnVisibility.nominated_value && (
+                        {columnVisibility?.nominated_value && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("nominationValue", sortState, setSortState, setSortedData, masterData)}>
                                 <div>{`Nominated Value`}</div>
                                 <div>{`(MMBTU/D)`}</div>
@@ -84,7 +84,7 @@ const TableAllocationMGNHistory: React.FC<TableProps> = ({ tableData, isLoading,
                             </th>
                         )}
 
-                        {columnVisibility.system_allocation && (
+                        {columnVisibility?.system_allocation && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("systemAllocation", sortState, setSortState, setSortedData, masterData)}>
                                 <div>{`System Allocation`}</div>
                                 <div>{`(MMBTU/D)`}</div>
@@ -92,7 +92,7 @@ const TableAllocationMGNHistory: React.FC<TableProps> = ({ tableData, isLoading,
                             </th>
                         )}
 
-                        {columnVisibility.intraday_system_allocation && (
+                        {columnVisibility?.intraday_system_allocation && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("intradaySystem", sortState, setSortState, setSortedData, masterData)}>
                                 <div>{`Intraday System`}</div>
                                 <div>{`Allocation`}</div>
@@ -100,14 +100,14 @@ const TableAllocationMGNHistory: React.FC<TableProps> = ({ tableData, isLoading,
                             </th>
                         )}
 
-                        {columnVisibility.shipper_review_allocation && (
+                        {columnVisibility?.shipper_review_allocation && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("shipper_review_allocation", sortState, setSortState, setSortedData, masterData)}>
                                 {`Shipper Review Allocation (MMBTU/D)`}
                                 {getArrowIcon("shipper_review_allocation")}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("create.create_by.first_name", sortState, setSortState, setSortedData, masterData)}>
                                 {`Updated by`}
                                 {getArrowIcon("create.create_by.first_name")}
@@ -125,7 +125,7 @@ const TableAllocationMGNHistory: React.FC<TableProps> = ({ tableData, isLoading,
                                 className={`${table_row_style}`}
                             >
 
-                                {columnVisibility.status && (
+                                {columnVisibility?.status && (
                                     <td className="px-4 py-1 justify-center">
                                         {
                                             <div className="flex min-w-[140px] max-w-[250px] w-auto text-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: String(row?.allocation_status?.color) }}>{row?.allocation_status?.name}</div>
@@ -133,23 +133,23 @@ const TableAllocationMGNHistory: React.FC<TableProps> = ({ tableData, isLoading,
                                     </td>
                                 )}
 
-                                {columnVisibility.nominated_value && (
+                                {columnVisibility?.nominated_value && (
                                     <td className="px-4 py-1 text-[#464255] text-right">{row?.nominationValue ? formatNumberFourDecimal(row?.nominationValue) : ''}</td>
                                 )}
 
-                                {columnVisibility.system_allocation && (
+                                {columnVisibility?.system_allocation && (
                                     <td className="px-4 py-1 text-[#464255] text-right">{row?.systemAllocation ? formatNumberFourDecimal(row?.systemAllocation) : ''}</td>
                                 )}
 
-                                {columnVisibility.intraday_system_allocation && (
+                                {columnVisibility?.intraday_system_allocation && (
                                     <td className="px-4 py-1 text-[#464255] text-right">{row?.intradaySystem ? formatNumberFourDecimal(row?.intradaySystem) : ''}</td>
                                 )}
 
-                                {columnVisibility.shipper_review_allocation && (
+                                {columnVisibility?.shipper_review_allocation && (
                                     <td className="px-4 py-1 text-[#464255] text-right">{row?.allocation_management_shipper_review ? formatNumberFourDecimal(row?.allocation_management_shipper_review[0]?.shipper_allocation_review) : ''}</td>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div>
                                             <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>

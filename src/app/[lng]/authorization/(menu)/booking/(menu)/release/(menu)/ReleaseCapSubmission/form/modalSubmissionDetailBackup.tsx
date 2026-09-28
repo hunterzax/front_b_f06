@@ -101,57 +101,57 @@ const ModalSubmissionDetails: React.FC<FormExampleProps> = ({
             newDataFileArr.push(fileUrl);
         }
 
-        const transformedData = data?.flatMap((item: any, index: any) => [
+        const transformedData = (data || [])?.flatMap((item: any, index: any) => [
             {
-                booking_row_json_id: item.pathMatch.booking_version_id, // Unique ID generation logic
-                temp_contract_point: item.entryData.contract_point,
-                temp_zone: item.entryData.zone_text,
-                temp_area: item.entryData.area_text,
-                temp_start_date: item.entryData.start_date,
-                temp_end_date: item.entryData.end_date,
-                total_contracted_mmbtu_d: item.entryData.contracted_mmbtu_d,
-                total_release_mmbtu_d: item.entryData.total_release_mmbtu_d,
-                total_contracted_mmscfd: item.entryData?.contracted_mmscfd,
-                total_release_mmscfd: item.entryData?.total_release_mmscfd,
-                entry_exit_id: item.entryData.entry_exit_id,
+                booking_row_json_id: item?.pathMatch?.booking_version_id, // Unique ID generation logic
+                temp_contract_point: item?.entryData?.contract_point,
+                temp_zone: item?.entryData?.zone_text,
+                temp_area: item?.entryData?.area_text,
+                temp_start_date: item?.entryData?.start_date,
+                temp_end_date: item?.entryData?.end_date,
+                total_contracted_mmbtu_d: item?.entryData?.contracted_mmbtu_d,
+                total_release_mmbtu_d: item?.entryData?.total_release_mmbtu_d,
+                total_contracted_mmscfd: item?.entryData?.contracted_mmscfd,
+                total_release_mmscfd: item?.entryData?.total_release_mmscfd,
+                entry_exit_id: item?.entryData?.entry_exit_id,
                 // pathMatch: item.pathMatch,
                 pathMatch: {
                     // id: item.pathMatch.booking_version_id,
-                    id: item.pathMatch.id,
+                    id: item?.pathMatch?.id,
                     entry: {
-                        name: item.entryData?.["area_text"],
+                        name: item?.entryData?.["area_text"],
                     },
                     exit: {
-                        name: item.exitData?.["area_text"],
+                        name: item?.exitData?.["area_text"],
                     },
                 },
-                path: item.path
+                path: item?.path
             },
             {
-                booking_row_json_id: item.pathMatch.booking_version_id, // Unique ID generation logic
-                temp_contract_point: item.exitData.contract_point,
-                temp_zone: item.exitData.zone_text,
-                temp_area: item.exitData.area_text,
-                temp_start_date: item.exitData.start_date,
-                temp_end_date: item.exitData.end_date,
-                total_contracted_mmbtu_d: item.exitData.contracted_mmbtu_d,
-                total_release_mmbtu_d: item.exitData.total_release_mmbtu_d,
-                total_contracted_mmscfd: item.exitData?.contracted_mmscfd,
-                total_release_mmscfd: item.exitData?.total_release_mmscfd,
-                entry_exit_id: item.exitData.entry_exit_id,
+                booking_row_json_id: item?.pathMatch?.booking_version_id, // Unique ID generation logic
+                temp_contract_point: item?.exitData?.contract_point,
+                temp_zone: item?.exitData?.zone_text,
+                temp_area: item?.exitData?.area_text,
+                temp_start_date: item?.exitData?.start_date,
+                temp_end_date: item?.exitData?.end_date,
+                total_contracted_mmbtu_d: item?.exitData?.contracted_mmbtu_d,
+                total_release_mmbtu_d: item?.exitData?.total_release_mmbtu_d,
+                total_contracted_mmscfd: item?.exitData?.contracted_mmscfd,
+                total_release_mmscfd: item?.exitData?.total_release_mmscfd,
+                entry_exit_id: item?.exitData?.entry_exit_id,
                 // pathMatch: item.pathMatch,
                 pathMatch: {
                     // id: item.pathMatch.booking_version_id,
-                    id: item.pathMatch.id,
+                    id: item?.pathMatch?.id,
                     entry: {
-                        name: item.entryData?.["area_text"],
+                        name: item?.entryData?.["area_text"],
                     },
                     exit: {
-                        name: item.exitData?.["area_text"],
+                        name: item?.exitData?.["area_text"],
                     },
                 },
-                path: item.path
-            },
+                path: item?.path
+            }
         ]);
 
         // pathMatch 

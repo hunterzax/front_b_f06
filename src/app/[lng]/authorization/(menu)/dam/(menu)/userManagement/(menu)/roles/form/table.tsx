@@ -96,7 +96,7 @@ const TableRole: React.FC<TableProps> = ({ openEditForm, openViewForm, openDupFo
   return (
     <div className="h-[calc(100vh-380px)] overflow-y-auto overflow-x-auto rounded-t-md relative z-1">
       {
-        isLoading ?
+        !isLoading ?
           <table className="min-w-full text-sm text-left rtl:text-right text-gray-500 whitespace-nowrap ">
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
@@ -121,38 +121,38 @@ const TableRole: React.FC<TableProps> = ({ openEditForm, openViewForm, openDupFo
                   {getArrowIcon("update_by")}
                 </th> */}
 
-                {columnVisibility.user_type_id && (
+                {columnVisibility?.user_type_id && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("user_type_id", sortState, setSortState, setSortedData, tableData)}>
                     {`User Type`}
                     {getArrowIcon("user_type_id")}
                   </th>
                 )}
-                {columnVisibility.name && (
+                {columnVisibility?.name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("name", sortState, setSortState, setSortedData, tableData)}>
                     {`Role Name`}
                     {getArrowIcon("name")}
                   </th>
                 )}
-                {columnVisibility.start_date && (
+                {columnVisibility?.start_date && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                     {`Start Date`}
                     {getArrowIcon("start_date")}
                   </th>
                 )}
-                {columnVisibility.end_date && (
+                {columnVisibility?.end_date && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, tableData)}>
                     {`End Date`}
                     {getArrowIcon("end_date")}
                   </th>
                 )}
-                {columnVisibility.update_by && (
+                {columnVisibility?.update_by && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Updated by`}
                     {getArrowIcon("update_by_account.first_name")}
                   </th>
                 )}
 
-                {columnVisibility.action && (
+                {columnVisibility?.action && (
                   <th scope="col" className={`${table_header_style} text-center`}>
                     {`Action`}
                   </th>
@@ -162,10 +162,10 @@ const TableRole: React.FC<TableProps> = ({ openEditForm, openViewForm, openDupFo
             </thead>
 
             <tbody>
-              {sortedData && sortedData.map((row: any, index: any) => (
-                <tr
-                  key={row?.id}
-                  className={`${table_row_style}`}
+              {(sortedData || [])?.map((row: any, index: any) => {
+                if (!row) return null;
+                return (
+                <tr key={row?.id ?? index} className={`${table_row_style}`}
                 >
 
                   {/* <td className="px-2 py-1 justify-center">
@@ -185,7 +185,7 @@ const TableRole: React.FC<TableProps> = ({ openEditForm, openViewForm, openDupFo
                     </div>
                   </td> */}
 
-                  {columnVisibility.user_type_id && (
+                  {columnVisibility?.user_type_id && (
                     <td className="px-2 py-1 justify-center">
                       {row.user_type && (
                         <div className="flex w-[100px] bg-[#EEE4FF] justify-center !text-[14px] font-bold rounded-full p-1" style={{ backgroundColor: row.user_type.color, color: row.user_type.color_text }}>
@@ -194,16 +194,16 @@ const TableRole: React.FC<TableProps> = ({ openEditForm, openViewForm, openDupFo
                       )}
                     </td>
                   )}
-                  {columnVisibility.name && (
+                  {columnVisibility?.name && (
                     <td className="px-2 py-1 text-[#464255]">{row.name}</td>
                   )}
-                  {columnVisibility.start_date && (
+                  {columnVisibility?.start_date && (
                     <td className="px-2 py-1 text-[#464255]">{row.start_date ? formatDateNoTime(row.start_date) : ''}</td>
                   )}
-                  {columnVisibility.end_date && (
+                  {columnVisibility?.end_date && (
                     <td className="px-2 py-1 text-[#0DA2A2]">{row.end_date ? formatDateNoTime(row.end_date) : ''}</td>
                   )}
-                  {columnVisibility.update_by && (
+                  {columnVisibility?.update_by && (
                     <td className="px-2 py-1">
                       <div>
                         <span className="text-[#464255]">{row.update_by_account?.first_name} {row.update_by_account?.last_name}</span>
@@ -212,7 +212,7 @@ const TableRole: React.FC<TableProps> = ({ openEditForm, openViewForm, openDupFo
                     </td>
                   )}
 
-                  {columnVisibility.action && (
+                  {columnVisibility?.action && (
                     <td className="px-2 py-1">
                       {/* <div className="relative inline-block text-left"> */}
                       <div className="relative inline-flex justify-center items-center w-full">
@@ -258,7 +258,8 @@ const TableRole: React.FC<TableProps> = ({ openEditForm, openViewForm, openDupFo
                     </td>
                   )}
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
           :

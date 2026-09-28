@@ -145,6 +145,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [srchReviewCode, setSrchReviewCode] = useState('');
     const [srchNomConcept, setSrchNomConcept] = useState<any>([]);
     const [srchShipperName, setSrchShipperName] = useState<any>([]);
+    const srchStartDateRef = useRef<string | null>(null);
+    const srchEndDateRef = useRef<string | null>(null);
 
     const getStartAndEndDateForApi = (gasDayFrom: any, gasDayTo: any) => {
         try {
@@ -160,7 +162,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 from = to.startOf("year");
             }
 
-            return getDateRangeForApi(from.toDate(), to.toDate());
+            if (from?.toDate && to?.toDate) {
+                return getDateRangeForApi(from.toDate(), to.toDate());
+            }
+            return {
+                start_date: undefined,
+                end_date: undefined
+            };
         } catch (error) {
             return {
                 start_date: undefined,
@@ -228,38 +236,38 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         const data_contract_code_de_dup = Array.from(
             new Map(dataOnlyTargetPoint?.map((item: any) => [item.contract, { contract_code: item.contract, group: item.group }])).values()
         );
-        setDataContract(data_contract_code_de_dup);
+        // setDataContract(data_contract_code_de_dup);
         setDataContractOriginal(data_contract_code_de_dup)
 
-        // DATA NOMI POINT CONCEPT POINT
-        const data_nom_point_concept_point_de_dup = Array.from(
-            new Map(dataOnlyTargetPoint?.map((item: any) => [item.point, { point_name: item.point, area: item.area_obj }])).values()
-        );
+        // // DATA NOMI POINT CONCEPT POINT
+        // const data_nom_point_concept_point_de_dup = Array.from(
+        //     new Map(dataOnlyTargetPoint?.map((item: any) => [item.point, { point_name: item.point, area: item.area_obj }])).values()
+        // );
 
-        const fShip = dataShipper?.find((f: any) => f?.id === userDT?.account_manage?.[0]?.group_id)?.shipper_contract_point || []
-        const f_data_nom_point_concept_point_de_dup = data_nom_point_concept_point_de_dup?.filter((f: any) => {
-            if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-                return fShip?.flatMap((fm: any) => fm?.contract_point?.nomination_point_list?.map((ifm: any) => ifm?.nomination_point))?.includes(f?.point_name)
-            } else {
-                const fShip_tso = srchShipperName?.length > 0 ? (dataShipper?.filter((f: any) => srchShipperName?.includes(f?.id_name))?.map((e_: any) => e_?.shipper_contract_point) || [])?.flat() : []
-                return srchShipperName?.length > 0 ? fShip_tso?.flatMap((fm: any) => fm?.contract_point?.nomination_point_list?.map((ifm: any) => ifm?.nomination_point))?.includes(f?.point_name) : f
-            }
-        })
+        // const fShip = dataShipper?.find((f: any) => f?.id === userDT?.account_manage?.[0]?.group_id)?.shipper_contract_point || []
+        // const f_data_nom_point_concept_point_de_dup = data_nom_point_concept_point_de_dup?.filter((f: any) => {
+        //     if (userDT?.account_manage?.[0]?.user_type_id == 3) {
+        //         return fShip?.flatMap((fm: any) => fm?.contract_point?.nomination_point_list?.map((ifm: any) => ifm?.nomination_point))?.includes(f?.point_name)
+        //     } else {
+        //         const fShip_tso = srchShipperName?.length > 0 ? (dataShipper?.filter((f: any) => srchShipperName?.includes(f?.id_name))?.map((e_: any) => e_?.shipper_contract_point) || [])?.flat() : []
+        //         return srchShipperName?.length > 0 ? fShip_tso?.flatMap((fm: any) => fm?.contract_point?.nomination_point_list?.map((ifm: any) => ifm?.nomination_point))?.includes(f?.point_name) : f
+        //     }
+        // })
        
-        if (data_nom_point_concept_point_de_dup?.length > 0) {
-            const uniqueItems = Array.from(
-                new Map(
-                    (f_data_nom_point_concept_point_de_dup || []).map((item: any) => [
-                        item.point_name,
-                        item,
-                    ])
-                ).values()
-            );
+        // if (data_nom_point_concept_point_de_dup?.length > 0) {
+        //     const uniqueItems = Array.from(
+        //         new Map(
+        //             (f_data_nom_point_concept_point_de_dup || []).map((item: any) => [
+        //                 item.point_name,
+        //                 item,
+        //             ])
+        //         ).values()
+        //     );
 
-            setDataNomConcept(uniqueItems);
-        } else {
-            setDataNomConcept([]);
-        }
+        //     setDataNomConcept(uniqueItems);
+        // } else {
+        //     setDataNomConcept([]);
+        // }
        
 
         setIsLoading(true);
@@ -299,13 +307,104 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setSrchStartDate(null)
         setSrchEndDate(null)
 
-        setDataContract(dataContractOriginal)
+        // setDataContract(dataContractOriginal)
         setFilteredDataTable(dataTable);
         setKey((prevKey) => prevKey + 1);
 
         setIsLoading(false);
         fetchData();
     };
+
+    const getShipperIds = (value: any): string[] => {
+      if (Array.isArray(value)) {
+        return value.filter(Boolean)
+      }
+  
+      if (value) {
+        return [value]
+      }
+  
+      return []
+    }
+
+    const buildShipperIdParam = (value: any) => {
+      const shipperIds = getShipperIds(value)
+  
+      if (shipperIds.length === 0) {
+        return ''
+      }
+  
+      return `[${shipperIds.map((id) => `"${id}"`).join(',')}]`
+    }
+
+    const fetchShipperAndContract = async () => {
+        const startDate = srchStartDate
+            ? dayjs(srchStartDate).format('YYYY-MM-DD')
+            : dayjs().format('YYYY-MM-DD');
+
+        const endDate = srchEndDate
+            ? dayjs(srchEndDate).format('YYYY-MM-DD')
+            : dayjs().format('YYYY-MM-DD');
+      let apiUrl = `/master/daily-adjustment/shipper-data?start_date=${startDate}&end_date=${endDate}`
+
+      const res_: any = await getService(apiUrl)
+  
+      if (res_ && Array.isArray(res_)) {
+        setDataShipper(res_)
+        if (userDT?.account_manage?.[0]?.user_type_id == 3) {
+          const uniqueContract = res_.filter((f: any) => f?.id === userDT?.account_manage?.[0]?.group?.id)?.flatMap((fm: any) => fm?.contract_code)
+          setDataContract(uniqueContract)
+        } else {
+          const uniqueContract = res_.flatMap((fm: any) => fm?.contract_code)
+          setDataContract(uniqueContract)
+        }
+      }
+    }
+    
+    const fetchNomPoint = async (selectedGasDayFrom?: any, selectedGasDayTo?: any) => {
+        const gasDayFrom = selectedGasDayFrom ? toDayjs(selectedGasDayFrom) : srchStartDate ? toDayjs(srchStartDate) : toDayjs()
+        const gasDayTo = selectedGasDayTo ? toDayjs(selectedGasDayTo) : srchEndDate ? toDayjs(srchEndDate) : toDayjs()
+
+        // จำวันที่ request นี้ดึงมา ใช้เช็คหลัง await ว่า srchGasDay เปลี่ยนหรือยัง
+        const startDate = gasDayFrom.format('YYYY-MM-DD')
+        const endDate = gasDayTo.format('YYYY-MM-DD')
+
+        let url = `/master/asset/nomination-point-by-shipper-or-contract?start_date=${startDate}&end_date=${endDate}&is_include_concept_point=true&is_only_RA6_and_BVW10_concept_point=true`
+
+        const shipperIdParam = buildShipperIdParam(srchShipperName)
+        const contractCodeParam = buildShipperIdParam(srchContractCode)
+
+        if (shipperIdParam) {
+            url += `&shipper_id=${encodeURIComponent(shipperIdParam)}`
+        }
+  
+        if(contractCodeParam){
+            url += `&contract_code=${encodeURIComponent(contractCodeParam)}`
+        }
+        try {
+            const res: any = await getService(url)
+    
+            // srchGasDay เปลี่ยนระหว่างรอ API → ทิ้ง response นี้
+            if ((srchStartDateRef.current && srchStartDateRef.current !== startDate) || (srchEndDateRef.current && srchEndDateRef.current !== endDate)) return
+    
+            if (Array.isArray(res)) {
+                setDataNomConcept(res)
+            }
+            else{
+                setSrchNomConcept([])
+                setDataNomConcept([])
+            }
+            
+        } catch (error) {
+            // srchGasDay เปลี่ยนระหว่างรอ API → ทิ้ง error handling ของ request เก่า
+            if ((srchStartDateRef.current && srchStartDateRef.current !== startDate) || (srchEndDateRef.current && srchEndDateRef.current !== endDate)) return
+
+            console.error('Failed to fetch nom point:', error)
+
+            setSrchNomConcept([])
+            setDataNomConcept([])
+        }
+    }
 
     useEffect(() => {
         if (isUpload) {
@@ -338,7 +437,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     item?.shipper?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     item?.contract?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     item?.point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                    item?.entry_exit?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+                    // item?.entry_exit?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || // https://app.clickup.com/t/9018502823/86eub6d0j
                     // item?.zone?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     item?.zone_obj?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
                     item?.area?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
@@ -404,6 +503,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     // filter ต้องเห็นแค่ของ shipper ตัวเองที่มีสิทธิ์เท่านั้น https://app.clickup.com/t/86ex1w2zz
     const findGroupAreaCaseShipper = async () => {
         const res_shipper: any = await getService(`/master/account-manage/group-master?user_type=3`);
+        if(Array.isArray(res_shipper)){
         const data_only_your_shipper = res_shipper?.filter((item: any) => item?.id === userDT?.account_manage?.[0]?.group?.id)
 
         // เอา area จาก contract_point
@@ -448,6 +548,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             setAreaMasterMix(removed_duplicate_area);
         }
+        }
     }
 
     const fetchData = async () => {
@@ -462,8 +563,11 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             }
 
             const res_shipper_name = await getService(`/master/account-manage/group-master?user_type=3`);
-            setDataShipper(res_shipper_name)
+            // if(Array.isArray(res_shipper_name)){
+            // setDataShipper(res_shipper_name)
+            // }
             const res_shipper_that_have_active_contract = await getService(`/master/allocation/allocation-review-shipper-data`);
+            console.log('res_shipper_that_have_active_contract : ', res_shipper_that_have_active_contract);
             setDataShipperThatHaveActiveContract(res_shipper_that_have_active_contract)
 
             const start_date = dayjs().format("YYYY-MM-DD")
@@ -524,7 +628,13 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 setFilteredDataTable([]);
             } else {
 
-                const updatedDataAllocReview = addShipperToData(dataOnlyTargetPoint, res_shipper_name)
+                let updatedDataAllocReview = [];
+                if(Array.isArray(res_shipper_name)){
+                    updatedDataAllocReview = addShipperToData(dataOnlyTargetPoint, res_shipper_name)
+                }
+                else{
+                    updatedDataAllocReview = dataOnlyTargetPoint
+                }
 
                 if (userDT?.account_manage?.[0]?.user_type_id == 3) {
                     const data_only_shipper = updatedDataAllocReview?.filter((item: any) => item?.group?.id === userDT?.account_manage?.[0]?.group?.id)
@@ -566,7 +676,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // new Map(res_API?.map((item: any) => [item.contract, { contract_code: item.contract, group: item.group }])).values()
                 new Map(dataOnlyTargetPoint?.map((item: any) => [item.contract, { contract_code: item.contract, group: item.group }])).values()
             );
-            setDataContract(data_contract_code_de_dup);
+            // setDataContract(data_contract_code_de_dup);
             setDataContractOriginal(data_contract_code_de_dup)
 
             // DATA CONTRACT CODE สำหรับ TEMPLATE
@@ -575,23 +685,23 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             setDataContractForTemplate(res_shipper_that_have_active_contract.flatMap((item: any) => item.contract_code))
 
             // DATA NOMI POINT CONCEPT POINT
-            const data_nom_point_concept_point_de_dup = Array.from(
-                // new Map(res_API?.map((item: any) => [item.point, { point_name: item.point, area: item.area_obj }])).values()
-                new Map(dataOnlyTargetPoint?.map((item: any) => [item.point, { point_name: item.point, area: item.area_obj }])).values()
-            );
+            // const data_nom_point_concept_point_de_dup = Array.from(
+            //     // new Map(res_API?.map((item: any) => [item.point, { point_name: item.point, area: item.area_obj }])).values()
+            //     new Map(dataOnlyTargetPoint?.map((item: any) => [item.point, { point_name: item.point, area: item.area_obj }])).values()
+            // );
 
-            const fShip = res_shipper_name?.find((f: any) => f?.id === userDT?.account_manage?.[0]?.group_id)?.shipper_contract_point || []
+            // const fShip = res_shipper_name?.find((f: any) => f?.id === userDT?.account_manage?.[0]?.group_id)?.shipper_contract_point || []
 
-            const f_data_nom_point_concept_point_de_dup = data_nom_point_concept_point_de_dup?.filter((f: any) => {
-                if (userDT?.account_manage?.[0]?.user_type_id == 3) {
+            // const f_data_nom_point_concept_point_de_dup = data_nom_point_concept_point_de_dup?.filter((f: any) => {
+            //     if (userDT?.account_manage?.[0]?.user_type_id == 3) {
 
-                    return fShip?.flatMap((fm: any) => fm?.contract_point?.nomination_point_list?.map((ifm: any) => ifm?.nomination_point))?.includes(f?.point_name)
-                } else {
-                    return f
-                }
-            })
+            //         return fShip?.flatMap((fm: any) => fm?.contract_point?.nomination_point_list?.map((ifm: any) => ifm?.nomination_point))?.includes(f?.point_name)
+            //     } else {
+            //         return f
+            //     }
+            // })
 
-            setDataNomConcept(f_data_nom_point_concept_point_de_dup);
+            // setDataNomConcept(f_data_nom_point_concept_point_de_dup);
            
 
 
@@ -612,6 +722,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             const res_system_parameter: any = await getService(`/master/parameter/system-parameter`);
             const filter_system_parameter = res_system_parameter?.filter((item: any) => item?.system_parameter?.name == "Onshore: Number of days after allocation when shipper can create allocation review")
             const res_filter_system_parameter = filterTodayInRangeStartEndDate(filter_system_parameter)
+            console.log('res_filter_system_parameter : ', res_filter_system_parameter);
             setDataSystemParam(res_filter_system_parameter)
 
             setIsLoading(true);
@@ -631,7 +742,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         hasFetchedRef.current = true;
 
-        void fetchData();
+        fetchData();
+        fetchShipperAndContract();
     }, []);
 
     // ############# RE-GENERATE  #############
@@ -757,6 +869,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         }
     }, [filteredDataTable, currentPage, itemsPerPage])
 
+    useEffect(() => {
+      fetchShipperAndContract()
+  
+      srchStartDateRef.current = srchStartDate ? toDayjs(srchStartDate).format('YYYY-MM-DD') : null
+      srchEndDateRef.current = srchEndDate ? toDayjs(srchEndDate).format('YYYY-MM-DD') : null
+      setSrchShipperName([])
+      setSrchContractCode([])
+      setSrchNomConcept([])
+      fetchNomPoint(srchStartDate, srchEndDate)
+    }, [srchStartDate, srchEndDate])
+
+    useEffect(() => {
+        setSrchNomConcept([])
+        fetchNomPoint(srchStartDate, srchEndDate)
+    }, [srchShipperName, srchContractCode])
+
     // ############### COLUMN SHOW/HIDE ###############
     const initialColumns: any = [
         { key: 'status', label: 'Status', visible: true },
@@ -764,7 +892,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         { key: 'shipper_name', label: 'Shipper Name', visible: true },
         { key: 'contract_code', label: 'Contract Code', visible: true },
         { key: 'nom_point_concept_point', label: 'Nomination Point / Concept Point', visible: true },
-        { key: 'entry_exit', label: 'Entry / Exit', visible: true },
+        // { key: 'entry_exit', label: 'Entry / Exit', visible: true }, // https://app.clickup.com/t/9018502823/86eub6d0j
         { key: 'zone', label: 'Zone', visible: true },
         { key: 'area', label: 'Area', visible: true },
         { key: 'nominated_value', label: 'Nominated Value (MMBTU/D)', visible: true },
@@ -1138,8 +1266,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             srchArea?.length > 0 ? srchArea.includes(item?.area?.id?.toString()) :
                                 item !== null)?.map((item: any) => (
                                     {
-                                        value: item.point_name,
-                                        label: item.point_name
+                                        value: item.nomination_point || item.concept_point || item.point_name,
+                                        label: item.nomination_point || item.concept_point || item.point_name
                                     })
                                 )
                         }
@@ -1247,6 +1375,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             <PaginationComponent
                 totalItems={filteredDataTable?.length}
                 // totalItems={paginatedData?.length}
+                tempTotal={filteredDataTable?.length}
                 itemsPerPage={itemsPerPage}
                 currentPage={currentPage}
                 onPageChange={handlePageChange}

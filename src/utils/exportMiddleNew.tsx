@@ -53,6 +53,22 @@ export function dcimal3(number: any) {
   return `${withCommas}.${decimalPart}`;
 };
 
+export function dcimal2(number: any) {
+  let numbers = number ?? 0;
+  if (isNaN(numbers)) return numbers;
+
+  if (numbers == 0) {
+    return '0.00'; // special case for zero
+  }
+
+  const fixedNumber = parseFloat(numbers).toFixed(2); // Keep 4 decimal places
+  const [intPart, decimalPart] = fixedNumber.split('.');
+
+  const withCommas = intPart?.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  return `${withCommas}.${decimalPart}`;
+};
+
 // digit6
 export function dcimal6(number: any) {
   let numbers = number ?? 0;
@@ -98,8 +114,6 @@ export function filterNestedObjectByPaths(
       if (Object.keys(nested).length > 0) {
         result[key] = nested;
       }
-    } else if (isExactMatch && typeof obj[key] !== "object") {
-      result[key] = obj[key];
     }
   }
 
@@ -402,27 +416,27 @@ export function setWorkSheetDataAndStyle({
   const headerStartRow =
     rowOffset + extraHeaderRowOffset;
 
-  XLSX.utils.sheet_add_aoa(ws, headerRows, {
+  XLSX.utils.sheet_add_aoa(ws, headerRows || [], {
     origin: headerStartRow,
   });
 
   /**
    * เตรียมข้อมูลต้นฉบับ
    */
-  const jsonData = flatData.map(
-    (item) => item.result
+  const jsonData = (flatData || []).map(
+    (item) => item?.result
   );
 
-  const originalRows = jsonData.map((row) =>
-    headers.map((key) => row?.[key])
+  const originalRows = (jsonData || []).map((row) =>
+    (headers || []).map((key) => row?.[key])
   );
 
   /**
    * แปลงค่าที่หน้าตาเป็นตัวเลขให้เป็น JavaScript Number
    * ก่อนส่งเข้า sheet_add_aoa
    */
-  const rows = originalRows.map((row) =>
-    row.map((originalValue) => {
+  const rows = (originalRows || []).map((row) =>
+    (row || []).map((originalValue) => {
       const numericValue =
         parseExcelNumber(originalValue);
 
@@ -438,9 +452,9 @@ export function setWorkSheetDataAndStyle({
    * เพิ่มข้อมูลลง Worksheet
    */
   const dataStartRow =
-    headerStartRow + headerRows.length;
+    headerStartRow + (headerRows?.length ?? 0);
 
-  XLSX.utils.sheet_add_aoa(ws, rows, {
+  XLSX.utils.sheet_add_aoa(ws, rows || [], {
     origin: dataStartRow,
   });
 
@@ -449,12 +463,12 @@ export function setWorkSheetDataAndStyle({
    */
   for (
     let R = 0;
-    R < headerRows.length;
+    R < (headerRows?.length ?? 0);
     R++
   ) {
     for (
       let C = 0;
-      C < headers.length;
+      C < (headers?.length ?? 0);
       C++
     ) {
       const cellAddress = XLSX.utils.encode_cell({
@@ -469,7 +483,7 @@ export function setWorkSheetDataAndStyle({
       const headerValue =
         headerRows?.[R]?.[C];
 
-      const fullPath = headerRows
+      const fullPath = (headerRows || [])
         .slice(0, R + 1)
         .map((row) => row?.[C])
         .filter((value) => !isBlank(value))
@@ -531,14 +545,14 @@ export function setWorkSheetDataAndStyle({
    */
   for (
     let r = dataStartRow;
-    r < dataStartRow + rows.length;
+    r < dataStartRow + (rows?.length ?? 0);
     r++
   ) {
     const rowIndex = r - dataStartRow;
 
     for (
       let c = 0;
-      c < headers.length;
+      c < (headers?.length ?? 0);
       c++
     ) {
       const cellAddress =
@@ -551,7 +565,7 @@ export function setWorkSheetDataAndStyle({
 
       if (!cell) continue;
 
-      const key = headers[c];
+      const key = headers?.[c] ?? '';
 
       const originalValue =
         originalRows?.[rowIndex]?.[c];
@@ -650,8 +664,7 @@ export function setWorkSheetDataAndStyle({
    */
   const merges: XLSX.Range[] = [];
 
-  const lastHeaderRow =
-    headerRows.length - 1;
+  const lastHeaderRow = (headerRows || []).length - 1;
 
   const isSameRange = (
     a: XLSX.Range,
@@ -728,12 +741,12 @@ export function setWorkSheetDataAndStyle({
    */
   for (
     let R = 0;
-    R < headerRows.length;
+    R < (headerRows?.length ?? 0);
     R++
   ) {
     let startC = 0;
 
-    while (startC < headers.length) {
+    while (startC < (headers?.length ?? 0)) {
       const startValue =
         headerRows?.[R]?.[startC];
 
@@ -748,7 +761,7 @@ export function setWorkSheetDataAndStyle({
       let endC = startC;
 
       while (
-        endC + 1 < headers.length &&
+        endC + 1 < (headers?.length ?? 0) &&
         headerRows?.[R]?.[endC + 1] ===
           startValue &&
         getParentKey(R, endC + 1) ===
@@ -780,14 +793,14 @@ export function setWorkSheetDataAndStyle({
    */
   for (
     let C = 0;
-    C < headers.length;
+    C < (headers?.length ?? 0);
     C++
   ) {
     let leafRow = -1;
 
     for (
       let R = 0;
-      R < headerRows.length;
+      R < (headerRows?.length ?? 0);
       R++
     ) {
       const value =
@@ -1168,11 +1181,13 @@ const NUMBER_FORMAT_4_DECIMAL = '#,##0.0000';
 function applyNumberFormatByHeader(
   ws: XLSX.WorkSheet,
   headerNames: string[],
+  numberFormat?: {[key: string]: string}
 ) {
   if (!ws['!ref']) return;
 
   const range = XLSX.utils.decode_range(ws['!ref']);
   const targetColumns = new Set<number>();
+  const targetNumberFormat: {[key :number]: string} = {}
   let headerRow = -1;
 
   // ค้นหาตำแหน่ง Header และ Column ที่ต้องการ
@@ -1183,6 +1198,9 @@ function applyNumberFormatByHeader(
 
       if (headerNames.includes(String(value ?? '').trim())) {
         targetColumns.add(col);
+        if(numberFormat) {
+          targetNumberFormat[col] = numberFormat[String(value ?? '').trim()] || NUMBER_FORMAT_4_DECIMAL;
+        }
         headerRow = Math.max(headerRow, row);
       }
     }
@@ -1214,10 +1232,10 @@ function applyNumberFormatByHeader(
 
       cell.v = numberValue;
       cell.t = 'n';
-      cell.z = NUMBER_FORMAT_4_DECIMAL;
+      cell.z = targetNumberFormat[col] || NUMBER_FORMAT_4_DECIMAL;
       cell.s = {
         ...(cell.s ?? {}),
-        numFmt: NUMBER_FORMAT_4_DECIMAL,
+        numFmt: targetNumberFormat[col] || NUMBER_FORMAT_4_DECIMAL,
       };
     }
   });
@@ -1251,7 +1269,7 @@ export function exportAllocationReportToExcel(
   // WORKBOOK + MAIN SHEET
   // ---------------------------------------------------
   const wb = XLSX.utils.book_new();
-  const flatMainData = mainResult.map((d) => flattenObjectNew(d));
+  const flatMainData = (mainResult || []).map((d) => flattenObjectNew(d));
   const mainHeaders = Object.keys(flatMainData[0].result);
   const mainHeaderRows = buildHeaderRowsNew(flatMainData[0].pathArray);
 
@@ -1306,6 +1324,63 @@ export function exportAllocationReportToExcel(
     ]);
 
     XLSX.utils.book_append_sheet(wb, detailWs, 'Overusage Detail');
+  }
+
+  XLSX.writeFile(wb, `${nameFile}.xlsx`);
+}
+
+export function exportAllocationReportFromAlloQueryToExcel(
+  overusageDetailRows: any[],
+  nameFile: string,
+  skipFirstRow: boolean,
+  detailHeaderColorMap: any,
+  detailHighlightMap: any,
+): void {
+  // ---------------------------------------------------
+  // WORKBOOK
+  // ---------------------------------------------------
+  const wb = XLSX.utils.book_new();
+
+  // ---------------------------------------------------
+  // DETAIL
+  // ---------------------------------------------------
+
+  if (overusageDetailRows.length > 0) {
+
+    const flatDetailData = overusageDetailRows.map((d) =>
+      flattenObjectNew(d),
+    );
+
+    const detailWs = XLSX.utils.aoa_to_sheet([]);
+    const detailHeaderRows = buildHeaderRowsNew(
+      flatDetailData[0].pathArray,
+    );
+
+    setWorkSheetDataAndStyle({
+      ws: detailWs,
+      headerRows: detailHeaderRows,
+      rowOffset: skipFirstRow ? 1 : 0, // ข้าม row แรก
+      flatData: flatDetailData,
+      headers: Object.keys(flatDetailData[0].result),
+      headerColorMap: detailHeaderColorMap,
+      cellHighlightMap: detailHighlightMap,
+    });
+
+    applyNumberFormatByHeader(detailWs, [
+      'Booked Cap. (MMBTU/D)',
+      'Nominated Value (MMBTU/D)',
+      'Allocation TPA (MMBTU/D)',
+      'Usage (%)'
+    ],
+    {
+      'Booked Cap. (MMBTU/D)': '#,##0.0000',
+      'Nominated Value (MMBTU/D)': '#,##0.0000',
+      'Allocation TPA (MMBTU/D)': '#,##0.0000',
+      'Usage (%)': '#,##0.00'
+    }
+  );
+
+    XLSX.utils.book_append_sheet(wb, detailWs, 'allocations1');
   }
 
   XLSX.writeFile(wb, `${nameFile}.xlsx`);
@@ -1386,12 +1461,11 @@ export function listToObject(keys: any, valueArr: any, groupMaster: any) {
 export function formatNumberFourDecimalNom(number: any) {
   if (isNaN(number)) return number; // Handle invalid numbers gracefully
 
-  if (number)
-    if (number == 0) {
-      return "0.0000"; // special case for zero
-    }
+  if (number === 0 || number === "0") {
+    return "0.0000"; // special case for zero
+  }
 
-  if (number == null || number == undefined) {
+  if (number == null || number === undefined || number === "") {
     return "";
   }
 

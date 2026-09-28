@@ -89,21 +89,21 @@ const TableNonTpa: React.FC<TableProps> = ({ openEditForm, openViewForm, openHis
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.area && (
+                                {columnVisibility?.area && (
                                     <th scope="col" className={`${table_sort_header_style} min-w-[120px] text-center`} onClick={() => handleSort("area.name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Area`}
                                         {getArrowIcon("area.name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.name && (
+                                {columnVisibility?.name && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("non_tpa_point_name", sortState, setSortState, setSortedData, tableData)}>
                                         {`Non TPA Point Name`}
                                         {getArrowIcon("non_tpa_point_name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.desc && (
+                                {columnVisibility?.desc && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("description", sortState, setSortState, setSortedData, tableData)}>
                                         {`Description`}
                                         {getArrowIcon("description")}
@@ -112,14 +112,14 @@ const TableNonTpa: React.FC<TableProps> = ({ openEditForm, openViewForm, openHis
 
 
 
-                                {columnVisibility.nom_point && (
+                                {columnVisibility?.nom_point && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("nomination_point_id", sortState, setSortState, setSortedData, tableData)}>
                                         {`Nomination Point`}
                                         {getArrowIcon("nomination_point_id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <th
                                         scope="col"
                                         className={`${table_sort_header_style}`}
@@ -130,7 +130,7 @@ const TableNonTpa: React.FC<TableProps> = ({ openEditForm, openViewForm, openHis
                                     </th>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     <th
                                         scope="col"
                                         className={`${table_sort_header_style}`}
@@ -141,7 +141,7 @@ const TableNonTpa: React.FC<TableProps> = ({ openEditForm, openViewForm, openHis
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -150,13 +150,13 @@ const TableNonTpa: React.FC<TableProps> = ({ openEditForm, openViewForm, openHis
                         </thead>
 
                         <tbody>
-                            {sortedData && sortedData?.map((row: any, index: any) => (
+                            {(sortedData || [])?.map((row: any, index: any) => (
                                 <tr
                                     key={row?.id}
                                     className={`${table_row_style}`}
                                 >
 
-                                    {columnVisibility.area && (
+                                    {columnVisibility?.area && (
                                         <td className="px-2 py-1 justify-center flex min-w-[120px] text-center">
                                             {
                                                 row?.area.entry_exit_id == 2 ?
@@ -177,28 +177,28 @@ const TableNonTpa: React.FC<TableProps> = ({ openEditForm, openViewForm, openHis
                                         </td>
                                     )}
 
-                                    {columnVisibility.name && (
+                                    {columnVisibility?.name && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.non_tpa_point_name}</td>
                                     )}
 
-                                    {columnVisibility.desc && (
+                                    {columnVisibility?.desc && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.description}</td>
                                     )}
 
 
 
-                                    {columnVisibility.nom_point && (
+                                    {columnVisibility?.nom_point && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.nomination_point?.nomination_point}</td>
                                     )}
-                                    {columnVisibility.start_date && (
+                                    {columnVisibility?.start_date && (
                                         <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                     )}
 
-                                    {columnVisibility.end_date && (
+                                    {columnVisibility?.end_date && (
                                         <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                     )}
 
-                                    {columnVisibility.action && (
+                                    {columnVisibility?.action && (
                                         <td className="px-2 py-1">
                                             {/* <div className="relative inline-block text-left "> */}
                                             <div className="relative inline-flex justify-center items-center w-full">

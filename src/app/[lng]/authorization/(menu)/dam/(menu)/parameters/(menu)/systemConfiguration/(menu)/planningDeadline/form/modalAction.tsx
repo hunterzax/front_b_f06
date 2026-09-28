@@ -212,7 +212,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     if (e) {
                                                         clearErrors('term_type_id')
                                                     }
-                                                    setValue("term_type_id", e.target.value);
+                                                    setValue("term_type_id", e?.target?.value ?? "");
                                                 }}
                                                 displayEmpty
                                                 renderValue={(value: any) => {
@@ -279,7 +279,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             if (e) {
                                                                 clearErrors('hour')
                                                             }
-                                                            setValue("hour", e.target.value);
+                                                            setValue("hour", e?.target?.value ?? "");
                                                         }}
                                                         displayEmpty
                                                         renderValue={(value: any) => {
@@ -334,7 +334,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                             if (e) {
                                                                 clearErrors('minute')
                                                             }
-                                                            setValue("minute", e.target.value);
+                                                            setValue("minute", e?.target?.value ?? "");
                                                         }}
                                                         displayEmpty
                                                         renderValue={(value: any) => {
@@ -378,7 +378,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("day") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("day", e.target.value);
+                                                    setValue("day", e?.target?.value ?? "");
                                                     if (errors?.day) { clearErrors('day') }
                                                 }}
                                                 errors={errors?.day}

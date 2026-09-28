@@ -99,75 +99,75 @@ const TableShippersGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, 
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                {columnVisibility.status && (
+                {columnVisibility?.status && (
                   <th scope="col" className={`${table_header_style}`}>
                     {`Status`}
                   </th>
                 )}
 
-                {columnVisibility.id_name && (
+                {columnVisibility?.id_name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("id_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Shipper ID`}
                     {getArrowIcon("id_name")}
                   </th>
                 )}
 
-                {columnVisibility.name && (
+                {columnVisibility?.name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("name", sortState, setSortState, setSortedData, tableData)}>
                     {`Shipper Name`}
                     {getArrowIcon("name")}
                   </th>
                 )}
 
-                {columnVisibility.company_name && (
+                {columnVisibility?.company_name && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("company_name", sortState, setSortState, setSortedData, tableData)}>
                     {`Shipper Company Name`}
                     {getArrowIcon("company_name")}
                   </th>
                 )}
 
-                {columnVisibility.division_name && (
+                {columnVisibility?.division_name && (
                   <th scope="col" className={`${table_header_style}`}>
                     {`Division Name`}
                   </th>
                 )}
 
-                {columnVisibility.role_default && (
+                {columnVisibility?.role_default && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("role.name", sortState, setSortState, setSortedData, tableData)}>
                     {`Default Role`}
                     {getArrowIcon("role.name")}
                   </th>
                 )}
 
-                {columnVisibility.address && (
+                {columnVisibility?.address && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("address", sortState, setSortState, setSortedData, tableData)}>
                     {`Address`}
                     {getArrowIcon("address")}
                   </th>
                 )}
 
-                {columnVisibility.telephone && (
+                {columnVisibility?.telephone && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("telephone", sortState, setSortState, setSortedData, tableData)}>
                     {`Telephone`}
                     {getArrowIcon("telephone")}
                   </th>
                 )}
 
-                {columnVisibility.email && (
+                {columnVisibility?.email && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("email", sortState, setSortState, setSortedData, tableData)}>
                     {`Email`}
                     {getArrowIcon("email")}
                   </th>
                 )}
 
-                {columnVisibility.bank_account && (
+                {columnVisibility?.bank_account && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("bank_no", sortState, setSortState, setSortedData, tableData)}>
                     {`Bank Account`}
                     {getArrowIcon("bank_no")}
                   </th>
                 )}
 
-                {columnVisibility.start_date && (
+                {columnVisibility?.start_date && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -178,7 +178,7 @@ const TableShippersGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                   </th>
                 )}
 
-                {columnVisibility.end_date && (
+                {columnVisibility?.end_date && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style}`}
@@ -189,13 +189,13 @@ const TableShippersGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                   </th>
                 )}
 
-                {columnVisibility.group_id && (
+                {columnVisibility?.group_id && (
                   <th scope="col" className={`${table_header_style}`}>
                     {`Group ID`}
                   </th>
                 )}
 
-                {columnVisibility.action && (
+                {columnVisibility?.action && (
                   <th scope="col" className={`${table_header_style} text-center`}>
                     {`Action`}
                   </th>
@@ -204,14 +204,14 @@ const TableShippersGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, 
             </thead>
 
             <tbody>
-              {sortedData && sortedData.map((row: any, index: any) => (
-                <tr
-                  key={row?.id}
-                  className={`${table_row_style}`}
+              {(sortedData || [])?.map((row: any, index: any) => {
+                if (!row) return null;
+                return (
+                <tr key={row?.id ?? index} className={`${table_row_style}`}
                   style={{ backgroundColor: istrLoading && selectedKey == row?.id ? "#f8f8f8" : "#fff" }}
                 >
               
-                  {columnVisibility.status && (
+                  {columnVisibility?.status && (
                     <td className="px-2 py-1">
 
                       <div>
@@ -233,15 +233,15 @@ const TableShippersGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                     </td>
                   )}
 
-                  {columnVisibility.id_name && (
+                  {columnVisibility?.id_name && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.id_name ? row?.id_name : '-'}</td>
                   )}
 
-                  {columnVisibility.name && (
+                  {columnVisibility?.name && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.name ? row?.name : '-'}</td>
                   )}
 
-                  {columnVisibility.company_name && (
+                  {columnVisibility?.company_name && (
                     <td className={`px-2 py-1`}>
                       <div className={`max-w-[500px] ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>
                         {row?.company_name ? row?.company_name : '-'}
@@ -249,7 +249,7 @@ const TableShippersGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                     </td>
                   )}
 
-                  {columnVisibility.division_name && (
+                  {columnVisibility?.division_name && (
                     <td className="px-2 py-1 text-center">
                       <div className="inline-flex items-center justify-center relative">
                         <button
@@ -262,41 +262,41 @@ const TableShippersGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                           <SupervisorAccountRoundedIcon sx={{ fontSize: 18, color: '#1473A1', '&:hover': { color: '#ffffff' } }} />
                         </button>
                         <span className="px-2 text-[#464255]">
-                          {row?.division.length}
+                          {row?.division?.length ?? 0}
                         </span>
                       </div>
                     </td>
                   )}
 
-                  {columnVisibility.role_default && (
+                  {columnVisibility?.role_default && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.role_default?.length > 0 ? row?.role_default[0]?.role ? row?.role_default[0]?.role?.name : '' : ''}</td>
                   )}
 
-                  {columnVisibility.address && (
+                  {columnVisibility?.address && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.address ? row?.address : ''}</td>
                   )}
 
-                  {columnVisibility.telephone && (
+                  {columnVisibility?.telephone && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.telephone ? maskLastFiveDigits(row?.telephone) : ''}</td>
                   )}
 
-                  {columnVisibility.email && (
+                  {columnVisibility?.email && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.email ? anonymizeEmail(row?.email) : ''}</td>
                   )}
 
-                  {columnVisibility.bank_account && (
+                  {columnVisibility?.bank_account && (
                     <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"}`}>{row?.bank_no ? maskLastFiveDigits(row?.bank_no) : ''}</td>
                   )}
 
-                  {columnVisibility.start_date && (
-                    <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} `}>{row.start_date ? formatDateNoTime(row.start_date) : ''}</td>
+                  {columnVisibility?.start_date && (
+                    <td className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} `}>{row?.start_date ? formatDateNoTime(row.start_date) : ''}</td>
                   )}
 
-                  {columnVisibility.end_date && (
-                    <td className={`px-2 py-1 ${row?.status ? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{row.end_date ? formatDateNoTime(row.end_date) : ''}</td>
+                  {columnVisibility?.end_date && (
+                    <td className={`px-2 py-1 ${row?.status ? "text-[#0DA2A2]" : "text-[#9CA3AF]"}`}>{row?.end_date ? formatDateNoTime(row.end_date) : ''}</td>
                   )}
 
-                  {columnVisibility.group_id && (
+                  {columnVisibility?.group_id && (
                     <td className="px-2 py-1">
                       <div className="relative inline-block text-left">
                         <button
@@ -316,7 +316,7 @@ const TableShippersGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                     </td>
                   )}
 
-                  {columnVisibility.action && (
+                  {columnVisibility?.action && (
                     <td className="px-2 py-1">
                       <div className="relative inline-flex justify-center items-center w-full">
                         <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view && !userPermission?.f_edit ? true : false} />
@@ -341,7 +341,8 @@ const TableShippersGroup: React.FC<TableProps> = ({ openEditForm, openViewForm, 
                   )}
 
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
           :

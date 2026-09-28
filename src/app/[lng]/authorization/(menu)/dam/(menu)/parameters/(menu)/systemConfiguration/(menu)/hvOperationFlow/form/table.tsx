@@ -88,42 +88,42 @@ const TableHvForOperationFlow: React.FC<TableProps> = ({ openEditForm, openViewF
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.type && (
+                                {columnVisibility?.type && (
                                     <th scope="col" className={`${table_sort_header_style} text-center`} onClick={() => handleSort("hv_type.type", sortState, setSortState, setSortedData, tableData)} >
                                         {`Type`}
                                         {getArrowIcon("hv_type.type")}
                                     </th>
                                 )}
 
-                                {columnVisibility.shipper_name && (
+                                {columnVisibility?.shipper_name && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("group.name", sortState, setSortState, setSortedData, tableData)} >
                                         {`Shipper Name`}
                                         {getArrowIcon("group.name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.meter_point && (
+                                {columnVisibility?.meter_point && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("metering_point.metered_point_name", sortState, setSortState, setSortedData, tableData)} >
                                         {`Meter Point`}
                                         {getArrowIcon("metering_point.metered_point_name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)} >
                                         {`Start Date`}
                                         {getArrowIcon("start_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.created_by && (
+                                {columnVisibility?.created_by && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("create_by_account.first_name", sortState, setSortState, setSortedData, tableData)} >
                                         {`Created by`}
                                         {getArrowIcon("create_by_account.first_name")}
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -139,7 +139,7 @@ const TableHvForOperationFlow: React.FC<TableProps> = ({ openEditForm, openViewF
                                         className={`${table_row_style}`}
                                     >
 
-                                        {columnVisibility.type && (
+                                        {columnVisibility?.type && (
                                             <td className="px-2 py-1">
                                                 <div className="flex items-center justify-center h-full">
                                                     {row?.hv_type && (
@@ -164,17 +164,17 @@ const TableHvForOperationFlow: React.FC<TableProps> = ({ openEditForm, openViewF
                                             </td>
                                         )}
 
-                                        {columnVisibility.meter_point && (
+                                        {columnVisibility?.meter_point && (
                                             <td className={`px-2 py-1 text-[#464255] `}>
                                                 {row?.metering_point ? row?.metering_point?.metered_point_name : ''}
                                             </td>
                                         )}
 
-                                        {columnVisibility.start_date && (
+                                        {columnVisibility?.start_date && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.created_by && (
+                                        {columnVisibility?.created_by && (
                                             <td className="px-2 py-1">
                                                 <div>
                                                     <span className="text-[#464255]">{row?.create_by_account?.first_name} {row?.create_by_account?.last_name}</span>
@@ -183,7 +183,7 @@ const TableHvForOperationFlow: React.FC<TableProps> = ({ openEditForm, openViewF
                                             </td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 <div className="relative inline-flex justify-center items-center w-full">
                                                     <BtnActionTable togglePopover={togglePopover} row_id={row?.id} />

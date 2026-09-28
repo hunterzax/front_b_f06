@@ -50,28 +50,28 @@ const TableFileSubmissionTemplateHistory: React.FC<TableProps> = ({ tableData, i
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-9">
 
-                        {columnVisibility.shipper_name && (
+                        {columnVisibility?.shipper_name && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("shipper_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Shipper Name`}
                                 {getArrowIcon("shipper_name")}
                             </th>
                         )}
 
-                        {columnVisibility.start_date && (
+                        {columnVisibility?.start_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Start Date`}
                                 {getArrowIcon("start_date")}
                             </th>
                         )}
 
-                        {columnVisibility.end_date && (
+                        {columnVisibility?.end_date && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`End Date`}
                                 {getArrowIcon("end_date")}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -86,24 +86,24 @@ const TableFileSubmissionTemplateHistory: React.FC<TableProps> = ({ tableData, i
                 </thead>
 
                 <tbody>
-                    {sortedData && sortedData?.map((row: any, index: any) => (
+                    {(sortedData || [])?.map((row: any, index: any) => (
                         <tr
                             key={row?.id}
                             className={`${table_row_style}`}
                         >
-                            {columnVisibility.shipper_name && (
+                            {columnVisibility?.shipper_name && (
                                 <td className="px-2 py-1 text-[#464255]">{row?.group ? row?.group?.name : ''}</td>
                             )}
 
-                            {columnVisibility.start_date && (
+                            {columnVisibility?.start_date && (
                                 <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                             )}
 
-                            {columnVisibility.end_date && (
+                            {columnVisibility?.end_date && (
                                 <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                             )}
 
-                            {columnVisibility.updated_by && (
+                            {columnVisibility?.updated_by && (
                                 <td className="px-2 py-1">
                                     <div>
                                         <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

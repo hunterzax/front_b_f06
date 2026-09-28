@@ -48,19 +48,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
-    // let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-    let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+    let user_permission: any = typeof window !== 'undefined' ? (getCookieValue("k3a9r2b6m7t0x5w1s8j") || localStorage?.getItem("k3a9r2b6m7t0x5w1s8j")) : null;
     user_permission = user_permission ? decryptData(user_permission) : null;
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+            }
 
             const permission = findRoleConfigByMenuName('Capacity Right Template', userDT)
             if (permission) {
                 setUserPermission(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermission(updatedUserPermission);
             }
         } catch (error) {
@@ -97,14 +99,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setSrchType([])
         setSrchStartDate(null);
         setSrchEndDate(null);
-        setFilteredDataTable(dataTable);
+        setFilteredDataTable(dataTable || []);
         setKey((prevKey) => prevKey + 1);
     };
 
     // ############### LIKE SEARCH ###############
     const handleSearch = (query: string) => {
-        const normalizedQuery = query.toLowerCase().replace(/\s+/g, '')?.trim();
-        const filtered = dataTable.filter((item: any) => {
+        const normalizedQuery = query ? query.toLowerCase().replace(/\s+/g, '')?.trim() : '';
+        const filtered = (dataTable || []).filter((item: any) => {
             // If query matches "mo", "mon", "mont", or "month", filter by file_period_mode
             // Mapping for partial query matches to file_period_mode values
             const filePeriodModeMap: Record<string, number> = {
@@ -120,34 +122,32 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             // กรองหา file period
             for (const [prefix, mode] of Object.entries(filePeriodModeMap)) {
-                if (normalizedQuery.startsWith(prefix) && item?.file_period_mode === mode) {
+                if (normalizedQuery && normalizedQuery.startsWith(prefix) && item?.file_period_mode === mode) {
                     return true;
                 }
             }
 
             // กรองหา file recurring start date
             for (const [prefix, mode] of Object.entries(fileStartModeMap)) {
-                if (normalizedQuery.startsWith(prefix) && item?.file_start_date_mode == mode) {
+                if (normalizedQuery && normalizedQuery.startsWith(prefix) && item?.file_start_date_mode == mode) {
                     return true;
                 }
             }
 
             return (
-                item?.term_type?.name.replace(/\s+/g, '').toLowerCase().includes(normalizedQuery) ||
-                item?.day?.toString().includes(normalizedQuery) ||
-                item?.min?.toString().includes(normalizedQuery) ||
-                item?.max?.toString().includes(normalizedQuery) ||
-                item?.hour?.toString().includes(normalizedQuery) ||
-                item?.shadow_time?.toString().includes(normalizedQuery) ||
-                item?.todayday?.toString().includes(normalizedQuery) ||
-                item?.minute?.toString().includes(normalizedQuery) ||
-                item?.before_month?.toString().includes(normalizedQuery) ||
-                // formatTime(item?.start_date)?.toLowerCase().includes(normalizedQuery) ||
-                formatDate(item?.start_date)?.replace(/\s+/g, '').toLowerCase().includes(normalizedQuery) ||
-                // formatTime(item?.end_date)?.toLowerCase().includes(normalizedQuery) ||
-                formatDate(item?.end_date)?.replace(/\s+/g, '').toLowerCase().includes(normalizedQuery) ||
-                item?.start_date?.toLowerCase().includes(normalizedQuery) ||
-                item?.end_date?.toLowerCase().includes(normalizedQuery)
+                (item?.term_type?.name && item?.term_type?.name.replace(/\s+/g, '').toLowerCase().includes(normalizedQuery)) ||
+                (item?.day != null && item?.day?.toString().includes(normalizedQuery)) ||
+                (item?.min != null && item?.min?.toString().includes(normalizedQuery)) ||
+                (item?.max != null && item?.max?.toString().includes(normalizedQuery)) ||
+                (item?.hour != null && item?.hour?.toString().includes(normalizedQuery)) ||
+                (item?.shadow_time != null && item?.shadow_time?.toString().includes(normalizedQuery)) ||
+                (item?.todayday != null && item?.todayday?.toString().includes(normalizedQuery)) ||
+                (item?.minute != null && item?.minute?.toString().includes(normalizedQuery)) ||
+                (item?.before_month != null && item?.before_month?.toString().includes(normalizedQuery)) ||
+                (item?.start_date && formatDate(item?.start_date)?.replace(/\s+/g, '').toLowerCase().includes(normalizedQuery)) ||
+                (item?.end_date && formatDate(item?.end_date)?.replace(/\s+/g, '').toLowerCase().includes(normalizedQuery)) ||
+                (typeof item?.start_date === 'string' && item?.start_date?.toLowerCase().includes(normalizedQuery)) ||
+                (typeof item?.end_date === 'string' && item?.end_date?.toLowerCase().includes(normalizedQuery))
             );
         });
         setCurrentPage(1); // ตอน filter กลับไปหน้าแรก
@@ -205,8 +205,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [formData, setFormData] = useState(fdInterface);
 
     const handleFormSubmit = async (data: any) => {
+        if (!data) return;
         const newData = replaceEmptyStringsWithNull(data)
-        if (typeof data.end_date !== 'string' || data.end_date == 'Invalid Date') {
+        if (typeof data?.end_date !== 'string' || data?.end_date == 'Invalid Date') {
             data.end_date = null;
         }
 
@@ -225,10 +226,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         delete data.file_period
         // data.file_period = parseInt(data.file_period)
-        data.max = parseInt(data.max)
-        data.min = parseInt(data.min)
-        data.file_start_date_mode = parseInt(data.file_start_date_mode)
-        data.shadow_time = parseInt(data.shadow_time)
+        data.max = data?.max != null && data?.max !== '' ? parseInt(data.max) : null;
+        data.min = data?.min != null && data?.min !== '' ? parseInt(data.min) : null;
+        data.file_start_date_mode = data?.file_start_date_mode != null && data?.file_start_date_mode !== '' ? parseInt(data.file_start_date_mode) : null;
+        data.shadow_time = data?.shadow_time != null && data?.shadow_time !== '' ? parseInt(data.shadow_time) : null;
         // data.shadow_period = parseInt(data.shadow_period)
         data.shadow_period = null // req ใหม่เขาให้เอา shadow_period ออก
         delete data.shadow_period;

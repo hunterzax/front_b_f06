@@ -127,7 +127,7 @@ const ModalSelShipperContract: React.FC<FormExampleProps> = ({
                                                 }}
                                                 onChange={(e) => {
                                                     updateValue("group_id", e.target.value);
-                                                    // setValue("group_id", e.target.value);
+                                                    // setValue("group_id", e?.target?.value ?? "");
                                                 }}
                                                 displayEmpty
                                                 renderValue={(value: any) => {
@@ -145,7 +145,7 @@ const ModalSelShipperContract: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                             >
-                                                {shipperGroupData?.length > 0 && shipperGroupData?.map((item: any) => (
+                                                {(shipperGroupData || [])?.map((item: any) => (
                                                     <MenuItem key={item.id} value={item.id}>
                                                         {item.name}
                                                     </MenuItem>
@@ -203,7 +203,7 @@ const ModalSelShipperContract: React.FC<FormExampleProps> = ({
                                                 }}
                                                 onChange={(e) => {
                                                     updateValue("group_id", e.target.value);
-                                                    // setValue("group_id", e.target.value);
+                                                    // setValue("group_id", e?.target?.value ?? "");
                                                 }}
                                                 displayEmpty
                                                 renderValue={(value: any) => {
@@ -221,7 +221,7 @@ const ModalSelShipperContract: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                             >
-                                                {dataContractOriginal?.length > 0 && dataContractOriginal?.map((item: any) => (
+                                                {(dataContractOriginal || [])?.map((item: any) => (
                                                     <MenuItem key={item.id} value={item.id}>
                                                         {item?.contract_code}
                                                     </MenuItem>

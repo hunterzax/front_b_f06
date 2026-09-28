@@ -98,6 +98,7 @@ const ModalRunTariff: React.FC<FormExampleProps> = ({
         // จากนั้นเอารายชื่อ shipper จาก contract พวกนั้น
 
         const filter_2 = dataContractCode?.filter((item: any) => {
+            if (!item) return false;
             const start = dayjs(item.contract_start_date);
             // const end = dayjs(item.contract_end_date);
             let end = dayjs(item.contract_end_date);
@@ -106,10 +107,10 @@ const ModalRunTariff: React.FC<FormExampleProps> = ({
             // ต้องจับจาก contract_start_date --> terminate_date ("2025-06-15T00:00:00.000Z")
             // ถ้าไม่มี terminated ไปดู extend ถ้ามี จับจาก contract_start_date --> extend_deadline
             // จากนั้น ถ้าไม่มีสองอันบนนั้นค่อยดู เคส contract_end_date
-            if (item?.status_capacity_request_management == 5) {
-                end = dayjs(item?.terminate_date);
-            } else if (item?.extend_deadline) {
-                end = dayjs(item?.extend_deadline);
+            if (item.status_capacity_request_management == 5) {
+                end = dayjs(item.terminate_date);
+            } else if (item.extend_deadline) {
+                end = dayjs(item.extend_deadline);
             }
 
             // return dayjs(date).isBetween(start, end, "day", "[]");
@@ -220,7 +221,7 @@ const ModalRunTariff: React.FC<FormExampleProps> = ({
                                             disabled={userDT?.account_manage?.[0]?.user_type_id == 3 ? true : false}
                                             valueWatch={userDT?.account_manage?.[0]?.user_type_id == 3 ? userDT?.account_manage?.[0]?.group?.id : watch("group_id")}
                                             handleChange={(e) => {
-                                                setValue("group_id", e.target.value);
+                                                setValue("group_id", e?.target?.value ?? "");
                                                 if (errors?.group_id) { clearErrors('group_id') }
                                             }}
                                             errors={errors?.group_id}

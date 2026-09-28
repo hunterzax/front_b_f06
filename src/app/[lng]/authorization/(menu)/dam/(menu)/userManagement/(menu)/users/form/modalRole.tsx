@@ -52,7 +52,7 @@ const ModalDivision: React.FC<FormExampleProps> = ({
 
                         <div className="mb-4 w-[100%]">
                             {dataRole?.map((item: any) => (
-                                <div key={item.role.id} className="w-[100%] h-[40px] border rounded-lg mb-2 p-2">
+                                <div key={item?.role.id} className="w-[100%] h-[40px] border rounded-lg mb-2 p-2">
                                     <p>{item?.role?.name || '-'}</p>
                                 </div>
                             ))}

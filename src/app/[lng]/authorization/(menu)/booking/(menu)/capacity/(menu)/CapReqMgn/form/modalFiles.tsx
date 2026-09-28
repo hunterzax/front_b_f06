@@ -37,11 +37,11 @@ const ModalFiles: React.FC<FormExampleProps> = ({
 
     useEffect(() => {
         // setFileOriginal(data?.file_capacity_request_management.reverse());
-        setFileOriginal(data?.file_capacity_request_management);
+        setFileOriginal(data?.file_capacity_request_management || []);
     }, [data])
 
     const handleFileChange = async (e: any) => {
-        const file = e.target.files[0];
+        const file = e?.target?.files?.[0];
         const setvalError = (text: any) => {
             setFileName('Maximum File 10 MB')
             setError('upload_file', { type: "custom", message: text });
@@ -54,17 +54,17 @@ const ModalFiles: React.FC<FormExampleProps> = ({
             const maxSizeInMB = 10; // Maximum file size in MB
             const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
 
-            if (!validFileTypes.includes(file.type)) {
+            if (!validFileTypes.includes(file?.type)) {
                 setvalError('Invalid file type. Please upload an Excel file.')
                 return;
             }
 
-            if (file.size > maxSizeInBytes) {
+            if (file?.size > maxSizeInBytes) {
                 setvalError('The file is larger than 10 MB.')
                 return;
             }
 
-            setFileName(file.name);
+            setFileName(file?.name || '');
             setFileUpload(file);
             if (errors?.upload_file) {
                 clearErrors('upload_file');
@@ -178,13 +178,13 @@ const ModalFiles: React.FC<FormExampleProps> = ({
                                 <div
                                     className={`mb-4 w-[100%] ${data?.file_capacity_request_management?.length > 3 ? 'max-h-[350px] overflow-y-auto' : ''}`}
                                 >
-                                    {fileOriginal?.length > 0 && fileOriginal?.map((item: any) => (
-                                        <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                                    {(fileOriginal || [])?.map((item: any) => (
+                                        <div key={item?.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                             <div className="flex flex-col p-2">
                                                 <div className="mb-2 flex justify-between">
                                                     <span className='font-light'>
                                                         By <span className="font-bold text-[#58585A]">
-                                                            {item?.create_by_account?.first_name} {" "} {item?.create_by_account?.last_name}
+                                                            {item?.create_by_account ? `${item?.create_by_account?.first_name || ''} ${item?.create_by_account?.last_name || ''}` : ''}
                                                         </span>
                                                     </span>
                                                     {/* <span className="text-[#9CA3AF] font-light">{formatDate(item?.create_date)}</span> */}
@@ -223,7 +223,7 @@ const ModalFiles: React.FC<FormExampleProps> = ({
 
                                 <div className={`flex w-full rounded-lg`}>
                                     {/* "Choose File" button */}
-                                    <div className={`flex w-full rounded-lg ${errors.upload_file && 'border border-red-500'}`}>
+                                    <div className={`flex w-full rounded-lg ${errors?.upload_file && 'border border-red-500'}`}>
                                         <label className={`bg-[#00ADEF] text-white flex items-center justify-center font-light rounded-l-[6px] text-sm text-justify w-[30%] !h-[40px] px-5 py-2 cursor-pointer `}> {/* ${isReadOnly && "!bg-[#B6B6B6] !text-[#828282]"} */}
                                             {`Choose File`}
                                             <input
@@ -304,8 +304,8 @@ const ModalFiles: React.FC<FormExampleProps> = ({
                                     </label>
                                 </div>
                                 <span className='w-full flex text-left justify-start text-[#1473A1] text-[14px]'>Required :  .xls, .xlsx</span>
-                                <div className={`text-[14px] text-red-500 col-span-2 -mt-1 flex justify-start w-full ${!errors.upload_file ? 'hidden' : 'block'}`}>
-                                    <span>{errors?.upload_file && String(errors?.upload_file?.message)}</span>
+                                <div className={`text-[14px] text-red-500 col-span-2 -mt-1 flex justify-start w-full ${!errors?.upload_file ? 'hidden' : 'block'}`}>
+                                    <span>{errors?.upload_file ? String(errors?.upload_file?.message || "") : ""}</span>
                                 </div>
 
                                 <div className="w-full flex justify-end pt-8">

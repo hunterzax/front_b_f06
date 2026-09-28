@@ -65,7 +65,7 @@ const TableGroupOtherHistory: React.FC<TableProps> = ({ tableData, isLoading, co
                 <table className="min-w-full text-sm text-left rtl:text-right text-gray-500 whitespace-nowrap">
                     <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                         <tr className="h-9">
-                            {columnVisibility.status && (
+                            {columnVisibility?.status && (
                                 <th
                                     scope="col"
                                     className={`${table_sort_header_style}`}
@@ -86,62 +86,62 @@ const TableGroupOtherHistory: React.FC<TableProps> = ({ tableData, isLoading, co
                                 </th>
                             )}
 
-                            {/* {columnVisibility.id_name && (
+                            {/* {columnVisibility?.id_name && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("id_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Other ID`}
                                 {getArrowIcon("id_name")}
                             </th>
                         )} */}
 
-                            {columnVisibility.group_name && (
+                            {columnVisibility?.group_name && (
                                 <th scope="col" className={`${table_sort_header_style} !w-[310px]`} onClick={() => handleSort("name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`Group Name`}
                                     {getArrowIcon("name")}
                                 </th>
                             )}
 
-                            {columnVisibility.division_name && (
+                            {columnVisibility?.division_name && (
                                 <th scope="col" className={`${table_header_style}`}>
                                     {`Division Name`}
                                 </th>
                             )}
 
-                            {columnVisibility.default_role && (
+                            {columnVisibility?.default_role && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("role_default", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`Default Role`}
                                     {getArrowIcon("role_default")}
                                 </th>
                             )}
 
-                            {columnVisibility.telephone && (
+                            {columnVisibility?.telephone && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("telephone", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`Telephone`}
                                     {getArrowIcon("telephone")}
                                 </th>
                             )}
 
-                            {columnVisibility.email && (
+                            {columnVisibility?.email && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("email", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`Email`}
                                     {getArrowIcon("email")}
                                 </th>
                             )}
 
-                            {columnVisibility.start_date && (
+                            {columnVisibility?.start_date && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`Start Date`}
                                     {getArrowIcon("start_date")}
                                 </th>
                             )}
 
-                            {columnVisibility.end_date && (
+                            {columnVisibility?.end_date && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("end_date", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`End Date`}
                                     {getArrowIcon("end_date")}
                                 </th>
                             )}
 
-                            {columnVisibility.updated_by && (
+                            {columnVisibility?.updated_by && (
                                 <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                     {`Updated by`}
                                     {getArrowIcon("update_by_account.first_name")}
@@ -157,7 +157,7 @@ const TableGroupOtherHistory: React.FC<TableProps> = ({ tableData, isLoading, co
                                 key={row?.id}
                                 className={`${table_row_style}`}
                             >
-                                {columnVisibility.status && (
+                                {columnVisibility?.status && (
                                     <td className="px-2 py-1">
                                         {/* <div>
                                         <label className="relative inline-block w-10 h-6">
@@ -181,15 +181,15 @@ const TableGroupOtherHistory: React.FC<TableProps> = ({ tableData, isLoading, co
                                     </td>
                                 )}
 
-                                {/* {columnVisibility.id_name && (
+                                {/* {columnVisibility?.id_name && (
                                 <td className="px-2 py-1 text-[#464255]">{row?.id_name}</td>
                             )} */}
 
-                                {columnVisibility.group_name && (
+                                {columnVisibility?.group_name && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.name}</td>
                                 )}
 
-                                {columnVisibility.division_name && (
+                                {columnVisibility?.division_name && (
                                     <td className="px-2 py-1 text-center">
                                         <div className="inline-flex items-center justify-center relative">
                                             {/* <button
@@ -220,29 +220,29 @@ const TableGroupOtherHistory: React.FC<TableProps> = ({ tableData, isLoading, co
                                     </td>
                                 )}
 
-                                {columnVisibility.default_role && (
+                                {columnVisibility?.default_role && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.role_default?.length > 0 ? row?.role_default[0]?.role ? row?.role_default[0]?.role?.name : '' : ''}</td>
                                 )}
 
-                                {columnVisibility.telephone && (
+                                {columnVisibility?.telephone && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.telephone ? maskLastFiveDigits(row?.telephone) : ''}</td>
                                 )}
 
-                                {columnVisibility.email && (
+                                {columnVisibility?.email && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.email ? anonymizeEmail(row?.email) : ''}</td>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     // <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateTimeSec(row?.start_date) : ''}</td>
                                     <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.end_date && (
+                                {columnVisibility?.end_date && (
                                     // <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateTimeSec(row?.end_date) : ''}</td>
                                     <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
                                 )}
 
-                                {columnVisibility.updated_by && (
+                                {columnVisibility?.updated_by && (
                                     <td className="px-2 py-1 text-[#464255]">
                                         <div>
 

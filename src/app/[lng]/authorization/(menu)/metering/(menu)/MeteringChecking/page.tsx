@@ -155,8 +155,7 @@ let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
     const [srchMeterPointId, setSrchMeterPointId] = useState<any>([]);
 
     const handleFieldSearch = async () => {
-        setIsLoading(false)
-        console.log('...');
+        setIsLoading(true)
         sethelperCheck(helperCheck)
 
         try {
@@ -192,7 +191,7 @@ let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
 
 
         setTimeout(() => {
-            setIsLoading(true)
+            setIsLoading(false)
         }, 500);
     };
 
@@ -209,6 +208,8 @@ let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
     const [dataTable, setData] = useState<any>([]);
     const [dataTableByGasDay, setDataTableByGasDay] = useState<any[]>([]);
     const fetchData = async () => {
+            setIsLoading(true);
+
         try {
             // DATA CUSTOMER TYPE
             // const res_cust_type: any = await getService(`/master/asset/customer-type`);
@@ -230,11 +231,11 @@ let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
             setData(res_get_cust_type);
             usedData(res_get_cust_type);
 
-            setIsLoading(true);
             setDataTableByGasDay(res_get_cust_type)
         } catch (err) {
         } finally {
         }
+        setIsLoading(false);
     };
 
     useEffect(() => {
@@ -447,7 +448,7 @@ let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
                 ]
             }
           })
-          console.log('nHelpCheck : ', nHelpCheck);
+        //   console.log('nHelpCheck : ', nHelpCheck);
           sethelperCheck(nHelpCheck)
       }
       helpCheck()
@@ -456,34 +457,58 @@ let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
 
     
     
-    useEffect(() => {
-        console.log('helperCheck : ', helperCheck);
-        const todayStart = dayjs().startOf('day');
-        const todayEnd = dayjs().endOf('day');
-        const test = helperCheck.find((item_:any) => {
-            const start = dayjs(item_.start_date);
-            const end = dayjs(item_.end_date);
-            // return (srchGasDay ? dayjs(srchGasDay, "YYYY-MM-DD") : dayjs()).isAfter(start) && (srchGasDay ? dayjs(srchGasDay, "YYYY-MM-DD") : dayjs()).isBefore(end);
-            const s_ = srchGasDay 
-                ? dayjs(srchGasDay).isSameOrAfter(start)
-                : todayStart.isSameOrAfter(start)
-            const e_ = srchGasDay 
-                ? dayjs(srchGasDay).isBefore(end) 
-                : todayEnd.isBefore(end)
+    // useEffect(() => {
+    //     console.log('helperCheck : ', helperCheck);
+    //     // const todayStart = dayjs().startOf('day');
+    //     // const todayEnd = dayjs().endOf('day');
+    //     // const test = helperCheck.find((item_:any) => {
+    //     //     const start = dayjs(item_.start_date);
+    //     //     const end = dayjs(item_.end_date);
+    //     //     // return (srchGasDay ? dayjs(srchGasDay, "YYYY-MM-DD") : dayjs()).isAfter(start) && (srchGasDay ? dayjs(srchGasDay, "YYYY-MM-DD") : dayjs()).isBefore(end);
+    //     //     const s_ = srchGasDay 
+    //     //         ? dayjs(srchGasDay).isSameOrAfter(start)
+    //     //         : todayStart.isSameOrAfter(start)
+    //     //     const e_ = srchGasDay 
+    //     //         ? dayjs(srchGasDay).isBefore(end) 
+    //     //         : todayEnd.isBefore(end)
 
-                console.log('s_ : ', s_);
-                console.log('e_ : ', e_);
-            if(item_.end_date){
+    //     //         console.log('s_ : ', s_);
+    //     //         console.log('e_ : ', e_);
+    //     //     if(item_.end_date){
 
-                return s_;
-            }else{
+    //     //         return s_;
+    //     //     }else{
 
-                return s_ && e_;
-            }
-            })
-        console.log('srchGasDay : ', srchGasDay);
-        console.log('test : ', test);
-    }, [helperCheck, srchGasDay])
+    //     //         return s_ && e_;
+    //     //     }
+    //     //     })
+    //     // console.log('srchGasDay : ', srchGasDay);
+    //     // console.log('test : ', test);
+
+
+        
+    //     const tt = helperCheck.find((item_: any) => {
+    //             const targetDate = srchGasDay ? dayjs(srchGasDay).startOf("day") : dayjs().startOf("day");
+    //             const startDate = dayjs(item_.start_date).startOf("day");
+
+    //             if (targetDate.isBefore(startDate)) {
+    //                 return false;
+    //             }
+
+    //             if (!item_.end_date) {
+    //                 return true;
+    //             }
+
+    //             const endDate = dayjs(item_.end_date).endOf("day");
+
+    //             return (
+    //                 targetDate.isSameOrAfter(startDate) &&
+    //                 targetDate.isSameOrBefore(endDate)
+    //             );
+    //         });
+    //     console.log('tt : ', tt);
+            
+    // }, [helperCheck, srchGasDay])
     
 
     return (
@@ -587,24 +612,24 @@ let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
                             <CustomTooltip
                                 title={<div className=" space-y-5">
                                     {
-                                        ((helperCheck.find((item_:any) => {
-                                            const start = dayjs(item_.start_date);
-                                            const end = dayjs(item_.end_date);
-                                            // return (srchGasDay ? dayjs(srchGasDay, "YYYY-MM-DD") : dayjs()).isAfter(start) && (srchGasDay ? dayjs(srchGasDay, "YYYY-MM-DD") : dayjs()).isBefore(end);
-                                            const s_ = srchGasDay 
-                                                ? dayjs(srchGasDay).isSameOrAfter(start)
-                                                : dayjs().startOf('day').isSameOrAfter(start)
-                                            const e_ = srchGasDay 
-                                                ? dayjs(srchGasDay).isBefore(end) 
-                                                : dayjs().endOf('day').isBefore(end)
-                                              
-                                            if(item_.end_date){
+                                        ((helperCheck.find((item_: any) => {
+                                                const targetDate = srchGasDay ? dayjs(srchGasDay).startOf("day") : dayjs().startOf("day");
+                                                const startDate = dayjs(item_.start_date).startOf("day");
 
-                                                return s_;
-                                            }else{
+                                                if (targetDate.isBefore(startDate)) {
+                                                    return false;
+                                                }
 
-                                                return s_ && e_;
-                                            }
+                                                if (!item_.end_date) {
+                                                    return true;
+                                                }
+
+                                                const endDate = dayjs(item_.end_date).endOf("day");
+
+                                                return (
+                                                    targetDate.isSameOrAfter(startDate) &&
+                                                    targetDate.isSameOrBefore(endDate)
+                                                );
                                             }))?.data || [])?.map((e:any, ix:number) => {
 
                                             return (

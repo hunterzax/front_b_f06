@@ -90,7 +90,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 value={watch('remark') || ''}
                                                 onChange={(e) => {
                                                     if (e.target.value.length <= 2000) {
-                                                        setValue('remark', e.target.value);
+                                                        setValue('remark', e?.target?.value ?? "");
                                                     }
                                                 }}
                                                 label=""

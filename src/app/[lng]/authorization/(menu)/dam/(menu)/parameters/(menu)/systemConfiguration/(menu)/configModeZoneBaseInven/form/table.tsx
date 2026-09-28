@@ -88,28 +88,28 @@ const TableConfigModeZone: React.FC<TableProps> = ({ openEditForm, openViewForm,
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
 
-                                {columnVisibility.zone && (
+                                {columnVisibility?.zone && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("zone_id", sortState, setSortState, setSortedData, tableData)} >
                                         {`Zone`}
                                         {getArrowIcon("zone_id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.mode && (
+                                {columnVisibility?.mode && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("mode", sortState, setSortState, setSortedData, tableData)}>
                                         {`Mode`}
                                         {getArrowIcon("mode")}
                                     </th>
                                 )}
 
-                                {columnVisibility.start_date && (
+                                {columnVisibility?.start_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("start_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`Start Date`}
                                         {getArrowIcon("start_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.action && (
+                                {columnVisibility?.action && (
                                     <th scope="col" className={`${table_header_style} text-center`}>
                                         {`Action`}
                                     </th>
@@ -124,19 +124,19 @@ const TableConfigModeZone: React.FC<TableProps> = ({ openEditForm, openViewForm,
                                         key={row?.id}
                                         className={`${table_row_style}`}
                                     >
-                                        {columnVisibility.zone && (
+                                        {columnVisibility?.zone && (
                                             <td className="px-2 py-1  justify-center ">{row?.zone && <div className="flex w-[140px] justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: row?.zone?.color }}>{`${row?.zone?.name}`}</div>}</td>
                                         )}
 
-                                        {columnVisibility.mode && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.mode && row?.mode}</td>
+                                        {columnVisibility?.mode && (
+                                            <td className="px-2 py-1 text-[#464255]">{row?.mode}</td>
                                         )}
 
-                                        {columnVisibility.start_date && (
+                                        {columnVisibility?.start_date && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
                                         )}
 
-                                        {columnVisibility.action && (
+                                        {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 {/* <div className="relative inline-block text-left "> */}
                                                 <div className="relative inline-flex justify-center items-center w-full">

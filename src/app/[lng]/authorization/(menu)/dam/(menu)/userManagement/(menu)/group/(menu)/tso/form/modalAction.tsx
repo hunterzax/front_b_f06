@@ -277,10 +277,11 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 renderValue={(selected) => {
-                                                    if (selected.length === 0) {
+                                                    const selectedValues = Array.isArray(selected) ? selected : [];
+                                                    if (selectedValues.length === 0) {
                                                         return <Typography color="#9CA3AF" className={isReadOnly ? 'opacity-0' : 'opacity-100'} fontSize={14}>Select Division Name</Typography>;
                                                     }
-                                                    return <span className={`${itemselectClass}`}>{`${selected?.length} Selected`}</span>;
+                                                    return <span className={`${itemselectClass}`}>{`${selectedValues.length} Selected`}</span>;
                                                 }}
                                                 MenuProps={{
                                                     PaperProps: {
@@ -383,7 +384,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     disabled={isReadOnly}
                                                     valueWatch={watch("role_default") || ""}
                                                     handleChange={(e) => {
-                                                        setValue("role_default", e.target.value);
+                                                        setValue("role_default", e?.target?.value ?? "");
                                                         if (errors?.role_default) { clearErrors('role_default') }
                                                     }}
                                                     errors={errors?.role_default}

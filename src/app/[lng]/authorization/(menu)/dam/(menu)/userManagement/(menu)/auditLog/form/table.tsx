@@ -101,35 +101,35 @@ const TableAuditLog: React.FC<TableProps> = ({ tableData, isLoading, columnVisib
                     <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                         <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                             <tr className="h-9">
-                                {columnVisibility.id && (
+                                {columnVisibility?.id && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("id", sortState, setSortState, setSortedData, tableData)}>
                                         {`ID`}
                                         {getArrowIcon("id")}
                                     </th>
                                 )}
 
-                                {columnVisibility.module && (
+                                {columnVisibility?.module && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("module", sortState, setSortState, setSortedData, tableData)}>
                                         {`Module`}
                                         {getArrowIcon("module")}
                                     </th>
                                 )}
 
-                                {columnVisibility.create_date && (
+                                {columnVisibility?.create_date && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("create_date", sortState, setSortState, setSortedData, tableData)}>
                                         {`Action Date`}
                                         {getArrowIcon("create_date")}
                                     </th>
                                 )}
 
-                                {columnVisibility.name && (
+                                {columnVisibility?.name && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("reqUser", sortState, setSortState, setSortedData, tableData)}>
                                         {`First Name / Last Name`}
                                         {getArrowIcon("reqUser")}
                                     </th>
                                 )}
 
-                                {columnVisibility.desc && (
+                                {columnVisibility?.desc && (
                                     <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("method", sortState, setSortState, setSortedData, tableData)}>
                                         {`Description`}
                                         {getArrowIcon("method")}
@@ -146,25 +146,25 @@ const TableAuditLog: React.FC<TableProps> = ({ tableData, isLoading, columnVisib
                                         key={row?.id}
                                         className={`${table_row_style}`}
                                     >
-                                        {columnVisibility.id && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.id && row?.id}</td>
+                                        {columnVisibility?.id && (
+                                            <td className="px-2 py-1 text-[#464255]">{row?.id}</td>
                                         )}
 
-                                        {columnVisibility.module && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.module && row?.module}</td>
+                                        {columnVisibility?.module && (
+                                            <td className="px-2 py-1 text-[#464255]">{row?.module}</td>
                                         )}
 
-                                        {columnVisibility.create_date && (
+                                        {columnVisibility?.create_date && (
                                             <td className="px-2 py-1 text-[#464255]">{row?.create_date && formatDate(row?.create_date)}</td>
                                         )}
 
-                                        {columnVisibility.name && (
+                                        {columnVisibility?.name && (
                                             <td className="px-2 py-1 text-[#464255]">
                                                 {row?.reqUser ? JSON.parse(row.reqUser).first_name + ' ' + JSON.parse(row.reqUser).last_name : ''}
                                             </td>
                                         )}
 
-                                        {columnVisibility.desc && (
+                                        {columnVisibility?.desc && (
                                             <td className="px-2 py-1 text-[#464255] capitalize">{renameMethod(row?.method, row?.type)} {matchTypeWithMenu(row?.type)}</td>
                                         )}
                                     </tr>

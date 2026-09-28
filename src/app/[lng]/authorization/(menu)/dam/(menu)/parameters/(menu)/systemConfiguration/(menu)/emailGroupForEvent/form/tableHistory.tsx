@@ -40,34 +40,34 @@ const TableEmailGroupForEventHistory: React.FC<TableProps> = ({ tableData, isLoa
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-1">
                     <tr className="h-9">
 
-                        {columnVisibility.user_type && (
+                        {columnVisibility?.user_type && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("user_type.name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`User Type`}
                                 {getArrowIcon("user_type.name")}
                             </th>
                         )}
 
-                        {columnVisibility.group && (
+                        {columnVisibility?.group && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("group.name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Group Name`}
                                 {getArrowIcon("group.name")}
                             </th>
                         )}
 
-                        {columnVisibility.name && (
+                        {columnVisibility?.name && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Email Group Name For Event`}
                                 {getArrowIcon("name")}
                             </th>
                         )}
 
-                        {columnVisibility.person && (
+                        {columnVisibility?.person && (
                             <th scope="col" className={`${table_header_style} text-center`}>
                                 {`Email`}
                             </th>
                         )}
 
-                        {columnVisibility.update_by && (
+                        {columnVisibility?.update_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, fillMissingUpdateByAccount(tableData))}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -77,14 +77,14 @@ const TableEmailGroupForEventHistory: React.FC<TableProps> = ({ tableData, isLoa
                 </thead>
 
                 <tbody>
-                    {sortedData && sortedData?.map((row: any, index: any) => {
+                    {(sortedData || [])?.map((row: any, index: any) => {
                         return (
                             <tr
                                 key={row?.id}
                                 className={`${table_row_style}`}
                             >
 
-                                {columnVisibility.user_type && (
+                                {columnVisibility?.user_type && (
                                     <td className="px-2 py-1 justify-center">
                                         {
                                             row?.user_type &&
@@ -93,15 +93,15 @@ const TableEmailGroupForEventHistory: React.FC<TableProps> = ({ tableData, isLoa
                                     </td>
                                 )}
 
-                                {columnVisibility.group && (
+                                {columnVisibility?.group && (
                                     <td className="px-2 py-1 text-[#464255]">{row?.group ? row?.group?.name : ''}</td>
                                 )}
 
-                                {columnVisibility.name && (
-                                    <td className="px-2 py-1 text-[#464255] font-light">{row?.name && row?.name}</td>
+                                {columnVisibility?.name && (
+                                    <td className="px-2 py-1 text-[#464255] font-light">{row?.name}</td>
                                 )}
 
-                                {columnVisibility.person && (
+                                {columnVisibility?.person && (
                                     <td className="px-2 py-1 text-center">
                                         <div className="inline-flex items-center justify-center relative">
                                             {/* <button
@@ -132,7 +132,7 @@ const TableEmailGroupForEventHistory: React.FC<TableProps> = ({ tableData, isLoa
                                     </td>
                                 )}
 
-                                {columnVisibility.update_by && (
+                                {columnVisibility?.update_by && (
                                     <td className="px-2 py-1">
                                         <div>
                                             <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

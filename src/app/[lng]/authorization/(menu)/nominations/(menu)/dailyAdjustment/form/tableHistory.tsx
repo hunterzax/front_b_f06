@@ -65,26 +65,26 @@ const TableNomUploadTemplateForShipperHistory: React.FC<TableProps> = ({ tableDa
                 <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                     <tr className="h-9">
 
-                        {columnVisibility.document_type && (
+                        {columnVisibility?.document_type && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("nomination_type.document_type", sortState, setSortState, setSortedData, tableData)}>
                                 {`Document Type`}
                                 {getArrowIcon("nomination_type.document_type")}
                             </th>
                         )}
 
-                        {columnVisibility.file && (
+                        {columnVisibility?.file && (
                             <th scope="col" className={`${table_header_style} text-center`} >
                                 {`File`}
                             </th>
                         )}
 
-                        {columnVisibility.comment && (
+                        {columnVisibility?.comment && (
                             <th scope="col" className={`${table_header_style} text-center`}>
                                 {`Comment`}
                             </th>
                         )}
 
-                        {columnVisibility.updated_by && (
+                        {columnVisibility?.updated_by && (
                             <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("update_by_account.first_name", sortState, setSortState, setSortedData, tableData)}>
                                 {`Updated by`}
                                 {getArrowIcon("update_by_account.first_name")}
@@ -95,12 +95,12 @@ const TableNomUploadTemplateForShipperHistory: React.FC<TableProps> = ({ tableDa
                 </thead>
 
                 <tbody>
-                    {sortedData && sortedData?.map((row: any, index: any) => (
+                    {(sortedData || [])?.map((row: any, index: any) => (
                         <tr
                             key={row?.id}
                             className={`${table_row_style}`}
                         >
-                            {columnVisibility.document_type && (
+                            {columnVisibility?.document_type && (
                                 <td className="pl-2 py-1 text-center">
                                     {row?.nomination_type && (
                                         <div
@@ -113,7 +113,7 @@ const TableNomUploadTemplateForShipperHistory: React.FC<TableProps> = ({ tableDa
                                 </td>
                             )}
 
-                            {columnVisibility.file && (
+                            {columnVisibility?.file && (
                                 <td className="px-2 py-1 text-center">
                                     <div className="inline-flex items-center justify-center relative">
                                         {/* <button
@@ -146,7 +146,7 @@ const TableNomUploadTemplateForShipperHistory: React.FC<TableProps> = ({ tableDa
                                 </td>
                             )}
 
-                            {columnVisibility.comment && (
+                            {columnVisibility?.comment && (
                                 <td className="px-2 py-1 text-center">
                                     <div className="inline-flex items-center justify-center relative">
                                         {/* <button
@@ -178,7 +178,7 @@ const TableNomUploadTemplateForShipperHistory: React.FC<TableProps> = ({ tableDa
                                 </td>
                             )}
 
-                            {columnVisibility.updated_by && (
+                            {columnVisibility?.updated_by && (
                                 <td className="px-2 py-1 text-[#464255]">
                                     <div>
                                         <span className="text-[#464255]">{row?.update_by_account?.first_name} {row?.update_by_account?.last_name}</span>

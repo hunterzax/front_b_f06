@@ -1,4 +1,3 @@
-"use client";
 import * as React from 'react';
 import {
   Dialog,
@@ -255,7 +254,6 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
     setSrchGasDayTo(null);
     setSrchType('')
     setSrchLginMode('')
-    setSrchStartDate(null);
     setFilteredDataTable(data);
     setKey((prevKey) => prevKey + 1);
   };
@@ -364,7 +362,7 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               item?.email?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-              item?.first_name && item?.last_name && (item?.first_name + item?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              (item?.first_name && item?.last_name ? (item?.first_name + item?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
               item?.telephone?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.user_id?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.group?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
@@ -380,15 +378,15 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               formatDateNoTimeNoPlusSeven(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
               formatDateNoTimeNoPlusSeven(item?.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
 
-              item?.update_by_mod && item?.update_by_mod?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-              item?.update_by_mod && item?.update_by_mod?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || // เผื่อ search นามสกุล
-              item?.update_by_mod && item?.update_by_mod?.first_name && item?.update_by_mod?.last_name && (item?.update_by_mod?.first_name + item?.update_by_mod?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              item?.update_by_mod?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+              item?.update_by_mod?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || // เผื่อ search นามสกุล
+              (item?.update_by_mod?.first_name && item?.update_by_mod?.last_name ? (item?.update_by_mod?.first_name + item?.update_by_mod?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
 
             )
 
@@ -404,28 +402,28 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               formatNumberFourDecimalNom(val_to_string)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || //for make full value example 1,200.000
               formatNumberThreeDecimalNoComma(val_to_string)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || //for make full value example 1200.000
 
-              ((columnVisibility.start_date) && formatDateNoTime(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.end_date) && formatDateNoTime(item?.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              (columnVisibility?.start_date ? formatDateNoTime(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+              (columnVisibility?.end_date ? formatDateNoTime(item?.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
-              ((columnVisibility.created_by || columnVisibility.create_by) && item?.create_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.created_by || columnVisibility.create_by) && item?.create_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              ((columnVisibility.created_by || columnVisibility.create_by) && item?.create_by_account?.first_name && item?.create_by_account?.last_name && (item?.create_by_account?.first_name + item?.create_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && item?.create_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && item?.create_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && item?.create_by_account?.first_name && item?.create_by_account?.last_name ? (item?.create_by_account?.first_name + item?.create_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-              ((columnVisibility.created_by || columnVisibility.create_by) && formatDateNoTime(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.created_by || columnVisibility.create_by) && formatDate(item?.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.created_by || columnVisibility.create_by) && formatDateTimeSec(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.created_by || columnVisibility.create_by) && formatTime(item?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
-              ((columnVisibility.created_by || columnVisibility.create_by) && formatDateTimeSecPlusSeven(item?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && formatDateNoTime(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && formatDate(item?.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && formatDateTimeSec(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && formatTime(item?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && formatDateTimeSecPlusSeven(item?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name && (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name ? (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
             )
 
           case 'nomination-point':
@@ -444,18 +442,18 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               formatNumberThreeDecimal(item?.maximum_capacity)?.toString().includes(queryLower) ||
               formatNumberThreeDecimalNoComma(item?.maximum_capacity)?.toString().includes(queryLower) ||
 
-              ((columnVisibility.start_date) && formatDateNoTime(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.end_date) && formatDateNoTime(item?.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              (columnVisibility?.start_date ? formatDateNoTime(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+              (columnVisibility?.end_date ? formatDateNoTime(item?.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name && (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name ? (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
             )
 
           // DAM --> metering checking condition
@@ -463,18 +461,18 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
             return (
               item?.version?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
 
-              ((columnVisibility.start_date) && formatDateNoTime(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.end_date) && formatDateNoTime(item?.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              (columnVisibility?.start_date ? formatDateNoTime(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+              (columnVisibility?.end_date ? formatDateNoTime(item?.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name && (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name ? (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
             )
 
           // Allocation --> alloc review
@@ -494,16 +492,16 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               formatNumberFourDecimal(item?.shipper_allocation_review)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimalNoComma(item?.shipper_allocation_review)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
 
-              (columnVisibility.updated_by && item?.create?.create_by?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              (columnVisibility.updated_by && item?.create?.create_by?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              (columnVisibility.updated_by && item?.create?.create_by?.first_name && item?.create?.create_by?.last_name && (item?.create?.create_by?.first_name + item?.create?.create_by?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              (columnVisibility?.updated_by && item?.create?.create_by?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              (columnVisibility?.updated_by && item?.create?.create_by?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              (columnVisibility?.updated_by && item?.create?.create_by?.first_name && item?.create?.create_by?.last_name ? (item?.create?.create_by?.first_name + item?.create?.create_by?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-              (columnVisibility.updated_by && formatDateNoTime(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              (columnVisibility.updated_by && formatDate(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              (columnVisibility.updated_by && formatDateTimeSec(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              (columnVisibility.updated_by && formatTime(item?.create?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
-              (columnVisibility.updated_by && formatDateTimeSecPlusSeven(item?.create?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
-              (columnVisibility.updated_by && formatDateTimeSecNoPlusSeven(item?.create?.create_date)?.toLowerCase().includes(queryLower.trim()))
+              (columnVisibility?.updated_by && formatDateNoTime(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              (columnVisibility?.updated_by && formatDate(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              (columnVisibility?.updated_by && formatDateTimeSec(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              (columnVisibility?.updated_by && formatTime(item?.create?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
+              (columnVisibility?.updated_by && formatDateTimeSecPlusSeven(item?.create?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
+              (columnVisibility?.updated_by && formatDateTimeSecNoPlusSeven(item?.create?.create_date)?.toLowerCase().includes(queryLower.trim()))
             )
 
           case 'allocation-management':
@@ -527,15 +525,15 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               formatNumberFourDecimal(item?.allocation_management_shipper_review[0]?.shipper_allocation_review)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimalNoComma(item?.allocation_management_shipper_review[0]?.shipper_allocation_review)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.create?.create_by?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.create?.create_by?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.create?.create_by?.first_name && item?.create?.create_by?.last_name && (item?.create?.create_by?.first_name + item?.create?.create_by?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.create?.create_by?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.create?.create_by?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.create?.create_by?.first_name && item?.create?.create_by?.last_name ? (item?.create?.create_by?.first_name + item?.create?.create_by?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateNoTime(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDate(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSec(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatTime(item?.create?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSecPlusSeven(item?.create?.create_date)?.toLowerCase().includes(queryLower.trim()))
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateNoTime(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDate(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSec(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatTime(item?.create?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSecPlusSeven(item?.create?.create_date)?.toLowerCase().includes(queryLower.trim()))
             )
 
           case 'bal-vent-commissioning-other':
@@ -558,15 +556,15 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               formatNumberFourDecimalNoComma(item?.other_gas_value_mmbtud)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
 
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name && (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name ? (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
             )
 
           case 'system-login':
@@ -577,30 +575,30 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               item?.role_default?.[0]?.role?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.mode_account?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name && (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name ? (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
             )
 
           case 'config-mode-zone-base-inventory':
             return (
               item?.zone?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.mode?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-              ((columnVisibility.start_date) && formatDateNoTime(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name && (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
+              (columnVisibility?.start_date ? formatDateNoTime(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name ? (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim()))
             )  
 
           default:
@@ -622,16 +620,16 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               item?.company_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-              item?.first_name && item?.last_name && (item?.first_name + item?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              (item?.first_name && item?.last_name ? (item?.first_name + item?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
               item?.address?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.telephone?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.user_id?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.group?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
 
-              ((columnVisibility.start_date) && formatDateNoTime(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.end_date) && formatDateNoTime(item?.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              (columnVisibility?.start_date ? formatDateNoTime(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+              (columnVisibility?.end_date ? formatDateNoTime(item?.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
-              toDayjs(item?.gas_day).format("DD/MM/YYYY")?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+              (toDayjs(item?.gas_day)?.isValid() ? toDayjs(item?.gas_day)?.format("DD/MM/YYYY")?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
               item?.east?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.west?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimal(item?.east)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
@@ -642,7 +640,7 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               formatTime(item?.contract_point_end_date)?.toLowerCase().includes(queryLower) ||
               formatDate(item?.contract_point_end_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
 
-              query.length !== 0 && item?.system_login_account?.length == (Number(queryLower)) ||
+              (query?.length !== 0 && item?.system_login_account ? item?.system_login_account?.length == (Number(queryLower)) : false) ||
               item?.detail?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.concept_point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.type_concept_point?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
@@ -652,8 +650,7 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               item?.supply_reference_quality_area_by?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.area?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.zone?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-              item?.contract_point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-              item?.contract_point?.contract_point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+              (typeof item?.contract_point === 'string' ? item?.contract_point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : item?.contract_point?.contract_point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
               item?.account_manage?.[0]?.group?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.account_manage?.[0]?.division?.division_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.role_default?.[0]?.role?.name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
@@ -664,8 +661,7 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               item?.before_month?.toString().includes(queryLower) ||
               item?.non_tpa_point_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
 
-              (typeof item?.nomination_point === 'string' ? item.nomination_point.replace(/\s+/g, '').toLowerCase().trim() : '').includes(queryLower) ||
-              item?.nomination_point?.nomination_point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+              (typeof item?.nomination_point === 'string' ? item?.nomination_point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : item?.nomination_point?.nomination_point?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
               item?.maximum_capacity?.toString().includes(queryLower) ||
               formatNumberThreeDecimal(item?.maximum_capacity)?.toString().includes(queryLower) ||
               formatNumberThreeDecimalNoComma(item?.maximum_capacity)?.toString().includes(queryLower) ||
@@ -674,9 +670,7 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               item?.min?.toString().includes(queryLower) ||
               item?.max?.toString().includes(queryLower) ||
               item?.hour?.toString().includes(queryLower) ||
-              item?.shadow_time?.toString().includes(queryLower) ||
-              item?.term_type?.name.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-              item?.before_month?.toString().includes(queryLower) ||
+              item?.term_type?.name?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
               item?.area_nominal_capacity?.toString().includes(queryLower) ||
               formatNumberThreeDecimal(item?.area_nominal_capacity)?.toString().includes(queryLower) ||
               item?.topic?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
@@ -695,22 +689,22 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               item?.shipper_allocation_review?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.nominationValue?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               item?.intradaySystem?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-              item?.allocation_management_shipper_review && item?.allocation_management_shipper_review?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+              item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimal(item?.systemAllocation)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimal(item?.previousAllocationTPAforReview)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimal(item?.shipper_allocation_review)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimal(item?.nominationValue)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimal(item?.intradaySystem)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-              item?.allocation_management_shipper_review && formatNumberFourDecimal(item?.allocation_management_shipper_review[0]?.shipper_allocation_review)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+              formatNumberFourDecimal(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimalNoComma(item?.systemAllocation)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimalNoComma(item?.previousAllocationTPAforReview)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimalNoComma(item?.shipper_allocation_review)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimalNoComma(item?.nominationValue)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimalNoComma(item?.intradaySystem)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-              item?.allocation_management_shipper_review && formatNumberFourDecimalNoComma(item?.allocation_management_shipper_review[0]?.shipper_allocation_review)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.create?.create_by?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.create?.create_by?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.create?.create_by?.first_name && item?.create?.create_by?.last_name && (item?.create?.create_by?.first_name + item?.create?.create_by?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              formatNumberFourDecimalNoComma(item?.allocation_management_shipper_review?.[0]?.shipper_allocation_review)?.toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.create?.create_by?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.create?.create_by?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.create?.create_by?.first_name && item?.create?.create_by?.last_name ? (item?.create?.create_by?.first_name + item?.create?.create_by?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
               formatDateNoTime(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
               formatDate(item?.create?.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
@@ -778,35 +772,35 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               formatNumberFourDecimalNoComma(item?.commissioning_gas_value_mmbtud)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
               formatNumberFourDecimalNoComma(item?.other_gas_value_mmbtud)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              ((columnVisibility.updated_by || columnVisibility.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name && (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && item?.update_by_account?.first_name && item?.update_by_account?.last_name ? (item?.update_by_account?.first_name + item?.update_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
-              ((columnVisibility.updated_by || columnVisibility.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateNoTime(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDate(item?.update_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSec(item?.update_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatTime(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.updated_by || columnVisibility?.update_by) && formatDateTimeSecPlusSeven(item?.update_date)?.toLowerCase().includes(queryLower.trim())) ||
 
-              ((columnVisibility.created_by || columnVisibility.create_by) && item?.create_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.created_by || columnVisibility.create_by) && item?.create_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              ((columnVisibility.created_by || columnVisibility.create_by) && item?.create_by_account?.first_name && item?.create_by_account?.last_name && (item?.create_by_account?.first_name + item?.create_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && item?.create_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && item?.create_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && item?.create_by_account?.first_name && item?.create_by_account?.last_name ? (item?.create_by_account?.first_name + item?.create_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-              ((columnVisibility.created_by || columnVisibility.create_by) && formatDateNoTime(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.created_by || columnVisibility.create_by) && formatDate(item?.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              ((columnVisibility.created_by || columnVisibility.create_by) && formatDateTimeSec(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              ((columnVisibility.created_by || columnVisibility.create_by) && formatTime(item?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
-              ((columnVisibility.created_by || columnVisibility.create_by) && formatDateTimeSecPlusSeven(item?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && formatDateNoTime(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && formatDate(item?.create_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && formatDateTimeSec(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && formatTime(item?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
+              ((columnVisibility?.created_by || columnVisibility?.create_by) && formatDateTimeSecPlusSeven(item?.create_date)?.toLowerCase().includes(queryLower.trim())) ||
 
-              (columnVisibility.update_permission_by_account && item?.update_permission_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              (columnVisibility.update_permission_by_account && item?.update_permission_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
-              (columnVisibility.update_permission_by_account && item?.update_permission_by_account?.first_name && item?.update_permission_by_account?.last_name && (item?.update_permission_by_account?.first_name + item?.update_permission_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              (columnVisibility?.update_permission_by_account && item?.update_permission_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              (columnVisibility?.update_permission_by_account && item?.update_permission_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) || // เผื่อ search นามสกุล
+              (columnVisibility?.update_permission_by_account && item?.update_permission_by_account?.first_name && item?.update_permission_by_account?.last_name ? (item?.update_permission_by_account?.first_name + item?.update_permission_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
-              (columnVisibility.update_permission_by_account && formatDateNoTime(item?.update_permission_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              (columnVisibility.update_permission_by_account && formatDate(item?.update_permission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
-              (columnVisibility.update_permission_by_account && formatDateTimeSec(item?.update_permission_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
-              (columnVisibility.update_permission_by_account && formatTime(item?.update_permission_date)?.toLowerCase().includes(queryLower.trim())) ||
-              (columnVisibility.update_permission_by_account && formatDateTimeSecPlusSeven(item?.update_permission_date)?.toLowerCase().includes(queryLower.trim())) ||
+              (columnVisibility?.update_permission_by_account && formatDateNoTime(item?.update_permission_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              (columnVisibility?.update_permission_by_account && formatDate(item?.update_permission_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+              (columnVisibility?.update_permission_by_account && formatDateTimeSec(item?.update_permission_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)) ||
+              (columnVisibility?.update_permission_by_account && formatTime(item?.update_permission_date)?.toLowerCase().includes(queryLower.trim())) ||
+              (columnVisibility?.update_permission_by_account && formatDateTimeSecPlusSeven(item?.update_permission_date)?.toLowerCase().includes(queryLower.trim())) ||
 
               (item?.mode_account?.name + " Mode")?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||  // ใช้ใน login mgn tools
               // 1 == SSO 2 == Local
@@ -821,9 +815,9 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
               formatDateNoTimeNoPlusSeven(item?.start_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
               formatDateNoTimeNoPlusSeven(item?.end_date)?.replace(/\s+/g, '').toLowerCase().trim().includes(query.replace(/\s+/g, '')?.toLowerCase().trim()) ||
 
-              item?.update_by_mod && item?.update_by_mod?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-              item?.update_by_mod && item?.update_by_mod?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) || // เผื่อ search นามสกุล
-              item?.update_by_mod && item?.update_by_mod?.first_name && item?.update_by_mod?.last_name && (item?.update_by_mod?.first_name + item?.update_by_mod?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
+              (item?.update_by_mod?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ?? false) ||
+              (item?.update_by_mod?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ?? false) || // เผื่อ search นามสกุล
+              (item?.update_by_mod?.first_name && item?.update_by_mod?.last_name ? (item?.update_by_mod?.first_name + item?.update_by_mod?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
 
             )
         }
@@ -871,7 +865,7 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
   const [tk, settk] = useState<boolean>(false);
 
   const [columnVisibility, setColumnVisibility] = useState<any>(
-    initialColumns ? Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible])) : {}
+    initialColumns ? Object.fromEntries(initialColumns.map((column: any) => [column?.key, column?.visible])) : {}
   );
 
   // const handleColumnToggle = (columnKey: string) => {
@@ -892,7 +886,7 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
     };
 
     const getAncestors = (key: string): string[] => {
-      const column = dataFilter.find((col: any) => col.key === key);
+      const column = (dataFilter || [])?.find((col: any) => col.key === key);
       if (column?.parent_id) {
         return [column.parent_id, ...getAncestors(column.parent_id)];
       }
@@ -936,11 +930,11 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
   const gnrFirstLog: any = (logDT: any) => {
     let gnrData = logDT;
 
-    if (gnrData) {
-      const lastElement = gnrData?.length - 1;
-      if (!gnrData[lastElement]?.update_by_account && gnrData?.length >= 2) {
-        gnrData[lastElement].update_by_account = gnrData[lastElement]?.create_by_account
-        gnrData[lastElement].update_date = gnrData[lastElement]?.create_date
+    if (gnrData && Array.isArray(gnrData)) {
+      const lastElement = (gnrData?.length ?? 0) - 1;
+      if (gnrData?.[lastElement] && !gnrData?.[lastElement]?.update_by_account && (gnrData?.length ?? 0) >= 2) {
+        gnrData[lastElement].update_by_account = gnrData?.[lastElement]?.create_by_account
+        gnrData[lastElement].update_date = gnrData?.[lastElement]?.create_date
       }
 
       return gnrData
@@ -951,7 +945,7 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
 
   useEffect(() => {
     setFilteredDataTable(gnrFirstLog(data))
-    setColumnVisibility(initialColumns ? Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible])) : {})
+    setColumnVisibility(initialColumns ? Object.fromEntries(initialColumns.map((column: any) => [column?.key, column?.visible])) : {})
   }, [data])
 
   // #region render table
@@ -1117,14 +1111,18 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
                           {tableType == "group-3" ? (
                             head_data && head_data.length > 0 ? (head_data[0]?.title || "") : ("No Data Available")
                           ) : (
-                            head_data?.map((item: any, index: number) => (<div className='w-full text-[#000000B2]' key={index}><span className='font-bold'>{item?.title || ""}</span></div>)) || "No Data Available"
+                            head_data && head_data.length > 0
+                              ? head_data.map((item: any, index: number) => (<div className='w-full text-[#000000B2]' key={index}><span className='font-bold'>{item?.title || ""}</span></div>))
+                              : "No Data Available"
                           )}
 
                           {/* VALUE */}
                           {tableType == "group-3" ? (
                             head_data && head_data.length > 0 ? (head_data[0]?.value || "") : ("No Data Available")
                           ) : (
-                            head_data?.map((item: any, index: number) => (<div className=' w-full text-[#58585A]' key={index}><span>{item?.value || ""}</span></div>)) || "No Data Available"
+                            head_data && head_data.length > 0
+                              ? head_data.map((item: any, index: number) => (<div className=' w-full text-[#58585A]' key={index}><span>{item?.value || ""}</span></div>))
+                              : "No Data Available"
                           )}
 
                         </div>
@@ -1150,14 +1148,18 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
                           {tableType == "group-3" ? (
                             head_data && head_data.length > 0 ? (head_data[0]?.title || "") : ("No Data Available")
                           ) : (
-                            head_data?.map((item: any, index: number) => (<div className='w-full text-[#000000B2]' key={index}><span className='font-bold'>{item?.title || ""}</span></div>)) || "No Data Available"
+                            head_data && head_data.length > 0
+                              ? head_data.map((item: any, index: number) => (<div className='w-full text-[#000000B2]' key={index}><span className='font-bold'>{item?.title || ""}</span></div>))
+                              : "No Data Available"
                           )}
 
                           {/* VALUE */}
                           {tableType == "group-3" ? (
                             head_data && head_data.length > 0 ? (head_data[0]?.value || "") : ("No Data Available")
                           ) : (
-                            head_data?.map((item: any, index: number) => (<div className=' w-full text-[#58585A]' key={index}><span>{item?.value || ""}</span></div>)) || "No Data Available"
+                            head_data && head_data.length > 0
+                              ? head_data.map((item: any, index: number) => (<div className=' w-full text-[#58585A]' key={index}><span>{item?.value || ""}</span></div>))
+                              : "No Data Available"
                           )}
 
                         </div>
@@ -1316,7 +1318,7 @@ const ModalHistory: React.FC<ModalHistoryProps> = ({ open, handleClose, title, d
                             onChange={(e) => setSrchLginMode(e.target.value)}
                             options={allocationStatusMaster?.data?.map((item: any) => ({
                               value: item?.id?.toString(),
-                              label: item.name
+                              label: item?.name
                             }))}
                             placeholder="Select Status"
                           />

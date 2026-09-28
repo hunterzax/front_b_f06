@@ -37,7 +37,7 @@ interface ClientProps {
     };
 }
 
-const ClientPage: React.FC<ClientProps> = (props) => {
+const ClientPage: React.FC<ClientProps> = () => {
     const userDT: any = getUserValue();
     const [tk, settk] = useState<boolean>(true);
 
@@ -47,27 +47,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
-    let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
-    // let user_permission: any = getCookieValue("k3a9r2b6m7t0x5w1s8j");
+    let user_permission: any = typeof window !== 'undefined' ? (getCookieValue("k3a9r2b6m7t0x5w1s8j") || localStorage?.getItem("k3a9r2b6m7t0x5w1s8j")) : null;
     user_permission = user_permission ? decryptData(user_permission) : null;
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
-
-            // if (user_permission?.role_config) {
-            //     const updatedUserPermission = generateUserPermission(user_permission);
-            //     setUserPermission(updatedUserPermission);
-            // } else {
-            //     const permission = findRoleConfigByMenuName('Monthly Report', userDT)
-            //     setUserPermission(permission);
-            // }
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+            }
 
             const permission = findRoleConfigByMenuName('Monthly Report', userDT)
             if (permission) {
                 setUserPermission(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermission(updatedUserPermission);
             }
         } catch (error) {
@@ -88,8 +82,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 );
             };
 
-            data.forEach((item) => {
-                const day = item.gas_day;
+            (Array.isArray(data) ? data : []).forEach((item) => {
+                const day = item?.gas_day;
+                if (!day) return;
 
                 if (!map[day]) {
                     map[day] = {
@@ -99,23 +94,30 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     };
                 }
 
-                item?.data?.shipperData?.forEach((shipperData: any) => {
-                    const currentData = shipperData.shipperAccumulated ?? shipperData.shipperSummary ?? {};
+                (Array.isArray(item?.data?.shipperData) ? item.data.shipperData : []).forEach((shipperData: any) => {
+                    if (!shipperData) return;
+                    const currentData = shipperData?.shipperAccumulated ?? shipperData?.shipperSummary ?? {};
 
                     // 🔥 filter null object
                     if (isAllNull(currentData)) return;
 
-                    map[day].value.push({
-                        key: shipperData.shipperName ?? shipperData.shipper,
-                        data: currentData,
-                    });
+                    if (map[day]?.value) {
+                        map[day].value.push({
+                            key: shipperData?.shipperName ?? shipperData?.shipper ?? '',
+                            data: currentData,
+                        });
+                    }
                 });
 
-                map[day].sum = item?.data?.accumulated ?? item?.data?.summary ?? {};
+                if (map[day]) {
+                    map[day].sum = item?.data?.accumulated ?? item?.data?.summary ?? {};
 
-                map[day].value.sort((a: any, b: any) => {
-                    return a.key.localeCompare(b.key);
-                });
+                    if (Array.isArray(map[day].value)) {
+                        map[day].value.sort((a: any, b: any) => {
+                            return (a?.key ?? '').localeCompare(b?.key ?? '');
+                        });
+                    }
+                }
             });
         } catch (error) {
             map = {};
@@ -210,73 +212,57 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             setDataExpanded(transformDataExpanded(res_new_data?.gasDayShipperData ?? []));
             setFilteredDataTableExpanded(transformDataExpanded(res_new_data?.gasDayShipperData ?? []));
 
-            if (res_new_data?.setDataUse?.length > 0) {
+            const setDataUseList: any[] = Array.isArray(res_new_data?.setDataUse) ? res_new_data.setDataUse : [];
 
-                // ถ้า res_new_data.typeReport == "Summary" แสดงว่าไม่ได้กรอง shipper มา
-                // ให้หา res_new_data.setDataUse.key ที่เท่ากับ res_new_data.typeReport แล้วเอาไปแสดงผล
-                if (srchShipperName?.length !== 1 && srchContractCode == '') { // ไม่ได้เสิช shipper กับ contract
-                    let filter_summary: any = res_new_data?.setDataUse?.filter((item: any) => item.keys == "Summary")
+            if (setDataUseList.length > 0) {
+                if (srchShipperName?.length !== 1 && srchContractCode == '') {
+                    const filter_summary = setDataUseList.filter((item: any) => item?.keys == "Summary");
+                    const summaryFirst = filter_summary?.[0];
+                    const summaryValues = Array.isArray(summaryFirst?.value) ? summaryFirst.value : [];
+                    const find_data_sum = summaryValues.find((item: any) => item?.gas_day == 'sum');
+                    setDataSummary(find_data_sum || {});
 
-                    // หา sum เพื่อเอาไปแสดงผล total
-                    // "gas_day": "sum" คือแถบเขียว
-                    let find_data_sum = filter_summary?.[0]?.value?.find((item: any) => item.gas_day == 'sum')
-                    setDataSummary(find_data_sum)
-
-                    // กันแตก
-                    if (!Array.isArray(filter_summary)) filter_summary = [];
-                    if (!filter_summary[0]) filter_summary[0] = { value: [] };
-
-                    // ลบ sum ออกจาก filter_summary
-                    filter_summary[0].value = filter_summary?.[0]?.value?.filter((row: any) => row.gas_day !== 'sum');
-
-                    // ทำให้ value อยู่ชั้นเดียวกับ gas_day
-                    const flatData = filter_summary?.[0]?.value.map(({ gas_day, value }: any) => ({ gas_day, ...value }));
-
-                    setData(flatData)
-                    setFilteredDataTable(flatData);
-
-                } else {
-
-                    let type_report = res_new_data.typeReport;
-                    let filter_shipper_or_contract: any = res_new_data?.setDataUse?.filter((item: any) => item.keys == type_report);
-
-                    // หา sum เพื่อเอาไปแสดงผล total
-                    let find_data_sum = filter_shipper_or_contract?.[0]?.value?.find((item: any) => item.gas_day == 'sum');
-                    setDataSummary(find_data_sum);
-
-                    // ลบ sum ออกจาก filter_shipper_or_contract
-                    if (filter_shipper_or_contract?.length > 0) {
-                        filter_shipper_or_contract[0].value = filter_shipper_or_contract?.[0]?.value?.filter((row: any) => row.gas_day !== 'sum');
-
-                        // ทำให้ value อยู่ชั้นเดียวกับ gas_day
-                        const flatData = filter_shipper_or_contract?.[0]?.value.map(({ gas_day, value }: any) => ({ gas_day, ...value }));
-
+                    if (summaryFirst) {
+                        const nonSumValues = summaryValues.filter((row: any) => row?.gas_day !== 'sum');
+                        summaryFirst.value = nonSumValues;
+                        const flatData = nonSumValues.map(({ gas_day, value }: any) => ({ gas_day, ...(value ?? {}) }));
                         setData(flatData);
                         setFilteredDataTable(flatData);
                     } else {
                         setData([]);
                         setFilteredDataTable([]);
                     }
+                } else {
+                    const type_report = res_new_data?.typeReport;
+                    const filter_shipper_or_contract = setDataUseList.filter((item: any) => item?.keys == type_report);
+                    const shipperFirst = filter_shipper_or_contract?.[0];
+                    const shipperValues = Array.isArray(shipperFirst?.value) ? shipperFirst.value : [];
+                    const find_data_sum = shipperValues.find((item: any) => item?.gas_day == 'sum');
+                    setDataSummary(find_data_sum || {});
 
+                    if (shipperFirst) {
+                        const nonSumValues = shipperValues.filter((row: any) => row?.gas_day !== 'sum');
+                        shipperFirst.value = nonSumValues;
+                        const flatData = nonSumValues.map(({ gas_day, value }: any) => ({ gas_day, ...(value ?? {}) }));
+                        setData(flatData);
+                        setFilteredDataTable(flatData);
+                    } else {
+                        setData([]);
+                        setFilteredDataTable([]);
+                    }
                 }
 
-                // Active เมื่อ filter Gas Month และ Shipper Name 
-                // if (srchGasDay == null || srchShipperName == '' || res_new_data?.setDataUse?.length <= 0) {
-                // if (srchShipperName == '' || res_new_data?.setDataUse?.length <= 0) {
-                // console.log('srchShipperName : ', srchShipperName);
-                // console.log('srchShipperName.length : ', srchShipperName.length);
-                if (srchShipperName.length !== 1 || res_new_data?.setDataUse?.length <= 0) {
+                if (srchShipperName?.length !== 1 || setDataUseList.length <= 0) {
                     setDisableApprove(true)
                 } else {
                     setDisableApprove(false)
                 }
-
             } else {
                 setData([]);
                 setFilteredDataTable([]);
 
                 setDataSummary({})
-                if (srchShipperName.length !== 1) {
+                if (srchShipperName?.length !== 1) {
                     setDisableApprove(true)
                 } else {
                     setDisableApprove(false)
@@ -287,14 +273,15 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         } else { // table download
             const localDate = srchGasDayTabDownlaod ? toDayjs(srchGasDayTabDownlaod).format("MMMM YYYY") : toDayjs().format("MMMM YYYY");
 
-            const result_2 = dataTabDownloadOriginal.filter((item: any) => {
+            const result_2 = (dataTabDownloadOriginal || []).filter((item: any) => {
                 if (srchShipperName?.length === dataShipper?.length || srchShipperName?.length === 0) {
                     return (
                         (srchGasDayTabDownlaod ? localDate == item?.monthText : true) &&
                         (srchContractCode ? srchContractCode == item?.contractCode : true)
                     );
                 } else {
-                    const shipperName = item?.contractCode ? item?.group?.id_name : (dataShipper?.find((f: any) => f?.id_name === JSON.parse(item?.jsonData)?.typeReport)?.id_name || '')
+                    const typeReport = item?.jsonData ? (() => { try { return JSON.parse(item.jsonData)?.typeReport; } catch { return ''; } })() : '';
+                    const shipperName = item?.contractCode ? item?.group?.id_name : (dataShipper?.find((f: any) => f?.id_name === typeReport)?.id_name || '')
                     const fShipper = srchShipperName?.find((f: any) => f === shipperName)
                     return (
                         (srchGasDayTabDownlaod ? localDate == item?.monthText : true) &&
@@ -359,28 +346,81 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         setKey((prevKey) => prevKey + 1);
     };
 
-    const fetchShipperAndContract = async () => {
-      const defaultMonth = dayjs().startOf('month')
-      const gasDay = tabIndex == 0 ? srchGasDay : srchGasDayTabDownlaod
-      const month = gasDay ? dayjs(gasDay).startOf('day') : defaultMonth
-      let apiUrl = `/master/daily-adjustment/shipper-data?month=${month.isValid() ? month.format('YYYY-MM-DD') : defaultMonth.format('YYYY-MM-DD')}`
-      const res_: any = await getService(apiUrl)
+    // const fetchShipperAndContract = async () => {
+    //   const defaultMonth = dayjs().startOf('month')
+    //   const gasDay = tabIndex == 0 ? srchGasDay : srchGasDayTabDownlaod
+    //   const month = gasDay ? dayjs(gasDay).startOf('day') : defaultMonth
+    //   let apiUrl = `/master/daily-adjustment/shipper-data?month=${month.isValid() ? month.format('YYYY-MM-DD') : defaultMonth.format('YYYY-MM-DD')}`
+    //   const res_: any = await getService(apiUrl)
   
-      if (res_ && Array.isArray(res_)) {
-        setDataShipper(res_)
-        if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-          const uniqueContract = res_.filter((f: any) => f?.id === userDT?.account_manage?.[0]?.group?.id)?.flatMap((fm: any) => fm?.contract_code)
-          setDataContract(uniqueContract)
-        } else {
-          const uniqueContract = res_.flatMap((fm: any) => fm?.contract_code)
-          setDataContract(uniqueContract)
+    //   if (res_ && Array.isArray(res_)) {
+    //     setDataShipper(res_)
+    //     if (userDT?.account_manage?.[0]?.user_type_id == 3) {
+    //       const uniqueContract = res_.filter((f: any) => f?.id === userDT?.account_manage?.[0]?.group?.id)?.flatMap((fm: any) => fm?.contract_code)
+    //       setDataContract(uniqueContract)
+    //     } else {
+    //       const uniqueContract = res_.flatMap((fm: any) => fm?.contract_code)
+    //       setDataContract(uniqueContract)
+    //     }
+    //   }
+    // }
+
+    const fetchContractMaster = async () => {
+    try {
+        const res_contract_code_: any = await getService(
+            `/master/capacity/pure-contract`
+        )
+
+        const res_contract_code = (
+            Array.isArray(res_contract_code_)
+                ? res_contract_code_
+                : []
+        ).filter(
+            (item: any) =>
+                item?.status_capacity_request_management_id !== 3
+        )
+
+        setDataContract(res_contract_code)
+        setDataContractOriginal(res_contract_code)
+
+        // สำคัญ
+        return res_contract_code
+
+    } catch (error) {
+        console.error('fetchContractMaster error : ', error)
+
+        setDataContract([])
+        setDataContractOriginal([])
+
+        return []
+    }
+}
+
+    const fetchShipperAndContract = async () => {
+        const defaultMonth = dayjs().startOf('month')
+        const gasDay = tabIndex == 0 ? srchGasDay : srchGasDayTabDownlaod
+
+        const month = gasDay
+            ? dayjs(gasDay).startOf('day')
+            : defaultMonth
+
+        const apiUrl =
+            `/master/daily-adjustment/shipper-data?month=${month.isValid()
+                ? month.format('YYYY-MM-DD')
+                : defaultMonth.format('YYYY-MM-DD')
+            }`
+
+        const res_: any = await getService(apiUrl)
+
+        if (Array.isArray(res_)) {
+            // ใช้ endpoint นี้สำหรับ Shipper เท่านั้น
+            setDataShipper(res_)
         }
-      }
     }
 
     // ############### LIKE SEARCH ###############
     const handleSearch = (query: string) => {
-        const queryLower = query?.replace(/\s+/g, '')?.toLowerCase().trim();
+        const queryLower = (query || '').replace(/\s+/g, '')?.toLowerCase().trim();
 
         // table report
         if (tabIndex == 0) {
@@ -390,67 +430,66 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 return;
             }
 
-            const searchData = (data: any[], query: string) => {
-                const queryLower = query.toLowerCase().trim().replace(/\s+/g, "");
+            const searchData = (data: any[], queryStr: string) => {
+                const qLower = (queryStr || '').toLowerCase().trim().replace(/\s+/g, "");
 
                 const checkMatch = (item: any) => {
+                    if (!item) return false;
                     return (
-                        item["Entry Point"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        item["Exit"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        item["Entry - Exit"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        item["Fuel Gas"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        item["Balancing Gas"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        item["Change Min Inventory"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        item["Shrinkagate"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        item["Commissioning"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        item["Gas Vent"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        item["Other Gas"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        item["Imbalance"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        item["Acc. Imbqalance"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        item["Min Inventory"]?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
+                        (item["Entry Point"] != null && item["Entry Point"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
+                        (item["Exit"] != null && item["Exit"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
+                        (item["Entry - Exit"] != null && item["Entry - Exit"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
+                        (item["Fuel Gas"] != null && item["Fuel Gas"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
+                        (item["Balancing Gas"] != null && item["Balancing Gas"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
+                        (item["Change Min Inventory"] != null && item["Change Min Inventory"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
+                        (item["Shrinkagate"] != null && item["Shrinkagate"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
+                        (item["Commissioning"] != null && item["Commissioning"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
+                        (item["Gas Vent"] != null && item["Gas Vent"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
+                        (item["Other Gas"] != null && item["Other Gas"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
+                        (item["Imbalance"] != null && item["Imbalance"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
+                        (item["Acc. Imbqalance"] != null && item["Acc. Imbqalance"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
+                        (item["Min Inventory"] != null && item["Min Inventory"].toString().replace(/\s+/g, '').toLowerCase().includes(qLower)) ||
 
-                        formatNumberFourDecimal(item["Entry Point"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Exit"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Entry - Exit"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Fuel Gas"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Balancing Gas"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Change Min Inventory"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Shrinkagate"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Commissioning"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Gas Vent"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Other Gas"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Imbalance"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Acc. Imbqalance"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Min Inventory"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
+                        (formatNumberFourDecimal(item["Entry Point"]) ? String(formatNumberFourDecimal(item["Entry Point"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimal(item["Exit"]) ? String(formatNumberFourDecimal(item["Exit"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimal(item["Entry - Exit"]) ? String(formatNumberFourDecimal(item["Entry - Exit"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimal(item["Fuel Gas"]) ? String(formatNumberFourDecimal(item["Fuel Gas"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimal(item["Balancing Gas"]) ? String(formatNumberFourDecimal(item["Balancing Gas"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimal(item["Change Min Inventory"]) ? String(formatNumberFourDecimal(item["Change Min Inventory"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimal(item["Shrinkagate"]) ? String(formatNumberFourDecimal(item["Shrinkagate"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimal(item["Commissioning"]) ? String(formatNumberFourDecimal(item["Commissioning"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimal(item["Gas Vent"]) ? String(formatNumberFourDecimal(item["Gas Vent"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimal(item["Other Gas"]) ? String(formatNumberFourDecimal(item["Other Gas"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimal(item["Imbalance"]) ? String(formatNumberFourDecimal(item["Imbalance"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimal(item["Acc. Imbqalance"]) ? String(formatNumberFourDecimal(item["Acc. Imbqalance"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimal(item["Min Inventory"]) ? String(formatNumberFourDecimal(item["Min Inventory"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
 
-                        formatNumberFourDecimalNoComma(item["Entry Point"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Exit"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Entry - Exit"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Fuel Gas"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Balancing Gas"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Change Min Inventory"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Shrinkagate"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Commissioning"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Gas Vent"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Other Gas"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Imbalance"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Acc. Imbqalance"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Min Inventory"])?.toString()?.replace(/\s+/g, '').toLowerCase().includes(queryLower)
+                        (formatNumberFourDecimalNoComma(item["Entry Point"]) ? String(formatNumberFourDecimalNoComma(item["Entry Point"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item["Exit"]) ? String(formatNumberFourDecimalNoComma(item["Exit"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item["Entry - Exit"]) ? String(formatNumberFourDecimalNoComma(item["Entry - Exit"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item["Fuel Gas"]) ? String(formatNumberFourDecimalNoComma(item["Fuel Gas"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item["Balancing Gas"]) ? String(formatNumberFourDecimalNoComma(item["Balancing Gas"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item["Change Min Inventory"]) ? String(formatNumberFourDecimalNoComma(item["Change Min Inventory"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item["Shrinkagate"]) ? String(formatNumberFourDecimalNoComma(item["Shrinkagate"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item["Commissioning"]) ? String(formatNumberFourDecimalNoComma(item["Commissioning"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item["Gas Vent"]) ? String(formatNumberFourDecimalNoComma(item["Gas Vent"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item["Other Gas"]) ? String(formatNumberFourDecimalNoComma(item["Other Gas"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item["Imbalance"]) ? String(formatNumberFourDecimalNoComma(item["Imbalance"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item["Acc. Imbqalance"]) ? String(formatNumberFourDecimalNoComma(item["Acc. Imbqalance"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item["Min Inventory"]) ? String(formatNumberFourDecimalNoComma(item["Min Inventory"])).replace(/\s+/g, '').toLowerCase().includes(qLower) : false)
                     );
                 };
 
-                return data
-                    .map((item) => {
-                        // 🔥 STEP 1: เช็ค sum ก่อน
-                        if (checkMatch(item.sum)) {
-                            return item; // ✅ ผ่านทั้งก้อน ไม่ต้องยุ่ง value
+                return (data || [])
+                    .map((item: any) => {
+                        if (checkMatch(item?.sum)) {
+                            return item;
                         }
 
-                        // 🔥 STEP 2: ค่อย filter value
-                        const filteredValue = item.value.filter((v: any) => {
+                        const filteredValue = (item?.value || []).filter((v: any) => {
                             return (
-                                v.key?.toLowerCase().includes(queryLower) ||
-                                checkMatch(v.data)
+                                (v?.key && v.key.toLowerCase().includes(qLower)) ||
+                                checkMatch(v?.data)
                             );
                         });
 
@@ -459,92 +498,93 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             value: filteredValue,
                         };
                     })
-                    // 🔥 STEP 3: ลบ record ที่ value ว่าง
-                    .filter((item) => item.value.length > 0);
+                    .filter((item: any) => (item?.value?.length ?? 0) > 0);
             };
 
-            const filtered = dataTable?.filter(
+            const filtered = (dataTable || [])?.filter(
                 (item: any) => {
-
+                    if (!item) return false;
                     return (
-                        item?.gas_day?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Entry Point"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Exit"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Entry - Exit"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Fuel Gas"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Balancing Gas"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Change Min Inventory"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Shrinkagate"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Commissioning"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Gas Vent"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Other Gas"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Imbalance"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["ImbalancePercen"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Acc. Imbqalance"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item["Min Inventory"]?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+                        (item?.gas_day && item.gas_day.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Entry Point"] != null && item["Entry Point"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Exit"] != null && item["Exit"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Entry - Exit"] != null && item["Entry - Exit"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Fuel Gas"] != null && item["Fuel Gas"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Balancing Gas"] != null && item["Balancing Gas"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Change Min Inventory"] != null && item["Change Min Inventory"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Shrinkagate"] != null && item["Shrinkagate"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Commissioning"] != null && item["Commissioning"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Gas Vent"] != null && item["Gas Vent"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Other Gas"] != null && item["Other Gas"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Imbalance"] != null && item["Imbalance"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["ImbalancePercen"] != null && item["ImbalancePercen"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Acc. Imbqalance"] != null && item["Acc. Imbqalance"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.["Min Inventory"] != null && item["Min Inventory"].toString().replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
 
-                        formatNumberFourDecimal(item["Entry Point"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Exit"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Entry - Exit"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Fuel Gas"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Balancing Gas"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Change Min Inventory"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Shrinkagate"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Commissioning"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Gas Vent"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Other Gas"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Imbalance"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["ImbalancePercen"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Acc. Imbqalance"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimal(item["Min Inventory"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
+                        (formatNumberFourDecimal(item?.["Entry Point"]) ? String(formatNumberFourDecimal(item["Entry Point"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["Exit"]) ? String(formatNumberFourDecimal(item["Exit"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["Entry - Exit"]) ? String(formatNumberFourDecimal(item["Entry - Exit"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["Fuel Gas"]) ? String(formatNumberFourDecimal(item["Fuel Gas"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["Balancing Gas"]) ? String(formatNumberFourDecimal(item["Balancing Gas"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["Change Min Inventory"]) ? String(formatNumberFourDecimal(item["Change Min Inventory"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["Shrinkagate"]) ? String(formatNumberFourDecimal(item["Shrinkagate"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["Commissioning"]) ? String(formatNumberFourDecimal(item["Commissioning"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["Gas Vent"]) ? String(formatNumberFourDecimal(item["Gas Vent"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["Other Gas"]) ? String(formatNumberFourDecimal(item["Other Gas"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["Imbalance"]) ? String(formatNumberFourDecimal(item["Imbalance"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["ImbalancePercen"]) ? String(formatNumberFourDecimal(item["ImbalancePercen"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["Acc. Imbqalance"]) ? String(formatNumberFourDecimal(item["Acc. Imbqalance"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimal(item?.["Min Inventory"]) ? String(formatNumberFourDecimal(item["Min Inventory"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
 
-                        formatNumberFourDecimalNoComma(item["Entry Point"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Exit"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Entry - Exit"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Fuel Gas"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Balancing Gas"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Change Min Inventory"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Shrinkagate"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Commissioning"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Gas Vent"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Other Gas"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Imbalance"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["ImbalancePercen"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Acc. Imbqalance"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        formatNumberFourDecimalNoComma(item["Min Inventory"])?.toString()?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)
-
-                    )
+                        (formatNumberFourDecimalNoComma(item?.["Entry Point"]) ? String(formatNumberFourDecimalNoComma(item["Entry Point"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["Exit"]) ? String(formatNumberFourDecimalNoComma(item["Exit"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["Entry - Exit"]) ? String(formatNumberFourDecimalNoComma(item["Entry - Exit"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["Fuel Gas"]) ? String(formatNumberFourDecimalNoComma(item["Fuel Gas"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["Balancing Gas"]) ? String(formatNumberFourDecimalNoComma(item["Balancing Gas"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["Change Min Inventory"]) ? String(formatNumberFourDecimalNoComma(item["Change Min Inventory"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["Shrinkagate"]) ? String(formatNumberFourDecimalNoComma(item["Shrinkagate"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["Commissioning"]) ? String(formatNumberFourDecimalNoComma(item["Commissioning"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["Gas Vent"]) ? String(formatNumberFourDecimalNoComma(item["Gas Vent"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["Other Gas"]) ? String(formatNumberFourDecimalNoComma(item["Other Gas"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["Imbalance"]) ? String(formatNumberFourDecimalNoComma(item["Imbalance"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["ImbalancePercen"]) ? String(formatNumberFourDecimalNoComma(item["ImbalancePercen"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["Acc. Imbqalance"]) ? String(formatNumberFourDecimalNoComma(item["Acc. Imbqalance"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false) ||
+                        (formatNumberFourDecimalNoComma(item?.["Min Inventory"]) ? String(formatNumberFourDecimalNoComma(item["Min Inventory"])).replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) : false)
+                    );
                 }
             );
 
-            // const filterdExpanded 
-
             setFilteredDataTable(filtered);
-            setFilteredDataTableExpanded(searchData(dataTableExpanded, queryLower))
+            setFilteredDataTableExpanded(searchData(dataTableExpanded, queryLower));
         } else { // table download
             if (!queryLower) {
                 setDataTabDownload(dataTabDownloadOriginal);
                 return;
             }
 
-            const filtered = dataTabDownloadOriginal?.filter(
+            const filtered = (Array.isArray(dataTabDownloadOriginal) ? dataTabDownloadOriginal : [])?.filter(
                 (item: any) => {
+                    if (!item) return false;
+                    const firstName = item?.create_by_account?.first_name ? String(item.create_by_account.first_name).trim() : '';
+                    const lastName = item?.create_by_account?.last_name ? String(item.create_by_account.last_name).trim() : '';
+                    const fullName = `${firstName}${lastName}`.toLowerCase().replace(/\s+/g, '');
+
                     return (
-                        item?.monthText?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item?.contractCode?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item?.file?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item?.version?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item?.typeReport?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower) ||
-                        item?.create_by_account?.first_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower.trim()) ||
-                        item?.create_by_account?.last_name?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower.trim()) || // เผื่อ search นามสกุล
-                        item?.create_by_account?.first_name && item?.create_by_account?.last_name && (item?.create_by_account?.first_name + item?.create_by_account?.last_name)?.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower.trim()) || // เผื่อ search ชื่อ - นามสกุล พร้อมกัน
-                        formatTime(item?.create_date)?.toLowerCase().includes(queryLower) ||
-                        formatDate(item?.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower)
-                    )
+                        (item?.monthText && item.monthText.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.contractCode && item.contractCode.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.file && item.file.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.version && item.version.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (item?.typeReport && item.typeReport.replace(/\s+/g, '').toLowerCase().trim().includes(queryLower)) ||
+                        (firstName && firstName.toLowerCase().replace(/\s+/g, '').includes(queryLower)) ||
+                        (lastName && lastName.toLowerCase().replace(/\s+/g, '').includes(queryLower)) ||
+                        (fullName && fullName.includes(queryLower)) ||
+                        (item?.create_date && formatTime(item.create_date)?.toLowerCase().includes(queryLower)) ||
+                        (item?.create_date && formatDate(item.create_date)?.replace(/\s+/g, '').toLowerCase().includes(queryLower))
+                    );
                 }
             );
 
-            setDataTabDownload(filtered)
+            setDataTabDownload(filtered);
         }
     };
 
@@ -567,7 +607,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     };
     
 
-    const fetchData = async () => {
+    const fetchData = async (contractMaster?: any[]) => {
         try {
             // ถ้า user เป็น shipper
             // https://app.clickup.com/t/86ert2k28 ตามที่คุยกัน หากเป็น shipper user ถ้ามี filter ชื่อ shipper ให้ค้างชื่อ shipper ตัวเองไว้เลย ไม่ต้องขึ้นเป็น dropdown ให้เลือก - ปรับทั้ง system
@@ -584,28 +624,45 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             const res_master_version = await getService(`/master/allocation/version-exe`);
             setDataVersion(res_master_version)
 
-            // DATA CONTRACT CODE
-            const res_contract_code: any = await getService(`/master/capacity/pure-contract`);
-            setDataContract(res_contract_code);
-            setDataContractOriginal(res_contract_code)
+            // // DATA CONTRACT CODE
+            // const res_contract_code: any = await getService(`/master/capacity/pure-contract`);
+            // setDataContract(res_contract_code);
+            // setDataContractOriginal(res_contract_code)
 
-            // DATA TAB DOWNLAOD
-            const res_tab_download = await getService(`/master/balancing/balancing-monthly-report-download`);
-            // setDataTabDownloadOriginal(res_tab_download)
-            // setDataTabDownload(res_tab_download)
+            // DATA TAB DOWNLOAD
+            const res_tab_download = await getService(
+                `/master/balancing/balancing-monthly-report-download`
+            )
 
-            // map shipper เข้า 
-            let updatedData = res_tab_download?.map((item: any) => {
-                const matchContract = res_contract_code?.find((itemx: any) => itemx.contract_code === item.contractCode);
+            const contractList = Array.isArray(contractMaster)
+                ? contractMaster
+                : Array.isArray(dataContractOriginal)
+                    ? dataContractOriginal
+                    : []
+
+            // map shipper เข้า
+            const updatedData = (
+                Array.isArray(res_tab_download)
+                    ? res_tab_download
+                    : []
+            ).map((item: any) => {
+
+                const matchContract = contractList.find(
+                    (itemx: any) =>
+                        itemx?.contract_code === item?.contractCode
+                )
+
                 if (matchContract) {
                     return {
                         ...item,
                         group: matchContract?.group,
                         shipper_name: matchContract?.group?.name
-                    };
+                    }
                 }
-                return item;
-            });
+
+                return item
+            })
+
             setDataTabDownloadOriginal(updatedData)
             setDataTabDownload(updatedData)
 
@@ -624,32 +681,29 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             setFilteredDataTableExpanded(transformDataExpanded(res_new_data?.gasDayShipperData ?? []));
             setIsFilter(true)
 
-            if (res_new_data?.setDataUse?.length > 0) {
-                let filter_summary: any = res_new_data?.setDataUse?.filter((item: any) => item.keys == "Summary")
+            const setDataUseList: any[] = Array.isArray(res_new_data?.setDataUse) ? res_new_data.setDataUse : [];
 
-                // หา sum เพื่อเอาไปแสดงผล total
-                // "gas_day": "sum" คือแถบเขียว
-                let find_data_sum = filter_summary[0]?.value?.find((item: any) => item.gas_day == 'sum')
+            if (setDataUseList.length > 0) {
+                const filter_summary = setDataUseList.filter((item: any) => item?.keys == "Summary");
+                const summaryFirst = filter_summary?.[0];
+                const summaryValues = Array.isArray(summaryFirst?.value) ? summaryFirst.value : [];
+                const find_data_sum = summaryValues.find((item: any) => item?.gas_day == 'sum');
+                setDataSummary(find_data_sum || {});
 
-                setDataSummary(find_data_sum)
-
-                // กันแตก
-                if (!Array.isArray(filter_summary)) filter_summary = [];
-                if (!filter_summary[0]) filter_summary[0] = { value: [] };
-
-                // ลบ sum ออกจาก filter_summary
-                filter_summary[0].value = filter_summary[0]?.value?.filter((row: any) => row.gas_day !== 'sum');
-
-                // ทำให้ value อยู่ชั้นเดียวกับ gas_day
-                const flatData = filter_summary[0]?.value.map(({ gas_day, value }: any) => ({ gas_day, ...value }));
-
-                // เวอร์ชั่นไม่ expanded
-                setData(flatData)
-                setFilteredDataTable(flatData);
+                if (summaryFirst) {
+                    const nonSumValues = summaryValues.filter((row: any) => row?.gas_day !== 'sum');
+                    summaryFirst.value = nonSumValues;
+                    const flatData = nonSumValues.map(({ gas_day, value }: any) => ({ gas_day, ...(value ?? {}) }));
+                    setData(flatData);
+                    setFilteredDataTable(flatData);
+                } else {
+                    setData([]);
+                    setFilteredDataTable([]);
+                }
             } else {
                 setData([]);
                 setFilteredDataTable([]);
-                setDataSummary({})
+                setDataSummary({});
             }
 
             setTimeout(() => {
@@ -681,35 +735,33 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             setFilteredDataTableExpanded(transformDataExpanded(res_new_data?.gasDayShipperData ?? []));
             setIsFilter(true);
 
-            if (res_new_data?.setDataUse?.length > 0) {
-                let filter_summary: any = res_new_data?.setDataUse?.filter((item: any) => item.keys == "Summary")
+            const setDataUseList: any[] = Array.isArray(res_new_data?.setDataUse) ? res_new_data.setDataUse : [];
 
-                // หา sum เพื่อเอาไปแสดงผล total
-                // "gas_day": "sum" คือแถบเขียว
-                let find_data_sum = filter_summary[0]?.value?.find((item: any) => item.gas_day == 'sum')
-                setDataSummary(find_data_sum)
+            if (setDataUseList.length > 0) {
+                const filter_summary = setDataUseList.filter((item: any) => item?.keys == "Summary");
+                const summaryFirst = filter_summary?.[0];
+                const summaryValues = Array.isArray(summaryFirst?.value) ? summaryFirst.value : [];
+                const find_data_sum = summaryValues.find((item: any) => item?.gas_day == 'sum');
+                setDataSummary(find_data_sum || {});
 
-                // กันแตก
-                if (!Array.isArray(filter_summary)) filter_summary = [];
-                if (!filter_summary[0]) filter_summary[0] = { value: [] };
-
-                // ลบ sum ออกจาก filter_summary
-                filter_summary[0].value = filter_summary[0]?.value?.filter((row: any) => row.gas_day !== 'sum');
-
-                // ทำให้ value อยู่ชั้นเดียวกับ gas_day
-                const flatData = filter_summary[0]?.value.map(({ gas_day, value }: any) => ({ gas_day, ...value }));
-
-                setData(flatData)
-                setFilteredDataTable(flatData);
-                setIsLoading(true);
+                if (summaryFirst) {
+                    const nonSumValues = summaryValues.filter((row: any) => row?.gas_day !== 'sum');
+                    summaryFirst.value = nonSumValues;
+                    const flatData = nonSumValues.map(({ gas_day, value }: any) => ({ gas_day, ...(value ?? {}) }));
+                    setData(flatData);
+                    setFilteredDataTable(flatData);
+                } else {
+                    setData([]);
+                    setFilteredDataTable([]);
+                }
             } else {
                 setData([]);
                 setFilteredDataTable([]);
 
                 // เวอร์ชั่น expanded
                 setDataExpanded([]);
-                setFilteredDataTableExpanded([])
-                setDataSummary({})
+                setFilteredDataTableExpanded([]);
+                setDataSummary({});
             }
 
             setTimeout(() => {
@@ -731,7 +783,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
             // map shipper เข้า 
             let updatedData = res_tab_download?.map((item: any) => {
-                const matchContract = dataContractOriginal?.find((itemx: any) => itemx.contract_code === item.contractCode);
+                const matchContract = (dataContractOriginal || [])?.find((itemx: any) => itemx?.contract_code === item?.contractCode);
                 if (matchContract) {
                     return {
                         ...item,
@@ -752,10 +804,17 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         }
     }
 
-    useEffect(() => {
-        fetchData();
-        getPermission();
-    }, [resetForm]);
+useEffect(() => {
+    const initData = async () => {
+        const contractMaster = await fetchContractMaster()
+
+        await fetchData(contractMaster)
+
+        getPermission()
+    }
+
+    initData()
+}, [resetForm])
 
     // ############# NEW MODAL CREATE/EDIT/VIEW  #############
     const [isModalSuccessOpen, setModalSuccessOpen] = useState(false);
@@ -812,8 +871,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             // setDataTabDownload(res_tab_download)
 
             // map shipper เข้า 
-            let updatedData = res_tab_download?.map((item: any) => {
-                const matchContract = dataContractOriginal?.find((itemx: any) => itemx.contract_code === item.contractCode);
+            let updatedData = (Array.isArray(res_tab_download) ? res_tab_download : [])?.map((item: any) => {
+                const matchContract = (Array.isArray(dataContractOriginal) ? dataContractOriginal : [])?.find((itemx: any) => itemx?.contract_code === item?.contractCode);
                 if (matchContract) {
                     return {
                         ...item,
@@ -823,8 +882,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 }
                 return item;
             });
-            setDataTabDownloadOriginal(updatedData)
-            setDataTabDownload(updatedData)
+            setDataTabDownloadOriginal(updatedData);
+            setDataTabDownload(updatedData);
 
         } catch (error) {
         }
@@ -873,14 +932,14 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries((initialColumns || [])?.map((column: any) => [column?.key, column?.visible]))
     );
 
     useEffect(() => {
         if (tabIndex == 0) {
-            setColumnVisibility(Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible])))
+            setColumnVisibility(Object.fromEntries((initialColumns || [])?.map((column: any) => [column?.key, column?.visible])))
         } else {
-            setColumnVisibility(Object.fromEntries(initialColumnsDownload.map((column: any) => [column.key, column.visible])))
+            setColumnVisibility(Object.fromEntries((initialColumnsDownload || [])?.map((column: any) => [column?.key, column?.visible])))
         }
     }, [tabIndex])
 
@@ -928,6 +987,145 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         }
     }, [filteredDataTableExpanded, currentPage, itemsPerPage, dataTabDownload])
 
+    useEffect(() => {
+        fetchShipperAndContract();
+    }, [srchGasDay, srchGasDayTabDownlaod]);
+
+    // useEffect(() => {
+    //     const dataContract_ = (Array.isArray(dataContract) ? dataContract : []).filter((item: any) => (Array.isArray(srchShipperName) && srchShipperName.length > 0 ? srchShipperName.includes(item?.group?.id_name) : true));
+
+    //     const gasDay = tabIndex == 0 ? srchGasDay : srchGasDayTabDownlaod;
+    //     const gasDayJs = toDayjs(gasDay);
+    //     const fromDate = gasDayJs && gasDayJs.isValid() ? gasDayJs.startOf('month') : null;
+    //     const toDate = gasDayJs && gasDayJs.isValid() ? gasDayJs.endOf('month') : null;
+
+    //     const filteredContract =
+    //         dataContract_?.filter((contract: any) => {
+    //             if (!contract?.contract_start_date) return false;
+
+    //             const contractStart = toDayjs(contract.contract_start_date);
+    //             const contractEndDate = contract?.terminate_date || contract?.extend_deadline || contract?.contract_end_date;
+    //             const contractEnd = contractEndDate ? toDayjs(contractEndDate).subtract(1, 'day') : null;
+
+    //             if (!contractStart || !contractStart.isValid()) return false;
+
+    //             // contract_start_date <= วันที่สิ้นสุดที่ค้นหา
+    //             const startIsValid = !toDate || !contractStart.isAfter(toDate);
+
+    //             // contract_end_date >= วันที่เริ่มต้นที่ค้นหา
+    //             // ถ้า contract_end_date เป็น null ให้ถือว่าสัญญายังไม่สิ้นสุด
+    //             const endIsValid = !fromDate || !contractEnd || !contractEnd.isValid() || !contractEnd.isBefore(fromDate);
+
+    //             return startIsValid && endIsValid;
+    //         }) || [];
+
+    //     setDataContractFiltered(filteredContract);
+    // }, [srchGasDay, srchGasDayTabDownlaod, tabIndex, srchShipperName, dataContract]);
+
+    useEffect(() => {
+        // =========================================================
+        // 1. Contract ทั้งหมดจาก pure-contract
+        // =========================================================
+        let contracts = Array.isArray(dataContractOriginal)
+            ? dataContractOriginal
+            : []
+
+        // =========================================================
+        // 2. Filter Shipper
+        // srchShipperName เก็บ id_name เช่น NGP-S01-001
+        // =========================================================
+        if (
+            Array.isArray(srchShipperName) &&
+            srchShipperName.length > 0
+        ) {
+            contracts = contracts.filter((contract: any) =>
+                srchShipperName.includes(contract?.group?.id_name)
+            )
+        }
+
+        // =========================================================
+        // 3. หาเดือนตาม Tab ปัจจุบัน
+        // =========================================================
+        const gasDay =
+            tabIndex === 0
+                ? srchGasDay
+                : srchGasDayTabDownlaod
+
+        const gasDayJs = gasDay
+            ? toDayjs(gasDay)
+            : null
+
+        const fromDate =
+            gasDayJs && gasDayJs.isValid()
+                ? gasDayJs.startOf('month')
+                : null
+
+        const toDate =
+            gasDayJs && gasDayJs.isValid()
+                ? gasDayJs.endOf('month')
+                : null
+
+        // =========================================================
+        // 4. Filter อายุ Contract
+        // =========================================================
+        contracts = contracts.filter((contract: any) => {
+            if (!contract || !contract?.contract_start_date) {
+                return false
+            }
+
+            const contractStart = toDayjs(contract.contract_start_date)
+
+            if (!contractStart || !contractStart.isValid()) {
+                return false
+            }
+
+            const contractEndDate = contract.terminate_date || contract.extend_deadline || contract.contract_end_date
+
+            const contractEnd = contractEndDate
+                ? toDayjs(contractEndDate).subtract(1, 'day')
+                : null
+
+            // contract ต้องเริ่มก่อนหรือภายในเดือนที่ค้นหา
+            const startIsValid =
+                !toDate ||
+                !contractStart.isAfter(toDate)
+
+            // contract ต้องยังไม่หมดก่อนเดือนที่ค้นหา
+            const endIsValid =
+                !fromDate ||
+                !contractEnd ||
+                !contractEnd.isValid() ||
+                !contractEnd.isBefore(fromDate)
+
+            return startIsValid && endIsValid
+        })
+
+        // =========================================================
+        // 5. Remove duplicate Contract Code
+        // =========================================================
+        const uniqueContracts = Array.from(
+            new Map(
+                contracts
+                    .filter(
+                        (contract: any) =>
+                            contract?.contract_code
+                    )
+                    .map((contract: any) => [
+                        contract.contract_code,
+                        contract
+                    ])
+            ).values()
+        )
+
+        setDataContractFiltered(uniqueContracts)
+
+    }, [
+        srchGasDay,
+        srchGasDayTabDownlaod,
+        tabIndex,
+        srchShipperName,
+        dataContractOriginal
+    ])
 
     useEffect(() => {
         if (tabIndex == 1) {
@@ -937,146 +1135,9 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     (srchGasDayTabDownlaod ? localDate == item?.monthText : true)
                 );
             });
-            setDataTabDownload(fitered_current_month)
+            setDataTabDownload(fitered_current_month);
         }
-
-    }, [tabIndex])
-
-
-    // useEffect(() => {
-    //   const contractSelect = dataContract
-    //   ?.filter((f:any) => f?.status_capacity_request_management_id !== 3)
-    //   ?.filter((contract: any) => {
-    //                         let isShipper = true;
-    //                         let isActive = true;
-    //                         if (srchShipperName?.length > 0) {
-    //                             isShipper = srchShipperName?.includes(contract?.group?.id_name)
-    //                         }
-
-    //                         const endDate = contract.terminate_date ?? contract.extend_deadline ?? contract.contract_end_date
-    //                         if (tabIndex == 0 && srchGasDay) {
-    //                             const gasDayMonth = toDayjs(srchGasDay).startOf("month")
-    //                             if (contract.contract_start_date) {
-    //                                 const contractStartMonth = toDayjs(
-    //                                     contract.contract_start_date
-    //                                 ).startOf("month");
-
-    //                                 isActive =
-    //                                     isActive &&
-    //                                     gasDayMonth.isSameOrAfter(
-    //                                         contractStartMonth,
-    //                                         "month"
-    //                                     );
-    //                             }
-
-    //                             if (endDate) {
-    //                                 const contractEndMonth = toDayjs(endDate).subtract(1, "day").startOf(
-    //                                     "month"
-    //                                 );
-
-    //                                 isActive =
-    //                                     isActive &&
-    //                                     (
-    //                                         gasDayMonth.isSame(
-    //                                             contractEndMonth,
-    //                                             "month"
-    //                                         ) ||
-    //                                         gasDayMonth.isBefore(
-    //                                             contractEndMonth,
-    //                                             "month"
-    //                                         )
-    //                                     );
-    //                             }
-    //                         }
-
-    //                         if (tabIndex == 1 && srchGasDayTabDownlaod) {
-    //                             const gasDayDownloadMonth = toDayjs(
-    //                                 srchGasDayTabDownlaod
-    //                             ).startOf("month");
-
-    //                             if (contract?.contract_start_date) {
-    //                                 const contractStartMonth = toDayjs(
-    //                                     contract.contract_start_date
-    //                                 ).startOf("month");
-
-    //                                 // เดือนค้นหา ต้องเท่ากับหรือหลังเดือนเริ่มสัญญา
-    //                                 isActive =
-    //                                     isActive &&
-    //                                     gasDayDownloadMonth.isSameOrAfter(
-    //                                         contractStartMonth,
-    //                                         "month"
-    //                                     );
-    //                             }
-
-    //                             if (endDate) {
-    //                                 const contractEndMonth = toDayjs(endDate).subtract(1, "day").startOf(
-    //                                     "month"
-    //                                 );
-
-    //                                 // เดือนค้นหา ต้องเท่ากับหรือก่อนเดือนสิ้นสุดสัญญา
-    //                                 isActive =
-    //                                     isActive &&
-    //                                     (
-    //                                         gasDayDownloadMonth.isSame(
-    //                                             contractEndMonth,
-    //                                             "month"
-    //                                         ) ||
-    //                                         gasDayDownloadMonth.isBefore(
-    //                                             contractEndMonth,
-    //                                             "month"
-    //                                         )
-    //                                     );
-    //                             }
-    //                         }
-
-    //                         return isShipper && isActive
-    //                     })
-    //                     ?.map((item: any) => ({ // กรอง contract ตาม shipper
-    //                         value: item?.contract_code,
-    //                         label: item?.contract_code
-    //                     }))
-    //     console.log('[PTT] dataContract : ', dataContract?.filter((f:any) => f?.group?.name === "PTT"));
-    //     // 2026-CSF-T002
-    //     console.log('dataContract : ', dataContract);
-    //     console.log('contractSelect : ', contractSelect);
-    // }, [srchShipperName, srchGasDayTabDownlaod, srchGasDay]) // test
-    
-
-
-    useEffect(() => {
-        fetchShipperAndContract()
-    }, [srchGasDay, srchGasDayTabDownlaod])
-
-  useEffect(() => {
-    const dataContract_ = dataContract?.filter((item: any) => (srchShipperName?.length > 0 ? srchShipperName?.includes(item?.group?.id_name) : true)) || [];
-
-    const gasDay = tabIndex == 0 ? srchGasDay : srchGasDayTabDownlaod
-    const fromDate = dayjs(gasDay).startOf('month')
-
-    const toDate = dayjs(gasDay).endOf('month')
-
-    const filteredContract =
-      dataContract_?.filter((contract: any) => {
-        if (!contract?.contract_start_date) return false
-
-        const contractStart = dayjs(contract.contract_start_date)
-        const contractEndDate = contract?.terminate_date || contract?.extend_deadline || contract?.contract_end_date
-        const contractEnd = contractEndDate ? dayjs(contractEndDate).subtract(1, 'day') : null
-
-        if (!contractStart.isValid()) return false
-
-        // contract_start_date <= วันที่สิ้นสุดที่ค้นหา
-        const startIsValid = !contractStart.isAfter(toDate)
-
-        // contract_end_date >= วันที่เริ่มต้นที่ค้นหา
-        // ถ้า contract_end_date เป็น null ให้ถือว่าสัญญายังไม่สิ้นสุด
-        const endIsValid = !contractEnd || !contractEnd.isBefore(fromDate)
-
-        return startIsValid && endIsValid
-      }) || []
-
-    setDataContractFiltered(filteredContract)
-  }, [srchGasDay, srchGasDayTabDownlaod, tabIndex, srchShipperName, dataContract])
+    }, [tabIndex]);
     
 
 
@@ -1180,42 +1241,40 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 setSrchShipperName(e.target.value)
                                 }
                             }}
-                            options={dataShipper?.filter((item: any) => {
+                            options={(Array.isArray(dataShipper) ? dataShipper : [])?.filter((item: any) => {
+                                if (!item) return false;
                                 let isShipper = true;
                                 let isActive = true;
-                                if (userDT?.account_manage?.[0]?.user_type_id == 3) {// เห็นแค่ชื่อตัวเอง
-                                    isShipper = item?.id === userDT?.account_manage?.[0]?.group?.id
+                                if (userDT?.account_manage?.[0]?.user_type_id == 3) {
+                                    isShipper = item?.id === userDT?.account_manage?.[0]?.group?.id;
                                 }
 
-
-
                                 if (srchGasDay) {
-                                    const gasDayjs = toDayjs(srchGasDay)
-                                    if (item.start_date) {
-                                        isActive = isActive && gasDayjs.isSameOrAfter(toDayjs(item.start_date))
+                                    const gasDayjs = toDayjs(srchGasDay);
+                                    if (item?.start_date && gasDayjs && gasDayjs.isValid()) {
+                                        isActive = isActive && gasDayjs.isSameOrAfter(toDayjs(item.start_date));
                                     }
 
-                                    if (item.end_date) {
-                                        isActive = isActive && gasDayjs.isBefore(toDayjs(item.end_date))
+                                    if (item?.end_date && gasDayjs && gasDayjs.isValid()) {
+                                        isActive = isActive && gasDayjs.isBefore(toDayjs(item.end_date));
                                     }
                                 }
 
                                 if (srchGasDayTabDownlaod) {
-                                    const gasDayjs = toDayjs(srchGasDayTabDownlaod)
-                                    if (item.start_date) {
-                                        isActive = isActive && gasDayjs.isSameOrAfter(toDayjs(item.start_date))
+                                    const gasDayjs = toDayjs(srchGasDayTabDownlaod);
+                                    if (item?.start_date && gasDayjs && gasDayjs.isValid()) {
+                                        isActive = isActive && gasDayjs.isSameOrAfter(toDayjs(item.start_date));
                                     }
 
-                                    if (item.end_date) {
-                                        isActive = isActive && gasDayjs.isBefore(toDayjs(item.end_date))
+                                    if (item?.end_date && gasDayjs && gasDayjs.isValid()) {
+                                        isActive = isActive && gasDayjs.isBefore(toDayjs(item.end_date));
                                     }
                                 }
 
-                                return isShipper && isActive
-                            }
-                            ).map((item: any) => ({
-                                value: item.id_name,
-                                label: item.name,
+                                return isShipper && isActive;
+                            }).map((item: any) => ({
+                                value: item?.id_name ?? '',
+                                label: item?.name ?? '',
                             }))
                             }
                         />
@@ -1526,22 +1585,23 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     if (resetForm) resetForm();
                 }}
                 title="Failed"
-                description=
-                {
-                    modalErrorMsg?.split('<br/>')?.length > 1 ?
-                        <ul className="text-start list-disc">
-                            {
-                                modalErrorMsg.split('<br/>').map(item => {
-                                    return (
-                                        <li>{item}</li>
-                                    )
-                                })
-                            }
-                        </ul>
-                        :
-                        <div className="text-center">
-                            {`${modalErrorMsg}`}
-                        </div>
+                description={
+                    <div>
+                        {
+                            typeof modalErrorMsg === 'string' && modalErrorMsg.includes('<br/>') ?
+                                <ul className="text-start list-disc">
+                                    {
+                                        modalErrorMsg.split('<br/>').map((item, idx) => (
+                                            <li key={idx}>{item}</li>
+                                        ))
+                                    }
+                                </ul>
+                                :
+                                <div className="text-center">
+                                    {modalErrorMsg ?? ''}
+                                </div>
+                        }
+                    </div>
                 }
                 stat="error"
             />

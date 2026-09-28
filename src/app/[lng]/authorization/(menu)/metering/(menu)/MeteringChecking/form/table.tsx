@@ -46,12 +46,12 @@ const TableMtrChecking: React.FC<TableProps> = ({
             <ArrowDropDown sx={{ fontSize: 18, opacity: sortState.column === column && sortState.direction === "desc" ? 1 : 0.4, }} />
         </div>
     };
-
+    console.log('isLoading : ', isLoading);
     return (
         <div className="h-[calc(100vh-440px)] overflow-y-auto overflow-x-auto rounded-t-md relative z-1">
             {/* <Spinloading spin={isLoading} rounded={0} /> */}
 
-            {isLoading ?
+            {!isLoading ?
                 <table className="min-w-full text-sm text-left rtl:text-right text-gray-500 whitespace-nowrap">
                     <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
                         <tr className="h-9">
@@ -107,11 +107,9 @@ const TableMtrChecking: React.FC<TableProps> = ({
                     </thead>
 
                     <tbody>
-                        {sortedData && (sortedData || [])?.map((row: any, index: any) => {
+                        {(sortedData || [])?.map((row: any, index: any) => {
                             return (
-                                <tr
-                                    key={row?.id}
-                                    className={`${table_row_style}`}
+                                <tr key={row?.id ?? index} className={`${table_row_style}`}
                                     style={{ backgroundColor: !isLoading && selectedKey == row?.id ? "#f8f8f8" : "#fff" }}
                                 >
                                     {columnVisibility?.gas_day && (
@@ -139,17 +137,17 @@ const TableMtrChecking: React.FC<TableProps> = ({
                                                 className={`px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} text-center`}
                                             >
                                                 {
-                                                    row[key] === "<%low" ? (
+                                                    row?.[key] === "<%low" ? (
                                                         <span className="text-[#E8B125] font-normal text-[16px]">{`<%low`}</span>
-                                                    ) : row[key] === ">%high" ? (
+                                                    ) : row?.[key] === ">%high" ? (
                                                         <span className="text-[#EC6300] font-normal text-[16px]">{`>%high`}</span>
-                                                    ) : row[key] === "Div/0" ? (
+                                                    ) : row?.[key] === "Div/0" ? (
                                                         <span className="text-[#5E5E5E] font-normal text-[16px]">{`Div/0`}</span>
-                                                    ) : row[key] == null ? <span className="text-[#5E5E5E] font-normal text-[16px] tracking-wider">{`N/A`}</span>
+                                                    ) : row?.[key] == null ? <span className="text-[#5E5E5E] font-normal text-[16px] tracking-wider">{`N/A`}</span>
                                                         : (
                                                             <div style={{ background: '#FFF' }} className="w-[40px] h-[40px] mt-[15px] flex justify-center items-center">
                                                                 <img
-                                                                    src={row[key]}
+                                                                    src={row?.[key]}
                                                                     // style={{ width: '80%', height: '80%', objectFit: 'contain' }}
                                                                     style={{ width: '30px', height: '30px', objectFit: 'contain' }}
                                                                     alt="Data Image"
@@ -184,18 +182,18 @@ const TableMtrChecking: React.FC<TableProps> = ({
                                                       className={`${(hindDefaultNodata?.[key] || hindWarning?.[key]) && " hidden"} px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} text-center`}
                                                   >
                                                       {/* --- แสดงค่า --- */}
-                                                      {row[key] === "<%low" ? (
+                                                      {row?.[key] === "<%low" ? (
                                                           <span className="text-[#FDC533] font-normal text-[16px]">{`<%low`}</span>
-                                                      ) : row[key] === ">%high" ? (
+                                                      ) : row?.[key] === ">%high" ? (
                                                           <span className="text-[#FC7E11] font-normal text-[16px]">{`>%high`}</span>
-                                                      ) : row[key] === "Div/0" ? (
+                                                      ) : row?.[key] === "Div/0" ? (
                                                           <span className="text-[#696969] font-normal text-[16px]">{`Div/0`}</span>
-                                                      ) : row[key] == null ? (
+                                                      ) : row?.[key] == null ? (
                                                           <span className="text-[#D3D3D3] font-normal text-[16px] tracking-wider">{`N/A`}</span>
                                                       ) : (
                                                           <div className="w-[40px] h-[40px] mt-[15px] flex justify-center items-center bg-white">
                                                               <img
-                                                                  src={row[key]}
+                                                                  src={row?.[key]}
                                                                   style={{ width: "30px", height: "30px", objectFit: "contain" }}
                                                                   alt="Data"
                                                               />
@@ -209,16 +207,16 @@ const TableMtrChecking: React.FC<TableProps> = ({
                                                 const value = `calcCondition2_${val}`
                                                 const type = `type_${val}`
 
-                                                const value_1 = Number.isNaN(Number(row[value] || row[value1])) ? null : formatNumberThreeDecimal(row[value] || row[value1])
+                                                const value_1 = Number.isNaN(Number(row?.[value] || row?.[value1])) ? null : formatNumberThreeDecimal(row?.[value] || row?.[value1])
                                                 const value_ = (value_1 === null) ? "N/A" : value_1 === "-Infinity" || value_1 === "Infinity" ? "Div/0" : value_1
 
 
                                                 // if(row?.meteringPointId === "HMMT"){ 
                                                 //     console.log('row : ', row);
                                                 //     console.log('key : ', key);
-                                                //     console.log('row[key] : ', row[key]);
-                                                //     console.log('row[value] : ', row[value]);
-                                                //     console.log('row[value1] : ', row[value1]); 
+                                                //     console.log('row?.[key] : ', row?.[key]);
+                                                //     console.log('row?.[value] : ', row?.[value]);
+                                                //     console.log('row?.[value1] : ', row?.[value1]); 
                                                 //     console.log('val : ', val);
                                                 //     console.log('- - - -');
                                                 // }
@@ -228,21 +226,21 @@ const TableMtrChecking: React.FC<TableProps> = ({
                                                       className={`${(hindDefaultNodata?.[key] || hindWarning?.[key]) && " hidden"} px-2 py-1 ${row?.status ? "text-[#464255]" : "text-[#9CA3AF]"} text-center`}
                                                   >
                                                       {/* --- แสดงค่า --- */}
-                                                      {(row[key] === "<%low" || row[type] === "<%low") ? (
+                                                      {(row?.[key] === "<%low" || row?.[type] === "<%low") ? (
                                                           <div className="flex justify-center items-center text-[#FDC533] font-normal text-[16px]">{value_}</div>
-                                                      ) : row[key] == null ? (
+                                                      ) : row?.[key] == null ? (
                                                           <div className="flex justify-center items-center text-[#696969] font-normal text-[16px] tracking-wider">{value_}</div>
-                                                      ) : (row[key] === ">%high" || row[type] === ">%high") ? (
+                                                      ) : (row?.[key] === ">%high" || row?.[type] === ">%high") ? (
                                                           <div className="flex justify-center items-center text-[#FC7E11] font-normal text-[16px]">{value_}</div>
-                                                      ) : row[key] === "Div/0" ? (
+                                                      ) : row?.[key] === "Div/0" ? (
                                                           <div className="flex justify-center items-center text-[#696969] font-normal text-[16px]">{value_}</div>
-                                                      ) : row[type] === "gray_url" ? (
+                                                      ) : row?.[type] === "gray_url" ? (
                                                           <div className="flex justify-center items-center text-[#D3D3D3] font-normal text-[16px] tracking-wider">{value_}</div>
-                                                      ) : row[type] === "green_url" ? (
+                                                      ) : row?.[type] === "green_url" ? (
                                                           <div className="flex justify-center items-center text-[#21B766] font-normal text-[16px] tracking-wider">{value_}</div>
-                                                      ) : row[type] === "red_url" ? (
+                                                      ) : row?.[type] === "red_url" ? (
                                                           <div className="flex justify-center items-center text-[#FA7070] font-normal text-[16px] tracking-wider">{value_}</div>
-                                                      ) : row[type] === "purple_url" ? (
+                                                      ) : row?.[type] === "purple_url" ? (
                                                           <div className="flex justify-center items-center text-[#C58AFF] font-normal text-[16px] tracking-wider">{value_}</div>
                                                       ) : (
                                                           <div className="flex justify-center items-center text-[#696969] font-normal text-[16px] tracking-wider">{value_}</div>

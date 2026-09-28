@@ -119,7 +119,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    setValue("allocation_mode_type_id", e.target.value);
+                                                    setValue("allocation_mode_type_id", e?.target?.value ?? "");
                                                 }}
                                                 displayEmpty
                                                 renderValue={(value: any) => {
@@ -151,7 +151,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 disabled={isReadOnly}
                                                 valueWatch={watch("allocation_mode_type_id") || ""}
                                                 handleChange={(e) => {
-                                                    setValue("allocation_mode_type_id", e.target.value);
+                                                    setValue("allocation_mode_type_id", e?.target?.value ?? "");
                                                     if (errors?.allocation_mode_type_id) { clearErrors('allocation_mode_type_id') }
                                                 }}
                                                 errors={errors?.allocation_mode_type_id}

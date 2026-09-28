@@ -60,14 +60,14 @@ const ModalFiles: React.FC<FormExampleProps> = ({
                         <div
                             className={`mb-4 w-[100%] ${data?.query_shipper_nomination_file_url?.length > 3 ? 'max-h-[350px] overflow-y-auto' : ''}`}
                         >
-                            {data?.query_shipper_nomination_file_url?.map((item: any) => (
-                                <div key={item.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                            {(data?.query_shipper_nomination_file_url || [])?.map((item: any, idx: number) => (
+                                <div key={item?.id ?? idx} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                     <div className="flex flex-col p-2">
 
                                         <div className="mb-2 flex justify-between items-center">
                                             <div className="flex items-baseline gap-2">
                                                 <span className='rounded-[20px] px-1 '>
-                                                    <div className="flex min-w-[180px] max-w-[250px] w-auto text-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: String(item?.query_shipper_nomination_status?.color) }}>{item?.query_shipper_nomination_status?.name}</div>
+                                                    <div className="flex min-w-[180px] max-w-[250px] w-auto text-center justify-center rounded-full p-1 text-[#464255]" style={{ backgroundColor: item?.query_shipper_nomination_status?.color ? String(item?.query_shipper_nomination_status?.color) : '#fff' }}>{item?.query_shipper_nomination_status?.name}</div>
                                                 </span>
 
                                                 <span className='rounded-md bg-[#D3E6F8] px-4 font-semibold text-[#464255]'> {item?.nomination_version?.version} </span>

@@ -62,6 +62,10 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [dataContractPointAll, setDataContractPointAll] = useState<any>([]);
     const [dataContractPointAllForFilter, setDataContractPointForFilter] = useState<any>([]);
     const [dataContractCode, setDataContractCode] = useState<any>([]);
+
+    const [dataContractOriginal, setDataContractOriginal] = useState<any[]>([]);
+    const [dataContractFiltered, setDataContractFiltered] = useState<any[]>([]);
+
     const [dataExport, setDataExport] = useState<any>([]);
 
     const [openPopoverId, setOpenPopoverId] = useState(null);
@@ -88,12 +92,22 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const dataExportRef = useRef<any[]>([]);
 
     useEffect(() => {
-        setSrchShipperName(Number(shipper_from_somewhere_else))
-    }, [shipper_from_somewhere_else])
+        if (!shipper_from_somewhere_else) return;
+
+        const shipperId = Number(shipper_from_somewhere_else);
+
+        if (!Number.isNaN(shipperId)) {
+            // เพราะ InputSearch เป็น select-multi-checkbox
+            setSrchShipperName([shipperId]);
+        }
+    }, [shipper_from_somewhere_else]);
 
     useEffect(() => {
-        setSrchContractCode(contract_from_somewhere_else)
-    }, [contract_from_somewhere_else])
+        if (!contract_from_somewhere_else) return;
+
+        // เพราะ InputSearch เป็น select-multi-checkbox
+        setSrchContractCode([contract_from_somewhere_else]);
+    }, [contract_from_somewhere_else]);
 
     // ############### Check Authen ###############
     const userDT: any = getUserValue();
@@ -133,31 +147,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     useEffect(() => {
         getPermission();
     }, [])
-
-    // const filteredDataTable = useMemo(() => {
-    //     let result_gasday_from_to: any[] = Array.isArray(dataTable) ? dataTable : [];
-
-    //     if (srchGasDayFrom || srchGasDayTo) {
-    //         const { start_date, end_date } = getDateRangeForApi(srchGasDayFrom, srchGasDayTo);
-    //         result_gasday_from_to = filterByDateRange(result_gasday_from_to, start_date, end_date);
-    //     }
-
-    //     const result = result_gasday_from_to.filter((item: any) => {
-    //         return (
-    //             (srchShipperName?.length > 0 ? srchShipperName.includes(item?.shipper?.id) : true) &&
-    //             (srchContractPoint?.length > 0 ? srchContractPoint.includes(item?.contract_point) : true) &&
-    //             (srchContractCode?.length > 0 ? srchContractCode.includes(item?.contract) : true)
-    //         );
-    //     });
-    //     return sortAlloReport(result);
-    // }, [
-    //     dataTable,
-    //     srchGasDayFrom,
-    //     srchGasDayTo,
-    //     srchShipperName,
-    //     srchContractPoint,
-    //     srchContractCode,
-    // ]);
 
     const filteredDataTable = useMemo(() => {
         let result: any[] = Array.isArray(dataTable) ? dataTable : [];
@@ -237,31 +226,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         // setFilteredDataTable(sorted);
     };
 
-    // const handleFieldSearch = () => {
-    //     fetchData();
-    // };
-    // const handleFieldSearch = async () => {
-    //     setPagination((prev) => ({
-    //         ...prev,
-    //         pageIndex: 0,
-    //     }));
 
-    //     setAppliedFilter({
-    //         gasDayFrom: srchGasDayFrom,
-    //         gasDayTo: srchGasDayTo,
-    //         contractCode: Array.isArray(srchContractCode)
-    //             ? [...srchContractCode]
-    //             : [],
-    //         contractPoint: Array.isArray(srchContractPoint)
-    //             ? [...srchContractPoint]
-    //             : [],
-    //         shipperName: Array.isArray(srchShipperName)
-    //             ? [...srchShipperName]
-    //             : [],
-    //     });
-
-    //     await fetchData();
-    // };
 
     const handleFieldSearch = async () => {
         setPagination((prev) => ({
@@ -384,20 +349,28 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         return updatedDataDaily
     }
 
-    // #region fetchData
-    // const fetchData = async () => {
-    //     try {
-    //         setIsLoading(false);
+    const fetchContractMaster = async () => {
+    try {
+        const res_contract_code_: any = await getService(
+            `/master/capacity/pure-contract`
+        );
 
-    //         // ถ้า user เป็น shipper
-    //         // https://app.clickup.com/t/86ert2k28 ตามที่คุยกัน หากเป็น shipper user ถ้ามี filter ชื่อ shipper ให้ค้างชื่อ shipper ตัวเองไว้เลย ไม่ต้องขึ้นเป็น dropdown ให้เลือก - ปรับทั้ง system
-    //         if (userDT?.account_manage?.[0]?.user_type_id == 3) {
-    //             setSrchShipperName([userDT?.account_manage?.[0]?.group?.id])
-    //         }
+        const res_contract_code = (
+            Array.isArray(res_contract_code_)
+                ? res_contract_code_
+                : []
+        ).filter(
+            (item: any) =>
+                item?.status_capacity_request_management_id !== 3
+        );
 
-    //         // NX เข้ามาแล้วข้อมูลไม่ขึ้น Filter แค่ Gas Day From ก็ข้อมูลไม่ขึ้น ต้องเลือกทั้ง from ทั้ง to ข้อมูลถึงจะมา https://app.clickup.com/t/86eun9wp7
-    //         let from = srchGasDayFrom ? dayjs(srchGasDayFrom) : dayjs().startOf("month");
-    //         let to = srchGasDayTo ? dayjs(srchGasDayTo) : dayjs().endOf("month");
+        setDataContractOriginal(res_contract_code);
+    } catch (error) {
+        console.error('fetchContractMaster error : ', error);
+        setDataContractOriginal([]);
+    }
+};
+   
     const fetchData = async (override?: {
         gasDayFrom?: Date | null;
         gasDayTo?: Date | null;
@@ -461,28 +434,32 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 // const sorted = sortAlloReport(response);
                 const sorted = sortAlloReport(updatedDataDaily);
 
-                // DATA CONTRACT CODE
-                const data_contract_code_de_dup = Array.from(
-                    new Map(
-                        sorted?.map((item: any) => [item.contract, { contract_code: item.contract, group: item.group ? item.group : item.shipper, contract_point: item.contract_point }])
-                    ).values()
-                );
-                setDataContractCode(data_contract_code_de_dup);
-
-                // DATA CONTRACT POINT
-                const data_contract_point_de_dup = Array.from(
-                    new Map(
-                        sorted?.map((item: any) => [item.contract_point, { contract_point: item.contract_point, group: item.group ? item.group : item.shipper, contract: item.contract }])
-                    ).values()
-                );
-                setDataContractPoint(data_contract_point_de_dup);
-                setDataContractPointAll(sorted);
+               
 
                 // Tab Daily / Tab Intraday : Shipper จะต้องเห็นแค่ของตัวเอง https://app.clickup.com/t/86et8d2wt
                 if (userDT?.account_manage?.[0]?.user_type_id == 3) {
                     let filter_response_only_own_shipper = sorted?.filter((item: any) =>
                         userDT?.account_manage?.[0]?.user_type_id == 3 ? item?.group?.id === userDT?.account_manage?.[0]?.group?.id : true
                     )
+
+                    const data_contract_code_de_dup = Array.from(
+                        new Map(
+                            filter_response_only_own_shipper?.map((item: any) => [item.contract, { contract_code: item.contract, group: item.group ? item.group : item.shipper, contract_point: item.contract_point }])
+                        ).values()
+                    );
+                    setDataContractCode(data_contract_code_de_dup);
+
+                    // DATA CONTRACT POINT
+                    const data_contract_point_de_dup = Array.from(
+                        new Map(
+                            filter_response_only_own_shipper?.map((item: any) => [item.contract_point, { contract_point: item.contract_point, group: item.group ? item.group : item.shipper, contract: item.contract }])
+                        ).values()
+                    );
+                    setDataContractPoint(data_contract_point_de_dup);
+                    setDataContractPointAll(sorted);
+                
+
+
                     setData(filter_response_only_own_shipper);
                     // setFilteredDataTable(filter_response_only_own_shipper);
                     setDataExport(filter_response_only_own_shipper) // --> for export
@@ -490,6 +467,23 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     // const onlyPublication = filter_response_only_own_shipper?.filter((item: any) => item?.publication == true);
                     // setSelectedRoles(onlyPublication);
                 } else {
+                     // DATA CONTRACT CODE
+                    const data_contract_code_de_dup = Array.from(
+                        new Map(
+                            sorted?.map((item: any) => [item.contract, { contract_code: item.contract, group: item.group ? item.group : item.shipper, contract_point: item.contract_point }])
+                        ).values()
+                    );
+                    setDataContractCode(data_contract_code_de_dup);
+
+                    // DATA CONTRACT POINT
+                    const data_contract_point_de_dup = Array.from(
+                        new Map(
+                            sorted?.map((item: any) => [item.contract_point, { contract_point: item.contract_point, group: item.group ? item.group : item.shipper, contract: item.contract }])
+                        ).values()
+                    );
+                    setDataContractPoint(data_contract_point_de_dup);
+                    setDataContractPointAll(sorted);
+                    
                     setData(sorted);
                     // setFilteredDataTable(sorted);
                     setDataExport(sorted) // --> for export
@@ -622,8 +616,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     }
 
     useEffect(() => {
-        if (makeFetch) {
-            // fetchData();
+        if (makeFetch) {fetchData();
             fetchK(tabIndex);
             handleFilter();
         }
@@ -633,15 +626,86 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         fetchK(tabIndex);
     }, [tabIndex])
 
-    //     useEffect(() => {
-    //     if (makeFetch) {
-    //         fetchK(tabIndex).finally(() => setMakeFetch(false));
-    //     }
-    // }, [makeFetch, tabIndex]);
-
     useEffect(() => {
         fetchData();
     }, []);
+
+    useEffect(() => {
+        fetchContractMaster();
+    }, []);
+
+    const filterContractMaster = () => {
+    let contracts = Array.isArray(dataContractOriginal)
+        ? dataContractOriginal
+        : [];
+
+    // =========================================================
+    // 1. Filter Shipper
+    // =========================================================
+    const selectedShippers = Array.isArray(srchShipperName)
+        ? srchShipperName
+        : srchShipperName
+            ? [Number(srchShipperName)]
+            : [];
+
+    if (selectedShippers.length > 0) {
+        contracts = contracts.filter((item: any) =>
+            selectedShippers.includes(item?.group?.id)
+        );
+    }
+
+    // =========================================================
+    // 2. Filter Contract Date
+    // =========================================================
+    if (srchGasDayFrom || srchGasDayTo) {
+        const fromDate = srchGasDayFrom
+            ? dayjs(srchGasDayFrom).startOf("day")
+            : dayjs(srchGasDayTo).startOf("day");
+
+        const toDate = srchGasDayTo
+            ? dayjs(srchGasDayTo).endOf("day")
+            : dayjs(srchGasDayFrom).endOf("day");
+
+        contracts = contracts.filter((contract: any) => {
+            if (!contract || !contract?.contract_start_date) return false;
+
+            const contractStart = dayjs(contract.contract_start_date);
+
+            const contractEndDate = contract.terminate_date || contract.extend_deadline || contract.contract_end_date;
+
+            const contractEnd = contractEndDate
+                ? dayjs(contractEndDate).subtract(1, "day")
+                : null;
+
+            if (!contractStart.isValid()) return false;
+
+            const startIsValid =
+                !contractStart.isAfter(toDate);
+
+            const endIsValid =
+                !contractEnd ||
+                !contractEnd.isBefore(fromDate);
+
+            return startIsValid && endIsValid;
+        });
+    }
+
+    // =========================================================
+    // 3. Remove duplicate Contract Code
+    // =========================================================
+    const uniqueContracts = Array.from(
+        new Map(
+            contracts
+                .filter((item: any) => item?.contract_code)
+                .map((item: any) => [
+                    item.contract_code,
+                    item
+                ])
+        ).values()
+    );
+
+    setDataContractFiltered(uniqueContracts);
+};
 
     // ############# NEW MODAL CREATE/EDIT/VIEW  #############
     const [isModalSuccessOpen, setModalSuccessOpen] = useState(false);
@@ -890,33 +954,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         }
     }
-
-
-    // const [paginatedData, setPaginatedData] = useState<any[]>([]);
-
-    // const handlePageChange = (page: number) => {
-    //     setCurrentPage(page);
-    // };
-
-    // const handleItemsPerPageChange = (itemsPerPage: number) => {
-    //     setItemsPerPage(itemsPerPage);
-    //     setCurrentPage(1);
-    // };
-
-    // useEffect(() => {
-    //     if (filteredDataTable) {
-    //         const sorted = sortAlloReport(filteredDataTable);
-
-    //         // setPaginatedData(filteredDataTable?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
-    //         // setPaginatedData(sorted?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage))
-    //         const { pageIndex, pageSize } = pagination;
-    //         const start = pageIndex * pageSize;
-    //         const end = start + pageSize;
-    //         setPaginatedData((sorted ?? []).slice(start, end));
-    //     }
-
-    // }, [currentPage, itemsPerPage, makeFetch, pagination.pageIndex, pagination.pageSize])
-    // }, [filteredDataTable, currentPage, itemsPerPage, makeFetch, pagination.pageIndex, pagination.pageSize])
 
     // ############### COLUMN SHOW/HIDE ###############
     const initialColumns: any = userDT?.account_manage?.[0]?.user_type_id !== 3 ? [
@@ -1179,6 +1216,53 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             //         return <div className="text-right w-full">{realVal && realVal == 0 ? formatNumberFourDecimal(realVal) : null}</div>
             //     }
             // },
+            {
+                accessorKey: "capacity_right",
+                header: "Capacity Right (MMBTU/D)",
+                enableSorting: true,
+                // คืนค่าเป็น String ที่มีทั้งแบบ 'เลขดิบ' และ 'เลขมีคอมม่า'
+                // เพื่อให้ Global Filter มองเห็นทั้งสองร่าง
+                accessorFn: (row: any) => {
+                    const val = row?.contractCapacity;
+                    if (val === null || val === undefined || val === '') return '';
+
+                    const rawNumber = Number(val);
+                    // const formatted = formatNumberFourDecimal(rawNumber); // "6,374.0000"
+                    const formatted = formatNumberThreeDecimal(rawNumber); // "6,374.000"
+
+                    // ส่งกลับเป็น String ที่ซ่อนค่าไว้เสิร์ช (แต่เราจะไปดัดตอน Sort แทน)
+                    return `${rawNumber} ${formatted}`;
+                },
+                // บังคับ Sorting ให้กลับไปใช้ค่าตัวเลขจริง ๆ (โดยการแกะออกจาก String)
+                sortingFn: (rowA, rowB, columnId) => {
+                    const getVal = (row: any) => {
+                        const str = row.getValue(columnId);
+                        if (!str) return Number.NEGATIVE_INFINITY;
+                        // แยกเอาเฉพาะเลขตัวแรกสุด (rawNumber) มาใช้ sort
+                        const firstPart = str.split(' ')[0];
+                        return Number(firstPart);
+                    };
+
+                    const valA = getVal(rowA);
+                    const valB = getVal(rowB);
+
+                    if (valA === valB) return 0;
+                    return valA > valB ? 1 : -1;
+                },
+                cell: (info) => {
+                    // ตอนแสดงผล: ดึงเฉพาะส่วนที่เป็น format (หลังช่องว่าง) มาโชว์
+                    // const val = info.getValue<string>();
+                    // if (!val) return <div className="text-right"></div>;
+
+                    // if (val.includes(" ")) {
+                    //     const displayVal = val.split(' ')[1]; // หยิบ "6,374.0000"
+                    //     return <div className="text-right">{displayVal}</div>;
+                    // }
+                    const realVal = info?.row?.original?.contractCapacity;
+                    // return <div className="text-right w-full">{realVal ? formatNumberFourDecimal(realVal) : realVal == 0 ? '0.000' : null}</div>
+                    return <div className="text-right w-full">{realVal ? formatNumberThreeDecimal(realVal) : realVal == 0 ? '0.000' : null}</div>
+                }
+            },
             {
                 accessorKey: "nominated_value",
                 header: "Nominated Value (MMBTU/D)",
@@ -1792,19 +1876,18 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         // ], [selectAll, filteredDataTable, dataExport, selectedRoles, userPermission, user_permission]
     )
 
-    // useEffect(() => {
-    //     fetchK(tabIndex);
-    // }, [tabIndex])
-
     const handleRerenderOptionContractPoint = () => {
 
     }
 
-    // useEffect(() => {
-    //     handleFilter();
-    // }, [dataTable])
-
-
+    useEffect(() => {
+        filterContractMaster();
+    }, [
+        dataContractOriginal,
+        srchGasDayFrom,
+        srchGasDayTo,
+        srchShipperName
+    ]);
 
     useEffect(() => {
         if (selectedRoles?.length == 0) {
@@ -2004,15 +2087,19 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             setSrchContractCode(e.target.value)
                             // findContractPoint(e.target.value)
                         }}
-                        options={
-                            dataContractCode?.filter(
-                                // (contract: any) => !srchShipperName?.length || srchShipperName.includes(contract?.group?.id)
-                                (contract: any) => srchShipperName?.length > 0 ? srchShipperName.includes(contract?.group?.id) : true
-                            ).map((item: any) => ({
-                                value: item?.contract_code,
-                                label: item?.contract_code,
-                            }))
-                        }
+                        options={dataContractFiltered.map((item: any) => ({
+                            value: item?.contract_code,
+                            label: item?.contract_code,
+                        }))}
+                        // options={
+                        //     dataContractCode?.filter(
+                        //         // (contract: any) => !srchShipperName?.length || srchShipperName.includes(contract?.group?.id)
+                        //         (contract: any) => srchShipperName?.length > 0 ? srchShipperName.includes(contract?.group?.id) : true
+                        //     ).map((item: any) => ({
+                        //         value: item?.contract_code,
+                        //         label: item?.contract_code,
+                        //     }))
+                        // }
                     />
 
                     <InputSearch
@@ -2387,7 +2474,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 columnVisibility={columnVisibility}
                 handleColumnToggle={handleColumnToggle}
                 // initialColumns={initialColumns}
-                initialColumns={tabIndex == 0 ? initialColumns?.filter((item: any) => item?.key !== 'gas_hour') : initialColumns}
+                initialColumns={tabIndex == 0 ? (initialColumns || [])?.filter((item: any) => item?.key !== 'gas_hour') : initialColumns}
             />
 
             <Popover

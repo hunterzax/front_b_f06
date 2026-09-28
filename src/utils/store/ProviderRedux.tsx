@@ -1,4 +1,6 @@
-"use client";
+// Next.js client boundary. Coverity flags this as unused_expr (NO_EFFECT).
+// coverity[unused_expr:SUPPRESS]
+'use client';
 
 import { Provider } from 'react-redux';
 import store from './store';

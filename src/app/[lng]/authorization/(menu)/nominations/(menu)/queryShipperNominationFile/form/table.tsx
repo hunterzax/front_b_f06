@@ -58,21 +58,21 @@ const TableNomQueryShipperNomFile: React.FC<TableProps> = ({ tableData, isLoadin
             <thead className="text-xs text-[#ffffff] bg-[#1473A1] sticky top-0 z-10">
               <tr className="h-9">
 
-                {columnVisibility.status && (
+                {columnVisibility?.status && (
                   <th scope="col" className={`${table_sort_header_style} text-center !min-w-[100px] !max-w-36`} onClick={() => handleSort("query_shipper_nomination_status.name", sortState, setSortState, setSortedData, originalData)}>
                     {`Status`}
                     {getArrowIcon("query_shipper_nomination_status.name")}
                   </th>
                 )}
 
-                {columnVisibility.gas_day && (
+                {columnVisibility?.gas_day && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, originalData)}>
                     {`${tabIndex == 0 ? 'Gas Day' : 'Gas Week'}`}
                     {getArrowIcon("gas_day")}
                   </th>
                 )}
 
-                {columnVisibility.shipper_name && (
+                {columnVisibility?.shipper_name && (
                   <th scope="col" className={`${table_sort_header_style}`}
                     onClick={() => handleSort("group.name", sortState, setSortState, setSortedData, originalData)}
                   >
@@ -81,14 +81,14 @@ const TableNomQueryShipperNomFile: React.FC<TableProps> = ({ tableData, isLoadin
                   </th>
                 )}
 
-                {columnVisibility.contract_code && (
+                {columnVisibility?.contract_code && (
                   <th scope="col" className={`${table_sort_header_style}`} onClick={() => handleSort("contract_code.contract_code", sortState, setSortState, setSortedData, originalData)}>
                     {`Contract Code`}
                     {getArrowIcon("contract_code.contract_code")}
                   </th>
                 )}
 
-                {columnVisibility.file_name && (
+                {columnVisibility?.file_name && (
                   <th
                     scope="col"
                     className={`${table_sort_header_style} `}
@@ -99,14 +99,14 @@ const TableNomQueryShipperNomFile: React.FC<TableProps> = ({ tableData, isLoadin
                   </th>
                 )}
 
-                {columnVisibility.submission_comment && (
+                {columnVisibility?.submission_comment && (
                   <th scope="col" className={`${table_header_style} text-center`}
                   >
                     {`Submission Comment`}
                   </th>
                 )}
 
-                {columnVisibility.file && (
+                {columnVisibility?.file && (
                   <th scope="col" className={`${table_header_style} text-center`}
                   >
                     {`File`}
@@ -117,13 +117,13 @@ const TableNomQueryShipperNomFile: React.FC<TableProps> = ({ tableData, isLoadin
             </thead>
 
             <tbody>
-              {sortedData && sortedData?.map((row: any, index: any) => (
+              {(sortedData || [])?.map((row: any, index: any) => (
                 <tr
                   key={row?.id}
                   className={`${table_row_style}`}
                 >
 
-                  {columnVisibility.status && (
+                  {columnVisibility?.status && (
                     <td className="px-2 py-1 justify-center ">
                       {
                         <div className="flex justify-center items-center">
@@ -133,19 +133,19 @@ const TableNomQueryShipperNomFile: React.FC<TableProps> = ({ tableData, isLoadin
                     </td>
                   )}
 
-                  {columnVisibility.gas_day && (
+                  {columnVisibility?.gas_day && (
                     <td className="px-2 py-1 text-[#464255]">{row?.gas_day ? formatDateNoTime(row?.gas_day) : ''}</td>
                   )}
 
-                  {columnVisibility.shipper_name && (
+                  {columnVisibility?.shipper_name && (
                     <td className="px-2 py-1 text-[#464255]">{row?.group ? row?.group?.name : ''}</td>
                   )}
 
-                  {columnVisibility.contract_code && (
+                  {columnVisibility?.contract_code && (
                     <td className="px-2 py-1 text-[#464255]">{row?.contract_code?.contract_code}</td>
                   )}
 
-                  {columnVisibility.file_name && (
+                  {columnVisibility?.file_name && (
                     <td className="px-2 py-1 text-[#464255] !min-w-[180px]">
                       <div className="flex items-center">
                         {/* <img className="w-[20px] h-[20px] mr-2" src="/assets/image/pdf_icon.png" alt="pdf icon" /> */}
@@ -155,7 +155,7 @@ const TableNomQueryShipperNomFile: React.FC<TableProps> = ({ tableData, isLoadin
                     </td>
                   )}
 
-                  {columnVisibility.submission_comment && (
+                  {columnVisibility?.submission_comment && (
                     <td className="px-2 py-1 text-center">
                       <div className="inline-flex items-center justify-center relative">
                         {/* <button
@@ -171,7 +171,7 @@ const TableNomQueryShipperNomFile: React.FC<TableProps> = ({ tableData, isLoadin
                           type="button"
                           className={iconButtonClass}
                           onClick={() => openReasonModal(row?.id, row?.submission_comment_query_shipper_nomination_file, row)}
-                          disabled={!userPermission?.f_view || row?.submission_comment_query_shipper_nomination_file?.length <= 0}
+                          disabled={!userPermission?.f_view || (row?.submission_comment_query_shipper_nomination_file?.length ?? 0) <= 0}
                         >
                           <ChatBubbleOutlineOutlinedIcon
                             fontSize="inherit"
@@ -180,27 +180,27 @@ const TableNomQueryShipperNomFile: React.FC<TableProps> = ({ tableData, isLoadin
                           />
                         </button>
                 
-                        <span className={`px-2 text-[#429D3A] ${row?.submission_comment_query_shipper_nomination_file?.length > 0 ? 'text-[#ED1B24]' : ''}`}>
-                          {row?.submission_comment_query_shipper_nomination_file?.length}
+                        <span className={`px-2 text-[#429D3A] ${(row?.submission_comment_query_shipper_nomination_file?.length ?? 0) > 0 ? 'text-[#ED1B24]' : ''}`}>
+                          {row?.submission_comment_query_shipper_nomination_file?.length ?? 0}
                         </span>
 
                       </div>
                     </td>
                   )}
 
-                  {columnVisibility.file && (
+                  {columnVisibility?.file && (
                     <td className="px-2 py-1 text-center">
                       <div className="inline-flex items-center justify-center relative">
                         <button
                           type="button"
                           className="flex items-center justify-center px-[2px] py-[2px] rounded-md hover:bg-blue-600 border border-[#DFE4EA] relative"
                           onClick={() => openAllFileModal(row?.id)}
-                          disabled={!userPermission?.f_view || row?.query_shipper_nomination_file_url.length <= 0}
+                          disabled={!userPermission?.f_view || (row?.query_shipper_nomination_file_url?.length ?? 0) <= 0}
                         >
                           <AttachFileRoundedIcon sx={{ fontSize: 18, color: '#1473A1', '&:hover': { color: '#ffffff' } }} />
                         </button>
                         <span className="px-2 text-[#464255]">
-                          {row?.query_shipper_nomination_file_url.length}
+                          {row?.query_shipper_nomination_file_url?.length ?? 0}
                         </span>
                       </div>
                     </td>

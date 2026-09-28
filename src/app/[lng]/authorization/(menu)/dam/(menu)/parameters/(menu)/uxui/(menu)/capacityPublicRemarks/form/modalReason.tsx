@@ -40,10 +40,10 @@ const ModalReason: React.FC<FormExampleProps> = ({
                                     <p>{formatDateNoTime(data?.end_date) || '-'}</p>
                                 </div>
                             </div>
-                            <div key={data.id} className="w-full h-auto mb-2 p-2 border rounded-lg">
+                            <div key={data?.id ?? 'reason-box'} className="w-full h-auto mb-2 p-2 border rounded-lg">
                                 <div className="flex flex-col p-2">
                                     <div className="mb-2 flex justify-between">
-                                        <span className='font-light text-[#58585A]'>By <span className="font-bold text-[#58585A]"> {data?.create_by_account?.first_name} {data?.create_by_account?.last_name}</span></span>
+                                        <span className='font-light text-[#58585A]'>By <span className="font-bold text-[#58585A]"> {data?.create_by_account?.first_name ?? ''} {data?.create_by_account?.last_name ?? ''}</span></span>
                                         <span className="text-[#9CA3AF]">{formatDate(data?.create_date)}</span>
                                     </div>
                                     <div className="w-full border rounded-lg mb-2 p-4">

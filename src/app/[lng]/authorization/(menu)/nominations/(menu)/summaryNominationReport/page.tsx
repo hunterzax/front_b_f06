@@ -21,7 +21,6 @@ import timezone from 'dayjs/plugin/timezone';
 import Spinloading from "@/components/other/spinLoading";
 import getUserValue from "@/utils/getuserValue";
 import { useSearchParams } from "next/navigation";
-import { tabPanel } from "@material-tailwind/react";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -43,7 +42,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
     const [tabIndexNomAreaTotal, setTabIndexNomAreaTotal] = useState(mainTab === "1" ? 1 : 0);
     const [tabIndexFrameTableMain, setTabIndexFrameTableMain] = useState<any>(mainTab === "1" ? 1 : 0); // ส่งเข้าไปใน FrameTable จะเอาไว้ดูว่ากด tab ไหน (tab หลัก 0 = Nomination, 1 = Area, 2 = Total System)
-    const [tabIndexFrameTableSub, setTabIndexFrameTableSub] = useState<any>(subTab === "0" ? 0 : 0); // ส่งเข้าไปใน FrameTable จะเอาไว้ดูว่ากด tab ไหน (tab ย่อย 0 = MMSCF, 1 = MMBTU, Imbalance)
+    const [tabIndexFrameTableSub, setTabIndexFrameTableSub] = useState<any>(subTab === "1" ? 1 : 0); // ส่งเข้าไปใน FrameTable จะเอาไว้ดูว่ากด tab ไหน (tab ย่อย 0 = MMSCF, 1 = MMBTU, Imbalance)
     const [filteredDataTable, setFilteredDataTable] = useState<any>(null);
     const [filteredDataTableWeekly, setFilteredDataTableWeekly] = useState<any>(null);
     const [filteredDataTableDaily, setFilteredDataTableDaily] = useState<any>(null);
@@ -75,27 +74,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     useRestrictedPage(token);
     // ############### PERMISSION ###############
     const [userPermission, setUserPermission] = useState<any>();
-    let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
+    let user_permission: any = typeof window !== 'undefined' ? (localStorage?.getItem("k3a9r2b6m7t0x5w1s8j") || getCookieValue("k3a9r2b6m7t0x5w1s8j")) : null;
     user_permission = user_permission ? decryptData(user_permission) : null;
-    
 
     const getPermission = () => {
         try {
-            user_permission = user_permission ? JSON.parse(user_permission) : null; // Convert JSON string to object
+            let parsed_permission = user_permission;
+            if (typeof parsed_permission === 'string') {
+                parsed_permission = JSON.parse(parsed_permission); // Convert JSON string to object
+            }
 
-            // if (user_permission?.role_config) {
-            //     const updatedUserPermission = generateUserPermission(user_permission);
-            //     setUserPermission(updatedUserPermission);
-            // } else {
-            //     const permission = findRoleConfigByMenuName('Summary Nomination Report', userDT)
-            //     setUserPermission(permission);
-            // }
-
-            const permission = findRoleConfigByMenuName(`Summary Nomination Report`, userDT)
+            const permission = findRoleConfigByMenuName(`Summary Nomination Report`, userDT);
             if (permission) {
                 setUserPermission(permission);
-            } else if (user_permission?.role_config) {
-                const updatedUserPermission = generateUserPermission(user_permission);
+            } else if (parsed_permission?.role_config) {
+                const updatedUserPermission = generateUserPermission(parsed_permission);
                 setUserPermission(updatedUserPermission);
             }
         } catch (error) {
@@ -172,7 +165,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             { text: "Daily", id: 3 }
         ];
         return [...baseButtons];
-    }, [dataNomCodeX?.nomination_version[0].nomination_row_json]);
+    }, [dataNomCodeX?.nomination_version?.[0]?.nomination_row_json]);
 
     // ############### FIELD SEARCH ###############
 
@@ -191,7 +184,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         try {
             const tab = activeButton == 2 ? 'weekly' : activeButton == 3 ? 'daily' : 'all';
             const response: any = await getService(`/master/summary-nomination-report?gas_day_text=${gas_day_search}&tab=${tab}&overTotalCap=${total_over_cap}`);
-            console.log('response : ', response);
             // เอา hv มาทำตัวแดง (อ่านคอมเม้นพี่แนนนะ)
             // https://app.clickup.com/t/86etzchd8
             // https://app.clickup.com/t/86etzchaq
@@ -212,16 +204,17 @@ const ClientPage: React.FC<ClientProps> = (props) => {
 
         const res_x = await fetchSearch();
         let filteredMockDataForFilter: any = res_x
-        const pointCapacityMap = dataNomPointMaster?.reduce((map: any, point: any) => {
-
-            map[point.nomination_point] = point?.maximum_capacity;
+        const pointCapacityMap = (dataNomPointMaster || [])?.reduce((map: any, point: any) => {
+            if (point?.nomination_point) {
+                map[point?.nomination_point] = point?.maximum_capacity;
+            }
             return map;
         }, {} as Record<string, number>);
 
         if (srchCheckbox) {
             // case search over total cap
             // ยกมาจาก tableDailyNom เพราะตรงนั้นทำตัวแดงตาม issues ข้อนี้ https://app.clickup.com/t/86ev8tun8
-            const data_nom_daily_mmbtud = decorateRowsWithGroupSums(res_x?.nomination.daily.MMBTUD);
+            const data_nom_daily_mmbtud = decorateRowsWithGroupSums(res_x?.nomination?.daily?.MMBTUD);
 
             // 3. Filter ข้อมูลข้างใน mock_data_for_filter แต่ยังรักษาโครงสร้างเดิมไว้
             filteredMockDataForFilter = {
@@ -230,8 +223,8 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     ...res_x?.nomination,
                     daily: {
                         ...res_x?.nomination.daily,
-                        MMSCFD: (res_x?.nomination.daily.MMSCFD || []).filter((item: any) => {
-                            const maxCap = pointCapacityMap[item?.nomination_point];
+                        MMSCFD: (res_x?.nomination?.daily?.MMSCFD || []).filter((item: any) => {
+                            const maxCap = pointCapacityMap?.[item?.nomination_point];
                             if (!maxCap) return false;
                             const totalCapNumber = parseFloat(item?.totalCap?.toString().replace(/,/g, '').trim() || "0");
                             if (totalCapNumber === 0) return false;
