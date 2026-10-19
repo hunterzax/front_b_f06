@@ -1817,7 +1817,7 @@ useEffect(() => {
     const open = Boolean(anchorEl);
 
     // List ---> เฉพาะ Shipper จะไม่เห็น Column Submission Comment และ Path Detail https://app.clickup.com/t/86eqy9nt5
-    const adjustedColumns = userData?.user_type_id == 3 ? (initialColumns || []).filter((column: any) => !['submission_comment', 'path_detail'].includes(column?.key)) : initialColumns;
+    const adjustedColumns = userData?.user_type_id == 3 ? initialColumns.filter((column: any) => !['submission_comment', 'path_detail'].includes(column?.key)) : initialColumns;
     const [columnVisibility, setColumnVisibility] = useState<any>(
         Object.fromEntries((adjustedColumns || [])?.map((column: any) => [column?.key, column?.visible]))
     );
@@ -2137,14 +2137,16 @@ useEffect(() => {
                 width: 200,
                 accessorFn: (row: any) => row?.contract_code || '',
                 cell: (info) => {
-                    const row: any = info?.row?.original
+                    if (info == null) return null;
+                    const row: any = info.row?.original;
+                    if (row == null) return null;
                     return (
                         <div>
                             <span
-                                onClick={() => handleContractClick(row?.id, row)}
+                                onClick={() => handleContractClick(row.id, row)}
                                 className="cursor-pointer underline text-[#1473A1]"
                             >
-                                {row?.contract_code || '-'}
+                                {row.contract_code || '-'}
                             </span>
                         </div>
                     )
@@ -3470,7 +3472,7 @@ useEffect(() => {
                                 value={srchTermType}
                                 onChange={(e) => setSrchTermType(e.target.value)}
                                 options={termTypeMaster?.data?.map((item: any) => ({
-                                    value: item?.id?.toString(),
+                                    value: item.id?.toString(),
                                     label: item.name
                                 }))}
                             />
@@ -3483,7 +3485,7 @@ useEffect(() => {
                                 value={srchContractStatus}
                                 onChange={(e) => setContractStatus(e.target.value)}
                                 options={(statCapReqMgn?.data && Array.isArray(statCapReqMgn?.data) ? statCapReqMgn?.data : []).map((item: any) => ({
-                                    value: item?.id?.toString(),
+                                    value: item.id?.toString(),
                                     label: item.name
                                 }))}
                             />
@@ -3496,7 +3498,7 @@ useEffect(() => {
                                 value={srchStatus}
                                 onChange={(e) => setSrchStatus(e.target.value)}
                                 options={firstColStat?.map((item: any) => ({
-                                    value: item?.id?.toString(),
+                                    value: item.id?.toString(),
                                     label: item.name
                                 }))}
                             />
@@ -3547,7 +3549,7 @@ useEffect(() => {
                                 can_export={userPermission ? userPermission?.f_export : false} columnVisibility={columnVisibility} initialColumns={initialColumns}
                             />
                         }
-                        initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
+                        initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
                         onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                     />
                 </>

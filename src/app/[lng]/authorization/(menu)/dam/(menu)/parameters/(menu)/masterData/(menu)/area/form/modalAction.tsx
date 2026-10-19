@@ -386,7 +386,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                               {...register('description')}
                               readOnly={isReadOnly}
                               onChange={(e) => {
-                                if (e.target.value.length <= 50) {
+                                if ((e?.target?.value ?? "").length <= 50) {
                                   setValue('description', e?.target?.value ?? "");
                                 }
                               }}

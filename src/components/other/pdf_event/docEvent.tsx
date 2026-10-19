@@ -2132,33 +2132,11 @@ const PdfDoc309Used = ({ shipper, data }: any) => {
                 [
                   {
                     stack: [
-                      fromSignature
-                        ? {
-                            columns: [
-                              {
-                                text: 'แจ้งโดย ',
-                                width: 'auto',
-                                alignment: 'right'
-                              },
-                              {
-                                image: fromSignature, // base64 หรือ path
-                                width: 50,
-                                alignment: 'center'
-                              },
-                              {
-                                text: '',
-                                width: 'auto',
-                                alignment: 'left'
-                              }
-                            ],
-                            columnGap: 15, // ระยะห่างระหว่างวงเล็บกับภาพ
-                            margin: [0, 2, 0, 5] // ปรับระยะรอบภาพ
-                          }
-                        : {
+                      {
                             text: `แจ้งโดย`
                           },
                       {
-                        text: fromFullname ? `( ${fromFullname} )` : `(                                   )`
+                        text: `( ${fromFullname} )`
                       },
                       {
                         // text: `หน่วยงาน ${fromCompany} (ผู้ให้บริการ)`
@@ -2172,29 +2150,11 @@ const PdfDoc309Used = ({ shipper, data }: any) => {
                   },
                   {
                     stack: [
-                      toSignature
-                        ? {
-                            columns: [
-                              {
-                                text: 'รับทราบโดย',
-                                width: 'auto',
-                                alignment: 'right'
-                              },
-                              {
-                                image: toSignature, // base64 หรือ path
-                                fit: [40, 40],
-                                margin: [0, 0, 0, 0],
-                                alignment: 'left'
-                              }
-                            ],
-                            columnGap: 5, // ระยะห่างระหว่างวงเล็บกับภาพ
-                            margin: [0, 2, 0, 5] // ปรับระยะรอบภาพ
-                          }
-                        : {
+                      {
                             text: `รับทราบโดย`
                           },
                       {
-                        text: toFullname ? `( ${toFullname} )` : `(                                   )`
+                        text: `( ${toFullname} )`
                       },
                       {
                         // text: `หน่วยงาน ${toCompany} (ผู้ใช้บริการ)`

@@ -16,6 +16,7 @@ import { NumericFormat } from "react-number-format";
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import SelectFormProps from "@/components/other/selectProps";
+import { getService } from "@/utils/postService";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -27,7 +28,6 @@ type FormExampleProps = {
     open: boolean;
     userDT?: any;
     dataTable?: any;
-    dataShipper?: any;
     closeBalanceData?: any;
     zoneMasterData: any;
     onClose: () => void;
@@ -42,13 +42,12 @@ const ModalAction: React.FC<FormExampleProps> = ({
     userDT,
     zoneMasterData = {},
     open,
-    dataShipper,
     closeBalanceData,
     onClose,
     onSubmit,
     setResetForm,
 }) => {
-    const { control, register, handleSubmit, setValue, reset, clearErrors, resetField, formState: { errors }, watch, } = useForm<any>({ defaultValues: data, });
+    const { control, register, handleSubmit, setValue, reset, clearErrors, formState: { errors }, watch, } = useForm<any>({ defaultValues: data, });
 
     const textFieldSx = {
         '.MuiOutlinedInput-root': {
@@ -90,6 +89,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
     const [modaConfirmSave, setModaConfirmSave] = useState<any>(false)
     const [dataSubmit, setDataSubmit] = useState<any>()
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [dataShipper, setDataShipper] = useState<any[]>([]);
 
     // const isReadOnly = (mode === "view" || mode === 'edit');
     const isReadOnly = (mode === "view");
@@ -164,6 +164,43 @@ const ModalAction: React.FC<FormExampleProps> = ({
             setIsLoading(false)
         }, 500);
     }
+
+
+    const fetchShipperAndContract = async (gasDayString: string) => {
+        const gasDay = gasDayString ||  dayjs().format('YYYY-MM-DD');
+
+        let apiUrl = `/master/daily-adjustment/shipper-data?start_date=${gasDay}&end_date=${gasDay}`
+
+        const res_: any = await getService(apiUrl)
+    
+        if (res_ && Array.isArray(res_)) {
+            setDataShipper(res_)
+            // if (userDT?.account_manage?.[0]?.user_type_id == 3) {
+            //     const uniqueContract = res_.filter((f: any) => f?.id === userDT?.account_manage?.[0]?.group?.id)?.flatMap((fm: any) => fm?.contract_code)
+            //     setDataContract(uniqueContract)
+            // } else {
+            //     const uniqueContract = res_.flatMap((fm: any) => fm?.contract_code)
+            //     setDataContract(uniqueContract)
+            // }
+        }
+    }
+
+    useEffect(() => {
+        const gasDay = watch("gas_day")
+        const isShipper = userDT?.account_manage?.[0]?.user_type_id == 3
+
+        // เคลียร์ shipper เฉพาะตอนเปลี่ยน Gas Day ในโหมด create
+        // ถ้าเป็น edit/view อย่าเคลียร์ เพราะ reset เป็น "" จะทับค่าเดิมที่โหลดมา
+        if (mode !== "edit" && mode !== "view") {
+            setValue("group_id", isShipper ? (userDT?.account_manage?.[0]?.group?.id ?? "") : "")
+            setDataShipper([])
+        }
+
+        if (gasDay) {
+            fetchShipperAndContract(gasDay)
+        }
+    }, [watch("gas_day")])
+    
 
     return (
         <>
@@ -240,7 +277,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                 id={'group_id'}
                                                 register={register("group_id", { required: "Select Shipper Name" })}
                                                 disabled={userDT?.account_manage?.[0]?.user_type_id == 3 ? true : false || mode == 'view'}
-                                                valueWatch={userDT?.account_manage?.[0]?.user_type_id == 3 ? userDT?.account_manage?.[0]?.group?.id : watch("group_id")}
+                                                valueWatch={userDT?.account_manage?.[0]?.user_type_id == 3 ? (userDT?.account_manage?.[0]?.group?.id ?? "") : (watch("group_id") ?? "")}
                                                 handleChange={(e) => {
                                                     setValue("group_id", e?.target?.value ?? "");
                                                     if (errors?.group_id) { clearErrors('group_id') }

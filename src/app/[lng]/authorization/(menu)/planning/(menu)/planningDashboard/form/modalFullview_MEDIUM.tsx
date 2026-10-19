@@ -346,7 +346,7 @@ const ModalFullViewMedium: React.FC<FormExampleProps> = ({open, onClose, data, d
         const key = item?.area?.name
 
         if (!areaMap.has(key)) {
-          areaMap?.set(key, {
+          areaMap.set(key, {
             ...item,
             value: [...(item?.value || [])],
             day: [...(item?.month || [])]

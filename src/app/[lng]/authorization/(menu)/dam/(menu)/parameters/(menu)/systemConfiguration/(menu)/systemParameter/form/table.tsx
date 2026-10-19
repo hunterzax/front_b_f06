@@ -164,17 +164,18 @@ const TableParameter: React.FC<TableProps> = ({ openEditForm, openViewForm, open
 
                         <tbody>
                             {sortedData && sortedData.map((row: any, index: any) => {
+                                if (row == null) return null;
                                 return (
-                                    <tr key={row?.id ?? index} className={`${table_row_style}`}
+                                    <tr key={row.id ?? index} className={`${table_row_style}`}
                                     >
                                         {columnVisibility?.module && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.menus?.name}</td>
+                                            <td className="px-2 py-1 text-[#464255]">{row.menus?.name}</td>
                                         )}
                                         {columnVisibility?.system_parameter && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.system_parameter?.name}</td>
+                                            <td className="px-2 py-1 text-[#464255]">{row.system_parameter?.name}</td>
                                         )}
                                         {columnVisibility?.value && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.value && formatNumberThreeDecimal(row?.value)}</td>
+                                            <td className="px-2 py-1 text-[#464255]">{row.value && formatNumberThreeDecimal(row.value)}</td>
                                         )}
                                         {/* <td className="px-2 py-1">
                                             <OpenInNewOutlinedIcon /> {row?.link}
@@ -197,38 +198,38 @@ const TableParameter: React.FC<TableProps> = ({ openEditForm, openViewForm, open
                                                 <div className="inline-flex items-center justify-center relative">
                                                     <button
                                                         type="button"
-                                                        disabled={(row?.link || '') ? false : true}
+                                                        disabled={(row.link || '') ? false : true}
                                                         className={`flex items-center justify-center px-[2px] py-[2px] border  rounded-md hover:bg-[#DFE4EA] hover:border hover:border-[#DFE4EA] relative`}
-                                                        onClick={() => {if (row?.link || '') openInNewTab(row?.link || '')}}
+                                                        onClick={() => {if (row.link || '') openInNewTab(row.link || '')}}
                                                     >
-                                                        <OpenInNewOutlinedIcon sx={{ fontSize: 18, color: row?.link ? '#A6CE39' : '#9CA3AF' }} />
+                                                        <OpenInNewOutlinedIcon sx={{ fontSize: 18, color: row.link ? '#A6CE39' : '#9CA3AF' }} />
                                                     </button>
                                                 </div>
                                             </td>
                                         )}
                                         {columnVisibility?.start_date && (
-                                            <td className="px-2 py-1 text-[#464255]">{row?.start_date ? formatDateNoTime(row?.start_date) : ''}</td>
+                                            <td className="px-2 py-1 text-[#464255]">{row.start_date ? formatDateNoTime(row.start_date) : ''}</td>
                                         )}
                                         {columnVisibility?.end_date && (
-                                            <td className="px-2 py-1 text-[#0DA2A2]">{row?.end_date ? formatDateNoTime(row?.end_date) : ''}</td>
+                                            <td className="px-2 py-1 text-[#0DA2A2]">{row.end_date ? formatDateNoTime(row.end_date) : ''}</td>
                                         )}
                                         {columnVisibility?.action && (
                                             <td className="px-2 py-1">
                                                 {/* <div className="relative inline-block text-left "> */}
                                                 <div className="relative inline-flex justify-center items-center w-full">
-                                                    <BtnActionTable togglePopover={togglePopover} row_id={row?.id} disable={!userPermission?.f_view && !userPermission?.f_edit ? true : false} />
-                                                    {openPopoverId === row?.id && (
+                                                    <BtnActionTable togglePopover={togglePopover} row_id={row.id} disable={!userPermission?.f_view && !userPermission?.f_edit ? true : false} />
+                                                    {openPopoverId === row.id && (
                                                         <div ref={popoverRef}
                                                             className="absolute left-[-9rem] top-[-10px] mt-2 w-36 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
                                                             <ul className="py-2">
                                                                 {
-                                                                    userPermission?.f_view && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("view", row?.id) }}><RemoveRedEyeOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`View`}</li>
+                                                                    userPermission?.f_view && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("view", row.id) }}><RemoveRedEyeOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`View`}</li>
                                                                 }
                                                                 {
-                                                                    userPermission?.f_edit && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("edit", row?.id) }}><EditOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`Edit`}</li>
+                                                                    userPermission?.f_edit && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("edit", row.id) }}><EditOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`Edit`}</li>
                                                                 }
                                                                 {
-                                                                    userPermission?.f_view && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("history", row?.id) }}><RestoreOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`History`}</li>
+                                                                    userPermission?.f_view && <li className="px-4 py-2 font-bold text-sm text-[#58585A] hover:bg-gray-100 cursor-pointer" onClick={() => { toggleMenu("history", row.id) }}><RestoreOutlinedIcon sx={{ fontSize: 20, marginRight: 2, color: '#58585A' }} /> {`History`}</li>
                                                                 }
                                                             </ul>
                                                         </div>

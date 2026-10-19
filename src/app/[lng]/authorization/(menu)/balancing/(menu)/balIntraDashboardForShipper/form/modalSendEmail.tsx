@@ -164,7 +164,7 @@ const ModalSendEmail: React.FC<FormExampleProps> = ({
                                         placeholder='Enter Detail'
                                         onChange={(e) => {
                                             clearErrors('detail');
-                                            if (e.target.value.length <= 2000) {
+                                            if ((e?.target?.value ?? "").length <= 2000) {
                                                 setValue("detail", e?.target?.value ?? "");
                                             }
                                         }}
@@ -227,7 +227,7 @@ const ModalSendEmail: React.FC<FormExampleProps> = ({
                                                     setValue('group', undefined);
                                                     setValue('user_mail', undefined);
                                                     setValue("user_type", e?.target?.value ?? "");
-                                                    filterGetGroup(e.target.value);
+                                                    filterGetGroup(e?.target?.value ?? "");
                                                     if (errors?.user_type) { clearErrors('user_type') }
                                                 }}
                                                 errors={errors?.user_type}

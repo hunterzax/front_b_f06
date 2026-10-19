@@ -821,8 +821,8 @@ const TableModify: React.FC<Props> = ({
                                     const checkDate: any = functionControlcolSpan(header, 'date'); //example here only data == date
                                     const getCol: any = checkDate?.filter((item: any) => item?.active == false)?.length > 0 ? checkDate?.filter((item: any) => item?.active == true)?.length : header.dates && header.dates.length > 0 ? header.dates.length : header.subHeaders ? header.subHeaders.length : 1
 
-                                    if (header?.label == "Period") {
-                                        const getPeriod = header?.dates;
+                                    if (header.label == "Period") {
+                                        const getPeriod = header.dates;
                                         return (
                                             getPeriod?.map((item: any, idx: number) => {
                                                 return (columnVisibility?.[item] && (
@@ -850,7 +850,7 @@ const TableModify: React.FC<Props> = ({
                                             className={`${["Zone", "Area", "Exit Meter ID", "Contract Point", "New Point"].includes(header.label) ? table_sort_header_style : table_header_style} border-r-2 border-gray-300 text-center w-[100px]`}
                                         >
                                             {
-                                                header?.label == "Pressure Range" ? 'Pressure Range (PSIG)' : header.label == "Temperature Range" ? 'Temperature Range (Deg. F)' : header.label
+                                                header.label == "Pressure Range" ? 'Pressure Range (PSIG)' : header.label == "Temperature Range" ? 'Temperature Range (Deg. F)' : header.label
                                             }
                                             {["Zone", "Area", "Exit Meter ID", "Contract Point", "New Point"].includes(header.label) && getArrowIcon("exit_item" + index)}
                                         </th>
@@ -869,12 +869,12 @@ const TableModify: React.FC<Props> = ({
                                     return null
                                 }
 
-                                let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header?.label);
+                                let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header.label);
                                 const checkDate: any = functionControlcolSpan(header, 'date'); //example here only data == date
                                 const checkSubheader: any = functionControlcolSpan(header, 'sub_header'); //example here only data == sub_header
 
                                 return (
-                                    header?.dates ? (
+                                    header.dates ? (
                                         sortDatesAsc([...header.dates]).map((date: any, dateIndex: any, arr: any) => { // Sort before rendering
 
                                             if (date == 'From' || date == 'To') {
@@ -906,9 +906,10 @@ const TableModify: React.FC<Props> = ({
                                                     </th>
                                                 )
                                         })
-                                    ) : header?.subHeaders && header?.subHeaders.length > 0 ? (
-                                        (header?.subHeaders || [])?.map((subHeader: any, subIndex: any, arr: any) => (
-                                            columnVisibility?.[subHeader?.key] && (
+                                    ) : header.subHeaders && header.subHeaders.length > 0 ? (
+                                        (header.subHeaders || []).map((subHeader: any, subIndex: any, arr: any) => {
+                                            if (subHeader == null) return null;
+                                            return columnVisibility?.[subHeader.key] && (
                                                 <th
                                                     key={`${index}-${subIndex}`}
                                                     colSpan={
@@ -919,8 +920,8 @@ const TableModify: React.FC<Props> = ({
                                                     {subHeader.label}
                                                     {getArrowIcon("entry_sub_min_max" + subIndex)}
                                                 </th>
-                                            )
-                                        ))
+                                            );
+                                        })
                                     ) : (
                                         <th key={index}
                                             // className="px-4 py-2 border border-gray-300 text-center"
@@ -939,12 +940,12 @@ const TableModify: React.FC<Props> = ({
                                     return null
                                 }
 
-                                let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header?.label);
+                                let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header.label);
                                 const checkDate: any = functionControlcolSpan(header, 'date'); //example here only data == date
                                 const checkSubheader: any = functionControlcolSpan(header, 'sub_header'); //example here only data == sub_header
                                 return (
                                     header.dates ? (
-                                        sortDatesAsc([...(header?.dates || [])]).map((date: any, dateIndex: any, arr: any) => { // Sort before rendering
+                                        sortDatesAsc([...(header.dates || [])]).map((date: any, dateIndex: any, arr: any) => { // Sort before rendering
                                             if (date == 'From' || date == 'To') {
                                                 return null
                                             }
@@ -976,8 +977,9 @@ const TableModify: React.FC<Props> = ({
                                                 )
                                         })
                                     ) : (header.subHeaders || []).length > 0 ? (
-                                        (header.subHeaders || [])?.map((subHeader: any, subIndex: any, arr: any) => (
-                                            columnVisibility?.[subHeader?.key] && (
+                                        (header.subHeaders || []).map((subHeader: any, subIndex: any, arr: any) => {
+                                            if (subHeader == null) return null;
+                                            return columnVisibility?.[subHeader.key] && (
                                                 <th
                                                     key={`${index}-${subIndex}`}
                                                     colSpan={
@@ -988,8 +990,8 @@ const TableModify: React.FC<Props> = ({
                                                     {subHeader.label}
                                                     {getArrowIcon("exit_sub_min_max" + subIndex)}
                                                 </th>
-                                            )
-                                        ))
+                                            );
+                                        })
                                     ) : (
                                         <th key={index}
                                             className={`${table_header_style} border border-[#1473A1] text-center `}
@@ -1088,14 +1090,15 @@ const TableModify: React.FC<Props> = ({
                                         const visibilityKey = visibilityMap[header.label];
 
                                         // Check if the header has dates
-                                        if ((header?.dates?.length ?? 0) > 0) {
-                                            let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header?.label);
+                                        if ((header.dates?.length ?? 0) > 0) {
+                                            let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header.label);
                                             const checkDate: any = functionControlcolSpan(header, 'date'); //example here only data == date
 
-                                            return (header?.dates2?.map((date: any, dateIndex: any, arr: any) => {
+                                            return ((header.dates2 || []).map((date: any, dateIndex: any, arr: any) => {
+                                                if (date == null) return null;
                                                 return (
-                                                    date?.value == 'From' || date?.value == 'To' ?
-                                                        columnVisibility?.[formatDateToMonthYear(date?.value)] && (
+                                                    date.value == 'From' || date.value == 'To' ?
+                                                        columnVisibility?.[formatDateToMonthYear(date.value)] && (
                                                             <td
                                                                 key={`${colIndex}-${dateIndex}`}
                                                                 className={`
@@ -1107,7 +1110,7 @@ const TableModify: React.FC<Props> = ({
                                                                                 text-[#464255] 
                                                                                 ${dateIndex === arr.length - 1 ? "border-r-2 border-gray-300"
                                                                         : checkDate?.filter((item: any) => item?.active == false)?.length > 0 ?
-                                                                            checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date?.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
+                                                                            checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
                                                                             "border-r-2 border-gray-300" : ""}`}
                                                             >
                                                                 {isEditing ? (
@@ -1117,19 +1120,19 @@ const TableModify: React.FC<Props> = ({
                                                                         placeHolder="Select Date"
                                                                         mode={'edit-table'}
                                                                         valueShow={
-                                                                            date?.value == 'From' ? isAmendMode && rowIndex == 5 ? dayjs(amendContractStartDate, "YYYY-MM-DD").format("DD/MM/YYYY") : row[5] !== undefined ? row[5] : dayjs().format("DD/MM/YYYY") :
-                                                                                date?.value == 'To' && isAmendMode && rowIndex == 6 ? dayjs(amendContractStartDate, "YYYY-MM-DD").format("DD/MM/YYYY") : row[6] !== undefined ? row[6] : dayjs().format("DD/MM/YYYY")
+                                                                            date.value == 'From' ? isAmendMode && rowIndex == 5 ? dayjs(amendContractStartDate, "YYYY-MM-DD").format("DD/MM/YYYY") : row[5] !== undefined ? row[5] : dayjs().format("DD/MM/YYYY") :
+                                                                                date.value == 'To' && isAmendMode && rowIndex == 6 ? dayjs(amendContractStartDate, "YYYY-MM-DD").format("DD/MM/YYYY") : row[6] !== undefined ? row[6] : dayjs().format("DD/MM/YYYY")
                                                                         } // ถ้า isAmendMode == true กำหนด date.key == 5 ให้ใช้วันที่ amendNewContractStartDate ลงใน valueShow
                                                                         min={tomorrowDay || undefined}
                                                                         allowClear
                                                                         onChange={(e: any) => {
                                                                             const formattedNewDate = e ? dayjs(e).format("DD/MM/YYYY") : undefined;
-                                                                            const currentDate = date?.value == 'From' ? row[5] : date?.value == 'To' && row[6];
+                                                                            const currentDate = date.value == 'From' ? row[5] : date.value == 'To' && row[6];
                                                                             const hasDateChanged = formattedNewDate !== currentDate;
 
-                                                                            if (date?.value == 'From') {
+                                                                            if (date.value == 'From') {
                                                                                 editdataTable(rowIndex, 5, formattedNewDate, mode, 'date')
-                                                                            } else if (date?.value == 'To') {
+                                                                            } else if (date.value == 'To') {
                                                                                 editdataTable(rowIndex, 6, formattedNewDate, mode, 'date')
                                                                             }
 
@@ -1146,7 +1149,7 @@ const TableModify: React.FC<Props> = ({
                                                                 )}
                                                             </td>
                                                         )
-                                                        : (columnVisibility?.[findKey?.key + "_" + formatDateToMonthYear(date?.value)] || columnVisibility?.[findKey?.key + "_" + formatDateToDayMonthYear(date?.value)]) && (
+                                                        : (columnVisibility?.[findKey?.key + "_" + formatDateToMonthYear(date.value)] || columnVisibility?.[findKey?.key + "_" + formatDateToDayMonthYear(date.value)]) && (
                                                             <td
                                                                 key={`${colIndex}-${dateIndex}`}
                                                                 className={`
@@ -1158,7 +1161,7 @@ const TableModify: React.FC<Props> = ({
                                                                                 text-[#464255] 
                                                                                 ${dateIndex === arr.length - 1 ? "border-r-2 border-gray-300"
                                                                         : checkDate?.filter((item: any) => item?.active == false)?.length > 0 ?
-                                                                            checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date?.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
+                                                                            checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
                                                                             "border-r-2 border-gray-300" : ""}
                                                                             `}
                                                             >
@@ -1186,14 +1189,15 @@ const TableModify: React.FC<Props> = ({
                                                         )
                                                 )
                                             }));
-                                        } else if (header?.subHeaders && header?.subHeaders?.length > 0) {
+                                        } else if (header.subHeaders && header.subHeaders?.length > 0) {
                                             // ตรงนี้ render Pressure Range | Temperature Range () => Min, Max
 
                                             const checkSubheader: any = functionControlcolSpan(header, 'sub_header'); //example here only data == sub_header
 
-                                            return (header?.subHeaders || [])?.map((subHeader: any, subIndex: any, arr: any) => {
+                                            return (header.subHeaders || []).map((subHeader: any, subIndex: any, arr: any) => {
+                                                if (subHeader == null) return null;
                                                 return (
-                                                    columnVisibility?.[subHeader?.key] && (
+                                                    columnVisibility?.[subHeader.key] && (
                                                         <td
                                                             key={`${colIndex}-${subIndex}`}
                                                             colSpan={
@@ -1205,10 +1209,10 @@ const TableModify: React.FC<Props> = ({
                                                             {isEditing ? (
                                                                 <NumericFormat
                                                                     value={
-                                                                        header?.label == 'Pressure Range' ? (
+                                                                        header.label == 'Pressure Range' ? (
                                                                             subHeader?.label == 'Min' ? row[1] :
                                                                                 subHeader?.label == 'Max' && row[2]
-                                                                        ) : header?.label == 'Temperature Range' && (
+                                                                        ) : header.label == 'Temperature Range' && (
                                                                             subHeader?.label == 'Min' ? row[3] :
                                                                                 subHeader?.label == 'Max' && row[4]
                                                                         )
@@ -1216,13 +1220,13 @@ const TableModify: React.FC<Props> = ({
                                                                     onValueChange={(values) => {
                                                                         const { value } = values;
 
-                                                                        if (header?.label == 'Pressure Range') {
+                                                                        if (header.label == 'Pressure Range') {
                                                                             if (subHeader?.label == 'Min') {
                                                                                 editdataTable(rowIndex, 1, value, mode, 'input')
                                                                             } else if (subHeader?.label == 'Max') {
                                                                                 editdataTable(rowIndex, 2, value, mode, 'input')
                                                                             }
-                                                                        } else if (header?.label == 'Temperature Range') {
+                                                                        } else if (header.label == 'Temperature Range') {
                                                                             if (subHeader?.label == 'Min') {
                                                                                 editdataTable(rowIndex, 3, value, mode, 'input')
                                                                             } else if (subHeader?.label == 'Max') {
@@ -1241,12 +1245,12 @@ const TableModify: React.FC<Props> = ({
                                                                     }}
                                                                 />
                                                             ) : (
-                                                                header?.label == 'Pressure Range' ? (
+                                                                header.label == 'Pressure Range' ? (
                                                                     subHeader?.label == 'Min' ?
                                                                         row?.[1] !== null && row?.[1] !== undefined && row?.[1] !== '' ? formatNumberThreeDecimal(Number(String(row?.[1]).replace(/,/g, '').trim())) : ''
                                                                         : subHeader?.label == 'Max' &&
                                                                             row?.[2] !== null && row?.[2] !== undefined && row?.[2] !== '' ? formatNumberThreeDecimal(Number(String(row?.[2]).replace(/,/g, '').trim())) : ''
-                                                                ) : header?.label == 'Temperature Range' && (
+                                                                ) : header.label == 'Temperature Range' && (
                                                                     subHeader?.label == 'Min' ?
                                                                         row?.[3] !== null && row?.[3] !== undefined && row?.[3] !== '' ? formatNumberThreeDecimal(Number(String(row?.[3]).replace(/,/g, '').trim())) : ''
                                                                         : subHeader?.label == 'Max' &&
@@ -1325,15 +1329,16 @@ const TableModify: React.FC<Props> = ({
                                     )}
 
                                     {(headerExit || []).map((header: any, colIndex: any) => {
-                                        const visibilityKey = visibilityMap[header?.label];
+                                        const visibilityKey = visibilityMap[header.label];
                                         // Check if the header has dates
-                                        if ((header?.dates?.length ?? 0) > 0) {
-                                            let findKey: any = (initialColumnsDynamic || []).find((item: any) => item?.label == header?.label);
+                                        if ((header.dates?.length ?? 0) > 0) {
+                                            let findKey: any = (initialColumnsDynamic || []).find((item: any) => item?.label == header.label);
                                             const checkDate: any = functionControlcolSpan(header, 'date'); //example here only data == date
-                                            return ((header?.dates2 || []).map((date: any, dateIndex: any, arr: any) => {
+                                            return ((header.dates2 || []).map((date: any, dateIndex: any, arr: any) => {
+                                                if (date == null) return null;
                                                 return (
-                                                    date?.value == 'From' || date?.value == 'To' ?
-                                                        (columnVisibility?.[formatDateToMonthYear(date?.value)] && (
+                                                    date.value == 'From' || date.value == 'To' ?
+                                                        (columnVisibility?.[formatDateToMonthYear(date.value)] && (
                                                             <td
                                                                 key={`${colIndex}-${dateIndex}`}
                                                                 className={`
@@ -1345,7 +1350,7 @@ const TableModify: React.FC<Props> = ({
                                                                                         text-[#464255] 
                                                                                         ${dateIndex === arr.length - 1 ? "border-r-2 border-gray-300"
                                                                         : checkDate?.filter((item: any) => item?.active == false)?.length > 0 ?
-                                                                            checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date?.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
+                                                                            checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
                                                                             "border-r-2 border-gray-300" : ""}
                                                                                     `}
                                                             >
@@ -1385,7 +1390,7 @@ const TableModify: React.FC<Props> = ({
                                                         ))
 
                                                         //DATE
-                                                        : (columnVisibility?.[findKey?.key + "_" + formatDateToMonthYear(date?.value)] || columnVisibility?.[findKey?.key + "_" + formatDateToDayMonthYear(date?.value)]) && (
+                                                        : (columnVisibility?.[findKey?.key + "_" + formatDateToMonthYear(date.value)] || columnVisibility?.[findKey?.key + "_" + formatDateToDayMonthYear(date.value)]) && (
                                                             <td
                                                                 key={`${colIndex}-${dateIndex}`}
                                                                 className={`
@@ -1397,7 +1402,7 @@ const TableModify: React.FC<Props> = ({
                                                                                     text-[#464255] 
                                                                                     ${dateIndex === arr.length - 1 ? "border-r-2 border-gray-300"
                                                                         : checkDate?.filter((item: any) => item?.active == false)?.length > 0 ?
-                                                                            checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date?.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
+                                                                            checkDate?.filter((item: any) => item?.active == true)[checkDate?.filter((item: any) => item?.active == true)?.length - 1]?.key == formatDateToMonthYear(date.value) && //หาตัวสุดท้าย โดยการเอา check date filter หาของที่มี และ - ด้วย(ของที่มี -1) เพื่อเช็ค index ตัวสุดท้ายสำหรับใส่ style
                                                                             "border-r-2 border-gray-300" : ""}
                                                                                 `}
                                                             >
@@ -1438,13 +1443,13 @@ const TableModify: React.FC<Props> = ({
 
                                                 )
                                             }));
-                                        } else if (header?.subHeaders && header?.subHeaders.length > 0) {
+                                        } else if (header.subHeaders && header.subHeaders.length > 0) {
                                             // Render data for columns with subHeaders
                                             // ตรงนี้ render Min, Max
                                             const checkSubheader: any = functionControlcolSpan(header, 'sub_header'); //example here only data == sub_header
-                                            return (header?.subHeaders || [])?.map((subHeader: any, subIndex: any, arr: any) => (
-
-                                                columnVisibility?.[subHeader?.key] && (
+                                            return (header.subHeaders || []).map((subHeader: any, subIndex: any, arr: any) => {
+                                                if (subHeader == null) return null;
+                                                return columnVisibility?.[subHeader.key] && (
                                                     <td
                                                         key={`${colIndex}-${subIndex}`}
                                                         colSpan={
@@ -1473,8 +1478,8 @@ const TableModify: React.FC<Props> = ({
                                                                     row?.[2] !== null && row?.[2] !== undefined && row?.[2] !== '' ? formatNumberThreeDecimal(Number(String(row?.[2]).replace(/,/g, '').trim())) : ''
                                                         )}
                                                     </td>
-                                                )
-                                            ));
+                                                );
+                                            });
                                         }
                                     })}
                                 </tr>

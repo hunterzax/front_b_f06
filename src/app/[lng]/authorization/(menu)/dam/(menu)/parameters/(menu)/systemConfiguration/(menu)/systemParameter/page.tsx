@@ -321,7 +321,7 @@ export default function ClientPage() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries((initialColumns || [])?.map((column: any) => [column?.key, column?.visible]))
+        Object.fromEntries(initialColumns.map((column: any) => [column?.key, column?.visible]))
     );
 
     const handleColumnToggle = (columnKey: string | VisibilityState) => {
@@ -631,7 +631,7 @@ export default function ClientPage() {
                         can_export={userPermission ? userPermission?.f_export : false} columnVisibility={columnVisibility} initialColumns={initialColumns}
                     />
                 }
-                initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
+                initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
                 onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                 onFilteredDataChange={(filteredData: any) => {
                     const newData = filteredData || [];

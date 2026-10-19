@@ -647,14 +647,14 @@ useEffect(() => {
     )
 
     return transformedAll
-      .filter(
-        (row: any) =>
-          Array.isArray(row?.data) &&
-          row.data.length > 0
-      )
+      .filter((row: any) => {
+        if (row == null) return false;
+        return Array.isArray(row.data) && row.data.length > 0;
+      })
       .map((row: any) => {
+        if (row == null) return row;
         const previousParent =
-          previousParentMap.get(row?.id)
+          previousParentMap.get(row.id)
 
         const previousChildMap = new Map(
           (previousParent?.data ?? []).map(
@@ -666,16 +666,16 @@ useEffect(() => {
         )
 
         return {
-          id: row?.id,
+          id: row.id,
 
           checked:
             previousParent?.checked ??
             false,
 
-          allocation_status: row?.status,
+          allocation_status: row.status,
 
-          data: (row.data || [])?.map((sub: any) => ({
-            parent: row?.id,
+          data: row.data.map((sub: any) => ({
+            parent: row.id,
             id: sub?.id,
             allocation_status:
               sub?.allocation_status,

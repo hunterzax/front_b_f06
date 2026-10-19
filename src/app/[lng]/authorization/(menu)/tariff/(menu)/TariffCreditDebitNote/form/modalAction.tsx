@@ -523,7 +523,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                     return {
                         id: id_ + item.id, // gen id ใหม่
                         contract_code_id: contractId,
-                        contract_code: item?.contract_code.contract_code,
+                        contract_code: item.contract_code.contract_code,
                         quantity: item.quantity,
                         unit: item.unit,
                         fee: item.fee,

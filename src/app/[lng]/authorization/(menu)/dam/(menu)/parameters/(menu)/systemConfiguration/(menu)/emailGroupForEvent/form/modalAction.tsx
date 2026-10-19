@@ -229,7 +229,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     setValue("user_type_id", e?.target?.value ?? "");
                                                     setValue("group_id", null); // clear ที่เลือก group ไว้ถ้ากดเลือก user type ใหม่
                                                     setValue("email", null); // clear ที่เลือก email ไว้ถ้ากดเลือก user type ใหม่
-                                                    getGroupByType(e.target.value)
+                                                    getGroupByType(e?.target?.value ?? "")
                                                     clearErrors('user_type_id');
                                                 }}
                                                 displayEmpty

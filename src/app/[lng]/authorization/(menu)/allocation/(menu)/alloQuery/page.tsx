@@ -480,7 +480,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     ];
 
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries(initialColumns.filter((item: any) => item?.key !== 'gas_hour')?.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries(initialColumns.filter((item: any) => item.key !== 'gas_hour').map((column: any) => [column.key, column.visible]))
     );
 
     useEffect(() => {
@@ -1885,7 +1885,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 setAnchorEl={setAnchorEl}
                 columnVisibility={columnVisibility}
                 handleColumnToggle={handleColumnToggle}
-                initialColumns={tabIndex == 0 ? initialColumns?.filter((item: any) => item?.key !== 'gas_hour') : initialColumns}
+                initialColumns={tabIndex == 0 ? initialColumns.filter((item: any) => item?.key !== 'gas_hour') : initialColumns}
             />
         </div>
     )

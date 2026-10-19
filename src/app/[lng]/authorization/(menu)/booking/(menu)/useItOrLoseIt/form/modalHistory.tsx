@@ -322,12 +322,12 @@ const ModalPathMgnHistory: React.FC<FormExampleProps> = ({
                                                                 >
                                                                     {(() => {
                                                                         // render path แรกใน array
-                                                                        if (item?.data?.length > 0) {
-                                                                            const areaMap = item?.data[0]?.paths?.revised_capacity_path.reduce((acc: any, pathItem: any) => {
+                                                                        if (item.data?.length > 0) {
+                                                                            const areaMap = item.data[0]?.paths?.revised_capacity_path.reduce((acc: any, pathItem: any) => {
                                                                                 acc[pathItem.area_id] = pathItem;
                                                                                 return acc;
                                                                             }, {});
-                                                                            const sortedRevisedCapacityPath = item?.data[0]?.paths?.revised_capacity_path_edges?.map((edge: any) => areaMap[edge.source_id]).filter((pathItem: any) => pathItem !== undefined);
+                                                                            const sortedRevisedCapacityPath = item.data[0]?.paths?.revised_capacity_path_edges?.map((edge: any) => areaMap[edge.source_id]).filter((pathItem: any) => pathItem !== undefined);
                                                                             return (
                                                                                 <RevisedCapacityPathRender sortedRevisedCapacityPath={sortedRevisedCapacityPath} />
                                                                             );
@@ -348,7 +348,7 @@ const ModalPathMgnHistory: React.FC<FormExampleProps> = ({
                                                                 {expandedRow === item.config_master_path_id && (
                                                                     <div className="ml-2 mt-2 bg-[#DFE4EA] border border-[#DFE4EA] rounded-[8px] p-2">
 
-                                                                        {(item?.data || []).map((configItem: any, configIndex: any) => {
+                                                                        {(item.data || []).map((configItem: any, configIndex: any) => {
                                                                             const areaMap = configItem?.paths?.revised_capacity_path?.reduce((acc: any, pathItem: any) => {
                                                                                 acc[pathItem.area_id] = pathItem;
                                                                                 return acc;

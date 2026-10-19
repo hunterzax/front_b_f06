@@ -18,6 +18,7 @@ import { useState } from "react";
 import ModalComponent from "../other/ResponseModal";
 import { useRouter } from "next/navigation";
 import DefaultProfileAvatar from "../other/DefaultProfileAvatar";
+import { setCookie } from "@/utils/cookie";
 
 function Profile({ mode }: any) {
 
@@ -29,6 +30,7 @@ function Profile({ mode }: any) {
   const router = useRouter();
 
   const handleLogout = async () => {
+    const pathname = window.location.pathname;
     localStorage.clear();
     const channel = new BroadcastChannel("auth_channel");
 
@@ -37,6 +39,7 @@ function Profile({ mode }: any) {
     channel.close();
 
     await mutateLogout();
+    setCookie('redirectAfterLogin', pathname, 1);
     router.replace("/en/signin");
   };
 

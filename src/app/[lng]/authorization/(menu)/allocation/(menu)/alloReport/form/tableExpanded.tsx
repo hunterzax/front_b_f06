@@ -330,48 +330,53 @@ const TableExpanded: React.FC<TableProps> = ({
 
                                 {/* HEADER */}
                                 <thead className="bg-[#1473A1] text-white sticky top-0">
-                                    {(table?.getHeaderGroups?.() || [])?.map(hg => (
+                                    {(table?.getHeaderGroups?.() || []).map(hg => {
+                                        if (hg == null) return null;
+                                        return (
                                         <tr key={hg.id}>
-                                            {(hg.headers || [])?.map((header, index) => {
+                                            {(hg.headers || []).map((header, index) => {
+                                                if (header == null) return null;
 
-                                                const getStyle: any = (columns || []).find((item: any) => item?.accessorKey == (header?.column?.columnDef as any)?.accessorKey);
-                                                const canSort = header?.column?.getCanSort() || false;
-                                                const enableSorting = canSort || header?.column?.columnDef?.enableSorting == true;
-                                                const size = header?.getSize() == 150 ? undefined : header?.getSize() // 150 is default size of column
-                                                const meta = header?.column?.columnDef?.meta as any
+                                                const getStyle: any = (columns || []).find((item: any) => item?.accessorKey == (header.column?.columnDef as any)?.accessorKey);
+                                                const canSort = header.column?.getCanSort() || false;
+                                                const enableSorting = canSort || header.column?.columnDef?.enableSorting == true;
+                                                const size = header.getSize() == 150 ? undefined : header.getSize() // 150 is default size of column
+                                                const meta = header.column?.columnDef?.meta as any
                                                 const width = getStyle?.width ? getStyle?.width : size ? size : meta?.width ? meta?.width : '100%'
                                                 const align = getStyle?.align ? getStyle?.align : meta?.align ? meta?.align : 'left'
 
                                                 return (
                                                     <th
-                                                        key={header?.id}
+                                                        key={header.id}
                                                         scope="col"
                                                         colSpan={header.colSpan}
-                                                        className={`${enableSorting ? table_sort_header_style : table_header_style} ${index == 0 ? 'rounded-tl-md' : (hg?.headers?.length - 1 == index) && 'rounded-tr-md'} text-center relative z-50`}
-                                                        onClick={enableSorting ? header.column.getToggleSortingHandler() : undefined}
+                                                        className={`${enableSorting ? table_sort_header_style : table_header_style} ${index == 0 ? 'rounded-tl-md' : (hg.headers?.length - 1 == index) && 'rounded-tr-md'} text-center relative z-50`}
+                                                        onClick={enableSorting ? header.column?.getToggleSortingHandler() : undefined}
                                                         style={{
                                                             textAlign: align,
                                                             backgroundColor: getStyle?.headerColor ? getStyle?.headerColor : meta?.headerColor ? meta?.headerColor : '#1473A1',
                                                             justifyItems: (enableSorting || !['center', 'right', 'left', 'start', 'end'].includes(align)) ? undefined : align
                                                         }}
                                                     >
-                                                        {flexRender(header?.column?.columnDef?.header, header?.getContext?.())}
+                                                        {flexRender(header.column?.columnDef?.header, header.getContext?.())}
 
                                                         {enableSorting && <div className={`absolute right-0 top-1/2 transform -translate-y-1/2 flex flex-col items-center -space-y-3`}>
-                                                            <ArrowDropUpIcon sx={{ fontSize: 18, opacity: header.column.getIsSorted() === "asc" ? 1 : 0.4, }} />
-                                                            <ArrowDropDownIcon sx={{ fontSize: 18, opacity: header.column.getIsSorted() === "desc" ? 1 : 0.4, }} />
+                                                            <ArrowDropUpIcon sx={{ fontSize: 18, opacity: header.column?.getIsSorted() === "asc" ? 1 : 0.4, }} />
+                                                            <ArrowDropDownIcon sx={{ fontSize: 18, opacity: header.column?.getIsSorted() === "desc" ? 1 : 0.4, }} />
                                                         </div>
                                                         }
                                                     </th>
                                                 );
                                             })}
                                         </tr>
-                                    ))}
+                                        );
+                                    })}
                                 </thead>
 
-                                {/* BODY (ของมึง + expand) */}
+                                {/* BODY (+ expand) */}
                                 <tbody>
-                                    {(table?.getRowModel?.()?.rows || [])?.map((row: any) => {
+                                    {(table?.getRowModel?.()?.rows || []).map((row: any) => {
+                                        if (row == null) return null;
                                         const dataRow = row.original;
                                         // const id = dataRow?.id ?? row.id;
                                         const id = dataRow?.id + '_' + dataRow?.request_number;
@@ -385,10 +390,11 @@ const TableExpanded: React.FC<TableProps> = ({
                                                     onClick={() => toggleExpand(id)}
                                                 >
                                                     {row.getVisibleCells().map((cell: any, index: number) => {
+                                                        if (cell == null) return null;
                                                         const isFirst = index === 0;
 
                                                         return (
-                                                            <td key={cell?.id || `cell_${index}`} className="px-3 py-2">
+                                                            <td key={cell.id || `cell_${index}`} className="px-3 py-2">
 
                                                                 <div className="flex gap-2 items-center">
 
@@ -401,7 +407,7 @@ const TableExpanded: React.FC<TableProps> = ({
                                                                         </span>
                                                                     )}
 
-                                                                    {flexRender(cell?.column?.columnDef?.cell, cell.getContext())}
+                                                                    {flexRender(cell.column?.columnDef?.cell, cell.getContext())}
 
                                                                 </div>
 
@@ -432,6 +438,7 @@ const TableExpanded: React.FC<TableProps> = ({
                                                             <tr key={i} className="bg-gray-50 border-b">
 
                                                                 {row.getVisibleCells().map((cell: any, index: number) => {
+                                                                    if (cell == null) return null;
                                                                     const column = cell.column;
                                                                     const accessorKey = `${column?.columnDef?.accessorKey || ''}`;
 

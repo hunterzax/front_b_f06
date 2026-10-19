@@ -951,7 +951,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
 
                                                             setValue("nomination_point", newValues);
                                                         }}
-                                                        errors={errors?.nomination_point}
+                                                        errors={errors.nomination_point}
                                                         errorsText={'Select Nomination Point'}
                                                         options={nomSelectData?.slice() // เพื่อไม่เปลี่ยนต้นฉบับ
                                                             .sort((a: any, b: any) => {

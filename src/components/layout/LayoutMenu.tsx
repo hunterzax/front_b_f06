@@ -105,7 +105,7 @@ function LayoutMenuContents({ children }: any) {
           );
 
           if (!response.ok) {
-            throw new Error(`Failed to download ${item?.document_name || item.file}`);
+            throw new Error(`Failed to download ${item.document_name || item.file}`);
           }
 
           const blob = await response.blob();

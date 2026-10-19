@@ -405,9 +405,9 @@ const fnHvData = async (area_id:any, areaMaster:any, nomination_point:any, nomDa
                                                 valueWatch={watch("area_id") || ""}
                                                 handleChange={(e) => {
                                                     setValue("area_id", e?.target?.value ?? "");
-                                                    handleSelectArea(e.target.value)
+                                                    handleSelectArea(e?.target?.value ?? "")
                                                     if(tabIndex == 0){
-                                                        fnHvData(e.target.value, areaMaster, watch("nomination_point"), nomDataMain, null)
+                                                        fnHvData(e?.target?.value ?? "", areaMaster, watch("nomination_point"), nomDataMain, null)
                                                     }
 
                                                     clearErrors('area_id')
@@ -448,7 +448,7 @@ const fnHvData = async (area_id:any, areaMaster:any, nomination_point:any, nomDa
                                                         setValue("nomination_point", e?.target?.value ?? "");
                                                         // watch("area_id") areaMaster
                                                         // watch("nomination_point") nomDataMain
-                                                        fnHvData(watch("area_id"), areaMaster, e.target.value, nomDataMain, null)
+                                                        fnHvData(watch("area_id"), areaMaster, e?.target?.value ?? "", nomDataMain, null)
 
                                                         clearErrors('nomination_point')
                                                         if (errors?.nomination_point) { clearErrors('nomination_point') }
@@ -523,7 +523,7 @@ const fnHvData = async (area_id:any, areaMaster:any, nomination_point:any, nomDa
                                                     },
                                                 }}
                                                 onChange={(e) => {
-                                                    fnHvData(watch("area_id"), areaMaster, watch("nomination_point"), nomDataMain, e.target.value)
+                                                    fnHvData(watch("area_id"), areaMaster, watch("nomination_point"), nomDataMain, e?.target?.value ?? "")
                                                     setValue("unit", e?.target?.value ?? "");
                                                     clearErrors('unit')
                                                 }}

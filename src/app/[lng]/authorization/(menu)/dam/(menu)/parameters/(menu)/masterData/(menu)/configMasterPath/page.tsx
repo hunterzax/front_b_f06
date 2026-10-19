@@ -108,13 +108,23 @@ const ClientPage: React.FC<ClientProps> = (props) => {
             // Check if revised_capacity_path contains matching areas
             const hasEntry = srchEntry.length > 0
                 ? item.revised_capacity_path.some(
-                    (path: any) => srchEntry.includes(path?.area?.id ? path?.area?.id?.toString() : '') && path.area.entry_exit_id === 1
+                    (path: any) => {
+                        if (path == null) return false;
+                        const area = path.area;
+                        if (area == null) return false;
+                        return srchEntry.includes(area.id ? area.id.toString() : '') && area.entry_exit_id === 1;
+                    }
                 )
                 : true;
 
             const hasExit = srchExit?.length > 0
                 ? item.revised_capacity_path.some(
-                    (path: any) => srchExit.includes(path?.area?.id ? path?.area?.id?.toString() : '') && path.area.entry_exit_id === 2
+                    (path: any) => {
+                        if (path == null) return false;
+                        const area = path.area;
+                        if (area == null) return false;
+                        return srchExit.includes(area.id ? area.id.toString() : '') && area.entry_exit_id === 2;
+                    }
                 )
                 : true;
 
@@ -515,7 +525,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
     );
 
     const handleColumnToggle = (columnKey: string | VisibilityState) => {
@@ -794,7 +804,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                             can_export={userPermission ? userPermission?.f_export : false} columnVisibility={columnVisibility} initialColumns={initialColumns}
                         />
                     }
-                    initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
+                    initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
                     onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                     onFilteredDataChange={(filteredData: any) => {
                         const newData = filteredData || [];

@@ -579,7 +579,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         { key: "nomination_point", title: "Nomination Point" },
         // { key: "description", title: "Description" },
       ];
-      let result = (mappings || [])?.map(({ key, title }) => {
+      let result = mappings.map(({ key, title }) => {
         const value = key
           .split(".")
           .reduce((acc, part) => acc && acc[part], valuesArray[0]);
@@ -1157,16 +1157,25 @@ const ClientPage: React.FC<ClientProps> = (props) => {
               setSrchArea(e.target.value)
               setSNomPointId([]);
             }}
-            options={(areaMaster?.data || []).filter((item: any) =>
-                srchEntryExit?.length > 0 && srchZone?.length > 0
-                  ? srchEntryExit.includes(item?.entry_exit?.id?.toString()) &&
-                  srchZone.includes(item?.zone?.id?.toString())
-                  : srchEntryExit?.length > 0 || srchZone?.length > 0
-                    ? srchEntryExit.includes(
-                      item?.entry_exit?.id?.toString(),
-                    ) || srchZone.includes(item?.zone?.id?.toString())
-                    : item !== null,
-              )
+            options={(areaMaster?.data || []).filter((item: any) => {
+                if (srchEntryExit == null) {
+                  if (srchZone == null || srchZone.length === 0) return item !== null;
+                  return srchZone.includes(item?.zone?.id?.toString());
+                }
+                if (srchZone == null) {
+                  if (srchEntryExit.length === 0) return item !== null;
+                  return srchEntryExit.includes(item?.entry_exit?.id?.toString());
+                }
+                if (srchEntryExit.length > 0 && srchZone.length > 0) {
+                  return srchEntryExit.includes(item?.entry_exit?.id?.toString()) &&
+                    srchZone.includes(item?.zone?.id?.toString());
+                }
+                if (srchEntryExit.length > 0 || srchZone.length > 0) {
+                  return srchEntryExit.includes(item?.entry_exit?.id?.toString()) ||
+                    srchZone.includes(item?.zone?.id?.toString());
+                }
+                return item !== null;
+              })
               ?.map((item: any) => ({
                 value: item?.id ? item?.id?.toString() : '',
                 label: item?.name || '',
@@ -1187,7 +1196,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                   srchArea?.includes(item?.area?.id?.toString()),
               ) // ถ้าไม่ได้กด search area ไม่ต้องกรอง
               .map((item: any) => ({
-                value: item?.id?.toString(),
+                value: item.id?.toString(),
                 label: item.nomination_point,
               }))}
           />
@@ -1351,7 +1360,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         title="Failed"
         description={
           <div>
-            {modalErrorMsg?.split("<br/>").length > 1 ? (
+            {(modalErrorMsg || '').split("<br/>").length > 1 ? (
               <ul className="text-start list-disc">
                 {modalErrorMsg.split("<br/>").map((item) => {
                   return <li>{item}</li>;

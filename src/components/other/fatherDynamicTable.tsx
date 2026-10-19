@@ -124,10 +124,10 @@ const FatherTable: React.FC<any> = ({
     const generateColumnVisibility = (columns: any) => Object.fromEntries(columns.map(({ key, visible }: any) => [key, visible]));
 
     const renderDateColumnMenu = async (key: any, label: any, parent?: any) => {
-        let newData: any = initialColumnsDynamic;
+        let newData: any[] = initialColumnsDynamic || [];
         if (parent) {
-            let findObject: any = newData?.find((item: any) => item?.label == parent);
-            let findIDX: any = newData?.findIndex((item: any) => item?.label == parent) + 1;
+            let findObject: any = newData.find((item: any) => item?.label == parent);
+            let findIDX: any = newData.findIndex((item: any) => item?.label == parent) + 1;
             if (findObject) {
                 newData.splice(findIDX, 0,
                     {
@@ -337,7 +337,8 @@ const FatherTable: React.FC<any> = ({
         return updatedHeaders;
     }
 
-    function updateHeadersLastTwo(headerss: any[], fromDate: string, toDate: string) {
+    function updateHeadersLastTwo(headerss: any[], fromDate: string, toDate?: string) {
+        if (toDate == null) return headerss;
         let newDates: any;
 
         // ✅ เพิ่ม: ปรับ toDate ให้ครอบคลุมเดือนสุดท้าย
@@ -382,7 +383,7 @@ const FatherTable: React.FC<any> = ({
     const toDateExit = mode == 'exit' && srchEnddate ? dayjs(srchEnddate)?.format('DD/MM/YYYY') :exitVal?.[0]?.[6]; // original 34 ---> new 6
 
     const updatedHeaders = updateHeadersLastFive(headers, fromDate, toDate);
-    const updatedHeadersExit = updateHeadersLastTwo(headersExit, fromDateExit, toDateExit);
+    const updatedHeadersExit = toDateExit == null ? headersExit : updateHeadersLastTwo(headersExit, fromDateExit, toDateExit);
 
     // ################## SORTING ##################
     const [sortState, setSortState] = useState({ column: null, direction: null });

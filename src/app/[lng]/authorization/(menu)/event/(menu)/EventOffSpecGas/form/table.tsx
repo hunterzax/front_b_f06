@@ -216,7 +216,7 @@ const TableOffspecGas: React.FC<TableProps> = ({
         if (Array.isArray(doc3)) {
             const first = doc3[0];
             if (first?.event_doc_status_id === 1 && (first?.user_type_id === 3 || first?.user_type_id === 4)) {
-                return true;
+                return isShipper;
             }
             if (!isShipper && doc3.find((f: any) => f?.user_type_id === userDT?.account_manage?.[0]?.user_type_id && f?.event_doc_status_id === 1)) {
                 return true;

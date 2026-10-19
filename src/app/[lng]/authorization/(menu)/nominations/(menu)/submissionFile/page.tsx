@@ -29,7 +29,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [tabIndex, setTabIndex] = useState(0); // 0=Daily, 1=Weekly
     const router = useRouter();
-    let isReadOnly = false
 
     const userDT: any = getUserValue();
     // ############### Check Authen ###############
@@ -492,7 +491,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 // }}
                                 sx={{
                                     "& .MuiOutlinedInput-input": {
-                                        color: isReadOnly ? "#464255 !important" : "inherit", // 👈 Ensures the actual text color changes
+                                        color: "inherit", // 👈 Ensures the actual text color changes
                                     },
                                     '.MuiOutlinedInput-root': {
                                         borderRadius: '8px',
@@ -518,7 +517,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                     },
                                 }}
                                 fullWidth
-                                className={`${errors.remark && "border-red-500"} ${isReadOnly && '!bg-[#EFECEC]'}`}
+                                className={`${errors.remark && "border-red-500"}`}
                             />
                             {errors.remark && (<p className="text-red-500 text-sm">{`Enter Remark`}</p>)}
                             <div className="flex justify-end text-sm text-[#B6B6B6] mt-1">
