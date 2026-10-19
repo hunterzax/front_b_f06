@@ -201,7 +201,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                         }
 
                                                         resetField("user_type_id"); // ล้างค่า user_type_id เพื่อป้องกันการซ้ำกัน https://app.clickup.com/t/9018502823/86euzxxp8
-                                                        setValue("process_type_id", e?.target?.value ?? "");
+                                                        setValue("process_type_id", e.target.value);
                                                         if (errors?.process_type_id) { clearErrors('process_type_id') }
                                                     }}
                                                     errors={errors?.process_type_id}

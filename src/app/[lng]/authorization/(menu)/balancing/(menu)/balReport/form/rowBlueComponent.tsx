@@ -113,7 +113,7 @@ export const ContractRowBlue = ({
             {columnVisibility?.gas_day && (
                 <td className={`w-[260px] whitespace-nowrap pl-10 font-semibold  text-left text-[#004762] bg-[#E6F8FF] sticky left-0 z-[2]`} scope="col">
                     {`TOTAL : `}
-                    {find_shipper_name ? (find_shipper_name?.name || '') : (shipperItem?.shipper || '')} {`(`} {row?.gas_day ? (toDayjs(row?.gas_day)?.isValid() ? toDayjs(row?.gas_day)?.format("DD/MM/YYYY") : "") : ""} {`)`}
+                    {row?.gas_day ? (toDayjs(row?.gas_day)?.isValid() ? toDayjs(row?.gas_day)?.format("DD/MM/YYYY") : "") : ""}
                 </td>
             )}
 
@@ -121,7 +121,8 @@ export const ContractRowBlue = ({
                 <td
                     className={`w-[260px] font-semibold text-[#004762] text-center bg-[#E6F8FF] whitespace-nowrap sticky left-[260px] z-[2]  ${!columnVisibility?.gas_day && '!left-[0px]'}`}
                     scope="col">
-                    {}
+                    
+                    {find_shipper_name ? (find_shipper_name?.name || '') : (shipperItem?.shipper || '')}
                     {/* {find_shipper_name ? (find_shipper_name?.name || '') : (shipperItem?.shipper || '')} {`(`} {row?.gas_day ? (toDayjs(row?.gas_day)?.isValid() ? toDayjs(row?.gas_day)?.format("DD/MM/YYYY") : "") : ""} {`)`} */}
                 </td>
             )}

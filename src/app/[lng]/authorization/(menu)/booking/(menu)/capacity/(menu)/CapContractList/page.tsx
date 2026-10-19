@@ -1843,7 +1843,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 value={srchTermType}
                                 onChange={(e) => setSrchTermType(e.target.value)}
                                 options={termTypeMaster?.data?.map((item: any) => ({
-                                    value: item?.id?.toString(),
+                                    value: item.id?.toString(),
                                     label: item.name
                                 }))}
                             />
@@ -1856,7 +1856,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 value={srchContractStatus}
                                 onChange={(e) => setContractStatus(e.target.value)}
                                 options={statCapReqMgn?.data?.map((item: any) => ({
-                                    value: item?.id?.toString(),
+                                    value: item.id?.toString(),
                                     label: item.name
                                 }))}
                             />
@@ -1869,7 +1869,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 value={srchStatus}
                                 onChange={(e) => setSrchStatus(e.target.value)}
                                 options={firstColStat?.map((item: any) => ({
-                                    value: item?.id?.toString(),
+                                    value: item.id?.toString(),
                                     label: item.name
                                 }))}
                             />

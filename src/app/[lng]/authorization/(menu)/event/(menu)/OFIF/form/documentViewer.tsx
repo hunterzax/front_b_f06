@@ -78,7 +78,11 @@ let user_permission: any = localStorage?.getItem("k3a9r2b6m7t0x5w1s8j");
         setEmailGroupForEventData(res_email_group_for_event)
 
         // DATA NOM POINT FOR DOC 7
-        const res_nom_point_for_doc_7: any = await getService(`/master/event/ofo/doc7/nompoint`);
+        let nomPointForDoc7Url = `/master/event/ofo/doc7/nompoint`;
+        if(dataOpenDocument?.event_date){
+            nomPointForDoc7Url += `?event_date=${dataOpenDocument?.event_date}`;
+        }
+        const res_nom_point_for_doc_7: any = await getService(nomPointForDoc7Url);
         setDataNomPointForDoc7(res_nom_point_for_doc_7)
 
         // DATA REF FOR DOC 8

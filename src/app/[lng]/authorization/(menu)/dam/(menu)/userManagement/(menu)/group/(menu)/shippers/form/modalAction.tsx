@@ -283,7 +283,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     if (selected.length === 0) {
                                                         return <Typography color="#9CA3AF" className={isReadOnly ? 'opacity-0' : 'opacity-100'} fontSize={14}>Select Division Name</Typography>;
                                                     }
-                                                    return <span className={itemselectClass}>{`${selected?.length} Selected`}</span>;
+                                                    return <span className={itemselectClass}>{`${selected.length} Selected`}</span>;
                                                 }}
                                                 MenuProps={{
                                                     PaperProps: {

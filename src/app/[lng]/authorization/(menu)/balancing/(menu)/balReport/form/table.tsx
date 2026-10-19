@@ -67,10 +67,11 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                         className={`${table_header_style} min-w-[260px] w-[260px] max-w-[260px] text-center sticky left-0 bg-[#1473A1] z-[99]`}
                                         rowSpan={4}
                                         scope="col"
+                                        onClick={() => handleSortOnlyBalReport("gas_day", sortState, setSortState, setSortedData, tableData)}
                                     // onClick={() => handleSort("gas_day", sortState, setSortState, setSortedData, tableData)} // https://app.clickup.com/t/86eujrg4t R: Sort ยังไม่ได้บาง column (ดูเพิ่มเติมว่ามันสามารถ sort ได้แบบไหน)
                                     >
                                         {`Gas Day`}
-                                        {/* {getArrowIcon("gas_day")} */}
+                                        {getArrowIcon("gas_day")}
                                     </th>
                                 )}
 
@@ -115,11 +116,12 @@ const TableMain: React.FC<any> = ({ tableData, columnVisibility, initialColumns,
                                             rowSpan={3}
                                             scope="col"
                                             colSpan={1}
+                                            onClick={() => handleSortOnlyBalReport("shipper_data.shipper_name", sortState, setSortState, setSortedData, tableData)}
                                         // onClick={() => handleSortBalReport("shipper_data.shipper", sortState, setSortState, setSortedData, tableData, shipperGroupData)}  // https://app.clickup.com/t/86eujrg4t R: Sort ยังไม่ได้บาง column (ดูเพิ่มเติมว่ามันสามารถ sort ได้แบบไหน)
                                         >
                                             <div className="">
                                                 {`Shipper Name`}
-                                                {/* {getArrowIcon("shipper_data.shipper")} */}
+                                                {getArrowIcon("shipper_data.shipper_name")}
                                             </div>
                                         </th>
                                     )}

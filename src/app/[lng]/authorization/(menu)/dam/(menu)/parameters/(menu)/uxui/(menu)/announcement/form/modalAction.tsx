@@ -127,7 +127,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                     readOnly={isReadOnly}
                                                     {...register("topic", { required: "Type Topic" })}
                                                     onChange={(e) => {
-                                                        if (e.target.value.length <= 255) {
+                                                        if ((e?.target?.value ?? "").length <= 255) {
                                                             setValue('topic', e?.target?.value ?? "");
                                                         }
                                                     }}

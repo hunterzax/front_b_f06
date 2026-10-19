@@ -195,7 +195,7 @@ const ChartMediumTermAll: React.FC<TableProps> = ({
     };
 
     // 🔥 1. หา earliest month จาก data ทั้งหมด
-    const minMonth = getEarliestMonth(dataChart); // ใช้ function ที่มึงมี
+    const minMonth = getEarliestMonth(dataChart); // ใช้ function ที่มี
 
     const baseMonths = Array.from({ length: 24 }, (_, i) =>
       dayjs(minMonth, "DD/MM/YYYY").add(i, "month").format("DD/MM/YYYY"),

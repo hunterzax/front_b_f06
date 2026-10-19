@@ -93,7 +93,9 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
     const [isModalErrorOpen, setModalErrorOpen] = useState(false);
     const [modalSuccessMsg, setModalSuccessMsg] = useState('Document has been created.');
     const [eventList, setEventList] = useState<any[] | undefined>(undefined);
+    const [eventTemplateSelect, setEventTemplateSelect] = useState<any[] | undefined>(undefined);
     const [selectedEvent, setSelectedEvent] = useState<any>(undefined);
+    const [usedEventTemplateSelect, setUsedEventTemplateSelect] = useState<any>(null)
     
     useEffect(() => {
         if (tableData && tableData.length > 0 && toggleData == undefined) { // for first comming
@@ -275,7 +277,7 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
             const gasDayjs = row_data?.gas_day ? toDayjs(row_data?.gas_day) : undefined;
             let eventDateFrom = '';
             let eventDateTo = '';
-            if(gasDayjs?.isValid() || false){
+            if(gasDayjs && gasDayjs.isValid()){
                 eventDateFrom = gasDayjs.startOf('day').format('YYYY-MM-DD');
                 eventDateTo = gasDayjs.endOf('day').format('YYYY-MM-DD');
             }
@@ -289,9 +291,31 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
                     setEventList([])
                 }
             })
+
+            getService(`/master/event-template/doc/7`).then(response => {
+                if (response && Array.isArray(response)){
+                    setEventTemplateSelect(response)
+                }
+                else{
+                    setEventTemplateSelect([])
+                }
+            })
         }
         else{
             setEventList([])
+            if(eventPath == 'emer'){
+                getService(`/master/event-template/doc/309`).then(response => {
+                    if (response && Array.isArray(response)){
+                        setEventTemplateSelect(response)
+                    }
+                    else{
+                        setEventTemplateSelect([])
+                    }
+                })
+            }
+            else{
+                setEventTemplateSelect([])
+            }
         }
 
 
@@ -340,7 +364,7 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
         switch (doc_no) {
             case 39:
                 // gen 39 and 4
-                const res_gen_doc_39_4 = await postService(`/master/event/emer/generatedoc39and4`, {...data_post, event_id: selectedEvent});
+                const res_gen_doc_39_4 = await postService(`/master/event/emer/generatedoc39and4`, {...data_post, event_id: selectedEvent, template_id: usedEventTemplateSelect});
                 // const status = res_gen_doc_39_4?.response?.data?.status ?? res_gen_doc_39_4?.response?.data?.statusCode;
                 const status = res_gen_doc_39_4?.response?.data?.statusCode ?? res_gen_doc_39_4?.response?.data?.status ?? res_gen_doc_39_4?.status ?? res_gen_doc_39_4?.statusCode ?? res_gen_doc_39_4?.code;
                 const errorMsg = res_gen_doc_39_4?.response?.data?.error ?? res_gen_doc_39_4?.data?.error ?? res_gen_doc_39_4?.response?.error ?? res_gen_doc_39_4?.error;
@@ -352,6 +376,8 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
                     setModalErrorOpen(true)
                 } else {
                     // setFormOpen(false);
+                    setUsedEventTemplateSelect(undefined)
+                    setSelectedEvent(undefined);
                     setModalSuccessMsg('Emergency Doc.1 and 2 has been created.')
                     setModalSuccessOpen(true);
                 }
@@ -359,7 +385,7 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
                 break;
             case 7:
                 // gen 7
-                const res_gen_doc_7 = await postService(`/master/event/ofo/generatedoc7`, {...data_post, event_id: selectedEvent});
+                const res_gen_doc_7 = await postService(`/master/event/ofo/generatedoc7`, {...data_post, event_id: selectedEvent, template_id: usedEventTemplateSelect});
                 // const status_2 = res_gen_doc_7?.response?.data?.status ?? res_gen_doc_7?.response?.data?.statusCode;
                 const status_2 = res_gen_doc_7?.response?.data?.statusCode ?? res_gen_doc_7?.response?.data?.status ?? res_gen_doc_7?.status ?? res_gen_doc_7?.statusCode ?? res_gen_doc_7?.code;
                 const errorMsg2 = res_gen_doc_7?.response?.data?.error ?? res_gen_doc_7?.data?.error ?? res_gen_doc_7?.response?.error ?? res_gen_doc_7?.error ?? res_gen_doc_7?.response?.data?.message;
@@ -371,6 +397,8 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
                     setModalErrorOpen(true)
                 } else {
                     // setFormOpen(false);
+                    setUsedEventTemplateSelect(undefined)
+                    setSelectedEvent(undefined);
                     setModalSuccessMsg('Document 7 has been created.')
                     setModalSuccessOpen(true);
                 }
@@ -1240,6 +1268,7 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
                     }, 100);
 
                 } else {
+                    setUsedEventTemplateSelect(undefined)
                     setSelectedEvent(undefined);
                     setEventList(undefined);
                     setIsLoadingGen(false);
@@ -1277,6 +1306,36 @@ const TableBalOperateAndInstructFlow: React.FC<TableProps> = ({ openEditForm, op
                                 .map((item: any) => ({
                                     value: item.id,
                                     label: item.event_nember,
+                                }))
+                            }
+                        />
+                        :
+                        <></>
+                        :
+                        <Spinicon />
+                    }
+                    {
+                        (!eventTemplateSelect || eventTemplateSelect?.length > 0) &&
+                        <div className="text-center">
+                            {`Select template for generate document.`}
+                        </div>
+                    }
+                    {
+                        eventTemplateSelect ? 
+                        eventTemplateSelect.length > 0 ?
+                        <InputSearch
+                            id="usedEventTemplateSelect"
+                            label=""
+                            placeholder="Select Template"
+                            type="select"
+                            value={usedEventTemplateSelect}
+                            onChange={(e) => setUsedEventTemplateSelect(e.target.value)}
+                            isDisabled={(userDT?.account_manage?.[0]?.user_type_id == 3 || userDT?.account_manage?.[0]?.user_type_id == 4) ? true : false}
+                            options={
+                                (Array.isArray(eventTemplateSelect) ? eventTemplateSelect : [])
+                                .map((e: any) => ({
+                                    value: String(e.id),
+                                    label: String(e.template_name)
                                 }))
                             }
                         />

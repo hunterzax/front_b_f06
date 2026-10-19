@@ -9186,7 +9186,7 @@ export const sumDataNomShipperReport = (data_for_sum: any[]) => {
         // if((existingValue + currentValue) === 15261.944416333332){
           // }
           if(existing.data_temp?.[9] === "MMSCFD"){
-            const existingValue = toNumber(existing?.data_temp?.[key])
+            const existingValue = toNumber(existing.data_temp?.[key])
             const currentValue = toNumber(dt?.[key])
             // if(existing.data_temp?.[3] === "LMPT1"){
             //   console.log('existingValue : ', existingValue);
@@ -9196,7 +9196,7 @@ export const sumDataNomShipperReport = (data_for_sum: any[]) => {
             // }
         existing.data_temp[key] = (existingValue + roundTo6(currentValue)).toFixed(6)
       }else{
-        const existingValue = toNumber(existing?.data_temp?.[key])
+        const existingValue = toNumber(existing.data_temp?.[key])
         const currentValue = toNumber(dt?.[key])
         existing.data_temp[key] = (existingValue + roundTo3(currentValue)).toFixed(6)
       }
@@ -12251,7 +12251,7 @@ export const handleDownloadPDFOfIf = async (doc_no: any, document_id: any) => {
 // (เลขหน้านับจาก event_doc_status_id == 5 ของ group_id เดียวกันจากทุก array ถ้าเป็น 5 หมด นับเป็น 1 )
 // (เลขหลังนับจาก array group_id เดียวกัน นับเป็น 1)
 export const getAcknowledgeStatus = (docArray: any) => {
-  const only_shipper_data = docArray?.filter((item: any) => item?.user_type_id !== 2)
+  const only_shipper_data = docArray?.filter((item: any) => item?.user_type_id !== 2 && item?.user_type_id !== 1)
 
   // จัดกลุ่มตาม group_id
   const groups: any = only_shipper_data.reduce((acc: any, item: any) => {

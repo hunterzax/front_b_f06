@@ -419,7 +419,7 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                             <button
                                                 type="submit"
                                                 className="w-[167px] font-light bg-[#00ADEF] text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                                disabled={selectedItems.length <= 0}
+                                                disabled={(selectedItems || []).length <= 0}
                                             >
                                                 Save
                                             </button>

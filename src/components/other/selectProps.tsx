@@ -121,13 +121,15 @@ const SelectFormProps: React.FC<Props> = (
                 displayEmpty
                 renderValue={(value: any) => {
                     if (type == 'select-list') {
-                        if (!value || value?.length == 0) {
+                        const selectedOption = optionFilter?.find((item: any) => String(item?.[optionsValue]) === String(value));
+
+                        if (value === undefined || value === null || value === "" || value?.length == 0 || !selectedOption) {
                             return <Typography color="#9CA3AF" fontSize={14} className={`${disabled ? '!opacity-100' : 'opacity-100'}`}>{placeholder}</Typography>;
                         }
                         // return <span className={`${itemselectClass}`}>{optionFilter?.find((item: any) => item?.[optionsValue] === value)?.[optionsResult] || ''} </span>;
 
-                        let render_option_select = optionFilter?.find((item: any) => item?.[optionsValue] === value)?.[optionsResult]
-                        let option_special_case = optionFilter?.find((item: any) => item?.[optionsValue] === value)
+                        let render_option_select = selectedOption?.[optionsResult]
+                        let option_special_case = selectedOption
 
                         return <span
                             className={`${itemselectClass}`}

@@ -265,7 +265,7 @@ export const transformASR = (dataMain: any, column?: any) => {
                         break;
                     case 'approved_by':
                         filteredItem[key] = item.create_by_account
-                            ? `${item.create_by_account.first_name} ${item.create_by_account.last_name} ${formatDateTimeSec(item?.create_date) || ''}`
+                            ? `${item.create_by_account.first_name} ${item.create_by_account.last_name} ${formatDateTimeSec(item.create_date) || ''}`
                             : null;
                         break;
                 }
@@ -1955,7 +1955,7 @@ export const transformShipperNomReportDetail = (dataMain: any, column?: any, ext
             }
             // มีเวลาค่อยมาจัดโค้ด ผลลัพถูกหมดแล้ว
             const fnVal = (k_:any) => item?.nom?.nomination_type_id === 2 ? ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(item?.data_temp[k_])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(item?.data_temp[k_])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
-            const fnTotal = (va_:any) => item?.nom?.nomination_type_id === 2 ? ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(va_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(va_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(va_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(va_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
+            const fnTotal = (va_:any) => (item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(va_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(va_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             const filteredItem: any = {};
             Object.keys(column).forEach(key => {
                 if (column[key]) {
@@ -2394,7 +2394,7 @@ export const transformShipperNomReportDetailAll = (dataMain: any, column?: any, 
             }
             // มีเวลาค่อยมาจัดโค้ด ผลลัพถูกหมดแล้ว
             const fnVal = (k_:any) => item?.nom?.nomination_type_id === 2 ? ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(value_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(value_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(item?.data_temp[k_])?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(item?.data_temp[k_])?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
-            const fnTotal = (va_:any) => item?.nom?.nomination_type_id === 2 ? ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(va_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(va_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))  : ((item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(va_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(va_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ','))
+            const fnTotal = (va_:any) => (item?.data_temp['9'] === "MMSCFD") ? formatNumberSixDecimal(va_)?.replace(/\B(?=(\d{6})+(?!\d))/g, ',') : roundTo3(va_)?.toFixed(3)?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             const filteredItem: any = {};
             Object.keys(column).forEach(key => {
                 if (column[key]) {

@@ -1480,15 +1480,17 @@ useEffect(() => {
                                     can_export={userPermission ? userPermission?.f_export : false}
                                     columnVisibility={columnVisibility}
                                     initialColumns={initialColumns}
-                                    disable={srchShipperName?.length === 0 || srchShipperName?.length === 1 || (srchShipperName?.length === dataShipper?.length) ? (isFilter ? false : true) : true}
+                                    disable={isFilter ? false : true}
                                     specificMenu={'balancing-monthly-report'}
                                     specificData={{
                                         "skip": 0, //fix
                                         "limit": 100,  //fix
                                         "month": month ? month : dayjs().format("MM"),
                                         "year": year ? year : dayjs().format("YYYY"),
-                                        "shipperId": srchShipperName, //NGP-S01-001
-                                        "contractCode": srchContractCode !== '' ? srchContractCode : "Summary" // Summary หรือ 2025-CNF-002 .....
+                                        ...(Array.isArray(srchShipperName) ? { "shipperIdList": srchShipperName } : { "shipperId": srchShipperName }),
+                                        "contractCode": (Array.isArray(srchShipperName) ? srchShipperName.length > 0 : !!srchShipperName) ?
+                                            (srchContractCode !== '' ? srchContractCode : "Summary") // Summary หรือ 2025-CNF-002 .....
+                                            : '' // ถ้าไม่เลือก shipper ห้ามส่ง contract
                                     }}
                                 />
                             }

@@ -665,11 +665,11 @@ const ModalAction: React.FC<FormExampleProps> = ({
                                                                         })?.map((item: any, index: number) => {
                                                                             let key = `metered-point-${index}`
                                                                             if(item.id){
-                                                                                key = item?.id ? item?.id : ''
+                                                                                key = item.id
                                                                             }
                                                                             return (
                                                                             <MenuItem key={key} value={key}>
-                                                                                <ListItemText primary={<Typography fontSize={14}>{item?.metered_point_name || ''}</Typography>} />
+                                                                                <ListItemText primary={<Typography fontSize={14}>{item.metered_point_name || ''}</Typography>} />
                                                                             </MenuItem>
                                                                             )
                                                                         })

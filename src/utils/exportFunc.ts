@@ -3902,11 +3902,11 @@ export function epBalancingBalanceReport(payload: any) {
           ...valuesTotalShipper,
           {
             tag: "custom_gas_day",
-            value: `TOTAL : ${shipperGroupData?.find((f: any) => f?.id_name === shipper )?.name}(${gasDay})`,
+            value: `TOTAL : ${gasDay}`,
           },
           { tag: "custom_shipper_name", 
-            // value: `${shipperGroupData?.find((f: any) => f?.id_name === shipper )?.name}(${gasDay})` },
-            value: `` },
+            value: `${shipperGroupData?.find((f: any) => f?.id_name === shipper )?.name}`
+          },
           { tag: "custom_contract_code", value: "ALL CONTRACT" },
         ],
         shipperGroupData
@@ -3946,8 +3946,8 @@ export function epBalancingBalanceReport(payload: any) {
       keyHead,
       [
         ...valuesTotalAll,
-        { tag: "custom_gas_day", value: `TOTAL ALL : (${gasDay})` },
-        { tag: "custom_shipper_name", value: `` },
+        { tag: "custom_gas_day", value: `TOTAL : ${gasDay}` },
+        { tag: "custom_shipper_name", value: 'ALL' },
         { tag: "custom_contract_code", value: "ALL CONTRACT" },
       ],
       shipperGroupData
@@ -4305,8 +4305,9 @@ export function epBalancingBalanceReport(payload: any) {
 
       for (let i = 0; i < data.length; i++) {
         const gasDay = String(data[i]?.["Gas Day"] ?? "");
+        const shipperName = String(data[i]?.["Summary Pane"]?.["Shipper Name"] ?? "");
 
-        if (gasDay.includes("TOTAL ALL :")) {
+        if (gasDay.includes("TOTAL :") && shipperName === "ALL") {
           result[key][i] = "FEFBEC";
         } else if (gasDay.includes("TOTAL :")) {
           result[key][i] = "E6F8FF";

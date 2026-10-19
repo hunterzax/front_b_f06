@@ -1049,13 +1049,18 @@ export function exportDataToExcelWithMultiLevelHeaderNew(
 data.forEach((row: any, index: number) => {
   const sheetRowIndex = dataStartRow + index; // 0-based
   const gasDay = String(row?.["Gas Day"] ?? "");
+  const shipperName = String(row?.["Summary Pane"]?.["Shipper Name"] ?? row?.["Shipper Name"] ?? "");
 
-  let fillColor = "";
+  let fallbackFillColor = "";
 
-  if (gasDay.includes("TOTAL ALL :")) {
-    fillColor = "FEFBEC";
+  // แถวเหลือง: ข้อความ TOTAL ALL หรือ TOTAL ของทุก shipper (Shipper Name = ALL)
+  if (
+    gasDay.includes("TOTAL ALL :") ||
+    (gasDay.includes("TOTAL :") && shipperName === "ALL")
+  ) {
+    fallbackFillColor = "FEFBEC";
   } else if (gasDay.includes("TOTAL :")) {
-    fillColor = "E6F8FF";
+    fallbackFillColor = "E6F8FF";
   }
 
   for (let col = 0; col < headers.length; col++) {
@@ -1071,6 +1076,8 @@ data.forEach((row: any, index: number) => {
     const currentStyle = ws[cellRef].s || {};
     const currentBorder = currentStyle.border || {};
     const headerKey = headers[col];
+    const fillColor =
+      cellHighlightMap?.[headerKey]?.[index] ?? fallbackFillColor;
 
     const nextBorder = { ...currentBorder };
 

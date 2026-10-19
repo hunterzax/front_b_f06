@@ -154,7 +154,7 @@ const SignInPage: React.FC<HomeProps> = (props) => {
   //       localStorage.setItem("v4r2d9z5m3h0c1p0x7l", encryptData(result?.token))
   //       localStorage.setItem("x9f3w1m8q2y0u5d7v1z", encryptData(result?.account))
   //       localStorage.setItem("p5n3b7j2k9s1a6wq8t0", encryptData(result?.tac))
-  //       activeAccount(data?.email);
+  //       activeAccount(data.email);
 
   //       // Broadcast login event to other tabs
   //       window.dispatchEvent(new Event('storage'));
@@ -250,6 +250,7 @@ const SignInPage: React.FC<HomeProps> = (props) => {
   // }
 
   const handleLoginAnyway = async (data: any) => {
+    if (data == null) return;
 
     const result = await postService('/master/account-manage/account-local', data);
     setResLogin(result)
@@ -265,7 +266,7 @@ const SignInPage: React.FC<HomeProps> = (props) => {
       else if ([401, 403, 412, 500].includes(Number(statusCode))) {
         if (statusCode == 401 || statusCode == 500) { // user หรือ email ผิด
           setisModalTxt("Invalid email or password. Please try again.")
-          handleFaildlgn(data?.email);
+          handleFaildlgn(data.email);
         } else if (statusCode == 412) { // PASSWORD หมดอายุ
 
           setisModalTxt(errorMsg ? errorMsg : "Your password has expired. Please update it, as passwords must be changed every 90 days for security purposes.")
@@ -308,7 +309,7 @@ const SignInPage: React.FC<HomeProps> = (props) => {
       localStorage.setItem("v4r2d9z5m3h0c1p0x7l", encryptData(result?.token))
       localStorage.setItem("x9f3w1m8q2y0u5d7v1z", encryptData(result?.account))
       localStorage.setItem("p5n3b7j2k9s1a6wq8t0", encryptData(result?.tac))
-      activeAccount(data?.email);
+      activeAccount(data.email);
 
         // Broadcast login event to other tabs
         window.dispatchEvent(new Event('storage'));
@@ -373,7 +374,7 @@ const SignInPage: React.FC<HomeProps> = (props) => {
   //       localStorage.setItem("v4r2d9z5m3h0c1p0x7l", encryptData(result?.token))
   //       localStorage.setItem("x9f3w1m8q2y0u5d7v1z", encryptData(result?.account))
   //       localStorage.setItem("p5n3b7j2k9s1a6wq8t0", encryptData(result?.tac))
-  //       activeAccount(data?.email);
+  //       activeAccount(data.email);
 
   //       // Broadcast login event to other tabs
   //       window.dispatchEvent(new Event('storage'));
@@ -487,6 +488,7 @@ const SignInPage: React.FC<HomeProps> = (props) => {
 
   // #region LOGIN
   const handleFormSubmit = async (data: any) => {
+    if (data == null) return;
     console.log('.........');
     setIsLoading(true)
 
@@ -508,7 +510,7 @@ const SignInPage: React.FC<HomeProps> = (props) => {
       else if ([401, 403, 412, 500].includes(Number(statusCode))) {
         if (statusCode == 401 || statusCode == 500) { // user หรือ email ผิด
           setisModalTxt("Invalid email or password. Please try again.")
-          handleFaildlgn(data?.email);
+          handleFaildlgn(data.email);
         } else if (statusCode == 412) { // PASSWORD หมดอายุ
           setisModalTxt(errorMsg ? errorMsg : "Your password has expired. Please update it, as passwords must be changed every 90 days for security purposes.")
 
@@ -551,7 +553,7 @@ const SignInPage: React.FC<HomeProps> = (props) => {
       localStorage.setItem("v4r2d9z5m3h0c1p0x7l", encryptData(result?.token))
       localStorage.setItem("x9f3w1m8q2y0u5d7v1z", encryptData(result?.account))
       localStorage.setItem("p5n3b7j2k9s1a6wq8t0", encryptData(result?.tac))
-      activeAccount(data?.email);
+      activeAccount(data.email);
 
       // Broadcast login event to other tabs
       window.dispatchEvent(new Event('storage'));

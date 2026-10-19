@@ -361,12 +361,19 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     setModalErrorOpen(true);
                 } else {
                     // warning ก่อนสำเร็จ
+                    const validateList = []
+
+                    if(res_upload?.warningEmpty){
+                        validateList.push("A Nomination Point value of NULL was detected in the uploaded file. Please verify if this is correct.")
+                    }
                     if (res_upload?.warningRowZero) {
-                        setModalWarningMsg("A Nomination Point value of 0 was detected in the uploaded file. Please verify if this is correct.")
-                        setModalWarningOpen(true)
-                        setFormOpen(false)
+                        validateList.push("A Nomination Point value of 0 was detected in the uploaded file. Please verify if this is correct.")
                     } else if (res_upload?.warning) {
-                        setModalWarningMsg("Total Entry & Total Exit equals zero.")
+                        validateList.push("Total Entry & Total Exit equals zero.")
+                    }
+                    
+                    if(validateList.length > 0){
+                        setModalWarningMsg(validateList.join('<br/>'))
                         setModalWarningOpen(true)
                         setFormOpen(false)
                     } else {
@@ -828,7 +835,21 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                     // if (resetForm) resetForm();
                 }}
                 title="Warning"
+                
                 description={
+                    modalWarningMsg.split('<br/>').length > 1 ?
+                        <div className={`${modalWarningMsg.length > 400 ? "h-[calc(300px)] overflow-y-auto text-sm" : ""}`}>
+                            <ul className=" text-start list-disc space-y-3">
+                                {
+                                    modalWarningMsg.split('<br/>').map(item => {
+                                        return (
+                                            <li className="">{item}</li>
+                                        )
+                                    })
+                                }
+                            </ul>
+                        </div>
+                    :
                     <div>
                         <div className="text-center">
                             {`${modalWarningMsg}`}

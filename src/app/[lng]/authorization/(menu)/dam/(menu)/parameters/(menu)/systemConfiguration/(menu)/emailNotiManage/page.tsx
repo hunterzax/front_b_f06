@@ -1,3 +1,5 @@
+// Next.js client boundary. Coverity flags this as unused_expr (NO_EFFECT).
+// coverity[unused_expr:SUPPRESS]
 "use client";
 import "@/app/globals.css";
 import { useEffect, useMemo, useRef, useState } from "react";

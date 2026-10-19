@@ -646,7 +646,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     ];
 
     const [columnVisibility, setColumnVisibility] = useState<any>(
-        Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))
+        Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))
     );
 
     const handleTogglePopover = (event: React.MouseEvent<HTMLElement>) => {

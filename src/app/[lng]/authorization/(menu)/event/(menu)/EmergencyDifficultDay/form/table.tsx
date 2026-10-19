@@ -838,6 +838,12 @@ const TableEmergencyDifficult: React.FC<TableProps> = ({
                                                             {`Generated`}
                                                         </div>
                                                     ) :
+                                                    // ถ้ามี status Draft อยู่ใน document39 จะแสดงเป็นคำว่า Draft
+                                                    row.document39.some((doc: any) => doc?.event_doc_status?.id === 1) ? (
+                                                        <div className="flex w-[120px] justify-center rounded-full px-1 py-2 text-[#464255]">
+                                                            Draft
+                                                        </div>
+                                                    ) :
                                                         // ถ้าไม่มี status Generated ให้นับจำนวนการกด accept ของ shipper
                                                         // ถ้าเท่ากัน close 
                                                         // ถ้าไม่เท่า open

@@ -1137,10 +1137,11 @@ export const handleSortOnlyBalReport = (
     };
 
     // 👉 clone data (กัน mutation)
+    if(path.includes('contract_data') || path.includes('shipper_data')){
     const newData = tableData.map((item) => {
 
         if (!item?.shipper_data) return item;
-
+        if(path.includes('contract_data')){
         return {
             ...item,
             shipper_data: item.shipper_data.map((shipper: any) => {
@@ -1174,9 +1175,134 @@ export const handleSortOnlyBalReport = (
                 };
             })
         };
+        }
+        else if(path.includes('shipper_data')){
+            const sortedShipper = [...item.shipper_data].sort((a: any, b: any) => {
+
+                const valA = getValue(a, [path[path.length - 1]]);
+                const valB = getValue(b, [path[path.length - 1]]);
+
+                // handle null
+                if (valA == null) return 1;
+                if (valB == null) return -1;
+
+                // string / number
+                if (typeof valA === 'string') {
+                    return direction === 'asc'
+                        ? valA.localeCompare(valB)
+                        : valB.localeCompare(valA);
+                }
+
+                return direction === 'asc'
+                    ? valA - valB
+                    : valB - valA;
+            });
+            return {
+                ...item,
+                shipper_data: sortedShipper.map((shipper: any) => {
+    
+                    if (!shipper?.contract_data) return shipper;
+    
+                    const sortedContracts = [...shipper.contract_data].sort((a: any, b: any) => {
+    
+                        const valA = getValue(a, ['contract']);
+                        const valB = getValue(b, ['contract']);
+    
+                        // handle null
+                        if (valA == null) return 1;
+                        if (valB == null) return -1;
+    
+                        // string / number
+                        if (typeof valA === 'string') {
+                            return valA.localeCompare(valB);
+                        }
+    
+                        return valA - valB;
+                    });
+    
+                    return {
+                        ...shipper,
+                        contract_data: sortedContracts
+                    };
+                })
+            }
+        }
     });
 
     setSortedData(newData);
+    }
+    else {
+        const newData = tableData.sort((a: any, b: any) => {
+
+            const valA = getValue(a, [path[path.length - 1]]);
+            const valB = getValue(b, [path[path.length - 1]]);
+
+            // handle null
+            if (valA == null) return 1;
+            if (valB == null) return -1;
+
+            // string / number
+            if (typeof valA === 'string') {
+                return direction === 'asc'
+                    ? valA.localeCompare(valB)
+                    : valB.localeCompare(valA);
+            }
+
+            return direction === 'asc'
+                ? valA - valB
+                : valB - valA;
+        })
+        .map((item) => {
+            const sortedShipper = [...item.shipper_data].sort((a: any, b: any) => {
+
+                const valA = getValue(a, ['shipper_name']);
+                const valB = getValue(b, ['shipper_name']);
+
+                // handle null
+                if (valA == null) return 1;
+                if (valB == null) return -1;
+
+                // string / number
+                if (typeof valA === 'string') {
+                    return valA.localeCompare(valB);
+                }
+
+                return valA - valB;
+            });
+            
+            return {
+                ...item,
+                shipper_data: sortedShipper.map((shipper: any) => {
+    
+                    if (!shipper?.contract_data) return shipper;
+    
+                    const sortedContracts = [...shipper.contract_data].sort((a: any, b: any) => {
+    
+                        const valA = getValue(a, ['contract']);
+                        const valB = getValue(b, ['contract']);
+    
+                        // handle null
+                        if (valA == null) return 1;
+                        if (valB == null) return -1;
+    
+                        // string / number
+                        if (typeof valA === 'string') {
+                            return valA.localeCompare(valB);
+                        }
+    
+                        return valA - valB;
+                    });
+    
+                    return {
+                        ...shipper,
+                        contract_data: sortedContracts
+                    };
+                })
+            }
+        })
+        
+        setSortedData(newData);;
+    }
 };
 
 export const handleSortBalReport = (

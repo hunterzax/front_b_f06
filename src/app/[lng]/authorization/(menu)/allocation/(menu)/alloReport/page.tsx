@@ -1950,7 +1950,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
         try {
             setLoadingMap(prev => ({ ...prev, [id]: true }));
 
-            const res = await getDetail(id); // 👈 ใช้ function ของมึง
+            const res = await getDetail(id); // 👈 ใช้ function
 
             setDetailMap(prev => ({
                 ...prev,

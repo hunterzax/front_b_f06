@@ -91,7 +91,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
   const [smartquery, setsmartquery] = useState<string>('')
   const [clearSmartQuery, setClearSmartQuery] = useState<boolean>(false)
 
-  const [columnVisibility, setColumnVisibility] = useState<any>(Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible])))
+  const [columnVisibility, setColumnVisibility] = useState<any>(Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible])))
 
   const handleClick = async (id: number | undefined, res_?: any, subRes_?: any) => {
     if (!id) return
@@ -722,7 +722,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           const resultKey: any = keys?.filter((item: any) => item !== 'QUERY SHIPPER NOMINATION FILE')
           const resultEndPoints: any = endpoints?.filter((item: any) => item?.key !== 'Query Shipper Nomination File')
 
-          return [item?.name?.toUpperCase(), {keys: resultKey, endpoints: resultEndPoints}]
+          return [item.name?.toUpperCase(), {keys: resultKey, endpoints: resultEndPoints}]
         }
 
         const keys = leafMenus.map((m) => m?.name?.toUpperCase()).filter(Boolean)
@@ -784,24 +784,24 @@ const ClientPage: React.FC<ClientProps> = (props) => {
           }
         ]
 
-        if (item?.name?.toUpperCase() === 'CAPACITY MANAGEMENT') {
+        if (item.name?.toUpperCase() === 'CAPACITY MANAGEMENT') {
           return [
-            item?.name?.toUpperCase(),
+            item.name?.toUpperCase(),
             {
               keys: [...keys, ...newKeysBook].map((m) => m?.toUpperCase()),
               endpoints: [...endpoints, ...newEnpoint_Book]
             }
           ]
-        } else if (item?.name?.toUpperCase() === 'EVENT') {
+        } else if (item.name?.toUpperCase() === 'EVENT') {
           return [
-            item?.name?.toUpperCase(),
+            item.name?.toUpperCase(),
             {
               keys: [...keys, ...newKeysEvent].map((m) => m?.toUpperCase()),
               endpoints: [...newEnpoint_Event]
             }
           ]
         } else {
-          return [item?.name?.toUpperCase(), {keys, endpoints}]
+          return [item.name?.toUpperCase(), {keys, endpoints}]
         }
       })
     )
@@ -916,7 +916,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                       columns={columns}
                       isLoading={!isLoading}
                       exportBtn={<BtnGeneral bgcolor={'#24AB6A'} modeIcon={'export'} textRender={'Export'} generalFunc={() => exportToExcel(dataExport, 'login-tracking', columnVisibility)} can_export={userPermission ? userPermission?.f_export : false} />}
-                      initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
+                      initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
                       onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                       onFilteredDataChange={(filteredData: any) => {
                         const newData = filteredData || []

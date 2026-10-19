@@ -195,11 +195,11 @@ const FatherTableModify: React.FC<Props> = ({
             let parentData: any = [];
 
             if (mode == 'entry') {
-                newData = masterColumnsDynamicEntry?.map((item: any) => {
+                newData = (masterColumnsDynamicEntry || []).map((item: any) => {
                     return { ...item, visible: columnVisibility?.[item?.key] }
                 })
             } else if (mode == 'exit') {
-                newData = masterColumnsDynamicExit?.map((item: any) => {
+                newData = (masterColumnsDynamicExit || []).map((item: any) => {
                     return { ...item, visible: columnVisibility?.[item?.key] }
                 })
             }
@@ -238,7 +238,7 @@ const FatherTableModify: React.FC<Props> = ({
 
             // parentData.reverse()?.map((f: any) => {
             parentData?.map((f: any) => {
-                let findIDX: any = newData?.findIndex((item: any) => item?.key == f?.parent_id) + 1;
+                let findIDX: any = newData.findIndex((item: any) => item?.key == f?.parent_id) + 1;
                 let resultLabel: any;
 
                 if (dataContract?.id == 4) {
@@ -843,7 +843,7 @@ const FatherTableModify: React.FC<Props> = ({
                                             className={`${["Zone", "Area", "Exit Meter ID", "Contract Point", "New Point"].includes(header.label) ? table_sort_header_style : table_header_style} border-r-2 border-gray-300 text-center w-[100px]`}
                                         >
                                             {
-                                                header?.label == "Pressure Range" ? 'Pressure Range (PSIG)' : header.label == "Temperature Range" ? 'Temperature Range (Deg. F)' : header.label
+                                                header.label == "Pressure Range" ? 'Pressure Range (PSIG)' : header.label == "Temperature Range" ? 'Temperature Range (Deg. F)' : header.label
                                             }
                                             {["Zone", "Area", "Exit Meter ID", "Contract Point", "New Point"].includes(header.label) && getArrowIcon("exit_item" + index)}
                                         </th>
@@ -1091,10 +1091,10 @@ const FatherTableModify: React.FC<Props> = ({
 
                                         // Check if the header has dates
                                         if (header.dates && header.dates.length > 0) {
-                                            let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header?.label);
+                                            let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header.label);
                                             const checkDate: any = functionControlcolSpan(header, 'date'); //example here only data == date
 
-                                            return (header?.dates2?.map((date: any, dateIndex: any, arr: any) => {
+                                            return ((header.dates2 || []).map((date: any, dateIndex: any, arr: any) => {
                                                 if (!date) return <td key={`${colIndex}-${dateIndex}`}></td>;
                                                 return (
                                                     date.value == 'From' || date.value == 'To' ?
@@ -1310,12 +1310,12 @@ const FatherTableModify: React.FC<Props> = ({
                                             return null;
                                         }
 
-                                        const visibilityKey = visibilityMap[header?.label];
+                                        const visibilityKey = visibilityMap[header.label];
                                         // Check if the header has dates
                                         if (header.dates && header.dates.length > 0) {
-                                            let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header?.label);
+                                            let findKey: any = initialColumnsDynamic?.find((item: any) => item?.label == header.label);
                                             const checkDate: any = functionControlcolSpan(header, 'date'); //example here only data == date
-                                            return (header?.dates2.map((date: any, dateIndex: any, arr: any) => {
+                                            return (header.dates2.map((date: any, dateIndex: any, arr: any) => {
                                                 if (!date) return <td key={`${colIndex}-${dateIndex}`}></td>;
                                                 return (
                                                     date.value == 'From' || date.value == 'To' ?

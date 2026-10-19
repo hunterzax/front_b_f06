@@ -108,7 +108,7 @@ export const ContractRowYellow = ({
             {/* https://app.clickup.com/t/9018502823/86eujrgh5 */}
             {columnVisibility?.gas_day && (
                 <td className={`w-[260px] whitespace-nowrap pl-10 font-semibold text-[#5A4600] text-left bg-[#FEFBEC] sticky left-0 z-[2]`} scope="col">
-                    {`TOTAL ALL : `}
+                    {`TOTAL : `}
                     {row?.gas_day ? (toDayjs(row?.gas_day)?.isValid() ? toDayjs(row?.gas_day)?.format("DD/MM/YYYY") : '') : ''}
                 </td>
             )}
@@ -120,7 +120,7 @@ export const ContractRowYellow = ({
                     `}
                     scope="col"
                 >
-                    {}
+                    ALL
                     {/* {row?.gas_day ? (toDayjs(row?.gas_day)?.isValid() ? toDayjs(row?.gas_day)?.format("DD/MM/YYYY") : '') : ''} */}
                 </td>
             )}

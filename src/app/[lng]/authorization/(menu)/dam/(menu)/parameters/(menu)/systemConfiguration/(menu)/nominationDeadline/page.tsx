@@ -620,7 +620,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         value={srchPrcessType}
                         onChange={(e) => setSrchProcessType(e.target.value)}
                         options={processTypeMaster?.data?.map((item: any) => ({
-                            value: item?.id?.toString(),
+                            value: item.id?.toString(),
                             label: item.name
                         }))}
                         customWidth={250}

@@ -857,7 +857,6 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                 data={formData}
                 open={formOpen}
                 dataTable={dataTable}
-                dataShipper={dataShipper}
                 closeBalanceData={closeBalanceData}
                 // zoneMasterData={zoneMaster?.data}
                 zoneMasterData={dataZone}

@@ -285,7 +285,7 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
             ];
 
             setDynamicColumns(sorted); // <== Save dynamic columns
-            const sortedAndFormattedList = (sorted || []).map((column: any) => [column.key, column.visible]);
+            const sortedAndFormattedList = sorted.map((column: any) => [column.key, column.visible]);
             const sortedAndFormattedData = Object.fromEntries(sortedAndFormattedList)
             setColumnVisibility(sortedAndFormattedData);
         }
@@ -431,7 +431,11 @@ const TablePathDetail: React.FC<any> = ({ tableData, dataPeriod, setDataPeriod, 
             }));
 
         // เพิ่ม missingAreas ต่อท้าย
-        if (dataTableX.length > 0) dataTableX[0].data = [...(dataTableX[0]?.data || []), ...missingAreas];
+        if (dataTableX.length > 0) {
+            const firstRow = dataTableX[0];
+            if (firstRow == null) return dataTableX;
+            firstRow.data = [...(firstRow.data || []), ...missingAreas];
+        }
 
         return dataTableX;
     };

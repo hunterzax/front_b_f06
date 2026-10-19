@@ -842,7 +842,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                                 }}
                                 onChange={(e) => {
 
-                                    setSelectedTermMaster(termMaster[e.target.value]) // ของจริง
+                                    setSelectedTermMaster(termMaster[e?.target?.value ?? ""]) // ของจริง
                                     // setSelectedTermMaster([{
                                     //     "id": 38,
                                     //     "file_period": null,
@@ -1200,7 +1200,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
                         </div>
                         <div className="text-[12px] text-[#1473A1] -mt-1 w-full col-span-2">
                             {requireText}
-                            {errors?.upload_tranform && (<p className="text-red-500 text-sm w-full">{`${errors?.upload_tranform?.message || ''}`}</p>)}
+                            {errors != null && errors.upload_tranform && (<p className="text-red-500 text-sm w-full">{`${errors.upload_tranform.message || ''}`}</p>)}
                         </div>
                     </div>
                 </form>

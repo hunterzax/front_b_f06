@@ -950,7 +950,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
     const monthEnd = gasDayJs.endOf('month')
 
     const filteredContract = dataContract_.filter((contract: any) => {
-      if (!contract?.contract_start_date) return false
+      if (!contract || !contract.contract_start_date) return false
 
       const contractStart = toDayjs(contract.contract_start_date)?.startOf('day')
 
@@ -959,7 +959,7 @@ const ClientPage: React.FC<ClientProps> = (props) => {
        * แล้วค่อย terminate_date
        * แล้วค่อย contract_end_date
        */
-      const contractEndDate = contract?.extend_deadline || contract?.terminate_date || contract?.contract_end_date
+      const contractEndDate = contract.extend_deadline || contract.terminate_date || contract.contract_end_date
 
       const contractEnd = contractEndDate ? toDayjs(contractEndDate)?.subtract(1, 'day')?.endOf('day') : null
 

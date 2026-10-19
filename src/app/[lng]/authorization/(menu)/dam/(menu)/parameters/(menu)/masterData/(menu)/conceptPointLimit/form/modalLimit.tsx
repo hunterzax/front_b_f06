@@ -278,7 +278,7 @@ const ModalLimit: React.FC<FormExampleProps> = ({
                                                             setEditedDataTable(dataTable)
                                                         }}
                                                         options={shipperGroupData.map((item: any) => ({
-                                                            value: item?.id?.toString(),
+                                                            value: item.id?.toString(),
                                                             label: item.name
                                                         }))}
                                                         isFullWidth={true}
@@ -298,7 +298,7 @@ const ModalLimit: React.FC<FormExampleProps> = ({
                                                             setSrchConceptPoint([])
                                                         }}
                                                         options={typeConceptData.map((item: any) => ({
-                                                            value: item?.id?.toString(),
+                                                            value: item.id?.toString(),
                                                             label: item.name
                                                         }))}
                                                         isFullWidth={true}

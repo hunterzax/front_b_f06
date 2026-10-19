@@ -100,7 +100,7 @@ const ClientPage: React.FC<ClientProps> = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
-  const [columnVisibility, setColumnVisibility] = useState<any>(Object.fromEntries((initialColumns || [])?.map((column: any) => [column?.key, column?.visible])))
+  const [columnVisibility, setColumnVisibility] = useState<any>(Object.fromEntries(initialColumns.map((column: any) => [column?.key, column?.visible])))
   const [subTabIndex, setSubTabIndex] = useState(0)
   const [subTabIndexview, setsubTabIndexview] = useState(0)
   const [viewOpen, setViewOpen] = useState(false)
@@ -1240,17 +1240,17 @@ const ClientPage: React.FC<ClientProps> = () => {
         }
       }},
       
-      ...(dataTable || [])?.flatMap((e: any, ix:number) => {
+      ...(dataTable || []).flatMap((e: any, ix:number) => {
         const date_ = `${tabIndex === 2 ? (subTabIndex === 7 ? "All" : dayjs(e?.gas_day_text, "DD/MM/YYYY").add(subTabIndex < 7 ? subTabIndex : subTabIndexview, 'day').format("DDMMYY")) : dayjs(e?.gas_day_text, "DD/MM/YYYY").format("DDMMYY")}`
         let viewData = e?.dataRow?.length > 0 ? addTotalPerRow(e?.dataRow) : []
-        const cpEast = viewData?.find((f:any) => f?.zone_text === "EAST")
-        const cpWest = viewData?.find((f:any) => f?.zone_text === "WEST")
-        const cpEastWest = viewData?.find((f:any) => f?.zone_text === "EAST-WEST")
+        const cpEast = viewData.find((f:any) => f?.zone_text === "EAST")
+        const cpWest = viewData.find((f:any) => f?.zone_text === "WEST")
+        const cpEastWest = viewData.find((f:any) => f?.zone_text === "EAST-WEST")
         const newCP = [
           cpEast,
           cpWest,
           cpEastWest,
-        ]?.filter((f:any) => !!f)
+        ].filter((f:any) => !!f)
           return [
           {
             typeExport: 'pageView',
@@ -1520,7 +1520,7 @@ const ClientPage: React.FC<ClientProps> = () => {
                       can_export={userPermission ? userPermission?.f_export : false}
                     />
                   }
-                  initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
+                  initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
                   onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                   onFilteredDataChange={(filteredData: any) => {
                     const newData = filteredData || []
@@ -1548,7 +1548,7 @@ const ClientPage: React.FC<ClientProps> = () => {
                     can_export={userPermission ? userPermission?.f_export : false}
                   />
                 }
-                initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
+                initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
                 onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                 onFilteredDataChange={(filteredData: any) => {
                   const newData = filteredData || []
@@ -1616,7 +1616,7 @@ const ClientPage: React.FC<ClientProps> = () => {
                     can_export={userPermission ? userPermission?.f_export : false}
                   />
                 }
-                initialColumns={Object.fromEntries((initialColumns || [])?.map((column: any) => [column.key, column.visible]))}
+                initialColumns={Object.fromEntries(initialColumns.map((column: any) => [column.key, column.visible]))}
                 onColumnVisibilityChange={(columnKey: any) => handleColumnToggle(columnKey)}
                 onFilteredDataChange={(filteredData: any) => {
                   const newData = filteredData || []

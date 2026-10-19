@@ -221,9 +221,9 @@ const ModalSelShipperContract: React.FC<FormExampleProps> = ({
                                                     },
                                                 }}
                                             >
-                                                {(dataContractOriginal || [])?.map((item: any) => (
+                                                {(dataContractOriginal || []).map((item: any) => (
                                                     <MenuItem key={item.id} value={item.id}>
-                                                        {item?.contract_code}
+                                                        {item.contract_code}
                                                     </MenuItem>
                                                 ))}
                                             </Select>
